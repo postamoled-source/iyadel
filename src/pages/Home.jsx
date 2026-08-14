@@ -206,6 +206,12 @@ function CalcButton({ children, onClick, variant = "primary" }) {
 // ---------- Hero ----------
 function HeroSection({ toolCount, catCount }) {
   const { t } = useI18n();
+  const scrollTo = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top: y, behavior: "smooth" });
+  };
   return (
     <section className="relative overflow-hidden bg-background pt-10 pb-16">
       <style>{styles}</style>
@@ -230,18 +236,18 @@ function HeroSection({ toolCount, catCount }) {
           </p>
           
           <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-            <div className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-primary/50 transition-colors shadow-sm">
+            <button onClick={() => scrollTo("tools")} className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-primary/50 transition-colors shadow-sm cursor-pointer">
               <Box className="w-4 h-4 text-primary" />
               <span className="text-sm font-semibold text-foreground"><span className="text-primary">{toolCount}</span> {t("Tools")}</span>
-            </div>
-            <div className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-accent/50 transition-colors shadow-sm">
+            </button>
+            <button onClick={() => scrollTo("categories")} className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-accent/50 transition-colors shadow-sm cursor-pointer">
               <Layers className="w-4 h-4 text-accent" />
               <span className="text-sm font-semibold text-foreground"><span className="text-accent">{catCount}</span> {t("Categories")}</span>
-            </div>
-            <div className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-primary/50 transition-colors shadow-sm">
+            </button>
+            <button onClick={() => scrollTo("why")} className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-primary/50 transition-colors shadow-sm cursor-pointer">
               <Gift className="w-4 h-4 text-primary" />
               <span className="text-sm font-semibold text-foreground"><span className="text-primary">{t("Free")}</span> {t("for Everyone")}</span>
-            </div>
+            </button>
           </div>
         </motion.div>
       </div>
@@ -1103,6 +1109,7 @@ function ToolsHub() {
       <div className="max-w-5xl mx-auto px-6">
         
         {!selectedTool && (
+          <div id="categories">
           <AnimatedElement className="flex flex-wrap justify-center gap-3 md:gap-4 mb-16">
             {CATEGORIES.map((cat) => (
               <button key={cat} onClick={() => setActiveCategory(cat)}
@@ -1114,6 +1121,7 @@ function ToolsHub() {
               {t("Blog")}
             </Link>
           </AnimatedElement>
+          </div>
         )}
 
         {selectedTool ? (
@@ -1218,7 +1226,7 @@ function WhySection() {
     { icon: Zap, title: "31+ tools", desc: "Finance, Health, Converters, Math, Brain Games, and Image Tools." },
   ];
   return (
-    <section className="bg-background pb-16">
+    <section id="why" className="bg-background pb-16">
       <div className="max-w-5xl mx-auto px-6">
         <AnimatedElement>
           <div className="rounded-[3rem] bg-card border border-border p-10 md:p-14 shadow-2xl relative overflow-hidden">
