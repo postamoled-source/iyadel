@@ -34,6 +34,7 @@ export default function Footer() {
             <li><Link to="/About" className="text-background/70 hover:text-accent transition-colors">{t("Privacy Policy")}</Link></li>
             <li><a href="mailto:support@testpeak.net" className="text-background/70 hover:text-accent transition-colors">{t("Contact Us")}</a></li>
             <li><Link to="/Blog" className="text-background/70 hover:text-accent transition-colors">{t("Blog")}</Link></li>
+            <li><Link to="/Dashboard" className="text-background/70 hover:text-accent transition-colors">{t("Usage Dashboard")}</Link></li>
           </ul>
         </div>
 

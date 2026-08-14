@@ -16,6 +16,7 @@ import { TOOL_GUIDES } from "@/data/tool-guides";
 
 const ToolEntity = base44.entities.Tool;
 const BlogPostEntity = base44.entities.BlogPost;
+const ToolUsageEntity = base44.entities.ToolUsage;
 
 const ICONS = {
   Calculator, TrendingUp, LineChart: LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight,
@@ -1287,6 +1288,7 @@ function ToolsHub({ searchQuery = "" }) {
     setActiveCategory(tool.category);
     setSearchParams({ tool: tool.slug });
     trackEvent("tool_select", { tool_slug: tool.slug, tool_name: tool.name, category: tool.category });
+    ToolUsageEntity.create({ slug: tool.slug, tool_name: tool.name, category: tool.category }).catch(() => {});
   };
   const clearTool = () => {
     const next = new URLSearchParams(searchParams);

@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Blog from './pages/Blog';
 import BlogPostPage from './pages/BlogPostPage';
+import Dashboard from './pages/Dashboard';
 import Layout from './components/Layout';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 // Add page imports here
@@ -40,6 +41,7 @@ const AuthenticatedApp = () => {
         <Route path="/About" element={<About />} />
         <Route path="/Blog" element={<Blog />} />
         <Route path="/Blog/post" element={<BlogPostPage />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
         {/* Add your page Route elements here */}
       </Route>
       <Route path="*" element={<PageNotFound />} />

@@ -234,6 +234,21 @@ const AR = {
   "Ready to get started?": "جاهز للبدء؟",
   "Jump back in and explore all 26+ free tools TestPeak has to offer.": "عُد واستكشف جميع الأدوات المجانية (أكثر من 26) التي يقدمها TestPeak.",
   "Back to Tools": "العودة إلى الأدوات",
+
+  // Dashboard
+  "Usage Dashboard": "لوحة تحكم الاستخدام",
+  "Most used tools and daily usage trends from your visitors.": "أكثر الأدوات استخداماً ونسب الاستخدام اليومية من زوّارك.",
+  "Total Uses": "إجمالي الاستخدام",
+  "Today": "اليوم",
+  "Unique Tools": "أدوات فريدة",
+  "Refresh": "تحديث",
+  "No usage data yet": "لا توجد بيانات استخدام بعد",
+  "Usage is recorded automatically when visitors open tools.": "يُسجّل الاستخدام تلقائياً عند فتح الزوّار للأدوات.",
+  "Most Used Tools": "الأكثر استخداماً",
+  "Daily Usage (14 days)": "الاستخدام اليومي (14 يوماً)",
+  "Top Tools Chart": "رسم الأدوات الأكثر استخداماً",
+  "Usage by Category": "الاستخدام حسب الفئة",
+  "Uses": "مرات استخدام",
 };
 
 const I18nContext = createContext(null);
