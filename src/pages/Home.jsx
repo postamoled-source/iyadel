@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import PullToRefresh from "@/components/PullToRefresh";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
@@ -97,10 +99,14 @@ function SelectField({ label, value, onChange, options }) {
   return (
     <div className="text-left">
       <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
-      <select value={value} onChange={onChange}
-        className="w-full rounded-2xl border border-border bg-background text-foreground px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm appearance-none cursor-pointer">
-        {options.map((o) => <option key={o} value={o} className="bg-card text-card-foreground">{o}</option>)}
-      </select>
+      <Select value={value} onValueChange={(v) => onChange({ target: { value: v } })}>
+        <SelectTrigger className="w-full rounded-2xl border border-border bg-background text-foreground px-4 py-3 h-auto text-base shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+          <SelectValue placeholder={options[0]} />
+        </SelectTrigger>
+        <SelectContent className="max-h-72">
+          {options.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+        </SelectContent>
+      </Select>
     </div>
   );
 }
@@ -1303,9 +1309,8 @@ function ToolsHub({ searchQuery = "" }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
-  useEffect(() => {
-    ToolEntity.list().then(setTools).catch(() => {});
-  }, []);
+  const load = useCallback(async () => { try { setTools(await ToolEntity.list()); } catch {} }, []);
+  useEffect(() => { load(); }, [load]);
 
   const items = (() => {
     const map = new Map();
@@ -1337,6 +1342,7 @@ function ToolsHub({ searchQuery = "" }) {
 
   return (
     <section className="bg-background py-16" id="tools">
+      <PullToRefresh onRefresh={load}>
       <div className="max-w-5xl mx-auto px-6">
         
         {!selectedTool && !isSearching && (
@@ -1420,6 +1426,7 @@ function ToolsHub({ searchQuery = "" }) {
           </>
         )}
       </div>
+      </PullToRefresh>
     </section>
   );
 }

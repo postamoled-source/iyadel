@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useI18n } from "@/lib/i18n";
@@ -8,6 +8,7 @@ import { Sparkles, ArrowRight, Calendar, Tag, LayoutGrid, Clock } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
 import { STATIC_BLOG } from "@/data/blog-posts";
+import PullToRefresh from "@/components/PullToRefresh";
 
 const BlogPostEntity = base44.entities.BlogPost;
 
@@ -64,7 +65,8 @@ function BlogGrid() {
   const [posts, setPosts] = useState([]);
   const [activeCategory, setActiveCategory] = useState("All");
 
-  useEffect(() => { BlogPostEntity.list("-created_date", 20).then(setPosts).catch(() => {}); }, []);
+  const load = useCallback(async () => { try { setPosts(await BlogPostEntity.list("-created_date", 20)); } catch {} }, []);
+  useEffect(() => { load(); }, [load]);
   const items = (() => {
     const map = new Map();
     STATIC_BLOG.forEach((p) => map.set(p.title, p));
@@ -76,6 +78,7 @@ function BlogGrid() {
 
   return (
     <section className="bg-secondary py-14 sm:py-20">
+      <PullToRefresh onRefresh={load}>
       <div className="max-w-6xl mx-auto px-6">
         <AnimatedElement>
           <div className="flex flex-wrap gap-3 mb-10">
@@ -121,6 +124,7 @@ function BlogGrid() {
           ))}
         </div>
       </div>
+      </PullToRefresh>
     </section>
   );
 }

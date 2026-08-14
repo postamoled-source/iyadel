@@ -99,6 +99,10 @@ input, textarea, select, [contenteditable="true"] {
   user-select: text;
   -webkit-touch-callout: default;
 }
+.prose-content {
+  user-select: text;
+  -webkit-user-select: text;
+}
 
 @keyframes floatA {
   0%, 100% { transform: translateY(0) rotate(0deg); }
