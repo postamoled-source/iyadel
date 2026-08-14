@@ -8,6 +8,8 @@ import { Image } from "@/components/ui/image";
 import { STATIC_BLOG } from "@/data/blog-posts";
 import { BLOG_CONTENT_AR } from "@/data/translations-ar";
 import { useSeo } from "@/lib/analytics";
+import ReadingControls from "@/components/ReadingControls";
+import { useReadingPrefs, READING_THEMES } from "@/hooks/useReadingPrefs";
 
 const BlogPostEntity = base44.entities.BlogPost;
 
@@ -38,6 +40,8 @@ export default function BlogPostPage() {
   const title = searchParams.get("title");
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { fontSize, fontIndex, changeFont, theme, changeTheme } = useReadingPrefs();
+  const readTheme = READING_THEMES[theme] || READING_THEMES.light;
   useSeo({
     title: post?.title,
     description: post?.excerpt,
@@ -120,9 +124,25 @@ export default function BlogPostPage() {
       )}
 
       <article className="max-w-3xl mx-auto px-6 mt-12">
-        <div className="prose-content space-y-5">
+        <ReadingControls
+          fontSize={fontSize}
+          fontIndex={fontIndex}
+          changeFont={changeFont}
+          theme={theme}
+          changeTheme={changeTheme}
+        />
+        <div
+          className="prose-content space-y-5 rounded-3xl border border-border p-6 sm:p-10 transition-colors duration-500"
+          style={{ background: readTheme.bg, color: readTheme.text }}
+        >
           {paragraphs.map((p, i) => (
-            <p key={i} className="text-base sm:text-lg leading-relaxed text-card-foreground/90">{p}</p>
+            <p
+              key={i}
+              className="leading-relaxed"
+              style={{ fontSize: `${fontSize}px`, color: readTheme.text }}
+            >
+              {p}
+            </p>
           ))}
         </div>
 
