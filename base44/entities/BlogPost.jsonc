@@ -4,7 +4,13 @@
     "title": {
       "type": "string"
     },
+    "slug": {
+      "type": "string"
+    },
     "excerpt": {
+      "type": "string"
+    },
+    "content": {
       "type": "string"
     },
     "category": {

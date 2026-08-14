@@ -5,15 +5,9 @@ import { useI18n } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, Calendar, Tag, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { STATIC_BLOG } from "@/data/blog-posts";
 
 const BlogPostEntity = base44.entities.BlogPost;
-
-const STATIC_BLOG = [
-  { title: "5 Smart Ways to Pay Off Your Loan Faster", excerpt: "Small changes to your repayment strategy can save you thousands in interest. Here's how to use the Loan Calculator to your advantage.", category: "Finance", date: "Aug 10, 2026", image_url: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/58374ccbe_generated_5e9014e0.png" },
-  { title: "Understanding BMI: What the Numbers Really Mean", excerpt: "Body Mass Index is a starting point, not the full picture. Learn how to read your BMI result the right way.", category: "Health", date: "Aug 5, 2026", image_url: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/091f98734_generated_92bd36b3.png" },
-  { title: "Compound Interest: The Eighth Wonder of the World", excerpt: "Einstein allegedly called it the most powerful force in the universe. See how compounding accelerates your savings.", category: "Finance", date: "Jul 28, 2026", image_url: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/ff5a36d61_generated_8395a13a.png" },
-  { title: "Boost Your Productivity with Free Online Tools", excerpt: "From unit converters to QR generators, discover how everyday tools quietly save you hours every week.", category: "Technology", date: "Jul 20, 2026", image_url: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/4637cebde_generated_ac5c1dd1.png" },
-];
 
 function AnimatedElement({ children, className, delay = 0 }) {
   const ref = useRef(null);
@@ -101,9 +95,9 @@ function BlogGrid() {
                   </div>
                   <h3 className="font-bold text-lg text-foreground mb-2 leading-snug">{t(post.title)}</h3>
                   <p className="text-sm text-muted-foreground flex-1">{t(post.excerpt)}</p>
-                  <a href="#" className="inline-flex items-center gap-1 text-primary text-sm font-semibold mt-4 hover:gap-2 transition-all">
+                  <Link to={`/Blog/post?slug=${encodeURIComponent(post.slug || "")}`} className="inline-flex items-center gap-1 text-primary text-sm font-semibold mt-4 hover:gap-2 transition-all">
                     {t("Read more")} <ArrowRight className="w-4 h-4" />
-                  </a>
+                  </Link>
                 </div>
               </article>
             </AnimatedElement>
