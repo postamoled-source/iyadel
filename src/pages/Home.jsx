@@ -5,6 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { jsPDF } from "jspdf";
 import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket } from "lucide-react";
 
 const ToolEntity = base44.entities.Tool;
@@ -63,6 +64,13 @@ const SPEED_UNITS = { Knot: 0.514444, "km/h": 0.277778, mph: 0.44704, "m/s": 1 }
 const CURRENCY_RATES = { USD: 1, EUR: 0.92, GBP: 0.79, JPY: 149.5, CNY: 7.24, CHF: 0.88, CAD: 1.36, AUD: 1.52, NZD: 1.64, KRW: 1330, SGD: 1.34, INR: 83.3, BRL: 5.0, RUB: 92.5, ZAR: 18.7, TRY: 32.1, MXN: 17.0, SEK: 10.4, NOK: 10.6, DKK: 6.86, PLN: 4.0, THB: 35.5, MYR: 4.7, IDR: 15600, PKR: 278, MAD: 9.9, EGP: 48.5, SAR: 3.75, AED: 3.67 };
 const ATOMIC_WEIGHTS = { H: 1.008, He: 4.0026, Li: 6.94, Be: 9.0122, B: 10.81, C: 12.011, N: 14.007, O: 15.999, F: 18.998, Ne: 20.18, Na: 22.99, Mg: 24.305, Al: 26.982, Si: 28.085, P: 30.974, S: 32.06, Cl: 35.45, K: 39.098, Ca: 40.078, Fe: 55.845, Cu: 63.546, Zn: 65.38, Br: 79.904, Ag: 107.868, I: 126.904, Ba: 137.327, Au: 196.967, Pb: 207.2 };
 const WORD_LIST = ["PLANET", "GARDEN", "BRIDGE", "PUZZLE", "LAPTOP", "GUITAR", "CASTLE", "BOTTLE"];
+const RIDDLES = [
+  { q: "I speak without a mouth and hear without ears. I have nobody, but I come alive with the wind. What am I?", answer: "echo" },
+  { q: "The more you take, the more you leave behind. What are they?", answer: "footsteps" },
+  { q: "What has keys but can't open locks?", answer: "piano" },
+  { q: "I'm tall when I'm young, and I'm short when I'm old. What am I?", answer: "candle" },
+  { q: "What gets wetter the more it dries?", answer: "towel" },
+];
 
 function convertUnit(value, units, from, to) {
   const v = parseFloat(value);
@@ -249,6 +257,9 @@ function ToolWorkspace({ tool, onBack }) {
   const [riddleAttempts, setRiddleAttempts] = useState(3);
   const [riddleMsg, setRiddleMsg] = useState("");
   const [riddleGuess, setRiddleGuess] = useState("");
+  const [riddle, setRiddle] = useState(() => RIDDLES[0]);
+  const [bgResult, setBgResult] = useState(null);
+  const [pdfBusy, setPdfBusy] = useState(false);
   const [puzzleLevel, setPuzzleLevel] = useState("Easy");
   const [puzzleQ, setPuzzleQ] = useState(() => generatePuzzle("Easy"));
   const [puzzleAns, setPuzzleAns] = useState("");
@@ -280,6 +291,7 @@ function ToolWorkspace({ tool, onBack }) {
     setQrUrl(null); setShareLinks(null); setPolicyText("");
     setCropSrc(null); setCropResult(null); setBgSrc(null); setBgDone(false);
     setPdfFiles([]); setPdfReady(false); setCompressSrc(null); setCompressResult(null); setPlotData(null);
+    setBgResult(null); setPdfBusy(false); setRiddle(RIDDLES[Math.floor(Math.random() * RIDDLES.length)]);
   }, [tool.slug]);
 
   const set = (k) => (e) => setInputs((p) => ({ ...p, [k]: e.target.value }));
@@ -326,6 +338,30 @@ function ToolWorkspace({ tool, onBack }) {
       setCompressResult({ url: out, origSize, newSize });
     };
     img.src = compressSrc;
+  };
+
+  const removeBg = () => {
+    if (!bgSrc) return;
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width; canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = data.data;
+      const tol = 44;
+      const bases = [[0, 0], [canvas.width - 1, 0], [0, canvas.height - 1], [canvas.width - 1, canvas.height - 1]].map(([x, y]) => { const i = (y * canvas.width + x) * 4; return [d[i], d[i + 1], d[i + 2]]; });
+      for (let i = 0; i < d.length; i += 4) {
+        for (const b of bases) {
+          if (Math.abs(d[i] - b[0]) <= tol && Math.abs(d[i + 1] - b[1]) <= tol && Math.abs(d[i + 2] - b[2]) <= tol) { d[i + 3] = 0; break; }
+        }
+      }
+      ctx.putImageData(data, 0, 0);
+      setBgResult(canvas.toDataURL("image/png"));
+      setBgDone(true);
+    };
+    img.src = bgSrc;
   };
 
   const renderCalculator = () => {
@@ -516,6 +552,487 @@ function ToolWorkspace({ tool, onBack }) {
               </ResultCard>
             )}
             <TipBox><strong>Tip:</strong> The default set excludes easily-confused characters (O, I, 0, 1) so codes stay readable.</TipBox>
+          </>
+        );
+      }
+      case "bond-yield": {
+        const face = parseFloat(inputs.face), price = parseFloat(inputs.price), coupon = parseFloat(inputs.coupon), years = parseFloat(inputs.years);
+        const bondResult = (face && price && !isNaN(coupon) && years) ? (() => {
+          const currentYield = (coupon / price) * 100;
+          const ytm = ((coupon + (face - price) / years) / ((face + price) / 2)) * 100;
+          return { currentYield: currentYield.toFixed(2), ytm: ytm.toFixed(2) };
+        })() : null;
+        const calc = () => setResult(bondResult);
+        return (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <NumInput label="Face Value ($)" value={inputs.face} onChange={set("face")} placeholder="1000" />
+              <NumInput label="Current Price ($)" value={inputs.price} onChange={set("price")} placeholder="950" />
+              <NumInput label="Annual Coupon ($)" value={inputs.coupon} onChange={set("coupon")} placeholder="50" />
+              <NumInput label="Years to Maturity" value={inputs.years} onChange={set("years")} placeholder="5" />
+            </div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={calc}>Calculate Yield</CalcButton></div>
+            {bondResult && (
+              <ResultCard title="Bond Yield">
+                <div className="text-sm text-muted-foreground mb-1">Current Yield</div>
+                <div className="text-3xl font-bold text-primary mb-4">{bondResult.currentYield}%</div>
+                <div className="text-sm text-muted-foreground mb-1">Yield to Maturity (YTM)</div>
+                <div className="text-3xl font-bold text-accent">{bondResult.ytm}%</div>
+              </ResultCard>
+            )}
+            <TipBox>Current Yield = Annual Coupon ÷ Price. YTM approximates total return if held to maturity.</TipBox>
+          </>
+        );
+      }
+      case "bmi-calculator": {
+        const w = parseFloat(inputs.weight), h = parseFloat(inputs.height) / 100;
+        const bmi = w && h ? w / (h * h) : null;
+        const cat = bmi ? (bmi < 18.5 ? "Underweight" : bmi < 25 ? "Normal weight" : bmi < 30 ? "Overweight" : "Obese") : null;
+        return (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <NumInput label="Weight (kg)" value={inputs.weight} onChange={set("weight")} placeholder="70" />
+              <NumInput label="Height (cm)" value={inputs.height} onChange={set("height")} placeholder="175" />
+            </div>
+            {bmi && (
+              <ResultCard title="Your BMI">
+                <div className="text-5xl font-extrabold text-primary mb-3">{bmi.toFixed(1)}</div>
+                <div className="text-lg font-semibold text-accent">{cat}</div>
+              </ResultCard>
+            )}
+            <TipBox>BMI is a general indicator. Consult a doctor for a complete health assessment.</TipBox>
+          </>
+        );
+      }
+      case "calories-burned": {
+        const metMap = { Walking: 3.5, Running: 9.8, Cycling: 7.5, Swimming: 8.0, "Weight Lifting": 6.0, Yoga: 2.5 };
+        const w = parseFloat(inputs.weight), m = parseFloat(inputs.minutes);
+        const met = metMap[inputs.activity || "Walking"];
+        const cal = w && m && met ? (met * 3.5 * w) / 200 * m : null;
+        return (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <NumInput label="Weight (kg)" value={inputs.weight} onChange={set("weight")} placeholder="70" />
+              <NumInput label="Duration (min)" value={inputs.minutes} onChange={set("minutes")} placeholder="30" />
+            </div>
+            <SelectField label="Activity" value={inputs.activity || "Walking"} onChange={set("activity")} options={Object.keys(metMap)} />
+            {cal != null && (
+              <ResultCard title="Calories Burned">
+                <div className="text-5xl font-extrabold text-primary mb-2">{Math.round(cal)}</div>
+                <div className="text-muted-foreground">kcal</div>
+              </ResultCard>
+            )}
+            <TipBox>Estimates based on MET values. Actual burn varies by intensity and metabolism.</TipBox>
+          </>
+        );
+      }
+      case "distance-converter": {
+        const v = parseFloat(inputs.value);
+        const from = inputs.from || "Mile", to = inputs.to || "Kilometer";
+        const out = !isNaN(v) ? convertUnit(v, DISTANCE_UNITS, from, to) : null;
+        return (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <NumInput label="Value" value={inputs.value} onChange={set("value")} placeholder="1" />
+              <SelectField label="From" value={from} onChange={set("from")} options={Object.keys(DISTANCE_UNITS)} />
+              <SelectField label="To" value={to} onChange={set("to")} options={Object.keys(DISTANCE_UNITS)} />
+            </div>
+            {out != null && (
+              <ResultCard title="Result">
+                <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
+                <div className="text-muted-foreground mt-2">{to}</div>
+              </ResultCard>
+            )}
+          </>
+        );
+      }
+      case "weight-converter": {
+        const v = parseFloat(inputs.value);
+        const from = inputs.from || "Kilogram", to = inputs.to || "Pound";
+        const out = !isNaN(v) ? convertUnit(v, WEIGHT_UNITS, from, to) : null;
+        return (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <NumInput label="Value" value={inputs.value} onChange={set("value")} placeholder="1" />
+              <SelectField label="From" value={from} onChange={set("from")} options={Object.keys(WEIGHT_UNITS)} />
+              <SelectField label="To" value={to} onChange={set("to")} options={Object.keys(WEIGHT_UNITS)} />
+            </div>
+            {out != null && (
+              <ResultCard title="Result">
+                <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
+                <div className="text-muted-foreground mt-2">{to}</div>
+              </ResultCard>
+            )}
+          </>
+        );
+      }
+      case "area-converter": {
+        const v = parseFloat(inputs.value);
+        const from = inputs.from || "m²", to = inputs.to || "ft²";
+        const out = !isNaN(v) ? convertUnit(v, AREA_UNITS, from, to) : null;
+        return (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <NumInput label="Value" value={inputs.value} onChange={set("value")} placeholder="1" />
+              <SelectField label="From" value={from} onChange={set("from")} options={Object.keys(AREA_UNITS)} />
+              <SelectField label="To" value={to} onChange={set("to")} options={Object.keys(AREA_UNITS)} />
+            </div>
+            {out != null && (
+              <ResultCard title="Result">
+                <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
+                <div className="text-muted-foreground mt-2">{to}</div>
+              </ResultCard>
+            )}
+          </>
+        );
+      }
+      case "time-converter": {
+        const v = parseFloat(inputs.value);
+        const from = inputs.from || "Hour", to = inputs.to || "Minute";
+        const out = !isNaN(v) ? convertUnit(v, TIME_UNITS, from, to) : null;
+        return (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <NumInput label="Value" value={inputs.value} onChange={set("value")} placeholder="1" />
+              <SelectField label="From" value={from} onChange={set("from")} options={Object.keys(TIME_UNITS)} />
+              <SelectField label="To" value={to} onChange={set("to")} options={Object.keys(TIME_UNITS)} />
+            </div>
+            {out != null && (
+              <ResultCard title="Result">
+                <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
+                <div className="text-muted-foreground mt-2">{to}</div>
+              </ResultCard>
+            )}
+          </>
+        );
+      }
+      case "speed-converter": {
+        const v = parseFloat(inputs.value);
+        const from = inputs.from || "km/h", to = inputs.to || "mph";
+        const out = !isNaN(v) ? convertUnit(v, SPEED_UNITS, from, to) : null;
+        return (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <NumInput label="Value" value={inputs.value} onChange={set("value")} placeholder="100" />
+              <SelectField label="From" value={from} onChange={set("from")} options={Object.keys(SPEED_UNITS)} />
+              <SelectField label="To" value={to} onChange={set("to")} options={Object.keys(SPEED_UNITS)} />
+            </div>
+            {out != null && (
+              <ResultCard title="Result">
+                <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
+                <div className="text-muted-foreground mt-2">{to}</div>
+              </ResultCard>
+            )}
+          </>
+        );
+      }
+      case "qr-code-generator": {
+        const data = inputs.text || "";
+        const src = data ? `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(data)}` : null;
+        return (
+          <>
+            <TxtInput label="Text or URL" value={inputs.text} onChange={set("text")} placeholder="https://testpeak.net" />
+            {src && (
+              <ResultCard title="Your QR Code">
+                <img src={src} alt="QR Code" className="w-48 h-48 mx-auto rounded-xl bg-white p-2" />
+                <a href={src} download="qr-code.png" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">Download <ImageDown className="w-4 h-4" /></a>
+              </ResultCard>
+            )}
+            <TipBox>Your QR code is generated on demand and not stored anywhere.</TipBox>
+          </>
+        );
+      }
+      case "share-link-generator": {
+        const url = encodeURIComponent(inputs.url || "");
+        const text = encodeURIComponent(inputs.text || "");
+        const links = inputs.url ? {
+          Facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
+          Twitter: `https://twitter.com/intent/tweet?url=${url}&text=${text}`,
+          LinkedIn: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+          WhatsApp: `https://wa.me/?text=${text}%20${url}`,
+        } : null;
+        return (
+          <>
+            <TxtInput label="Page URL" value={inputs.url} onChange={set("url")} placeholder="https://testpeak.net" />
+            <TxtInput label="Message (optional)" value={inputs.text} onChange={set("text")} placeholder="Check this out!" />
+            {links && (
+              <ResultCard title="Share Links">
+                <div className="grid grid-cols-2 gap-3">
+                  {Object.entries(links).map(([k, v]) => (
+                    <a key={k} href={v} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl bg-background border border-border px-4 py-3 text-sm font-semibold text-foreground hover:border-primary/50 hover:text-primary transition-all"><Send className="w-4 h-4" /> {k}</a>
+                  ))}
+                </div>
+              </ResultCard>
+            )}
+          </>
+        );
+      }
+      case "privacy-policy-generator": {
+        const generate = () => {
+          const name = inputs.appName || "TestPeak", site = inputs.siteUrl || "https://testpeak.net", email = inputs.email || "support@testpeak.net";
+          const text = `Privacy Policy for ${name}\n\nLast Updated: ${new Date().toLocaleDateString()}\n\n${name} ("we", "us", "our") operates ${site}. This policy explains what data we collect and how we use it.\n\n1. Information We Collect\nWe collect information you provide voluntarily and data collected automatically (IP address, browser type, cookies).\n\n2. How We Use Your Information\nWe use information to provide and improve our services, communicate with you, and analyze usage.\n\n3. Cookies\nWe use cookies to improve your experience. You can disable cookies in your browser settings.\n\n4. Third-Party Services\nWe may use third-party tools that collect data according to their own privacy policies.\n\n5. Your Rights\nYou may access, correct, or delete your personal data at any time. Contact us at ${email}.\n\n6. Security\nWe take reasonable measures to protect your data, though no system is 100% secure.\n\n7. Changes to This Policy\nWe may update this policy. Changes will be posted on this page.\n\nContact: ${email}`;
+          setPolicyText(text);
+        };
+        const copy = () => navigator.clipboard?.writeText(policyText);
+        return (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <TxtInput label="App Name" value={inputs.appName} onChange={set("appName")} placeholder="TestPeak" />
+              <TxtInput label="Site URL" value={inputs.siteUrl} onChange={set("siteUrl")} placeholder="https://testpeak.net" />
+              <TxtInput label="Contact Email" value={inputs.email} onChange={set("email")} placeholder="support@testpeak.net" />
+            </div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={generate}>Generate Policy</CalcButton></div>
+            {policyText && (
+              <ResultCard title="Generated Privacy Policy">
+                <pre className="text-left text-sm whitespace-pre-wrap text-muted-foreground max-h-72 overflow-y-auto bg-background rounded-xl p-4 border border-border">{policyText}</pre>
+                <button onClick={copy} className="inline-flex items-center gap-2 mt-4 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-secondary"><Copy className="w-4 h-4" /> Copy</button>
+              </ResultCard>
+            )}
+          </>
+        );
+      }
+      case "math-function-calculator": {
+        const plot = () => {
+          const expr = inputs.expr || "sin(x)";
+          const data = [];
+          for (let x = -10; x <= 10; x += 0.2) {
+            const y = evalFn(expr, x);
+            if (!isNaN(y)) data.push({ x: +x.toFixed(2), y: +y.toFixed(3) });
+          }
+          setPlotData(data);
+        };
+        return (
+          <>
+            <TxtInput label="f(x) =" value={inputs.expr} onChange={set("expr")} placeholder="sin(x)" />
+            <p className="text-xs text-muted-foreground mt-2 text-left ml-1">Supports: sin, cos, tan, sqrt, ln, log, exp, abs, ^</p>
+            <div className="flex justify-center mt-6"><CalcButton onClick={plot}>Plot Function</CalcButton></div>
+            {plotData && plotData.length > 0 && (
+              <ResultCard title="Plot">
+                <div className="w-full h-72">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={plotData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="x" stroke="hsl(var(--muted-foreground))" />
+                      <YAxis stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
+                      <Line type="monotone" dataKey="y" stroke="hsl(var(--primary))" dot={false} strokeWidth={2} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </ResultCard>
+            )}
+          </>
+        );
+      }
+      case "percentage-calculator": {
+        const a = parseFloat(inputs.a), b = parseFloat(inputs.b);
+        const mode = inputs.mode || "of";
+        const out = (mode === "of") ? (a && b ? (a / 100 * b) : null)
+          : (mode === "isWhat") ? (a && b ? (a / b * 100) : null)
+          : (mode === "change") ? (a && b ? ((b - a) / a * 100) : null) : null;
+        return (
+          <>
+            <SelectField label="Calculation Type" value={mode} onChange={set("mode")} options={["of", "isWhat", "change"]} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+              <NumInput label="Value A" value={inputs.a} onChange={set("a")} placeholder="20" />
+              <NumInput label="Value B" value={inputs.b} onChange={set("b")} placeholder="150" />
+            </div>
+            {out != null && (
+              <ResultCard title="Result">
+                <div className="text-4xl font-extrabold text-accent">{out.toFixed(2)}{mode !== "of" ? "%" : ""}</div>
+              </ResultCard>
+            )}
+            <TipBox>"of" = A% of B • "isWhat" = A is what % of B • "change" = % change from A to B.</TipBox>
+          </>
+        );
+      }
+      case "physics-calculators": {
+        const mode = inputs.mode || "speed";
+        const a = parseFloat(inputs.a), b = parseFloat(inputs.b);
+        let la = "Distance (m)", lb = "Time (s)", unit = "m/s";
+        if (mode === "distance") { la = "Speed (m/s)"; lb = "Time (s)"; unit = "m"; }
+        else if (mode === "time") { la = "Distance (m)"; lb = "Speed (m/s)"; unit = "s"; }
+        else if (mode === "ohm") { la = "Voltage (V)"; lb = "Resistance (Ω)"; unit = "A"; }
+        const res = (mode === "ohm") ? (a && b ? a / b : null) : (mode === "distance") ? (a && b ? a * b : null) : (a && b ? a / b : null);
+        return (
+          <>
+            <SelectField label="Calculation" value={mode} onChange={set("mode")} options={["speed", "distance", "time", "ohm"]} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+              <NumInput label={la} value={inputs.a} onChange={set("a")} placeholder="100" />
+              <NumInput label={lb} value={inputs.b} onChange={set("b")} placeholder="10" />
+            </div>
+            {res != null && (
+              <ResultCard title="Result">
+                <div className="text-4xl font-extrabold text-accent">{res.toFixed(3)}</div>
+                <div className="text-muted-foreground mt-2">{unit}</div>
+              </ResultCard>
+            )}
+            <TipBox>Speed = Distance ÷ Time • Ohm's Law: I = V ÷ R.</TipBox>
+          </>
+        );
+      }
+      case "chemistry-calculators": {
+        const mass = calcMolarMass(inputs.formula || "");
+        return (
+          <>
+            <TxtInput label="Chemical Formula" value={inputs.formula} onChange={set("formula")} placeholder="H2O" />
+            {mass != null ? (
+              <ResultCard title="Molar Mass">
+                <div className="text-4xl font-extrabold text-accent">{mass.toFixed(3)}</div>
+                <div className="text-muted-foreground mt-2">g/mol</div>
+              </ResultCard>
+            ) : inputs.formula ? (
+              <TipBox>Could not parse the formula. Use element symbols like H2O, NaCl, or C6H12O6.</TipBox>
+            ) : null}
+            <TipBox>Enter a formula like H2O, NaCl, or C6H12O6. Supports common elements.</TipBox>
+          </>
+        );
+      }
+      case "riddle-game": {
+        const guess = () => {
+          if (riddleGuess.trim().toLowerCase() === riddle.answer.toLowerCase()) setRiddleMsg("Correct! 🎉");
+          else {
+            const left = riddleAttempts - 1;
+            setRiddleAttempts(left);
+            setRiddleMsg(left > 0 ? `Wrong. ${left} attempt${left > 1 ? "s" : ""} left.` : `Out of attempts! The answer was "${riddle.answer}".`);
+          }
+        };
+        const next = () => { setRiddle(RIDDLES[Math.floor(Math.random() * RIDDLES.length)]); setRiddleGuess(""); setRiddleMsg(""); setRiddleAttempts(3); };
+        return (
+          <>
+            <div className="rounded-2xl bg-background border border-border p-6 mb-6">
+              <p className="text-lg font-semibold text-foreground mb-2">Riddle</p>
+              <p className="text-muted-foreground">{riddle.q}</p>
+            </div>
+            <TxtInput label="Your Answer" value={riddleGuess} onChange={(e) => setRiddleGuess(e.target.value)} placeholder="Type your guess" />
+            <div className="flex flex-wrap justify-center gap-3 mt-6">
+              <CalcButton onClick={guess}>Submit Answer</CalcButton>
+              <Button onClick={next} variant="outline" className="mt-6 rounded-2xl px-6 py-6">New Riddle</Button>
+            </div>
+            {riddleMsg && <ResultCard title="Result"><div className="text-lg font-semibold text-foreground">{riddleMsg}</div></ResultCard>}
+            <TipBox>Attempts left: {riddleAttempts}</TipBox>
+          </>
+        );
+      }
+      case "math-puzzle": {
+        const check = () => {
+          if (parseInt(puzzleAns) === puzzleQ.answer) setPuzzleResult("Correct! 🎉");
+          else setPuzzleResult(`Wrong. The answer was ${puzzleQ.answer}.`);
+        };
+        const next = () => { setPuzzleQ(generatePuzzle(puzzleLevel)); setPuzzleAns(""); setPuzzleResult(""); };
+        return (
+          <>
+            <div className="rounded-2xl bg-background border border-border p-6 mb-6 text-center">
+              <p className="text-3xl font-extrabold text-foreground">{puzzleQ.text}</p>
+            </div>
+            <SelectField label="Difficulty" value={puzzleLevel} onChange={(e) => { setPuzzleLevel(e.target.value); setPuzzleQ(generatePuzzle(e.target.value)); setPuzzleAns(""); setPuzzleResult(""); }} options={["Easy", "Medium", "Hard", "Expert"]} />
+            <NumInput label="Your Answer" value={puzzleAns} onChange={(e) => setPuzzleAns(e.target.value)} placeholder="?" />
+            <div className="flex flex-wrap justify-center gap-3 mt-6">
+              <CalcButton onClick={check}>Check</CalcButton>
+              <Button onClick={next} variant="outline" className="mt-6 rounded-2xl px-6 py-6">Next Puzzle</Button>
+            </div>
+            {puzzleResult && <ResultCard title="Result"><div className="text-lg font-semibold text-foreground">{puzzleResult}</div></ResultCard>}
+          </>
+        );
+      }
+      case "word-scramble": {
+        const check = () => {
+          if (scrambleGuess.trim().toUpperCase() === word) setScrambleResult("Correct! 🎉");
+          else setScrambleResult(`Wrong. The word was "${word}".`);
+        };
+        const next = () => { const w = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)]; setWord(w); setScrambled(scrambleWord(w)); setScrambleGuess(""); setScrambleResult(""); };
+        return (
+          <>
+            <div className="rounded-2xl bg-background border border-border p-6 mb-6 text-center">
+              <p className="text-sm text-muted-foreground mb-2">Unscramble the letters:</p>
+              <p className="text-3xl font-extrabold tracking-[0.3em] text-foreground">{scrambled}</p>
+            </div>
+            <TxtInput label="Your Answer" value={scrambleGuess} onChange={(e) => setScrambleGuess(e.target.value)} placeholder="Type the word" />
+            <div className="flex flex-wrap justify-center gap-3 mt-6">
+              <CalcButton onClick={check}>Check</CalcButton>
+              <Button onClick={next} variant="outline" className="mt-6 rounded-2xl px-6 py-6">New Word</Button>
+            </div>
+            {scrambleResult && <ResultCard title="Result"><div className="text-lg font-semibold text-foreground">{scrambleResult}</div></ResultCard>}
+          </>
+        );
+      }
+      case "image-cropper": {
+        return (
+          <>
+            <input type="file" accept="image/*" onChange={(e) => e.target.files[0] && readFile(e.target.files[0], setCropSrc)} className="block mx-auto text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:text-primary-foreground file:px-4 file:py-2" />
+            {cropSrc && <div className="mt-6"><img src={cropSrc} alt="preview" className="max-h-64 mx-auto rounded-xl" /></div>}
+            <div className="flex justify-center mt-6"><CalcButton onClick={doCrop}>Crop to Square</CalcButton></div>
+            {cropResult && (
+              <ResultCard title="Cropped Image">
+                <img src={cropResult} alt="cropped" className="w-48 h-48 object-cover mx-auto rounded-xl" />
+                <a href={cropResult} download="cropped.png" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">Download <ImageDown className="w-4 h-4" /></a>
+              </ResultCard>
+            )}
+            <TipBox>Crops the image to a centered square, ideal for profile pictures.</TipBox>
+          </>
+        );
+      }
+      case "background-remover": {
+        return (
+          <>
+            <input type="file" accept="image/*" onChange={(e) => { if (e.target.files[0]) { readFile(e.target.files[0], setBgSrc); setBgDone(false); setBgResult(null); } }} className="block mx-auto text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:text-primary-foreground file:px-4 file:py-2" />
+            {bgSrc && <div className="mt-6"><img src={bgSrc} alt="preview" className="max-h-64 mx-auto rounded-xl" /></div>}
+            <div className="flex justify-center mt-6"><CalcButton onClick={removeBg}>Remove Background</CalcButton></div>
+            {bgResult && (
+              <ResultCard title="Result">
+                <img src={bgResult} alt="no background" className="max-h-64 mx-auto rounded-xl" style={{ background: "repeating-conic-gradient(hsl(var(--muted)) 0 25%, transparent 0 50%) 50% / 16px 16px" }} />
+                <a href={bgResult} download="no-bg.png" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">Download <ImageDown className="w-4 h-4" /></a>
+              </ResultCard>
+            )}
+            <TipBox>Works best on images with a solid, uniform background color.</TipBox>
+          </>
+        );
+      }
+      case "image-to-pdf": {
+        const onFiles = (files) => { Array.from(files).forEach((f) => readFile(f, (url) => setPdfFiles((p) => [...p, url]))); };
+        const makePdf = async () => {
+          if (!pdfFiles.length) return;
+          setPdfBusy(true);
+          const pdf = new jsPDF();
+          for (let i = 0; i < pdfFiles.length; i++) {
+            const dim = await new Promise((res) => { const im = new Image(); im.onload = () => res({ w: im.width, h: im.height }); im.onerror = () => res(null); im.src = pdfFiles[i]; });
+            if (i > 0) pdf.addPage();
+            const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
+            if (dim) {
+              const s = Math.min(pw / dim.w, ph / dim.h);
+              pdf.addImage(pdfFiles[i], "JPEG", (pw - dim.w * s) / 2, (ph - dim.h * s) / 2, dim.w * s, dim.h * s);
+            }
+          }
+          pdf.save("testpeak-images.pdf");
+          setPdfBusy(false);
+        };
+        return (
+          <>
+            <input type="file" accept="image/*" multiple onChange={(e) => onFiles(e.target.files)} className="block mx-auto text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:text-primary-foreground file:px-4 file:py-2" />
+            {pdfFiles.length > 0 && (
+              <div className="grid grid-cols-3 gap-3 mt-6">
+                {pdfFiles.map((u, i) => <img key={i} src={u} alt="" className="w-full h-20 object-cover rounded-lg" />)}
+              </div>
+            )}
+            <div className="flex justify-center mt-6"><CalcButton onClick={makePdf}>{pdfBusy ? "Creating..." : "Create PDF"}</CalcButton></div>
+            <TipBox>Add one or more images, then create a single PDF — all in your browser.</TipBox>
+          </>
+        );
+      }
+      case "image-compressor": {
+        return (
+          <>
+            <input type="file" accept="image/*" onChange={(e) => e.target.files[0] && readFile(e.target.files[0], setCompressSrc)} className="block mx-auto text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:text-primary-foreground file:px-4 file:py-2" />
+            {compressSrc && <div className="mt-6"><img src={compressSrc} alt="preview" className="max-h-64 mx-auto rounded-xl" /></div>}
+            <SelectField label="Quality" value={inputs.quality || "0.7"} onChange={set("quality")} options={["0.9", "0.7", "0.5", "0.3"]} />
+            <div className="flex justify-center mt-6"><CalcButton onClick={doCompress}>Compress</CalcButton></div>
+            {compressResult && (
+              <ResultCard title="Compression Result">
+                <img src={compressResult.url} alt="compressed" className="max-h-48 mx-auto rounded-xl" />
+                <div className="mt-3 text-sm text-muted-foreground">{compressResult.origSize} KB → {compressResult.newSize} KB</div>
+                <a href={compressResult.url} download="compressed.jpg" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">Download <ImageDown className="w-4 h-4" /></a>
+              </ResultCard>
+            )}
           </>
         );
       }
