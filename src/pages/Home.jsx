@@ -8,7 +8,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, WORD_LIST, RIDDLES, convertUnit, scrambleWord, generatePuzzle, calcMolarMass, evalFn } from "@/lib/tool-utils";
-import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X } from "lucide-react";
+import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star } from "lucide-react";
+import { useFavorites } from "@/hooks/useFavorites";
 import { trackEvent } from "@/lib/analytics";
 import { TOOL_CONTENT_AR, TOOL_GUIDES_AR } from "@/data/translations-ar";
 import { TOOL_GUIDES } from "@/data/tool-guides";
@@ -189,6 +190,7 @@ function HeroSection({ toolCount, catCount, searchQuery, onSearchChange }) {
 // ---------- Tool workspace (all calculators) ----------
 function ToolWorkspace({ tool, onBack }) {
   const { t, lang } = useI18n();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const [inputs, setInputs] = useState({});
   const [result, setResult] = useState(null);
   const [riddleAttempts, setRiddleAttempts] = useState(3);
@@ -1183,6 +1185,12 @@ function ToolWorkspace({ tool, onBack }) {
       <button onClick={onBack} className="absolute top-8 left-8 sm:top-10 sm:left-10 flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border text-sm font-medium text-foreground hover:bg-secondary hover:text-secondary-foreground transition-all duration-300 shadow-sm z-20">
         <ArrowLeft className="w-4 h-4" /> {t("Back")}
       </button>
+      <button
+        onClick={() => toggleFavorite(tool.slug)}
+        aria-label={isFavorite(tool.slug) ? t("Remove from favorites") : t("Add to favorites")}
+        className={`absolute top-8 right-8 sm:top-10 sm:right-10 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm z-20 ${isFavorite(tool.slug) ? "bg-accent/15 text-accent border border-accent/30" : "bg-background border border-border text-muted-foreground hover:text-accent hover:border-accent/40"}`}>
+        <Star className={`w-5 h-5 ${isFavorite(tool.slug) ? "fill-accent" : ""}`} />
+      </button>
       
       <div className="text-center mb-10 mt-12 sm:mt-8 relative z-10">
         <h2 className="text-3xl sm:text-4xl font-extrabold text-card-foreground mb-3">{t(tool.name)}</h2>
@@ -1253,6 +1261,7 @@ function ToolsHub({ searchQuery = "" }) {
   const [tools, setTools] = useState([]);
   const [activeCategory, setActiveCategory] = useState("Finance");
   const [searchParams, setSearchParams] = useSearchParams();
+  const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
   useEffect(() => {
     ToolEntity.list().then(setTools).catch(() => {});
@@ -1270,7 +1279,9 @@ function ToolsHub({ searchQuery = "" }) {
   const isSearching = query.length > 0;
   const filtered = isSearching
     ? items.filter((t) => (`${t.name} ${t.category} ${t.description || ""}`).toLowerCase().includes(query))
-    : items.filter((t) => t.category === activeCategory);
+    : activeCategory === "Favorites"
+      ? items.filter((t) => isFavorite(t.slug))
+      : items.filter((t) => t.category === activeCategory);
 
   const selectTool = (tool) => {
     setActiveCategory(tool.category);
@@ -1296,6 +1307,11 @@ function ToolsHub({ searchQuery = "" }) {
                 {t(cat)}
               </button>
             ))}
+            <button onClick={() => setActiveCategory("Favorites")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 ${activeCategory === "Favorites" ? "bg-accent text-accent-foreground shadow-[0_0_20px_-5px_hsl(var(--accent)/0.5)]" : "bg-card text-card-foreground border border-border hover:bg-muted hover:border-accent/40"}`}>
+              <Star className={`w-4 h-4 ${favorites.length > 0 ? "fill-accent text-accent" : ""}`} />
+              {t("Favorites")} {favorites.length > 0 && <span className="ml-1 text-xs font-bold">{favorites.length}</span>}
+            </button>
             <Link to="/Blog" className="flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm bg-card text-card-foreground border border-border hover:bg-muted transition-all duration-300">
               {t("Blog")}
             </Link>
@@ -1318,13 +1334,34 @@ function ToolsHub({ searchQuery = "" }) {
               </p>
             </div>
           )}
+          {filtered.length === 0 && activeCategory === "Favorites" && (
+            <div className="text-center py-16">
+              <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
+                <Star className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <p className="text-card-foreground text-lg font-medium">{t("No favorites yet")}</p>
+              <p className="text-muted-foreground mt-2">{t("Tap the star on any tool to save it here for quick access.")}</p>
+              <button onClick={() => setActiveCategory("Finance")} className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-5 py-2.5 font-semibold text-sm hover:bg-primary/90 transition-colors">
+                {t("Browse Tools")}
+              </button>
+            </div>
+          )}
+          {filtered.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((tool, index) => {
               const Icon = ICONS[tool.icon] || Calculator;
+              const fav = isFavorite(tool.slug);
               return (
                 <AnimatedElement key={tool.slug || index} delay={index * 80}>
-                  <button onClick={() => selectTool(tool)}
-                    className="w-full h-full text-center rounded-[2rem] bg-card border border-border p-8 transition-all duration-400 hover:-translate-y-2 hover:shadow-[0_20px_50px_-15px_hsl(var(--primary)/0.2)] hover:border-primary/40 group flex flex-col items-center justify-center">
+                  <div onClick={() => selectTool(tool)}
+                    className="relative w-full h-full text-center rounded-[2rem] bg-card border border-border p-8 transition-all duration-400 hover:-translate-y-2 hover:shadow-[0_20px_50px_-15px_hsl(var(--primary)/0.2)] hover:border-primary/40 group flex flex-col items-center justify-center cursor-pointer">
+                    
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleFavorite(tool.slug); trackEvent("tool_favorite", { tool_slug: tool.slug, action: fav ? "remove" : "add" }); }}
+                      aria-label={fav ? t("Remove from favorites") : t("Add to favorites")}
+                      className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 z-10 ${fav ? "bg-accent/15 text-accent" : "bg-background border border-border text-muted-foreground hover:text-accent hover:border-accent/40"}`}>
+                      <Star className={`w-5 h-5 ${fav ? "fill-accent" : ""}`} />
+                    </button>
                     
                     <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-5 shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-500">
                       <Icon className="w-7 h-7 text-primary-foreground" />
@@ -1333,11 +1370,12 @@ function ToolsHub({ searchQuery = "" }) {
                     <h3 className="text-xl font-bold text-card-foreground mb-1">{t(tool.name)}</h3>
                     <span className="text-sm font-medium text-muted-foreground">{t(tool.category)}</span>
                     
-                  </button>
+                  </div>
                 </AnimatedElement>
               );
             })}
           </div>
+          )}
           </>
         )}
       </div>

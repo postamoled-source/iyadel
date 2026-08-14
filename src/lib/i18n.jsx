@@ -203,6 +203,11 @@ const AR = {
   "Enjoyed this article?": "استمتعت بالمقال؟",
   "Explore 31+ free tools that make everyday tasks effortless.": "استكشف أكثر من 31 أداة مجانية تجعل المهام اليومية سهلة.",
   "Browse Tools": "تصفّح الأدوات",
+  "Favorites": "المفضّلة",
+  "No favorites yet": "لا توجد مفضّلة بعد",
+  "Tap the star on any tool to save it here for quick access.": "اضغط النجمة على أي أداة لحفظها هنا للوصول السريع.",
+  "Add to favorites": "إضافة إلى المفضّلة",
+  "Remove from favorites": "إزالة من المفضّلة",
 
   // About page
   "About TestPeak": "عن TestPeak",
