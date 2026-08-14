@@ -252,12 +252,17 @@ function ToolWorkspace({ tool, onBack }) {
     if (!cropSrc) return;
     const img = new Image();
     img.onload = () => {
-      const size = Math.min(img.width, img.height);
+      const ratioMap = { "1:1": 1, "4:3": 4 / 3, "16:9": 16 / 9, "3:4": 3 / 4, "9:16": 9 / 16 };
+      const r = ratioMap[inputs.ratio || "1:1"];
+      const iw = img.width, ih = img.height;
+      let cw, ch;
+      if (iw / ih > r) { ch = ih; cw = Math.round(ih * r); }
+      else { cw = iw; ch = Math.round(iw / r); }
       const canvas = document.createElement("canvas");
-      canvas.width = size; canvas.height = size;
+      canvas.width = cw; canvas.height = ch;
       const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size);
-      setCropResult(canvas.toDataURL("image/png"));
+      ctx.drawImage(img, (iw - cw) / 2, (ih - ch) / 2, cw, ch, 0, 0, cw, ch);
+      setCropResult({ url: canvas.toDataURL("image/png"), w: cw, h: ch });
     };
     img.src = cropSrc;
   };
@@ -265,16 +270,23 @@ function ToolWorkspace({ tool, onBack }) {
   const doCompress = () => {
     if (!compressSrc) return;
     const quality = parseFloat(inputs.quality || "0.7");
+    const maxDim = parseInt(inputs.maxDim || "0");
     const img = new Image();
     img.onload = () => {
+      let w = img.width, h = img.height;
+      if (maxDim > 0 && Math.max(w, h) > maxDim) {
+        const scale = maxDim / Math.max(w, h);
+        w = Math.round(w * scale); h = Math.round(h * scale);
+      }
       const canvas = document.createElement("canvas");
-      canvas.width = img.width; canvas.height = img.height;
+      canvas.width = w; canvas.height = h;
       const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, w, h);
       const out = canvas.toDataURL("image/jpeg", quality);
       const origSize = Math.round((compressSrc.length * 3) / 4 / 1024);
       const newSize = Math.round((out.length * 3) / 4 / 1024);
-      setCompressResult({ url: out, origSize, newSize });
+      const saved = origSize > 0 ? Math.round((1 - newSize / origSize) * 100) : 0;
+      setCompressResult({ url: out, origSize, newSize, saved, w, h });
     };
     img.src = compressSrc;
   };
@@ -289,11 +301,26 @@ function ToolWorkspace({ tool, onBack }) {
       ctx.drawImage(img, 0, 0);
       const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const d = data.data;
-      const tol = 44;
+      const tol = parseInt(inputs.bgTol || "44");
+      const feather = inputs.feather === "on";
       const bases = [[0, 0], [canvas.width - 1, 0], [0, canvas.height - 1], [canvas.width - 1, canvas.height - 1]].map(([x, y]) => { const i = (y * canvas.width + x) * 4; return [d[i], d[i + 1], d[i + 2]]; });
       for (let i = 0; i < d.length; i += 4) {
-        for (const b of bases) {
-          if (Math.abs(d[i] - b[0]) <= tol && Math.abs(d[i + 1] - b[1]) <= tol && Math.abs(d[i + 2] - b[2]) <= tol) { d[i + 3] = 0; break; }
+        let matched = -1;
+        for (let b = 0; b < bases.length; b++) {
+          if (Math.abs(d[i] - bases[b][0]) <= tol && Math.abs(d[i + 1] - bases[b][1]) <= tol && Math.abs(d[i + 2] - bases[b][2]) <= tol) { matched = b; break; }
+        }
+        if (matched >= 0) {
+          d[i + 3] = 0;
+        } else if (feather) {
+          // soft edge: fade alpha for pixels close to the background but within 1.6× tolerance
+          let near = false, minDist = Infinity;
+          for (const b of bases) {
+            const dist = Math.abs(d[i] - b[0]) + Math.abs(d[i + 1] - b[1]) + Math.abs(d[i + 2] - b[2]);
+            if (dist < minDist) minDist = dist;
+          }
+          const softLimit = tol * 1.6;
+          if (minDist < softLimit) { d[i + 3] = Math.round((minDist - tol) / (softLimit - tol) * 255); near = true; }
+          if (!near) d[i + 3] = 255;
         }
       }
       ctx.putImageData(data, 0, 0);
@@ -896,18 +923,21 @@ function ToolWorkspace({ tool, onBack }) {
         );
       }
       case "image-cropper": {
+        const cropResultData = cropResult && cropResult.url ? cropResult : null;
         return (
           <>
             <input type="file" accept="image/*" onChange={(e) => e.target.files[0] && readFile(e.target.files[0], setCropSrc)} className="block mx-auto text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:text-primary-foreground file:px-4 file:py-2" />
             {cropSrc && <div className="mt-6"><img src={cropSrc} alt="preview" className="max-h-64 mx-auto rounded-xl" /></div>}
-            <div className="flex justify-center mt-6"><CalcButton onClick={doCrop}>Crop to Square</CalcButton></div>
-            {cropResult && (
-              <ResultCard title="Cropped Image">
-                <img src={cropResult} alt="cropped" className="w-48 h-48 object-cover mx-auto rounded-xl" />
-                <a href={cropResult} download="cropped.png" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">Download <ImageDown className="w-4 h-4" /></a>
+            <div className="mt-6"><SelectField label={t("Aspect Ratio")} value={inputs.ratio || "1:1"} onChange={set("ratio")} options={["1:1", "4:3", "16:9", "3:4", "9:16"]} /></div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={doCrop}>{t("Crop Image")}</CalcButton></div>
+            {cropResultData && (
+              <ResultCard title={t("Cropped Image")}>
+                <img src={cropResultData.url} alt="cropped" className="max-h-64 mx-auto rounded-xl" />
+                <div className="mt-3 text-sm text-muted-foreground">{cropResultData.w} × {cropResultData.h} px</div>
+                <a href={cropResultData.url} download="cropped.png" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">{t("Download")} <ImageDown className="w-4 h-4" /></a>
               </ResultCard>
             )}
-            <TipBox>Crops the image to a centered square, ideal for profile pictures.</TipBox>
+            <TipBox>{t("Crops the image to a centered region with the selected aspect ratio — 1:1 for profile pictures, 16:9 for banners.")}</TipBox>
           </>
         );
       }
@@ -916,30 +946,41 @@ function ToolWorkspace({ tool, onBack }) {
           <>
             <input type="file" accept="image/*" onChange={(e) => { if (e.target.files[0]) { readFile(e.target.files[0], setBgSrc); setBgDone(false); setBgResult(null); } }} className="block mx-auto text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:text-primary-foreground file:px-4 file:py-2" />
             {bgSrc && <div className="mt-6"><img src={bgSrc} alt="preview" className="max-h-64 mx-auto rounded-xl" /></div>}
-            <div className="flex justify-center mt-6"><CalcButton onClick={removeBg}>Remove Background</CalcButton></div>
+            <div className="mt-6"><SelectField label={t("Tolerance")} value={inputs.bgTol || "44"} onChange={set("bgTol")} options={["20", "32", "44", "60", "80"]} /></div>
+            <div className="mt-6"><SelectField label={t("Edge Smoothing")} value={inputs.feather || "off"} onChange={set("feather")} options={["off", "on"]} /></div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={removeBg}>{t("Remove Background")}</CalcButton></div>
             {bgResult && (
-              <ResultCard title="Result">
+              <ResultCard title={t("Result")}>
                 <img src={bgResult} alt="no background" className="max-h-64 mx-auto rounded-xl" style={{ background: "repeating-conic-gradient(hsl(var(--muted)) 0 25%, transparent 0 50%) 50% / 16px 16px" }} />
-                <a href={bgResult} download="no-bg.png" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">Download <ImageDown className="w-4 h-4" /></a>
+                <a href={bgResult} download="no-bg.png" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">{t("Download")} <ImageDown className="w-4 h-4" /></a>
               </ResultCard>
             )}
-            <TipBox>Works best on images with a solid, uniform background color.</TipBox>
+            <TipBox>{t("Works best on images with a solid, uniform background. Raise the tolerance for backgrounds close to the subject; enable Edge Smoothing to soften jagged borders.")}</TipBox>
           </>
         );
       }
       case "image-to-pdf": {
         const onFiles = (files) => { Array.from(files).forEach((f) => readFile(f, (url) => setPdfFiles((p) => [...p, url]))); };
+        const moveItem = (i, dir) => setPdfFiles((p) => {
+          const n = [...p]; const j = i + dir;
+          if (j < 0 || j >= n.length) return p;
+          [n[i], n[j]] = [n[j], n[i]]; return n;
+        });
+        const removeItem = (i) => setPdfFiles((p) => p.filter((_, idx) => idx !== i));
         const makePdf = async () => {
           if (!pdfFiles.length) return;
           setPdfBusy(true);
-          const pdf = new jsPDF();
+          const orientation = inputs.pdfOrient || "portrait";
+          const pdf = new jsPDF({ orientation, unit: "pt", format: "a4" });
           for (let i = 0; i < pdfFiles.length; i++) {
             const dim = await new Promise((res) => { const im = new Image(); im.onload = () => res({ w: im.width, h: im.height }); im.onerror = () => res(null); im.src = pdfFiles[i]; });
             if (i > 0) pdf.addPage();
             const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
+            const margin = 24;
             if (dim) {
-              const s = Math.min(pw / dim.w, ph / dim.h);
-              pdf.addImage(pdfFiles[i], "JPEG", (pw - dim.w * s) / 2, (ph - dim.h * s) / 2, dim.w * s, dim.h * s);
+              const s = Math.min((pw - margin * 2) / dim.w, (ph - margin * 2) / dim.h);
+              const dw = dim.w * s, dh = dim.h * s;
+              pdf.addImage(pdfFiles[i], "JPEG", (pw - dw) / 2, (ph - dh) / 2, dw, dh);
             }
           }
           pdf.save("testpeak-images.pdf");
@@ -948,13 +989,24 @@ function ToolWorkspace({ tool, onBack }) {
         return (
           <>
             <input type="file" accept="image/*" multiple onChange={(e) => onFiles(e.target.files)} className="block mx-auto text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:text-primary-foreground file:px-4 file:py-2" />
+            <div className="mt-6"><SelectField label={t("Page Orientation")} value={inputs.pdfOrient || "portrait"} onChange={set("pdfOrient")} options={["portrait", "landscape"]} /></div>
             {pdfFiles.length > 0 && (
-              <div className="grid grid-cols-3 gap-3 mt-6">
-                {pdfFiles.map((u, i) => <img key={i} src={u} alt="" className="w-full h-20 object-cover rounded-lg" />)}
+              <div className="mt-6 space-y-2">
+                {pdfFiles.map((u, i) => (
+                  <div key={i} className="flex items-center gap-3 rounded-xl bg-background border border-border p-2">
+                    <img src={u} alt="" className="w-14 h-14 object-cover rounded-lg shrink-0" />
+                    <span className="text-sm font-medium text-muted-foreground shrink-0">#{i + 1}</span>
+                    <div className="ml-auto flex items-center gap-1">
+                      <button onClick={() => moveItem(i, -1)} disabled={i === 0} className="w-8 h-8 rounded-lg border border-border text-foreground hover:bg-secondary disabled:opacity-40 transition-colors flex items-center justify-center">↑</button>
+                      <button onClick={() => moveItem(i, 1)} disabled={i === pdfFiles.length - 1} className="w-8 h-8 rounded-lg border border-border text-foreground hover:bg-secondary disabled:opacity-40 transition-colors flex items-center justify-center">↓</button>
+                      <button onClick={() => removeItem(i)} className="w-8 h-8 rounded-lg border border-border text-destructive hover:bg-destructive/10 transition-colors flex items-center justify-center"><X className="w-4 h-4" /></button>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
-            <div className="flex justify-center mt-6"><CalcButton onClick={makePdf}>{pdfBusy ? "Creating..." : "Create PDF"}</CalcButton></div>
-            <TipBox>Add one or more images, then create a single PDF — all in your browser.</TipBox>
+            <div className="flex justify-center mt-6"><CalcButton onClick={makePdf}>{pdfBusy ? t("Creating...") : t("Create PDF")}</CalcButton></div>
+            <TipBox>{t("Add images, reorder or remove them, choose the page orientation, then create a single PDF — all in your browser.")}</TipBox>
           </>
         );
       }
@@ -963,13 +1015,14 @@ function ToolWorkspace({ tool, onBack }) {
           <>
             <input type="file" accept="image/*" onChange={(e) => e.target.files[0] && readFile(e.target.files[0], setCompressSrc)} className="block mx-auto text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:text-primary-foreground file:px-4 file:py-2" />
             {compressSrc && <div className="mt-6"><img src={compressSrc} alt="preview" className="max-h-64 mx-auto rounded-xl" /></div>}
-            <SelectField label="Quality" value={inputs.quality || "0.7"} onChange={set("quality")} options={["0.9", "0.7", "0.5", "0.3"]} />
-            <div className="flex justify-center mt-6"><CalcButton onClick={doCompress}>Compress</CalcButton></div>
+            <div className="mt-6"><SelectField label={t("Quality")} value={inputs.quality || "0.7"} onChange={set("quality")} options={["0.9", "0.7", "0.5", "0.3"]} /></div>
+            <div className="mt-6"><SelectField label={t("Max Dimension (px)")} value={inputs.maxDim || "0"} onChange={set("maxDim")} options={["0", "640", "1024", "1920", "2560"]} /></div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={doCompress}>{t("Compress")}</CalcButton></div>
             {compressResult && (
-              <ResultCard title="Compression Result">
+              <ResultCard title={t("Compression Result")}>
                 <img src={compressResult.url} alt="compressed" className="max-h-48 mx-auto rounded-xl" />
-                <div className="mt-3 text-sm text-muted-foreground">{compressResult.origSize} KB → {compressResult.newSize} KB</div>
-                <a href={compressResult.url} download="compressed.jpg" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">Download <ImageDown className="w-4 h-4" /></a>
+                <div className="mt-3 text-sm text-muted-foreground">{compressResult.origSize} KB → {compressResult.newSize} KB ({compressResult.saved}% {t("smaller")}, {compressResult.w}×{compressResult.h}px)</div>
+                <a href={compressResult.url} download="compressed.jpg" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">{t("Download")} <ImageDown className="w-4 h-4" /></a>
               </ResultCard>
             )}
           </>
