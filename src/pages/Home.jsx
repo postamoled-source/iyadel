@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone } from "lucide-react";
+import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket } from "lucide-react";
 
 const ToolEntity = base44.entities.Tool;
 const BlogPostEntity = base44.entities.BlogPost;
@@ -12,7 +12,7 @@ const BlogPostEntity = base44.entities.BlogPost;
 const ICONS = {
   Calculator, TrendingUp, LineChart: LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight,
   Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical,
-  HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown
+  HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket
 };
 
 const CATEGORIES = ["Finance", "Health", "Converters", "Math", "Games", "Image Tools"];
@@ -33,6 +33,7 @@ const STATIC_TOOLS = [
   { name: "QR Code Generator", slug: "qr-code-generator", category: "Converters", description: "Create a custom QR code easily.", icon: "QrCode" },
   { name: "Share Link Generator", slug: "share-link-generator", category: "Converters", description: "Generate shareable social links.", icon: "Link2" },
   { name: "Privacy Policy Generator", slug: "privacy-policy-generator", category: "Converters", description: "Generate a GDPR-compliant policy.", icon: "ShieldCheck" },
+  { name: "Coupon Code Generator", slug: "coupon-code-generator", category: "Converters", description: "Create random, copy-ready promo codes.", icon: "Ticket" },
   { name: "Math Function Calculator", slug: "math-function-calculator", category: "Math", description: "Plot mathematical functions.", icon: "FunctionSquare" },
   { name: "Percentage", slug: "percentage-calculator", category: "Math", description: "Quick percentage calculations.", icon: "Percent" },
   { name: "Physics Calculators", slug: "physics-calculators", category: "Math", description: "Speed, distance, time and Ohm's Law.", icon: "Atom" },
@@ -455,6 +456,66 @@ function ToolWorkspace({ tool, onBack }) {
               </CalcButton>
             </div>
             <TipBox>Close bandwidth-heavy applications for the most accurate result.</TipBox>
+          </>
+        );
+      }
+      case "coupon-code-generator": {
+        const charsetOptions = {
+          "Alphanumeric": "ABCDEFGHJKLMNPQRSTUVWXYZ23456789",
+          "Letters": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+          "Numbers": "0123456789",
+          "Hex": "0123456789ABCDEF",
+        };
+        const generate = () => {
+          const count = Math.min(Math.max(parseInt(inputs.count || "5"), 1), 50);
+          const len = Math.max(parseInt(inputs.length || "8"), 4);
+          const chars = charsetOptions[inputs.charset || "Alphanumeric"];
+          const prefix = (inputs.prefix || "").toUpperCase().replace(/\s/g, "");
+          const dashEvery = parseInt(inputs.dashEvery || "0");
+          const out = [];
+          for (let c = 0; c < count; c++) {
+            let code = "";
+            for (let i = 0; i < len; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            if (dashEvery > 0) code = code.match(new RegExp(`.{1,${dashEvery}}`, "g")).join("-");
+            out.push(prefix + code);
+          }
+          setResult(out);
+        };
+        const codes = Array.isArray(result) ? result : [];
+        const copyAll = () => navigator.clipboard?.writeText(codes.join("\n"));
+        const copyOne = (code) => navigator.clipboard?.writeText(code);
+        return (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <NumInput label="Number of Codes" value={inputs.count} onChange={set("count")} placeholder="5" />
+              <NumInput label="Code Length" value={inputs.length} onChange={set("length")} placeholder="8" />
+              <TxtInput label="Prefix (optional)" value={inputs.prefix} onChange={set("prefix")} placeholder="SALE" />
+              <NumInput label="Dash every N (0 = off)" value={inputs.dashEvery} onChange={set("dashEvery")} placeholder="4" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+              <SelectField label="Character Set" value={inputs.charset || "Alphanumeric"} onChange={set("charset")} options={Object.keys(charsetOptions)} />
+            </div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={generate}>Generate Coupons</CalcButton></div>
+            {codes.length > 0 && (
+              <ResultCard title={`${codes.length} Coupon${codes.length > 1 ? "s" : ""} Generated`}>
+                <div className="flex justify-center mb-6">
+                  <button onClick={copyAll} className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-secondary transition-colors">
+                    <Copy className="w-4 h-4" /> Copy All
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-1">
+                  {codes.map((code, i) => (
+                    <div key={i} className="flex items-center justify-between rounded-xl bg-background border border-border px-4 py-3">
+                      <code className="text-sm font-mono font-semibold text-primary tracking-wider break-all">{code}</code>
+                      <button onClick={() => copyOne(code)} className="text-muted-foreground hover:text-primary transition-colors shrink-0 ml-3" aria-label="Copy code">
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </ResultCard>
+            )}
+            <TipBox><strong>Tip:</strong> The default set excludes easily-confused characters (O, I, 0, 1) so codes stay readable.</TipBox>
           </>
         );
       }
