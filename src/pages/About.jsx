@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useI18n } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { Coins, ShieldCheck, Layers, Globe, Wrench, Sparkles, Mail, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ function AnimatedElement({ children, className, delay = 0 }) {
 }
 
 function HeroSection() {
+  const { t } = useI18n();
   return (
     <section className="relative bg-background pt-20 pb-14 sm:pt-24 sm:pb-16">
       <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/20 rounded-full blur-[100px] pointer-events-none" style={{ animation: "floatA 9s ease-in-out infinite" }} />
@@ -35,13 +37,13 @@ function HeroSection() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: "easeOut" }} className="text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-secondary border border-border px-4 py-1.5 mb-5">
             <Sparkles className="w-4 h-4 text-accent" />
-            <span className="text-sm text-muted-foreground">About TestPeak</span>
+            <span className="text-sm text-muted-foreground">{t("About TestPeak")}</span>
           </div>
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-foreground mb-4">
-            Built to make life <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient-x">simpler</span>
+            {t("Built to make life")} <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient-x">{t("simpler")}</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            TestPeak is an integrated tools platform providing free, interactive tools that cover your daily needs across finance, health, math, converters, games and images.
+            {t("TestPeak is an integrated tools platform providing free, interactive tools that cover your daily needs across finance, health, math, converters, games and images.")}
           </p>
         </motion.div>
       </div>
@@ -50,6 +52,7 @@ function HeroSection() {
 }
 
 function AboutUsSection() {
+  const { t } = useI18n();
   const features = [
     { icon: Coins, text: "Completely free — no registration or payment required." },
     { icon: ShieldCheck, text: "Secure & private — all processing happens in your browser, no data is uploaded to any server." },
@@ -62,9 +65,9 @@ function AboutUsSection() {
     <section id="about-us" className="bg-secondary py-16 sm:py-24">
       <div className="max-w-5xl mx-auto px-6">
         <AnimatedElement>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">About Us</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">{t("About Us")}</h2>
           <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
-            <strong className="text-foreground">TestPeak</strong> is an <strong className="text-foreground">integrated tools platform</strong> that provides a wide range of free and interactive tools covering users' daily needs across various domains.
+            <strong className="text-foreground">TestPeak</strong> {t("is an")} <strong className="text-foreground">{t("integrated tools platform")}</strong> {t("that provides a wide range of free and interactive tools covering users' daily needs across various domains.")}
           </p>
         </AnimatedElement>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -74,13 +77,13 @@ function AboutUsSection() {
                 <div className="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
                   <f.icon className="w-5 h-5 text-accent" />
                 </div>
-                <p className="text-foreground">{f.text}</p>
+                <p className="text-foreground">{t(f.text)}</p>
               </div>
             </AnimatedElement>
           ))}
         </div>
         <AnimatedElement delay={300}>
-          <p className="text-muted-foreground mt-10 italic text-center">The TestPeak team works passionately to deliver the best digital experience.</p>
+          <p className="text-muted-foreground mt-10 italic text-center">{t("The TestPeak team works passionately to deliver the best digital experience.")}</p>
         </AnimatedElement>
       </div>
     </section>
@@ -88,6 +91,7 @@ function AboutUsSection() {
 }
 
 function PrivacyPolicySection() {
+  const { t } = useI18n();
   const sections = [
     { title: "1. Information We Collect", body: "We collect two main types: information you provide voluntarily (name, email, phone) and information collected automatically (IP, browser type, cookies)." },
     { title: "2. How We Use Your Information", body: "We use information to provide and improve services, communicate with you, analyze usage, and comply with legal obligations." },
@@ -101,18 +105,18 @@ function PrivacyPolicySection() {
     <section id="privacy-policy" className="bg-background py-16 sm:py-24">
       <div className="max-w-4xl mx-auto px-6">
         <AnimatedElement>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">Privacy Policy</h2>
-          <span className="text-sm text-muted-foreground">Last Updated: August 13, 2026</span>
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">{t("Privacy Policy")}</h2>
+          <span className="text-sm text-muted-foreground">{t("Last Updated: August 13, 2026")}</span>
           <p className="text-muted-foreground mt-6 leading-relaxed">
-            At TestPeak, we recognize the importance of your privacy and are committed to protecting it. This Privacy Policy explains how we collect, use, share, and protect your personal information.
+            {t("At TestPeak, we recognize the importance of your privacy and are committed to protecting it. This Privacy Policy explains how we collect, use, share, and protect your personal information.")}
           </p>
         </AnimatedElement>
         <div className="mt-10 space-y-8">
           {sections.map((s, i) => (
             <AnimatedElement key={s.title} delay={i * 60}>
               <div className="rounded-2xl bg-card border border-border p-6">
-                <h3 className="text-lg font-bold text-foreground mb-2">{s.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{s.body}</p>
+                <h3 className="text-lg font-bold text-foreground mb-2">{t(s.title)}</h3>
+                <p className="text-muted-foreground leading-relaxed">{t(s.body)}</p>
               </div>
             </AnimatedElement>
           ))}
@@ -121,7 +125,7 @@ function PrivacyPolicySection() {
           <div className="mt-10 rounded-2xl bg-gradient-to-br from-primary/15 to-accent/10 border border-primary/20 p-6 flex items-center gap-4">
             <Mail className="w-6 h-6 text-accent shrink-0" />
             <div>
-              <h3 className="font-bold text-foreground">8. Contact Us</h3>
+              <h3 className="font-bold text-foreground">{t("8. Contact Us")}</h3>
               <a href="mailto:support@testpeak.net" className="text-primary hover:underline">support@testpeak.net</a>
             </div>
           </div>
@@ -132,17 +136,18 @@ function PrivacyPolicySection() {
 }
 
 function CTASection() {
+  const { t } = useI18n();
   return (
     <section className="bg-secondary py-16 sm:py-20 relative overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[220px] bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
       <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
         <AnimatedElement>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Ready to get started?</h2>
-          <p className="text-muted-foreground mb-8">Jump back in and explore all 26+ free tools TestPeak has to offer.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{t("Ready to get started?")}</h2>
+          <p className="text-muted-foreground mb-8">{t("Jump back in and explore all 26+ free tools TestPeak has to offer.")}</p>
           <Link to="/">
             <Button className="relative overflow-hidden rounded-xl px-8 py-6 text-lg bg-accent text-accent-foreground hover:scale-105 transition-transform duration-300 shadow-lg shadow-accent/20">
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-foreground/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />
-              <span className="relative z-10 flex items-center gap-2">Back to Tools <ChevronRight className="w-5 h-5" /></span>
+              <span className="relative z-10 flex items-center gap-2">{t("Back to Tools")} <ChevronRight className="w-5 h-5" /></span>
             </Button>
           </Link>
         </AnimatedElement>

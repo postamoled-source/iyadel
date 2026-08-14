@@ -709,7 +709,7 @@ function WhySection() {
             </div>
             
             <p className="text-card-foreground/80 mb-10 text-lg">
-              <strong className="text-foreground">TestPeak</strong> هي <strong className="text-foreground">منصة أدوات متكاملة</strong> توفر مجموعة واسعة من الأدوات المجانية والتفاعلية التي تغطي الاحتياجات اليومية للمستخدمين في مختلف المجالات.
+              <strong className="text-foreground">TestPeak</strong> {t("is an")} <strong className="text-foreground">{t("integrated tools platform")}</strong> {t("that provides a wide range of free and interactive tools covering users' daily needs across various domains.")}
             </p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

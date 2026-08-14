@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { useI18n } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, Calendar, Tag, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,7 @@ function AnimatedElement({ children, className, delay = 0 }) {
 }
 
 function HeroSection() {
+  const { t } = useI18n();
   return (
     <section className="relative bg-background pt-20 pb-14 sm:pt-24 sm:pb-16">
       <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-primary/20 rounded-full blur-[100px] pointer-events-none" style={{ animation: "floatA 9s ease-in-out infinite" }} />
@@ -47,14 +49,14 @@ function HeroSection() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-secondary border border-border px-4 py-1.5 mb-5">
               <Sparkles className="w-4 h-4 text-accent" />
-              <span className="text-sm text-muted-foreground">TestPeak Blog</span>
+              <span className="text-sm text-muted-foreground">{t("TestPeak Blog")}</span>
             </div>
             <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-foreground mb-4">
-              Read the latest <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient-x">articles &amp; tips</span>
+              {t("Read the latest")} <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient-x">{t("articles & tips")}</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-xl">Practical guides on finance, health and productivity — powered by the same tools you use every day.</p>
+            <p className="text-lg text-muted-foreground max-w-xl">{t("Practical guides on finance, health and productivity — powered by the same tools you use every day.")}</p>
           </div>
-          <a href="#"><Button variant="outline" className="rounded-xl border-border text-foreground hover:bg-secondary">Admin Panel</Button></a>
+          <a href="#"><Button variant="outline" className="rounded-xl border-border text-foreground hover:bg-secondary">{t("Admin Panel")}</Button></a>
         </motion.div>
       </div>
     </section>
@@ -62,6 +64,7 @@ function HeroSection() {
 }
 
 function BlogGrid() {
+  const { t } = useI18n();
   const [posts, setPosts] = useState([]);
   const [activeCategory, setActiveCategory] = useState("All");
 
@@ -78,7 +81,7 @@ function BlogGrid() {
             {categories.map((cat) => (
               <button key={cat} onClick={() => setActiveCategory(cat)}
                 className={`px-5 py-2 rounded-full font-semibold text-sm transition-all duration-300 hover:scale-105 ${activeCategory === cat ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg shadow-primary/30" : "bg-card text-card-foreground border border-border hover:bg-muted"}`}>
-                {cat}
+                {t(cat)}
               </button>
             ))}
           </div>
@@ -89,17 +92,17 @@ function BlogGrid() {
             <AnimatedElement key={post.title} delay={i * 90}>
               <article className="h-full flex flex-col rounded-2xl bg-card border border-border overflow-hidden hover:-translate-y-1.5 hover:shadow-[0_20px_60px_-15px_hsl(var(--primary)/0.3)] transition-all duration-300 group">
                 <div className="aspect-[16/9] overflow-hidden">
-                  <img src={post.image_url} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={post.image_url} alt={t(post.title)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
                   <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary"><Tag className="w-3 h-3" />{post.category}</span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary"><Tag className="w-3 h-3" />{t(post.category)}</span>
                     <span className="inline-flex items-center gap-1"><Calendar className="w-3 h-3" />{post.date}</span>
                   </div>
-                  <h3 className="font-bold text-lg text-foreground mb-2 leading-snug">{post.title}</h3>
-                  <p className="text-sm text-muted-foreground flex-1">{post.excerpt}</p>
+                  <h3 className="font-bold text-lg text-foreground mb-2 leading-snug">{t(post.title)}</h3>
+                  <p className="text-sm text-muted-foreground flex-1">{t(post.excerpt)}</p>
                   <a href="#" className="inline-flex items-center gap-1 text-primary text-sm font-semibold mt-4 hover:gap-2 transition-all">
-                    Read more <ArrowRight className="w-4 h-4" />
+                    {t("Read more")} <ArrowRight className="w-4 h-4" />
                   </a>
                 </div>
               </article>
@@ -112,6 +115,7 @@ function BlogGrid() {
 }
 
 function NewsletterSection() {
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const handleSubmit = (e) => { e.preventDefault(); if (email) setSubmitted(true); };
@@ -123,17 +127,17 @@ function NewsletterSection() {
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-6 shadow-lg shadow-primary/30">
             <LayoutGrid className="w-7 h-7 text-primary-foreground" />
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Never miss an update</h2>
-          <p className="text-muted-foreground mb-8">Be the first to know when we publish new articles and launch new tools.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{t("Never miss an update")}</h2>
+          <p className="text-muted-foreground mb-8">{t("Be the first to know when we publish new articles and launch new tools.")}</p>
           {submitted ? (
-            <div className="rounded-xl bg-card border border-primary/30 px-6 py-4 text-card-foreground">Thanks for subscribing — check your inbox soon!</div>
+            <div className="rounded-xl bg-card border border-primary/30 px-6 py-4 text-card-foreground">{t("Thanks for subscribing — check your inbox soon!")}</div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com"
                 className="flex-1 rounded-xl border border-border bg-card text-card-foreground px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition" />
               <Button type="submit" className="relative overflow-hidden rounded-xl px-6 py-3 bg-accent text-accent-foreground hover:scale-105 transition-transform duration-300">
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-foreground/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />
-                <span className="relative z-10">Subscribe</span>
+                <span className="relative z-10">{t("Subscribe")}</span>
               </Button>
             </form>
           )}
