@@ -10,7 +10,7 @@ import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, WORD_LIST, RIDDLES, convertUnit, scrambleWord, generatePuzzle, calcMolarMass, evalFn } from "@/lib/tool-utils";
 import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
-import { trackEvent } from "@/lib/analytics";
+import { trackEvent, useSeo } from "@/lib/analytics";
 import { TOOL_CONTENT_AR, TOOL_GUIDES_AR } from "@/data/translations-ar";
 import { TOOL_GUIDES } from "@/data/tool-guides";
 
@@ -1577,6 +1577,11 @@ function PrivacyTeaser() {
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
+  useSeo({
+    title: "Free Online Calculators, Converters & Image Tools",
+    description: "31+ free online tools: loan & interest calculators, BMI & calorie trackers, unit converters, QR generator, image cropper, compressor & background remover. Fast, private, no signup.",
+    path: "/",
+  });
   return (
     <div className="min-h-screen bg-background selection:bg-primary/30 selection:text-primary">
       <HeroSection toolCount={31} catCount={7} searchQuery={searchQuery} onSearchChange={setSearchQuery} />

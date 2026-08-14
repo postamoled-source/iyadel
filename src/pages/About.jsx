@@ -4,6 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { Coins, ShieldCheck, Layers, Globe, Wrench, Sparkles, Mail, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSeo } from "@/lib/analytics";
 
 function AnimatedElement({ children, className, delay = 0 }) {
   const ref = useRef(null);
@@ -157,6 +158,11 @@ function CTASection() {
 }
 
 export default function About() {
+  useSeo({
+    title: "About TestPeak — Free, Private, Cross-Platform Tools",
+    description: "Learn about TestPeak — an integrated platform of 31+ free, private, cross-platform online tools covering finance, health, converters, math, games, and image processing.",
+    path: "/About",
+  });
   return (
     <div>
       <HeroSection />

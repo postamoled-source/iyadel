@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useI18n } from "@/lib/i18n";
+import { useSeo } from "@/lib/analytics";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, Calendar, Tag, LayoutGrid, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -158,6 +159,11 @@ function NewsletterSection() {
 }
 
 export default function Blog() {
+  useSeo({
+    title: "Blog — Finance, Health & Productivity Tips",
+    description: "Read the latest TestPeak articles and practical guides on finance, health, and productivity — backed by free online calculators and tools.",
+    path: "/Blog",
+  });
   return (
     <div>
       <HeroSection />

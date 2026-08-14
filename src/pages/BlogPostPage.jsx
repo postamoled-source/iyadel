@@ -7,6 +7,7 @@ import { ArrowLeft, Calendar, Tag, Sparkles } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import { STATIC_BLOG } from "@/data/blog-posts";
 import { BLOG_CONTENT_AR } from "@/data/translations-ar";
+import { useSeo } from "@/lib/analytics";
 
 const BlogPostEntity = base44.entities.BlogPost;
 
@@ -37,6 +38,12 @@ export default function BlogPostPage() {
   const title = searchParams.get("title");
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  useSeo({
+    title: post?.title,
+    description: post?.excerpt,
+    image: post?.image_url,
+    path: `/Blog/post?slug=${encodeURIComponent(post?.slug || "")}`,
+  });
 
   useEffect(() => {
     let active = true;
