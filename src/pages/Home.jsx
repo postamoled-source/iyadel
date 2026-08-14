@@ -206,11 +206,12 @@ function CalcButton({ children, onClick, variant = "primary" }) {
 // ---------- Hero ----------
 function HeroSection({ toolCount, catCount }) {
   const { t } = useI18n();
-  const scrollTo = (id) => {
-    const el = document.getElementById(id);
+  const scrollTo = (id, fallback) => {
+    const el = document.getElementById(id) || (fallback && document.getElementById(fallback));
     if (!el) return;
     const y = el.getBoundingClientRect().top + window.scrollY - 80;
-    window.scrollTo({ top: y, behavior: "smooth" });
+    try { window.scrollTo({ top: y, behavior: "smooth" }); }
+    catch { window.scrollTo(0, y); }
   };
   return (
     <section className="relative overflow-hidden bg-background pt-10 pb-16">
@@ -240,7 +241,7 @@ function HeroSection({ toolCount, catCount }) {
               <Box className="w-4 h-4 text-primary" />
               <span className="text-sm font-semibold text-foreground"><span className="text-primary">{toolCount}</span> {t("Tools")}</span>
             </button>
-            <button onClick={() => scrollTo("categories")} className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-accent/50 transition-colors shadow-sm cursor-pointer">
+            <button onClick={() => scrollTo("categories", "tools")} className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-accent/50 transition-colors shadow-sm cursor-pointer">
               <Layers className="w-4 h-4 text-accent" />
               <span className="text-sm font-semibold text-foreground"><span className="text-accent">{catCount}</span> {t("Categories")}</span>
             </button>
