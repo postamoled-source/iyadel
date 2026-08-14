@@ -1,60 +1,73 @@
-
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
   :root {
+    --background: 0 0% 98%;
+    --foreground: 240 10% 8%;
 
-    --accent: 43.3 96.4% 56.3%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 8%;
 
-    --accent-foreground: 222.2 84% 4.9%;
-
-    --background: 236.2 25.8% 12.2%;
-
-    --border: 0 0% 16.9%;
-
-    --card: 240 19.4% 14.1%;
-
-    --card-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-
-    --destructive-foreground: 210 40% 98%;
-
-    --font-body: 'Segoe UI', system-ui, sans-serif;
-
-    --font-heading: 'Segoe UI', system-ui, sans-serif;
-
-    --foreground: 0 0% 100%;
-
-    --input: 217.2 32.6% 17.5%;
-
-    --muted: 0 0% 16.9%;
-
-    --muted-foreground: 245 7.2% 67.5%;
-
-    --popover: 236.2 25.8% 12.2%;
-
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 8%;
 
     --primary: 268.6 77.9% 44.3%;
-
     --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 5% 95%;
+    --secondary-foreground: 240 10% 8%;
+
+    --muted: 240 5% 95%;
+    --muted-foreground: 240 4% 42%;
+
+    --accent: 43.3 96.4% 50%;
+    --accent-foreground: 240 10% 8%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 6% 88%;
+    --input: 240 6% 88%;
+    --ring: 268.6 77.9% 44.3%;
 
     --radius: 1rem;
 
-    --ring: 214.1 81.7% 50.6%;
+    --font-body: 'Segoe UI', system-ui, sans-serif;
+    --font-heading: 'Segoe UI', system-ui, sans-serif;
+  }
+
+  .dark {
+    --background: 236.2 25.8% 12.2%;
+    --foreground: 0 0% 100%;
+
+    --card: 240 19.4% 14.1%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 236.2 25.8% 12.2%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 268.6 77.9% 44.3%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 240 19.4% 14.1%;
-
     --secondary-foreground: 210 40% 98%;
 
+    --muted: 0 0% 16.9%;
+    --muted-foreground: 245 7.2% 67.5%;
+
+    --accent: 43.3 96.4% 56.3%;
+    --accent-foreground: 222.2 84% 4.9%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 0 0% 16.9%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 214.1 81.7% 50.6%;
   }
 }
-
 
 @layer base {
   * {
@@ -66,11 +79,26 @@
   }
 }
 
+html {
+  overscroll-behavior-y: none;
+}
+body {
+  font-family: var(--font-body) !important;
+  overscroll-behavior-y: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading) !important;
+}
 
-body { font-family: var(--font-body) !important; }
-h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading) !important; }
-
-
+/* Keep text selection for inputs and editable content */
+input, textarea, select, [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
 
 @keyframes floatA {
   0%, 100% { transform: translateY(0) rotate(0deg); }

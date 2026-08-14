@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -493,14 +493,26 @@ function ToolWorkspace({ tool, onBack }) {
 function ToolsHub() {
   const [tools, setTools] = useState([]);
   const [activeCategory, setActiveCategory] = useState("Finance");
-  const [selectedTool, setSelectedTool] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     ToolEntity.list().then(setTools).catch(() => {});
   }, []);
 
   const items = tools.length > 0 ? tools : STATIC_TOOLS;
+  const toolSlug = searchParams.get("tool");
+  const selectedTool = toolSlug ? items.find((t) => t.slug === toolSlug) || null : null;
   const filtered = items.filter((t) => t.category === activeCategory);
+
+  const selectTool = (tool) => {
+    setActiveCategory(tool.category);
+    setSearchParams({ tool: tool.slug });
+  };
+  const clearTool = () => {
+    const next = new URLSearchParams(searchParams);
+    next.delete("tool");
+    setSearchParams(next);
+  };
 
   return (
     <section className="bg-background py-16" id="tools">
@@ -522,7 +534,7 @@ function ToolsHub() {
 
         {selectedTool ? (
           <AnimatedElement>
-            <ToolWorkspace tool={selectedTool} onBack={() => setSelectedTool(null)} />
+            <ToolWorkspace tool={selectedTool} onBack={clearTool} />
           </AnimatedElement>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -530,7 +542,7 @@ function ToolsHub() {
               const Icon = ICONS[tool.icon] || Calculator;
               return (
                 <AnimatedElement key={tool.slug || index} delay={index * 80}>
-                  <button onClick={() => setSelectedTool(tool)}
+                  <button onClick={() => selectTool(tool)}
                     className="w-full h-full text-center rounded-[2rem] bg-card border border-border p-8 transition-all duration-400 hover:-translate-y-2 hover:shadow-[0_20px_50px_-15px_hsl(var(--primary)/0.2)] hover:border-primary/40 group flex flex-col items-center justify-center">
                     
                     <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-5 shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-500">
