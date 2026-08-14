@@ -175,6 +175,11 @@ const AR = {
   "Be the first to know when we publish new articles and launch new tools.": "كن أول من يعرف عندما ننشر مقالات جديدة ونطلق أدوات جديدة.",
   "Thanks for subscribing — check your inbox soon!": "شكرًا لاشتراكك — تفقّد بريدك قريبًا!",
   "Subscribe": "اشترك",
+  "Article not found": "المقال غير موجود",
+  "Back to Blog": "العودة إلى المدونة",
+  "Enjoyed this article?": "استمتعت بالمقال؟",
+  "Explore 31+ free tools that make everyday tasks effortless.": "استكشف أكثر من 31 أداة مجانية تجعل المهام اليومية سهلة.",
+  "Browse Tools": "تصفّح الأدوات",
 
   // About page
   "About TestPeak": "عن TestPeak",

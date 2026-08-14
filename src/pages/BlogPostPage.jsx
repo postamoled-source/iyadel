@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, Tag, Sparkles } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import { STATIC_BLOG } from "@/data/blog-posts";
+import { BLOG_CONTENT_AR } from "@/data/translations-ar";
 
 const BlogPostEntity = base44.entities.BlogPost;
 
@@ -30,7 +31,7 @@ function AnimatedElement({ children, className, delay = 0 }) {
 }
 
 export default function BlogPostPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [searchParams] = useSearchParams();
   const slug = searchParams.get("slug");
   const title = searchParams.get("title");
@@ -76,7 +77,8 @@ export default function BlogPostPage() {
     );
   }
 
-  const paragraphs = (post.content || "").split("\n").filter((p) => p.trim().length > 0);
+  const body = lang === "ar" ? (BLOG_CONTENT_AR[post.slug] || post.content) : post.content;
+  const paragraphs = (body || "").split("\n").filter((p) => p.trim().length > 0);
 
   return (
     <div className="bg-background pb-20">

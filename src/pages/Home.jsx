@@ -10,6 +10,7 @@ import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, WORD_LIST, RIDDLES, convertUnit, scrambleWord, generatePuzzle, calcMolarMass, evalFn } from "@/lib/tool-utils";
 import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { TOOL_CONTENT_AR } from "@/data/translations-ar";
 
 const ToolEntity = base44.entities.Tool;
 const BlogPostEntity = base44.entities.BlogPost;
@@ -186,7 +187,7 @@ function HeroSection({ toolCount, catCount, searchQuery, onSearchChange }) {
 
 // ---------- Tool workspace (all calculators) ----------
 function ToolWorkspace({ tool, onBack }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [inputs, setInputs] = useState({});
   const [result, setResult] = useState(null);
   const [riddleAttempts, setRiddleAttempts] = useState(3);
@@ -997,12 +998,18 @@ function ToolWorkspace({ tool, onBack }) {
       
       <div className="max-w-4xl mx-auto relative z-10">
         {renderCalculator()}
-        {tool.content && (
-          <div className="mt-10 rounded-2xl bg-secondary border border-border p-6 text-sm text-secondary-foreground leading-relaxed text-left">
-            <h3 className="font-bold text-foreground mb-3">{t("About this tool")}</h3>
-            <p>{tool.content}</p>
-          </div>
-        )}
+        {(() => {
+          const aboutContent = tool.content
+            ? (lang === "ar" ? (TOOL_CONTENT_AR[tool.slug] || tool.content) : tool.content)
+            : null;
+          if (!aboutContent) return null;
+          return (
+            <div className="mt-10 rounded-2xl bg-secondary border border-border p-6 text-sm text-secondary-foreground leading-relaxed text-left">
+              <h3 className="font-bold text-foreground mb-3">{t("About this tool")}</h3>
+              <p>{aboutContent}</p>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
