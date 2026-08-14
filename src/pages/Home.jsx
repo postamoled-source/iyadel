@@ -1078,7 +1078,12 @@ function ToolsHub() {
     ToolEntity.list().then(setTools).catch(() => {});
   }, []);
 
-  const items = tools.length > 0 ? tools : STATIC_TOOLS;
+  const items = (() => {
+    const map = new Map();
+    STATIC_TOOLS.forEach((t) => map.set(t.slug, t));
+    tools.forEach((t) => { if (!map.has(t.slug)) map.set(t.slug, t); });
+    return Array.from(map.values());
+  })();
   const toolSlug = searchParams.get("tool");
   const selectedTool = toolSlug ? items.find((t) => t.slug === toolSlug) || null : null;
   const filtered = items.filter((t) => t.category === activeCategory);
