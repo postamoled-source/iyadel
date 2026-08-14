@@ -20,6 +20,10 @@ const AR = {
   "Categories": "فئات",
   "Free": "مجاني",
   "for Everyone": "للجميع",
+  "Search for a tool by name...": "ابحث عن أداة بالاسم...",
+  "Clear": "مسح",
+  "results for": "نتيجة لـ",
+  "No tools found. Try another name.": "لا توجد أدوات. جرّب اسمًا آخر.",
 
   // Tool categories
   "Finance": "التمويل",

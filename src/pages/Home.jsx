@@ -8,7 +8,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, WORD_LIST, RIDDLES, convertUnit, scrambleWord, generatePuzzle, calcMolarMass, evalFn } from "@/lib/tool-utils";
-import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket } from "lucide-react";
+import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
 const ToolEntity = base44.entities.Tool;
@@ -113,7 +113,7 @@ function CalcButton({ children, onClick, variant = "primary" }) {
 }
 
 // ---------- Hero ----------
-function HeroSection({ toolCount, catCount }) {
+function HeroSection({ toolCount, catCount, searchQuery, onSearchChange }) {
   const { t } = useI18n();
   const scrollTo = (id, fallback) => {
     const el = document.getElementById(id) || (fallback && document.getElementById(fallback));
@@ -158,6 +158,25 @@ function HeroSection({ toolCount, catCount }) {
               <Gift className="w-4 h-4 text-primary" />
               <span className="text-sm font-semibold text-foreground"><span className="text-primary">{t("Free")}</span> {t("for Everyone")}</span>
             </button>
+          </div>
+
+          <div className="max-w-xl mx-auto mt-10">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery || ""}
+                onChange={(e) => { onSearchChange(e.target.value); scrollTo("tools"); }}
+                onFocus={() => scrollTo("tools")}
+                placeholder={t("Search for a tool by name...")}
+                className="w-full rounded-2xl border border-border bg-background text-foreground pl-12 pr-12 py-4 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm text-base"
+              />
+              {searchQuery && (
+                <button onClick={() => onSearchChange("")} aria-label={t("Clear")} className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
         </motion.div>
       </div>
@@ -990,7 +1009,7 @@ function ToolWorkspace({ tool, onBack }) {
 }
 
 // ---------- Tools Hub ----------
-function ToolsHub() {
+function ToolsHub({ searchQuery = "" }) {
   const { t } = useI18n();
   const [tools, setTools] = useState([]);
   const [activeCategory, setActiveCategory] = useState("Finance");
@@ -1008,7 +1027,11 @@ function ToolsHub() {
   })();
   const toolSlug = searchParams.get("tool");
   const selectedTool = toolSlug ? items.find((t) => t.slug === toolSlug) || null : null;
-  const filtered = items.filter((t) => t.category === activeCategory);
+  const query = (searchQuery || "").trim().toLowerCase();
+  const isSearching = query.length > 0;
+  const filtered = isSearching
+    ? items.filter((t) => (`${t.name} ${t.category} ${t.description || ""}`).toLowerCase().includes(query))
+    : items.filter((t) => t.category === activeCategory);
 
   const selectTool = (tool) => {
     setActiveCategory(tool.category);
@@ -1025,7 +1048,7 @@ function ToolsHub() {
     <section className="bg-background py-16" id="tools">
       <div className="max-w-5xl mx-auto px-6">
         
-        {!selectedTool && (
+        {!selectedTool && !isSearching && (
           <div id="categories">
           <AnimatedElement className="flex flex-wrap justify-center gap-3 md:gap-4 mb-16">
             {CATEGORIES.map((cat) => (
@@ -1041,11 +1064,21 @@ function ToolsHub() {
           </div>
         )}
 
-        {selectedTool ? (
+        {selectedTool && !isSearching ? (
           <AnimatedElement>
             <ToolWorkspace tool={selectedTool} onBack={clearTool} />
           </AnimatedElement>
         ) : (
+          <>
+          {isSearching && (
+            <div className="mb-8 text-center">
+              <p className="text-sm text-muted-foreground">
+                {filtered.length > 0
+                  ? `${filtered.length} ${t("results for")} "${searchQuery}"`
+                  : t("No tools found. Try another name.")}
+              </p>
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((tool, index) => {
               const Icon = ICONS[tool.icon] || Calculator;
@@ -1066,6 +1099,7 @@ function ToolsHub() {
               );
             })}
           </div>
+          </>
         )}
       </div>
     </section>
@@ -1263,10 +1297,11 @@ function PrivacyTeaser() {
 }
 
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState("");
   return (
     <div className="min-h-screen bg-background selection:bg-primary/30 selection:text-primary">
-      <HeroSection toolCount={31} catCount={7} />
-      <ToolsHub />
+      <HeroSection toolCount={31} catCount={7} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <ToolsHub searchQuery={searchQuery} />
       <AppStoreSection />
       <WhySection />
       <PrivacyTeaser />
