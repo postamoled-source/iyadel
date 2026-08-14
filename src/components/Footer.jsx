@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
+import { useI18n } from "@/lib/i18n";
 import { Sparkles, Mail, Facebook, Twitter, Instagram } from "lucide-react";
 
 export default function Footer() {
+  const { t } = useI18n();
+
   return (
     <footer className="bg-foreground text-background border-t border-border/20">
       <div className="max-w-6xl mx-auto px-6 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -10,10 +13,10 @@ export default function Footer() {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="font-bold text-lg text-background">TestPeak Platform</span>
+            <span className="font-bold text-lg text-background">{t("TestPeak Platform")}</span>
           </div>
           <p className="text-sm text-background/70 mb-6 leading-relaxed">
-            31+ interactive and accurate tools in one place — designed to simplify your daily life.
+            {t("31+ interactive and accurate tools in one place — designed to simplify your daily life.")}
           </p>
           <div className="flex flex-col gap-3">
             <a href="https://play.google.com/store/apps/details?id=com.testpeak.app" target="_blank" rel="noopener noreferrer" aria-label="Download on Google Play">
@@ -26,27 +29,27 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="font-bold text-background mb-4">Quick Links</h4>
+          <h4 className="font-bold text-background mb-4">{t("Quick Links")}</h4>
           <ul className="space-y-3 text-sm">
-            <li><Link to="/About" className="text-background/70 hover:text-accent transition-colors">About Us</Link></li>
-            <li><Link to="/About" className="text-background/70 hover:text-accent transition-colors">Privacy Policy</Link></li>
-            <li><a href="mailto:support@testpeak.net" className="text-background/70 hover:text-accent transition-colors">Contact Us</a></li>
-            <li><Link to="/Blog" className="text-background/70 hover:text-accent transition-colors">Blog</Link></li>
+            <li><Link to="/About" className="text-background/70 hover:text-accent transition-colors">{t("About Us")}</Link></li>
+            <li><Link to="/About" className="text-background/70 hover:text-accent transition-colors">{t("Privacy Policy")}</Link></li>
+            <li><a href="mailto:support@testpeak.net" className="text-background/70 hover:text-accent transition-colors">{t("Contact Us")}</a></li>
+            <li><Link to="/Blog" className="text-background/70 hover:text-accent transition-colors">{t("Blog")}</Link></li>
           </ul>
         </div>
 
         <div>
-          <h4 className="font-bold text-background mb-4">Categories</h4>
+          <h4 className="font-bold text-background mb-4">{t("Categories")}</h4>
           <ul className="space-y-3 text-sm">
-            <li><Link to="/" className="text-background/70 hover:text-accent transition-colors">Finance Tools</Link></li>
-            <li><Link to="/" className="text-background/70 hover:text-accent transition-colors">Health Tools</Link></li>
-            <li><Link to="/" className="text-background/70 hover:text-accent transition-colors">Converters</Link></li>
-            <li><Link to="/" className="text-background/70 hover:text-accent transition-colors">Brain Games</Link></li>
+            <li><Link to="/" className="text-background/70 hover:text-accent transition-colors">{t("Finance Tools")}</Link></li>
+            <li><Link to="/" className="text-background/70 hover:text-accent transition-colors">{t("Health Tools")}</Link></li>
+            <li><Link to="/" className="text-background/70 hover:text-accent transition-colors">{t("Converters")}</Link></li>
+            <li><Link to="/" className="text-background/70 hover:text-accent transition-colors">{t("Brain Games")}</Link></li>
           </ul>
         </div>
 
         <div>
-          <h4 className="font-bold text-background mb-4">Social</h4>
+          <h4 className="font-bold text-background mb-4">{t("Social")}</h4>
           <div className="flex gap-3 mb-5">
             <a href="#" aria-label="Facebook" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Facebook className="w-4 h-4 text-background" /></a>
             <a href="#" aria-label="Twitter" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Twitter className="w-4 h-4 text-background" /></a>
@@ -59,7 +62,7 @@ export default function Footer() {
       </div>
       <div className="border-t border-background/10">
         <div className="max-w-6xl mx-auto px-6 py-5 text-center text-xs text-background/60">
-          2026 TestPeak — All Rights Reserved
+          {t("2026 TestPeak — All Rights Reserved")}
         </div>
       </div>
     </footer>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useI18n } from "@/lib/i18n";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -196,6 +197,7 @@ function CalcButton({ children, onClick, variant = "primary" }) {
 
 // ---------- Hero ----------
 function HeroSection({ toolCount, catCount }) {
+  const { t } = useI18n();
   return (
     <section className="relative overflow-hidden bg-background pt-10 pb-16">
       <style>{styles}</style>
@@ -216,21 +218,21 @@ function HeroSection({ toolCount, catCount }) {
           </div>
           
           <p className="text-lg md:text-xl text-card-foreground/80 max-w-2xl mx-auto mb-10 font-medium">
-            Your all-in-one platform — {toolCount}+ tools in Finance, Health, Converters, Math, Brain Games, and Image Tools
+            {t("Your all-in-one platform")} — {toolCount}+ {t("tools in Finance, Health, Converters, Math, Brain Games, and Image Tools")}
           </p>
           
           <div className="flex flex-wrap justify-center gap-4 md:gap-6">
             <div className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-primary/50 transition-colors shadow-sm">
               <Box className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-foreground"><span className="text-primary">{toolCount}</span> Tools</span>
+              <span className="text-sm font-semibold text-foreground"><span className="text-primary">{toolCount}</span> {t("Tools")}</span>
             </div>
             <div className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-accent/50 transition-colors shadow-sm">
               <Layers className="w-4 h-4 text-accent" />
-              <span className="text-sm font-semibold text-foreground"><span className="text-accent">{catCount}</span> Categories</span>
+              <span className="text-sm font-semibold text-foreground"><span className="text-accent">{catCount}</span> {t("Categories")}</span>
             </div>
             <div className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-primary/50 transition-colors shadow-sm">
               <Gift className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-foreground"><span className="text-primary">Free</span> for Everyone</span>
+              <span className="text-sm font-semibold text-foreground"><span className="text-primary">{t("Free")}</span> {t("for Everyone")}</span>
             </div>
           </div>
         </motion.div>
@@ -241,6 +243,7 @@ function HeroSection({ toolCount, catCount }) {
 
 // ---------- Tool workspace (all calculators) ----------
 function ToolWorkspace({ tool, onBack }) {
+  const { t } = useI18n();
   const [inputs, setInputs] = useState({});
   const [result, setResult] = useState(null);
   const [riddleAttempts, setRiddleAttempts] = useState(3);
@@ -525,8 +528,8 @@ function ToolWorkspace({ tool, onBack }) {
             <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
               <Box className="w-8 h-8 text-muted-foreground" />
             </div>
-            <p className="text-card-foreground text-lg font-medium">This tool is fully functional in the live app.</p>
-            <p className="text-muted-foreground mt-2">It operates entirely within your browser for maximum privacy.</p>
+            <p className="text-card-foreground text-lg font-medium">{t("This tool is fully functional in the live app.")}</p>
+            <p className="text-muted-foreground mt-2">{t("It operates entirely within your browser for maximum privacy.")}</p>
           </div>
         );
     }
@@ -535,12 +538,12 @@ function ToolWorkspace({ tool, onBack }) {
   return (
     <div className="rounded-[3rem] bg-card border border-border shadow-2xl p-8 sm:p-14 relative overflow-hidden">
       <button onClick={onBack} className="absolute top-8 left-8 sm:top-10 sm:left-10 flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border text-sm font-medium text-foreground hover:bg-secondary hover:text-secondary-foreground transition-all duration-300 shadow-sm z-20">
-        <ArrowLeft className="w-4 h-4" /> Back
+        <ArrowLeft className="w-4 h-4" /> {t("Back")}
       </button>
       
       <div className="text-center mb-10 mt-12 sm:mt-8 relative z-10">
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-card-foreground mb-3">{tool.name}</h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto">{tool.description}</p>
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-card-foreground mb-3">{t(tool.name)}</h2>
+        <p className="text-muted-foreground max-w-2xl mx-auto">{t(tool.description)}</p>
       </div>
       
       <div className="max-w-4xl mx-auto relative z-10">
@@ -552,6 +555,7 @@ function ToolWorkspace({ tool, onBack }) {
 
 // ---------- Tools Hub ----------
 function ToolsHub() {
+  const { t } = useI18n();
   const [tools, setTools] = useState([]);
   const [activeCategory, setActiveCategory] = useState("Finance");
   const [searchParams, setSearchParams] = useSearchParams();
@@ -584,11 +588,11 @@ function ToolsHub() {
             {CATEGORIES.map((cat) => (
               <button key={cat} onClick={() => setActiveCategory(cat)}
                 className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 ${activeCategory === cat ? "bg-primary text-primary-foreground shadow-[0_0_20px_-5px_hsl(var(--primary)/0.5)]" : "bg-card text-card-foreground border border-border hover:bg-muted hover:border-primary/30"}`}>
-                {cat}
+                {t(cat)}
               </button>
             ))}
             <Link to="/Blog" className="flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm bg-card text-card-foreground border border-border hover:bg-muted transition-all duration-300">
-              Blog
+              {t("Blog")}
             </Link>
           </AnimatedElement>
         )}
@@ -610,8 +614,8 @@ function ToolsHub() {
                       <Icon className="w-7 h-7 text-primary-foreground" />
                     </div>
                     
-                    <h3 className="text-xl font-bold text-card-foreground mb-1">{tool.name}</h3>
-                    <span className="text-sm font-medium text-muted-foreground">{tool.category}</span>
+                    <h3 className="text-xl font-bold text-card-foreground mb-1">{t(tool.name)}</h3>
+                    <span className="text-sm font-medium text-muted-foreground">{t(tool.category)}</span>
                     
                   </button>
                 </AnimatedElement>
@@ -626,6 +630,7 @@ function ToolsHub() {
 
 // ---------- App Store Banner & Quick Links (Footer block from screenshot) ----------
 function AppStoreSection() {
+  const { t } = useI18n();
   return (
     <section className="bg-background pb-16">
       <div className="max-w-5xl mx-auto px-6">
@@ -634,24 +639,24 @@ function AppStoreSection() {
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent pointer-events-none" />
             
             <div className="flex-1 relative z-10">
-              <h3 className="text-2xl font-bold text-card-foreground mb-4">TestPeak Platform</h3>
+              <h3 className="text-2xl font-bold text-card-foreground mb-4">{t("TestPeak Platform")}</h3>
               <p className="text-muted-foreground mb-6 text-sm leading-relaxed max-w-sm">
-                31+ interactive and accurate tools in one place. Finance, health, converters, math, brain games, and image processing — completely free and secure.
+                {t("31+ interactive and accurate tools in one place. Finance, health, converters, math, brain games, and image processing — completely free and secure.")}
               </p>
-              <p className="text-xs text-muted-foreground/60 mt-auto pt-6">© 2026 TestPeak — All Rights Reserved</p>
+              <p className="text-xs text-muted-foreground/60 mt-auto pt-6">{t("© 2026 TestPeak — All Rights Reserved")}</p>
             </div>
             
             <div className="flex-1 relative z-10 grid grid-cols-2 gap-8">
               <div>
-                <h4 className="font-bold text-card-foreground mb-4">Quick Links</h4>
+                <h4 className="font-bold text-card-foreground mb-4">{t("Quick Links")}</h4>
                 <ul className="space-y-3 text-sm">
-                  <li><Link to="/About" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"><Square className="w-3 h-3" /> About Us</Link></li>
-                  <li><Link to="/Privacy" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"><Square className="w-3 h-3" /> Privacy Policy</Link></li>
+                  <li><Link to="/About" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"><Square className="w-3 h-3" /> {t("About Us")}</Link></li>
+                  <li><Link to="/Privacy" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"><Square className="w-3 h-3" /> {t("Privacy Policy")}</Link></li>
                 </ul>
               </div>
               
               <div>
-                <h4 className="font-bold text-card-foreground mb-4">Social</h4>
+                <h4 className="font-bold text-card-foreground mb-4">{t("Social")}</h4>
                 <div className="flex items-center gap-3">
                   <a href="#" className="w-10 h-10 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-all"><ExternalLink className="w-4 h-4" /></a>
                   <a href="#" className="w-10 h-10 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-all"><ExternalLink className="w-4 h-4" /></a>
@@ -662,15 +667,15 @@ function AppStoreSection() {
                   <button className="flex items-center gap-3 w-full max-w-[160px] bg-background border border-border rounded-xl p-2.5 hover:border-primary/50 transition-all">
                     <Smartphone className="w-6 h-6 text-foreground" />
                     <div className="text-left">
-                      <div className="text-[10px] text-muted-foreground uppercase leading-none mb-1">Get it on</div>
-                      <div className="text-sm font-bold text-foreground leading-none">Google Play</div>
+                      <div className="text-[10px] text-muted-foreground uppercase leading-none mb-1">{t("Get it on")}</div>
+                      <div className="text-sm font-bold text-foreground leading-none">{t("Google Play")}</div>
                     </div>
                   </button>
                   <button className="flex items-center gap-3 w-full max-w-[160px] bg-background border border-border rounded-xl p-2.5 hover:border-primary/50 transition-all">
                     <Smartphone className="w-6 h-6 text-foreground" />
                     <div className="text-left">
-                      <div className="text-[10px] text-muted-foreground uppercase leading-none mb-1">Download on the</div>
-                      <div className="text-sm font-bold text-foreground leading-none">App Store</div>
+                      <div className="text-[10px] text-muted-foreground uppercase leading-none mb-1">{t("Download on the")}</div>
+                      <div className="text-sm font-bold text-foreground leading-none">{t("App Store")}</div>
                     </div>
                   </button>
                 </div>
@@ -686,6 +691,7 @@ function AppStoreSection() {
 
 // ---------- Why TestPeak & About Content ----------
 function WhySection() {
+  const { t } = useI18n();
   const features = [
     { icon: Coins, title: "Completely free", desc: "no registration or payment required." },
     { icon: ShieldQuestion, title: "Secure & private", desc: "all processing happens in your browser, no data is uploaded to any server." },
@@ -699,11 +705,11 @@ function WhySection() {
           <div className="rounded-[3rem] bg-card border border-border p-10 md:p-14 shadow-2xl relative overflow-hidden">
             <div className="flex items-center gap-3 mb-6">
               <Square className="w-6 h-6 text-primary stroke-[2.5]" />
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-card-foreground">About Us</h2>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-card-foreground">{t("About Us")}</h2>
             </div>
             
             <p className="text-card-foreground/80 mb-10 text-lg">
-              <strong className="text-foreground">TestPeak</strong> is an <strong className="text-foreground">integrated tools platform</strong> that provides a wide range of free and interactive tools covering users' daily needs across various domains.
+              <strong className="text-foreground">TestPeak</strong> هي <strong className="text-foreground">منصة أدوات متكاملة</strong> توفر مجموعة واسعة من الأدوات المجانية والتفاعلية التي تغطي الاحتياجات اليومية للمستخدمين في مختلف المجالات.
             </p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -712,8 +718,8 @@ function WhySection() {
                   <div className="flex items-start gap-3">
                     <f.icon className="w-5 h-5 text-accent mt-0.5 shrink-0" />
                     <div>
-                      <strong className="text-sm text-foreground block mb-1">{f.title} —</strong>
-                      <span className="text-sm text-muted-foreground leading-snug block">{f.desc}</span>
+                      <strong className="text-sm text-foreground block mb-1">{t(f.title)} —</strong>
+                      <span className="text-sm text-muted-foreground leading-snug block">{t(f.desc)}</span>
                     </div>
                   </div>
                 </div>
@@ -721,7 +727,7 @@ function WhySection() {
             </div>
             
             <p className="text-sm text-muted-foreground mt-10 italic">
-              "The TestPeak team works passionately to deliver the best digital experience."
+              "{t("The TestPeak team works passionately to deliver the best digital experience.")}"
             </p>
           </div>
         </AnimatedElement>
@@ -732,6 +738,7 @@ function WhySection() {
 
 // ---------- Blog teaser ----------
 function BlogTeaser() {
+  const { t } = useI18n();
   const [posts, setPosts] = useState([]);
   useEffect(() => { BlogPostEntity.list("-created_date", 3).then(setPosts).catch(() => {}); }, []);
   const items = (posts.length > 0 ? posts : STATIC_BLOG).slice(0, 3);
@@ -743,10 +750,10 @@ function BlogTeaser() {
           <div className="rounded-[3rem] bg-card border border-border p-10 md:p-14 shadow-2xl">
             <div className="flex flex-wrap items-end justify-between gap-6 mb-10">
               <div>
-                <h2 className="text-3xl font-extrabold text-card-foreground">From the Blog</h2>
-                <p className="text-muted-foreground mt-2 font-medium">Read the latest articles and tips</p>
+                <h2 className="text-3xl font-extrabold text-card-foreground">{t("From the Blog")}</h2>
+                <p className="text-muted-foreground mt-2 font-medium">{t("Read the latest articles and tips")}</p>
               </div>
-              <Link to="/Blog"><Button className="bg-primary text-primary-foreground rounded-2xl px-6 py-5 hover:scale-105 transition-transform font-bold">View All Posts</Button></Link>
+              <Link to="/Blog"><Button className="bg-primary text-primary-foreground rounded-2xl px-6 py-5 hover:scale-105 transition-transform font-bold">{t("View All Posts")}</Button></Link>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -773,6 +780,7 @@ function BlogTeaser() {
 
 // ---------- Privacy Teaser (Matching screenshot bottom section) ----------
 function PrivacyTeaser() {
+  const { t } = useI18n();
   return (
     <section className="bg-background pb-20">
       <div className="max-w-5xl mx-auto px-6">
@@ -780,26 +788,26 @@ function PrivacyTeaser() {
           <div className="rounded-[3rem] bg-card border border-border p-10 md:p-14 shadow-2xl relative overflow-hidden">
             <div className="flex items-center gap-3 mb-2">
               <Square className="w-6 h-6 text-primary stroke-[2.5]" />
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-card-foreground">Privacy Policy</h2>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-card-foreground">{t("Privacy Policy")}</h2>
             </div>
-            <p className="text-xs text-muted-foreground mb-8 uppercase tracking-wider">Last Updated: August 13, 2026</p>
+            <p className="text-xs text-muted-foreground mb-8 uppercase tracking-wider">{t("Last Updated: August 13, 2026")}</p>
             
             <div className="space-y-6 text-sm text-muted-foreground">
-              <p>At TestPeak, we recognize the importance of your privacy and are committed to protecting it. This Privacy Policy explains how we collect, use, share, and protect your personal information.</p>
+              <p>{t("At TestPeak, we recognize the importance of your privacy and are committed to protecting it. This Privacy Policy explains how we collect, use, share, and protect your personal information.")}</p>
               
               <div>
-                <strong className="text-foreground text-base block mb-1">1. Information We Collect</strong>
-                <p>We collect two main types: information you provide voluntarily (name, email, phone) and information collected automatically (IP, browser type, cookies).</p>
+                <strong className="text-foreground text-base block mb-1">{t("1. Information We Collect")}</strong>
+                <p>{t("We collect two main types: information you provide voluntarily (name, email, phone) and information collected automatically (IP, browser type, cookies).")}</p>
               </div>
               
               <div>
-                <strong className="text-foreground text-base block mb-1">2. How We Use Your Information</strong>
-                <p>We use information to provide and improve services, communicate with you, analyze usage, and comply with legal obligations.</p>
+                <strong className="text-foreground text-base block mb-1">{t("2. How We Use Your Information")}</strong>
+                <p>{t("We use information to provide and improve services, communicate with you, analyze usage, and comply with legal obligations.")}</p>
               </div>
               
               <div className="pt-4">
                 <Link to="/Privacy" className="inline-flex items-center text-primary font-bold hover:text-primary/80 transition-colors">
-                  Read full policy <ChevronRight className="w-4 h-4 ml-1" />
+                  {t("Read full policy")} <ChevronRight className="w-4 h-4 ml-1" />
                 </Link>
               </div>
             </div>

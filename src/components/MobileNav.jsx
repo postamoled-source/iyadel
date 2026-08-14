@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { useI18n } from "@/lib/i18n";
 import { Home as HomeIcon, Newspaper, Info } from "lucide-react";
 
 const ITEMS = [
@@ -9,6 +10,7 @@ const ITEMS = [
 
 export default function MobileNav() {
   const { pathname } = useLocation();
+  const { t } = useI18n();
 
   return (
     <nav
@@ -26,7 +28,7 @@ export default function MobileNav() {
             >
               <Icon className={`w-5 h-5 ${active ? "text-primary" : "text-muted-foreground"}`} />
               <span className={`text-[11px] font-medium ${active ? "text-primary" : "text-muted-foreground"}`}>
-                {label}
+                {t(label)}
               </span>
             </Link>
           );
