@@ -1,37 +1,17 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { Home as HomeIcon, Wrench, Newspaper, Info } from "lucide-react";
 
 const ITEMS = [
-  { to: "/", label: "Home", icon: HomeIcon, target: null },
-  { to: "/#tools", label: "Tools", icon: Wrench, target: "tools" },
-  { to: "/Blog", label: "Blog", icon: Newspaper, target: null },
-  { to: "/About", label: "About", icon: Info, target: null },
+  { to: "/", label: "Home", icon: HomeIcon },
+  { to: "/#tools", label: "Tools", icon: Wrench },
+  { to: "/Blog", label: "Blog", icon: Newspaper },
+  { to: "/About", label: "About", icon: Info },
 ];
 
 export default function MobileNav() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   const { t } = useI18n();
-  const navigate = useNavigate();
-
-  const scrollToTools = () => {
-    const el = document.getElementById("tools");
-    if (el) {
-      const y = el.getBoundingClientRect().top + window.scrollY - 64;
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
-  };
-
-  const handleClick = (item, e) => {
-    if (!item.target) return;
-    e.preventDefault();
-    if (pathname === "/") {
-      scrollToTools();
-    } else {
-      navigate("/");
-      setTimeout(scrollToTools, 350);
-    }
-  };
 
   return (
     <nav
@@ -39,15 +19,16 @@ export default function MobileNav() {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="flex items-stretch justify-around px-1">
-        {ITEMS.map(({ to, label, icon: Icon, target }) => {
-          const active = to === "/"
-            ? pathname === "/" && !target
-            : pathname.startsWith(to);
+        {ITEMS.map(({ to, label, icon: Icon }) => {
+          const active = to === "/#tools"
+            ? pathname === "/" && hash === "#tools"
+            : to === "/"
+              ? pathname === "/" && !hash
+              : pathname.startsWith(to);
           return (
             <Link
               key={label}
               to={to}
-              onClick={(e) => handleClick({ to, label, icon: Icon, target }, e)}
               aria-label={t(label)}
               className="relative flex flex-1 flex-col items-center justify-center gap-1 py-2.5 min-h-[56px] transition-colors active:scale-95"
             >

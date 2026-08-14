@@ -2,10 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { useI18n } from "@/lib/i18n";
-import { Menu, Moon, Sun, Globe } from "lucide-react";
+import { Moon, Sun, Globe } from "lucide-react";
 import { LOGO_URL } from "@/data/tools";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import MobileSelect from "./MobileSelect";
 import ProfileSheet from "./ProfileSheet";
 
@@ -81,30 +79,16 @@ export default function Header() {
             >
               {isDark ? <Moon className="w-4 h-4 text-primary" /> : <Sun className="w-4 h-4 text-accent" />}
             </button>
+            <MobileSelect
+              value={lang}
+              onChange={(v) => setLang(v)}
+              options={LANG_OPTIONS}
+              placeholder="🇬🇧 English"
+              showLabel={false}
+              leading={<Globe className="w-4 h-4 text-muted-foreground" />}
+              triggerClassName="flex items-center justify-center w-9 h-9 rounded-full bg-card border border-border text-muted-foreground hover:text-primary hover:border-primary/50 transition-all duration-300 shadow-none focus:ring-0"
+            />
             <ProfileSheet />
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-foreground">
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="bg-card border-border">
-                <nav className="flex flex-col gap-5 mt-10 select-none">
-                  <Link to="/" className="text-lg font-medium text-foreground hover:text-primary transition-colors">{t("Home")}</Link>
-                  <Link to="/Blog" className="text-lg font-medium text-foreground hover:text-primary transition-colors">{t("Blog")}</Link>
-                  <Link to="/About" className="text-lg font-medium text-foreground hover:text-primary transition-colors">{t("About Us")}</Link>
-                  <div className="h-px bg-border my-2" />
-                  <MobileSelect
-                    value={lang}
-                    onChange={(v) => setLang(v)}
-                    options={LANG_OPTIONS}
-                    placeholder="🇬🇧 English"
-                    leading={<Globe className="w-4 h-4 text-muted-foreground" />}
-                    triggerClassName="flex items-center gap-2 rounded-xl border border-border bg-secondary px-3 py-3 h-auto w-full text-sm text-foreground shadow-none focus:ring-0"
-                  />
-                </nav>
-              </SheetContent>
-            </Sheet>
           </div>
         </div>
       </div>

@@ -2,10 +2,12 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { base44 } from "@/api/base44Client";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import MobileSelect from "@/components/MobileSelect";
 import PullToRefresh from "@/components/PullToRefresh";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { createPortal } from "react-dom";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
@@ -1226,7 +1228,7 @@ function ToolWorkspace({ tool, onBack }) {
   };
 
   return (
-    <div className="rounded-[3rem] bg-card border border-border shadow-2xl p-8 sm:p-14 relative overflow-hidden">
+    <div className="rounded-none sm:rounded-[3rem] bg-transparent sm:bg-card border-0 sm:border border-border shadow-none sm:shadow-2xl p-6 sm:p-14 relative overflow-hidden">
       <button onClick={onBack} className="absolute top-8 left-8 sm:top-10 sm:left-10 flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border text-sm font-medium text-foreground hover:bg-secondary hover:text-secondary-foreground transition-all duration-300 shadow-sm z-20">
         <ArrowLeft className="w-4 h-4" /> {t("Back")}
       </button>
@@ -1307,6 +1309,7 @@ function ToolsHub({ searchQuery = "" }) {
   const [activeCategory, setActiveCategory] = useState("Finance");
   const [searchParams, setSearchParams] = useSearchParams();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
+  const isMobile = useIsMobile();
 
   const load = useCallback(async () => { try { setTools(await ToolEntity.list()); } catch {} }, []);
   useEffect(() => { load(); }, [load]);
@@ -1339,12 +1342,16 @@ function ToolsHub({ searchQuery = "" }) {
     setSearchParams(next);
   };
 
+  // The list/grid is always visible on mobile (the workspace slides over it as
+  // a full-screen modal) and only hidden on desktop when a tool is open inline.
+  const showList = isSearching || !selectedTool || isMobile;
+
   return (
     <section className="bg-background py-16" id="tools">
       <PullToRefresh onRefresh={load}>
       <div className="max-w-5xl mx-auto px-6">
         
-        {!selectedTool && !isSearching && (
+        {showList && !isSearching && (
           <div id="categories">
           <AnimatedElement className="flex flex-wrap justify-center gap-3 md:gap-4 mb-16">
             {CATEGORIES.map((cat) => (
@@ -1365,67 +1372,94 @@ function ToolsHub({ searchQuery = "" }) {
           </div>
         )}
 
-        {selectedTool && !isSearching ? (
-          <AnimatedElement>
-            <ToolWorkspace tool={selectedTool} onBack={clearTool} />
-          </AnimatedElement>
-        ) : (
-          <>
-          {isSearching && (
-            <div className="mb-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                {filtered.length > 0
-                  ? `${filtered.length} ${t("results for")} "${searchQuery}"`
-                  : t("No tools found. Try another name.")}
-              </p>
-            </div>
-          )}
-          {filtered.length === 0 && activeCategory === "Favorites" && (
-            <div className="text-center py-16">
-              <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
-                <Star className="w-8 h-8 text-muted-foreground" />
-              </div>
-              <p className="text-card-foreground text-lg font-medium">{t("No favorites yet")}</p>
-              <p className="text-muted-foreground mt-2">{t("Tap the star on any tool to save it here for quick access.")}</p>
-              <button onClick={() => setActiveCategory("Finance")} className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-5 py-2.5 font-semibold text-sm hover:bg-primary/90 transition-colors">
-                {t("Browse Tools")}
-              </button>
-            </div>
-          )}
-          {filtered.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((tool, index) => {
-              const Icon = ICONS[tool.icon] || Calculator;
-              const fav = isFavorite(tool.slug);
-              return (
-                <AnimatedElement key={tool.slug || index} delay={index * 80}>
-                  <div onClick={() => selectTool(tool)}
-                    className="relative w-full h-full text-center rounded-[2rem] bg-card border border-border p-8 transition-all duration-400 hover:-translate-y-2 hover:shadow-[0_20px_50px_-15px_hsl(var(--primary)/0.2)] hover:border-primary/40 group flex flex-col items-center justify-center cursor-pointer">
-                    
-                    <button
-                      onClick={(e) => { e.stopPropagation(); toggleFavorite(tool.slug); trackEvent("tool_favorite", { tool_slug: tool.slug, action: fav ? "remove" : "add" }); }}
-                      aria-label={fav ? t("Remove from favorites") : t("Add to favorites")}
-                      className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 z-10 ${fav ? "bg-accent/15 text-accent" : "bg-background border border-border text-muted-foreground hover:text-accent hover:border-accent/40"}`}>
-                      <Star className={`w-5 h-5 ${fav ? "fill-accent" : ""}`} />
-                    </button>
-                    
-                    <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-5 shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-500">
-                      <Icon className="w-7 h-7 text-primary-foreground" />
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-card-foreground mb-1">{t(tool.name)}</h3>
-                    <span className="text-sm font-medium text-muted-foreground">{t(tool.category)}</span>
-                    
-                  </div>
-                </AnimatedElement>
-              );
-            })}
+        {isSearching && (
+          <div className="mb-8 text-center">
+            <p className="text-sm text-muted-foreground">
+              {filtered.length > 0
+                ? `${filtered.length} ${t("results for")} "${searchQuery}"`
+                : t("No tools found. Try another name.")}
+            </p>
           </div>
-          )}
-          </>
         )}
+        {showList && filtered.length === 0 && activeCategory === "Favorites" && !isSearching && (
+          <div className="text-center py-16">
+            <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
+              <Star className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <p className="text-card-foreground text-lg font-medium">{t("No favorites yet")}</p>
+            <p className="text-muted-foreground mt-2">{t("Tap the star on any tool to save it here for quick access.")}</p>
+            <button onClick={() => setActiveCategory("Finance")} className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-5 py-2.5 font-semibold text-sm hover:bg-primary/90 transition-colors">
+              {t("Browse Tools")}
+            </button>
+          </div>
+        )}
+        {showList && filtered.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filtered.map((tool, index) => {
+            const Icon = ICONS[tool.icon] || Calculator;
+            const fav = isFavorite(tool.slug);
+            return (
+              <AnimatedElement key={tool.slug || index} delay={index * 80}>
+                <div onClick={() => selectTool(tool)}
+                  className="relative w-full h-full text-center rounded-[2rem] bg-card border border-border p-8 transition-all duration-400 hover:-translate-y-2 hover:shadow-[0_20px_50px_-15px_hsl(var(--primary)/0.2)] hover:border-primary/40 group flex flex-col items-center justify-center cursor-pointer">
+                  
+                  <button
+                    onClick={(e) => { e.stopPropagation(); toggleFavorite(tool.slug); trackEvent("tool_favorite", { tool_slug: tool.slug, action: fav ? "remove" : "add" }); }}
+                    aria-label={fav ? t("Remove from favorites") : t("Add to favorites")}
+                    className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 z-10 ${fav ? "bg-accent/15 text-accent" : "bg-background border border-border text-muted-foreground hover:text-accent hover:border-accent/40"}`}>
+                    <Star className={`w-5 h-5 ${fav ? "fill-accent" : ""}`} />
+                  </button>
+                  
+                  <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-5 shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-500">
+                    <Icon className="w-7 h-7 text-primary-foreground" />
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-card-foreground mb-1">{t(tool.name)}</h3>
+                  <span className="text-sm font-medium text-muted-foreground">{t(tool.category)}</span>
+                  
+                </div>
+              </AnimatedElement>
+            );
+          })}
+        </div>
+        )}
+
+        {/* Desktop: inline workspace with a subtle slide-up */}
+        <AnimatePresence mode="wait">
+          {selectedTool && !isSearching && !isMobile && (
+            <motion.div
+              key={`ws-${selectedTool.slug}`}
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 24 }}
+              transition={{ duration: 0.26, ease: "easeOut" }}
+            >
+              <ToolWorkspace tool={selectedTool} onBack={clearTool} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       </PullToRefresh>
+
+      {/* Mobile: full-screen slide-up modal workspace (ported to body to escape page-transition transforms) */}
+      {createPortal(
+        <AnimatePresence>
+          {selectedTool && !isSearching && isMobile && (
+            <motion.div
+              key="ws-mobile"
+              className="fixed inset-0 z-[60] bg-card overflow-y-auto overscroll-contain"
+              style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.34, ease: [0.32, 0.72, 0, 1] }}
+            >
+              <ToolWorkspace tool={selectedTool} onBack={clearTool} />
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </section>
   );
 }

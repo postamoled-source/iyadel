@@ -6,7 +6,7 @@ import { ChevronDown, Check } from "lucide-react";
 
 // A Select that uses the Radix popover on desktop and a Vaul bottom-sheet
 // Drawer on mobile. `options` may be strings or { value, label } objects.
-export default function MobileSelect({ value, onChange, options, triggerClassName, placeholder, leading }) {
+export default function MobileSelect({ value, onChange, options, triggerClassName, placeholder, leading, showLabel = true }) {
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
   const opts = options.map((o) => (typeof o === "string" ? { value: o, label: o } : o));
@@ -34,8 +34,8 @@ export default function MobileSelect({ value, onChange, options, triggerClassNam
       <DrawerTrigger asChild>
         <button type="button" className={triggerClassName}>
           {leading}
-          <span className="flex-1 text-left truncate">{label}</span>
-          <ChevronDown className="w-4 h-4 opacity-50 shrink-0" />
+          {showLabel && <span className="flex-1 text-left truncate">{label}</span>}
+          {showLabel && <ChevronDown className="w-4 h-4 opacity-50 shrink-0" />}
         </button>
       </DrawerTrigger>
       <DrawerContent className="max-h-[75vh]">
