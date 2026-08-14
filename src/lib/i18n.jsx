@@ -171,6 +171,7 @@ const AR = {
   "Einstein allegedly called it the most powerful force in the universe. See how compounding accelerates your savings.": "قيل إن أينشتاين وصفها بأنها أقوى قوة في الكون. اكتشف كيف يعجل التراكم من مدخراتك.",
   "From unit converters to QR generators, discover how everyday tools quietly save you hours every week.": "من محولات الوحدات إلى مولّدات QR، اكتشف كيف توفر لك الأدوات اليومية ساعات كل أسبوع.",
   "Read more": "اقرأ المزيد",
+  "5 min read": "5 دقائق قراءة",
   "Never miss an update": "لا تفوّت أي تحديث",
   "Be the first to know when we publish new articles and launch new tools.": "كن أول من يعرف عندما ننشر مقالات جديدة ونطلق أدوات جديدة.",
   "Thanks for subscribing — check your inbox soon!": "شكرًا لاشتراكك — تفقّد بريدك قريبًا!",

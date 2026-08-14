@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useI18n } from "@/lib/i18n";
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight, Calendar, Tag, LayoutGrid } from "lucide-react";
+import { Sparkles, ArrowRight, Calendar, Tag, LayoutGrid, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Image } from "@/components/ui/image";
 import { STATIC_BLOG } from "@/data/blog-posts";
 
 const BlogPostEntity = base44.entities.BlogPost;
@@ -89,22 +90,32 @@ function BlogGrid() {
         <div className={filtered.length === 0 ? "hidden" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"}>
           {filtered.map((post, i) => (
             <AnimatedElement key={post.title} delay={i * 90}>
-              <article className="h-full flex flex-col rounded-2xl bg-card border border-border overflow-hidden hover:-translate-y-1.5 hover:shadow-[0_20px_60px_-15px_hsl(var(--primary)/0.3)] transition-all duration-300 group">
-                <div className="aspect-[16/9] overflow-hidden">
-                  <img src={post.image_url} alt={t(post.title)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                <div className="p-6 flex flex-col flex-1">
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary"><Tag className="w-3 h-3" />{t(post.category)}</span>
-                    <span className="inline-flex items-center gap-1"><Calendar className="w-3 h-3" />{post.date}</span>
+              <Link to={`/Blog/post?slug=${encodeURIComponent(post.slug || "")}&title=${encodeURIComponent(post.title || "")}`} className="block h-full">
+                <article className="h-full flex flex-col rounded-[1.75rem] bg-card border border-border overflow-hidden hover:-translate-y-2 hover:shadow-[0_24px_64px_-18px_hsl(var(--primary)/0.35)] hover:border-primary/40 transition-all duration-400 group">
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <Image src={post.image_url} alt={t(post.title)} fittingType="fill" className="w-full h-full group-hover:scale-110 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-card/10 to-transparent" />
+                    <span className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background/80 backdrop-blur-md border border-border text-xs font-bold text-primary uppercase tracking-wide">
+                      <Tag className="w-3 h-3" />{t(post.category)}
+                    </span>
+                    <div className="absolute bottom-4 left-4 right-4 flex items-center gap-2 text-xs font-medium text-foreground/90">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-background/70 backdrop-blur-md px-2.5 py-1">
+                        <Clock className="w-3 h-3 text-accent" />{t("5 min read")}
+                      </span>
+                    </div>
                   </div>
-                  <h3 className="font-bold text-lg text-foreground mb-2 leading-snug">{t(post.title)}</h3>
-                  <p className="text-sm text-muted-foreground flex-1">{t(post.excerpt)}</p>
-                  <Link to={`/Blog/post?slug=${encodeURIComponent(post.slug || "")}&title=${encodeURIComponent(post.title || "")}`} className="inline-flex items-center gap-1 text-primary text-sm font-semibold mt-4 hover:gap-2 transition-all">
-                    {t("Read more")} <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </article>
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
+                      <Calendar className="w-3.5 h-3.5" />{post.date}
+                    </div>
+                    <h3 className="font-bold text-lg text-foreground mb-3 leading-snug group-hover:text-primary transition-colors duration-300 line-clamp-2">{t(post.title)}</h3>
+                    <p className="text-sm text-muted-foreground flex-1 leading-relaxed line-clamp-3">{t(post.excerpt)}</p>
+                    <span className="inline-flex items-center gap-1.5 text-primary text-sm font-semibold mt-5 group-hover:gap-3 transition-all duration-300">
+                      {t("Read more")} <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </div>
+                </article>
+              </Link>
             </AnimatedElement>
           ))}
         </div>
