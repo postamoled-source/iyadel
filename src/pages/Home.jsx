@@ -9,6 +9,7 @@ import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, WORD_LIST, RIDDLES, convertUnit, scrambleWord, generatePuzzle, calcMolarMass, evalFn } from "@/lib/tool-utils";
 import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 const ToolEntity = base44.entities.Tool;
 const BlogPostEntity = base44.entities.BlogPost;
@@ -1012,6 +1013,7 @@ function ToolsHub() {
   const selectTool = (tool) => {
     setActiveCategory(tool.category);
     setSearchParams({ tool: tool.slug });
+    trackEvent("tool_select", { tool_slug: tool.slug, tool_name: tool.name, category: tool.category });
   };
   const clearTool = () => {
     const next = new URLSearchParams(searchParams);

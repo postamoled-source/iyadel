@@ -10,6 +10,7 @@ import About from './pages/About';
 import Blog from './pages/Blog';
 import BlogPostPage from './pages/BlogPostPage';
 import Layout from './components/Layout';
+import AnalyticsTracker from '@/components/AnalyticsTracker';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -51,6 +52,7 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
+          <AnalyticsTracker />
           <AuthenticatedApp />
         </Router>
         <Toaster />
