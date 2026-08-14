@@ -28,7 +28,7 @@ function AnimatedElement({ children, className, delay = 0 }) {
 
 function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-background pt-20 pb-14 sm:pt-24 sm:pb-16">
+    <section className="relative bg-background pt-20 pb-14 sm:pt-24 sm:pb-16">
       <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/20 rounded-full blur-[100px] pointer-events-none" style={{ animation: "floatA 9s ease-in-out infinite" }} />
       <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-accent/10 rounded-full blur-[100px] pointer-events-none" style={{ animation: "floatB 7s ease-in-out 2s infinite" }} />
       <div className="max-w-5xl mx-auto px-6 relative z-10">

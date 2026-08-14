@@ -1,6 +1,76 @@
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer base {
+  :root {
+
+    --accent: 43.3 96.4% 56.3%;
+
+    --accent-foreground: 222.2 84% 4.9%;
+
+    --background: 236.2 25.8% 12.2%;
+
+    --border: 0 0% 16.9%;
+
+    --card: 240 19.4% 14.1%;
+
+    --card-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+
+    --destructive-foreground: 210 40% 98%;
+
+    --font-body: 'Segoe UI', system-ui, sans-serif;
+
+    --font-heading: 'Segoe UI', system-ui, sans-serif;
+
+    --foreground: 0 0% 100%;
+
+    --input: 217.2 32.6% 17.5%;
+
+    --muted: 0 0% 16.9%;
+
+    --muted-foreground: 245 7.2% 67.5%;
+
+    --popover: 236.2 25.8% 12.2%;
+
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 268.6 77.9% 44.3%;
+
+    --primary-foreground: 0 0% 100%;
+
+    --radius: 1rem;
+
+    --ring: 214.1 81.7% 50.6%;
+
+    --secondary: 240 19.4% 14.1%;
+
+    --secondary-foreground: 210 40% 98%;
+
+  }
+}
+
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
+body { font-family: var(--font-body) !important; }
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading) !important; }
+
+
 
 @keyframes floatA {
   0%, 100% { transform: translateY(0) rotate(0deg); }

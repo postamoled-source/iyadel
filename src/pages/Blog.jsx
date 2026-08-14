@@ -38,7 +38,7 @@ function AnimatedElement({ children, className, delay = 0 }) {
 
 function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-background pt-20 pb-14 sm:pt-24 sm:pb-16">
+    <section className="relative bg-background pt-20 pb-14 sm:pt-24 sm:pb-16">
       <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-primary/20 rounded-full blur-[100px] pointer-events-none" style={{ animation: "floatA 9s ease-in-out infinite" }} />
       <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-accent/10 rounded-full blur-[100px] pointer-events-none" style={{ animation: "floatB 7s ease-in-out 2s infinite" }} />
       <div className="max-w-5xl mx-auto px-6 relative z-10">
@@ -126,11 +126,11 @@ function NewsletterSection() {
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Never miss an update</h2>
           <p className="text-muted-foreground mb-8">Be the first to know when we publish new articles and launch new tools.</p>
           {submitted ? (
-            <div className="rounded-xl bg-card border border-primary/30 px-6 py-4 text-foreground">Thanks for subscribing — check your inbox soon!</div>
+            <div className="rounded-xl bg-card border border-primary/30 px-6 py-4 text-card-foreground">Thanks for subscribing — check your inbox soon!</div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com"
-                className="flex-1 rounded-xl border border-border bg-card text-foreground px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition" />
+                className="flex-1 rounded-xl border border-border bg-card text-card-foreground px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition" />
               <Button type="submit" className="relative overflow-hidden rounded-xl px-6 py-3 bg-accent text-accent-foreground hover:scale-105 transition-transform duration-300">
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-foreground/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />
                 <span className="relative z-10">Subscribe</span>
