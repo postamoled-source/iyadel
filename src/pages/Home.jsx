@@ -331,14 +331,11 @@ function ToolWorkspace({ tool, onBack }) {
   const renderCalculator = () => {
     switch (tool.slug) {
       case "loan-calculator": {
-        const calc = () => {
-          const P = parseFloat(inputs.amount), annualRate = parseFloat(inputs.rate), n = parseFloat(inputs.term);
-          if (!P || !annualRate || !n) return setResult(null);
-          const r = annualRate / 100 / 12;
-          const payment = r === 0 ? P / n : (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-          const total = payment * n;
-          setResult({ payment: payment.toFixed(2), interest: (total - P).toFixed(2), total: total.toFixed(2) });
-        };
+        const P = parseFloat(inputs.amount), annualRate = parseFloat(inputs.rate), n = parseFloat(inputs.term);
+        const r = annualRate / 100 / 12;
+        const payment = P && annualRate && n ? (r === 0 ? P / n : (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)) : null;
+        const loanResult = payment != null ? { payment: payment.toFixed(2), interest: (payment * n - P).toFixed(2), total: (payment * n).toFixed(2) } : null;
+        const calc = () => setResult(loanResult);
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -347,13 +344,13 @@ function ToolWorkspace({ tool, onBack }) {
               <NumInput label="Term (Months)" value={inputs.term} onChange={set("term")} placeholder="36" />
             </div>
             <div className="flex justify-center mt-6"><CalcButton onClick={calc}>Calculate Loan</CalcButton></div>
-            {result && (
+            {loanResult && (
               <ResultCard title="Your Results">
                 <div className="text-card-foreground text-lg mb-2">Monthly Payment</div>
-                <div className="text-4xl font-extrabold text-primary mb-6">${result.payment}</div>
+                <div className="text-4xl font-extrabold text-primary mb-6">${loanResult.payment}</div>
                 <div className="flex flex-wrap justify-center gap-6 text-card-foreground">
-                  <div>Total Interest: <strong className="text-accent ml-1">${result.interest}</strong></div>
-                  <div>Total Amount: <strong className="text-accent ml-1">${result.total}</strong></div>
+                  <div>Total Interest: <strong className="text-accent ml-1">${loanResult.interest}</strong></div>
+                  <div>Total Amount: <strong className="text-accent ml-1">${loanResult.total}</strong></div>
                 </div>
               </ResultCard>
             )}
@@ -363,14 +360,14 @@ function ToolWorkspace({ tool, onBack }) {
       }
       case "simple-compound-interest": {
         const compounds = { Yearly: 1, "Semi-annual": 2, Quarterly: 4, Monthly: 12, Daily: 365 };
-        const calc = () => {
-          const P = parseFloat(inputs.principal), rate = parseFloat(inputs.rate), t = parseFloat(inputs.years);
-          const n = compounds[inputs.compound || "Yearly"];
-          if (!P || !rate || !t) return setResult(null);
+        const P = parseFloat(inputs.principal), rate = parseFloat(inputs.rate), t = parseFloat(inputs.years);
+        const n = compounds[inputs.compound || "Yearly"];
+        const interestResult = (P && rate && t) ? (() => {
           const simple = (P * rate * t) / 100;
           const compound = P * Math.pow(1 + rate / 100 / n, n * t) - P;
-          setResult({ simple: simple.toFixed(2), compound: compound.toFixed(2), finalSimple: (P + simple).toFixed(2), finalCompound: (P + compound).toFixed(2) });
-        };
+          return { simple: simple.toFixed(2), compound: compound.toFixed(2), finalSimple: (P + simple).toFixed(2), finalCompound: (P + compound).toFixed(2) };
+        })() : null;
+        const calc = () => setResult(interestResult);
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -380,18 +377,18 @@ function ToolWorkspace({ tool, onBack }) {
               <SelectField label="Compound Frequency" value={inputs.compound || "Yearly"} onChange={set("compound")} options={Object.keys(compounds)} />
             </div>
             <div className="flex justify-center mt-6"><CalcButton onClick={calc}>Calculate Interest</CalcButton></div>
-            {result && (
+            {interestResult && (
               <ResultCard title="Comparison">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
                   <div className="bg-background rounded-2xl p-6 border border-border shadow-sm">
                     <div className="text-sm text-muted-foreground mb-1">Simple Interest Earned</div>
-                    <div className="text-2xl font-bold text-primary">${result.simple}</div>
-                    <div className="text-sm text-muted-foreground mt-2">Final Amount: <strong className="text-foreground">${result.finalSimple}</strong></div>
+                    <div className="text-2xl font-bold text-primary">${interestResult.simple}</div>
+                    <div className="text-sm text-muted-foreground mt-2">Final Amount: <strong className="text-foreground">${interestResult.finalSimple}</strong></div>
                   </div>
                   <div className="bg-background rounded-2xl p-6 border border-border shadow-sm">
                     <div className="text-sm text-muted-foreground mb-1">Compound Interest Earned</div>
-                    <div className="text-2xl font-bold text-accent">${result.compound}</div>
-                    <div className="text-sm text-muted-foreground mt-2">Final Amount: <strong className="text-foreground">${result.finalCompound}</strong></div>
+                    <div className="text-2xl font-bold text-accent">${interestResult.compound}</div>
+                    <div className="text-sm text-muted-foreground mt-2">Final Amount: <strong className="text-foreground">${interestResult.finalCompound}</strong></div>
                   </div>
                 </div>
               </ResultCard>
