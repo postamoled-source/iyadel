@@ -28,6 +28,7 @@ const AR = {
   "Math": "الرياضيات",
   "Games": "الألعاب",
   "Image Tools": "أدوات الصور",
+  "About this tool": "حول هذه الأداة",
   "Finance Tools": "أدوات التمويل",
   "Health Tools": "أدوات الصحة",
   "Brain Games": "ألعاب العقل",

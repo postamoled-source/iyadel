@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
-import { Sparkles, Mail, Facebook, Twitter, Instagram } from "lucide-react";
+import { Mail, Facebook, Twitter, Instagram } from "lucide-react";
+import { LOGO_URL } from "@/data/tools";
 
 export default function Footer() {
   const { t } = useI18n();
@@ -10,9 +11,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-primary-foreground" />
-            </div>
+            <img src={LOGO_URL} alt="TestPeak" className="w-9 h-9 rounded-xl object-cover" />
             <span className="font-bold text-lg text-background">{t("TestPeak Platform")}</span>
           </div>
           <p className="text-sm text-background/70 mb-6 leading-relaxed">

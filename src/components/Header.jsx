@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { useI18n } from "@/lib/i18n";
-import { Square, Menu, Moon, Sun, Globe } from "lucide-react";
+import { Menu, Moon, Sun, Globe } from "lucide-react";
+import { LOGO_URL } from "@/data/tools";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import ProfileSheet from "./ProfileSheet";
@@ -66,7 +67,7 @@ export default function Header() {
         {/* Mobile */}
         <div className="sm:hidden flex items-center justify-between w-full">
           <Link to="/" className="flex items-center gap-2 shrink-0">
-            <Square className="w-6 h-6 text-accent" />
+            <img src={LOGO_URL} alt="TestPeak" className="w-8 h-8 rounded-lg object-cover" />
             <span className="font-bold text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TestPeak</span>
           </Link>
           <div className="flex items-center gap-2">

@@ -15,6 +15,9 @@
     },
     "icon": {
       "type": "string"
+    },
+    "content": {
+      "type": "string"
     }
   },
   "required": [
