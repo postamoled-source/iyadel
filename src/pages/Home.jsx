@@ -10,7 +10,8 @@ import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, WORD_LIST, RIDDLES, convertUnit, scrambleWord, generatePuzzle, calcMolarMass, evalFn } from "@/lib/tool-utils";
 import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
-import { TOOL_CONTENT_AR } from "@/data/translations-ar";
+import { TOOL_CONTENT_AR, TOOL_GUIDES_AR } from "@/data/translations-ar";
+import { TOOL_GUIDES } from "@/data/tool-guides";
 
 const ToolEntity = base44.entities.Tool;
 const BlogPostEntity = base44.entities.BlogPost;
@@ -208,6 +209,7 @@ function ToolWorkspace({ tool, onBack }) {
   const [qrUrl, setQrUrl] = useState(null);
   const [shareLinks, setShareLinks] = useState(null);
   const [policyText, setPolicyText] = useState("");
+  const [showGuide, setShowGuide] = useState(false);
   const [cropSrc, setCropSrc] = useState(null);
   const [cropResult, setCropResult] = useState(null);
   const [bgSrc, setBgSrc] = useState(null);
@@ -228,6 +230,7 @@ function ToolWorkspace({ tool, onBack }) {
     setCropSrc(null); setCropResult(null); setBgSrc(null); setBgDone(false);
     setPdfFiles([]); setPdfReady(false); setCompressSrc(null); setCompressResult(null); setPlotData(null);
     setBgResult(null); setPdfBusy(false); setRiddle(RIDDLES[Math.floor(Math.random() * RIDDLES.length)]);
+    setShowGuide(false);
   }, [tool.slug]);
 
   const set = (k) => (e) => setInputs((p) => ({ ...p, [k]: e.target.value }));
@@ -1003,11 +1006,50 @@ function ToolWorkspace({ tool, onBack }) {
             ? (lang === "ar" ? (TOOL_CONTENT_AR[tool.slug] || tool.content) : tool.content)
             : null;
           if (!aboutContent) return null;
+          const guide = lang === "ar" ? TOOL_GUIDES_AR[tool.slug] : TOOL_GUIDES[tool.slug];
           return (
-            <div className="mt-10 rounded-2xl bg-secondary border border-border p-6 text-sm text-secondary-foreground leading-relaxed text-left">
-              <h3 className="font-bold text-foreground mb-3">{t("About this tool")}</h3>
-              <p>{aboutContent}</p>
-            </div>
+            <>
+              <div className="mt-10 rounded-2xl bg-secondary border border-border p-6 text-sm text-secondary-foreground leading-relaxed text-left">
+                <h3 className="font-bold text-foreground mb-3">{t("About this tool")}</h3>
+                <p>{aboutContent}</p>
+                {guide && (
+                  <button onClick={() => setShowGuide((s) => !s)}
+                    className="mt-4 inline-flex items-center gap-1.5 text-primary font-semibold text-sm hover:gap-3 transition-all duration-300">
+                    {showGuide ? t("Show less") : t("Read more")} <ChevronRight className={`w-4 h-4 transition-transform ${showGuide ? "rotate-90" : ""}`} />
+                  </button>
+                )}
+              </div>
+              {guide && showGuide && (
+                <div className="mt-4 rounded-2xl bg-card border border-primary/20 p-6 text-left shadow-sm">
+                  <h3 className="font-bold text-foreground mb-3 flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-accent" /> {t("How to use this tool")}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-5">{guide.intro}</p>
+                  <div className="mb-5">
+                    <h4 className="font-semibold text-foreground text-sm mb-3">{t("Steps")}</h4>
+                    <ol className="space-y-2.5">
+                      {guide.steps.map((step, i) => (
+                        <li key={i} className="flex gap-3 text-sm text-card-foreground/90">
+                          <span className="shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                          <span className="leading-relaxed pt-0.5">{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground text-sm mb-3">{t("Tips")}</h4>
+                    <ul className="space-y-2">
+                      {guide.tips.map((tip, i) => (
+                        <li key={i} className="flex gap-2.5 text-sm text-card-foreground/90">
+                          <span className="shrink-0 text-accent mt-0.5"><ShieldCheck className="w-4 h-4" /></span>
+                          <span className="leading-relaxed">{tip}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </>
           );
         })()}
       </div>
