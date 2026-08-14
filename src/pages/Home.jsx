@@ -96,7 +96,7 @@ function SelectField({ label, value, onChange, options }) {
 }
 function ResultCard({ title, children }) {
   return (
-    <div className="mt-8 rounded-[2rem] bg-gradient-to-b from-primary/10 to-transparent border border-primary/20 p-8 shadow-inner shadow-primary/5">
+    <div className="mt-8 rounded-[2rem] bg-gradient-to-b from-primary/10 to-transparent border border-primary/20 p-8 shadow-inner shadow-primary/5 animate-[fadeIn_0.5s_ease-out]">
       <h4 className="text-lg font-bold text-foreground mb-4 text-center">{title}</h4>
       <div className="text-center">{children}</div>
     </div>
@@ -364,7 +364,7 @@ function ToolWorkspace({ tool, onBack }) {
                     <div className="h-56">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
-                          <Pie data={[{ name: "Principal", value: P }, { name: "Interest", value: parseFloat(loanResult.interest) }]} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3}>
+                          <Pie data={[{ name: "Principal", value: P }, { name: "Interest", value: parseFloat(loanResult.interest) }]} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3} isAnimationActive animationDuration={900} animationEasing="ease-out">
                             <Cell fill="hsl(var(--primary))" />
                             <Cell fill="hsl(var(--accent))" />
                           </Pie>
@@ -393,7 +393,7 @@ function ToolWorkspace({ tool, onBack }) {
                           <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
                           <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
                           <Tooltip formatter={(v) => `$${Math.round(v).toLocaleString()}`} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
-                          <Area type="monotone" dataKey="balance" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#loanBal)" />
+                          <Area type="monotone" dataKey="balance" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#loanBal)" isAnimationActive animationDuration={1000} animationEasing="ease-out" />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
@@ -464,8 +464,8 @@ function ToolWorkspace({ tool, onBack }) {
                         <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
                         <Tooltip formatter={(v) => `$${v.toLocaleString()}`} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
                         <Legend wrapperStyle={{ fontSize: 12 }} />
-                        <Area type="monotone" dataKey="Simple" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#gSimple)" />
-                        <Area type="monotone" dataKey="Compound" stroke="hsl(var(--accent))" strokeWidth={2} fill="url(#gCompound)" />
+                        <Area type="monotone" dataKey="Simple" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#gSimple)" isAnimationActive animationDuration={1000} animationEasing="ease-out" />
+                        <Area type="monotone" dataKey="Compound" stroke="hsl(var(--accent))" strokeWidth={2} fill="url(#gCompound)" isAnimationActive animationDuration={1100} animationBegin={150} animationEasing="ease-out" />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
@@ -649,7 +649,7 @@ function ToolWorkspace({ tool, onBack }) {
                         <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12 }} />
                         <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} unit="%" />
                         <Tooltip formatter={(v) => `${v}%`} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
-                        <Bar dataKey="value" radius={[8, 8, 0, 0]} barSize={64}>
+                        <Bar dataKey="value" radius={[8, 8, 0, 0]} barSize={64} isAnimationActive animationDuration={900} animationEasing="ease-out">
                           <Cell fill="hsl(var(--primary))" />
                           <Cell fill="hsl(var(--accent))" />
                         </Bar>
