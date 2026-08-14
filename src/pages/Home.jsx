@@ -4,7 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, WORD_LIST, RIDDLES, convertUnit, scrambleWord, generatePuzzle, calcMolarMass, evalFn } from "@/lib/tool-utils";
@@ -347,14 +347,57 @@ function ToolWorkspace({ tool, onBack }) {
             </div>
             <div className="flex justify-center mt-6"><CalcButton onClick={calc}>Calculate Loan</CalcButton></div>
             {loanResult && (
-              <ResultCard title="Your Results">
-                <div className="text-card-foreground text-lg mb-2">Monthly Payment</div>
-                <div className="text-4xl font-extrabold text-primary mb-6">${loanResult.payment}</div>
-                <div className="flex flex-wrap justify-center gap-6 text-card-foreground">
-                  <div>Total Interest: <strong className="text-accent ml-1">${loanResult.interest}</strong></div>
-                  <div>Total Amount: <strong className="text-accent ml-1">${loanResult.total}</strong></div>
+              <>
+                <ResultCard title="Your Results">
+                  <div className="text-card-foreground text-lg mb-2">Monthly Payment</div>
+                  <div className="text-4xl font-extrabold text-primary mb-6">${loanResult.payment}</div>
+                  <div className="flex flex-wrap justify-center gap-6 text-card-foreground">
+                    <div>Total Interest: <strong className="text-accent ml-1">${loanResult.interest}</strong></div>
+                    <div>Total Amount: <strong className="text-accent ml-1">${loanResult.total}</strong></div>
+                  </div>
+                </ResultCard>
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="rounded-2xl bg-background border border-border p-5 shadow-sm">
+                    <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">Principal vs Interest</h4>
+                    <div className="h-56">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie data={[{ name: "Principal", value: P }, { name: "Interest", value: parseFloat(loanResult.interest) }]} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3}>
+                            <Cell fill="hsl(var(--primary))" />
+                            <Cell fill="hsl(var(--accent))" />
+                          </Pie>
+                          <Tooltip formatter={(v) => `$${v.toLocaleString()}`} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
+                          <Legend wrapperStyle={{ fontSize: 12 }} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                  <div className="rounded-2xl bg-background border border-border p-5 shadow-sm">
+                    <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">Balance Over Time</h4>
+                    <div className="h-56">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={Array.from({ length: Math.min(Math.round(n) + 1, 60) }, (_, i) => {
+                          const m = i;
+                          let bal = P;
+                          for (let k = 0; k < m; k++) { bal = bal * (1 + r) - parseFloat(loanResult.payment); }
+                          return { month: m, balance: Math.max(bal, 0) };
+                        })}>
+                          <defs>
+                            <linearGradient id="loanBal" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.5} />
+                              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+                          <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+                          <Tooltip formatter={(v) => `$${Math.round(v).toLocaleString()}`} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
+                          <Area type="monotone" dataKey="balance" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#loanBal)" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
                 </div>
-              </ResultCard>
+              </>
             )}
             <TipBox><strong>Indicator:</strong> Interest is calculated on the remaining balance. Always compare multiple bank offers.</TipBox>
           </>
@@ -380,20 +423,52 @@ function ToolWorkspace({ tool, onBack }) {
             </div>
             <div className="flex justify-center mt-6"><CalcButton onClick={calc}>Calculate Interest</CalcButton></div>
             {interestResult && (
-              <ResultCard title="Comparison">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
-                  <div className="bg-background rounded-2xl p-6 border border-border shadow-sm">
-                    <div className="text-sm text-muted-foreground mb-1">Simple Interest Earned</div>
-                    <div className="text-2xl font-bold text-primary">${interestResult.simple}</div>
-                    <div className="text-sm text-muted-foreground mt-2">Final Amount: <strong className="text-foreground">${interestResult.finalSimple}</strong></div>
+              <>
+                <ResultCard title="Comparison">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
+                    <div className="bg-background rounded-2xl p-6 border border-border shadow-sm">
+                      <div className="text-sm text-muted-foreground mb-1">Simple Interest Earned</div>
+                      <div className="text-2xl font-bold text-primary">${interestResult.simple}</div>
+                      <div className="text-sm text-muted-foreground mt-2">Final Amount: <strong className="text-foreground">${interestResult.finalSimple}</strong></div>
+                    </div>
+                    <div className="bg-background rounded-2xl p-6 border border-border shadow-sm">
+                      <div className="text-sm text-muted-foreground mb-1">Compound Interest Earned</div>
+                      <div className="text-2xl font-bold text-accent">${interestResult.compound}</div>
+                      <div className="text-sm text-muted-foreground mt-2">Final Amount: <strong className="text-foreground">${interestResult.finalCompound}</strong></div>
+                    </div>
                   </div>
-                  <div className="bg-background rounded-2xl p-6 border border-border shadow-sm">
-                    <div className="text-sm text-muted-foreground mb-1">Compound Interest Earned</div>
-                    <div className="text-2xl font-bold text-accent">${interestResult.compound}</div>
-                    <div className="text-sm text-muted-foreground mt-2">Final Amount: <strong className="text-foreground">${interestResult.finalCompound}</strong></div>
+                </ResultCard>
+                <div className="mt-6 rounded-2xl bg-background border border-border p-5 shadow-sm">
+                  <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">Growth Over Time</h4>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={Array.from({ length: Math.round(t) + 1 }, (_, yr) => {
+                        const simpleBal = P + (P * rate * yr) / 100;
+                        const compBal = P * Math.pow(1 + rate / 100 / n, n * yr);
+                        return { year: yr, Simple: +simpleBal.toFixed(2), Compound: +compBal.toFixed(2) };
+                      })}>
+                        <defs>
+                          <linearGradient id="gSimple" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                          </linearGradient>
+                          <linearGradient id="gCompound" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="hsl(var(--accent))" stopOpacity={0.4} />
+                            <stop offset="100%" stopColor="hsl(var(--accent))" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                        <XAxis dataKey="year" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+                        <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+                        <Tooltip formatter={(v) => `$${v.toLocaleString()}`} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
+                        <Legend wrapperStyle={{ fontSize: 12 }} />
+                        <Area type="monotone" dataKey="Simple" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#gSimple)" />
+                        <Area type="monotone" dataKey="Compound" stroke="hsl(var(--accent))" strokeWidth={2} fill="url(#gCompound)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
-              </ResultCard>
+              </>
             )}
             <TipBox><strong>Indicator:</strong> Compound interest is the "miracle" of investing — the more frequent the compounding, the higher the return.</TipBox>
           </>
@@ -421,10 +496,27 @@ function ToolWorkspace({ tool, onBack }) {
               <Button onClick={swap} variant="outline" className="mt-6 rounded-2xl border-border bg-background text-foreground hover:bg-secondary hover:text-secondary-foreground h-[72px] px-6"><ArrowLeftRight className="w-5 h-5 mr-2" />Swap</Button>
             </div>
             {result && (
-              <ResultCard title="Conversion Result">
-                <div className="text-xl text-card-foreground mb-2">{inputs.amount} {result.from} =</div>
-                <div className="text-5xl font-extrabold text-accent">{result.value} <span className="text-2xl text-card-foreground/70 ml-1">{result.to}</span></div>
-              </ResultCard>
+              <>
+                <ResultCard title="Conversion Result">
+                  <div className="text-xl text-card-foreground mb-2">{inputs.amount} {result.from} =</div>
+                  <div className="text-5xl font-extrabold text-accent">{result.value} <span className="text-2xl text-card-foreground/70 ml-1">{result.to}</span></div>
+                </ResultCard>
+                <div className="mt-6 rounded-2xl bg-background border border-border p-5 shadow-sm">
+                  <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">Value Comparison</h4>
+                  <div className="flex items-end justify-center gap-4 h-40">
+                    <div className="flex flex-col items-center gap-1 w-24">
+                      <div className="text-xs font-bold text-primary">{inputs.amount}</div>
+                      <div className="w-full rounded-t-lg bg-primary transition-all duration-700" style={{ height: `${Math.min((parseFloat(inputs.amount) / Math.max(parseFloat(inputs.amount), parseFloat(result.value))) * 100, 100)}%` }} />
+                      <span className="text-xs text-muted-foreground mt-1">{result.from}</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1 w-24">
+                      <div className="text-xs font-bold text-accent">{result.value}</div>
+                      <div className="w-full rounded-t-lg bg-accent transition-all duration-700" style={{ height: `${Math.min((parseFloat(result.value) / Math.max(parseFloat(inputs.amount), parseFloat(result.value))) * 100, 100)}%` }} />
+                      <span className="text-xs text-muted-foreground mt-1">{result.to}</span>
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
             <TipBox>Rates provided for informational purposes. They are updated daily from reliable sources but may not reflect exact trading values.</TipBox>
           </>
@@ -539,12 +631,31 @@ function ToolWorkspace({ tool, onBack }) {
             </div>
             <div className="flex justify-center mt-6"><CalcButton onClick={calc}>Calculate Yield</CalcButton></div>
             {bondResult && (
-              <ResultCard title="Bond Yield">
-                <div className="text-sm text-muted-foreground mb-1">Current Yield</div>
-                <div className="text-3xl font-bold text-primary mb-4">{bondResult.currentYield}%</div>
-                <div className="text-sm text-muted-foreground mb-1">Yield to Maturity (YTM)</div>
-                <div className="text-3xl font-bold text-accent">{bondResult.ytm}%</div>
-              </ResultCard>
+              <>
+                <ResultCard title="Bond Yield">
+                  <div className="text-sm text-muted-foreground mb-1">Current Yield</div>
+                  <div className="text-3xl font-bold text-primary mb-4">{bondResult.currentYield}%</div>
+                  <div className="text-sm text-muted-foreground mb-1">Yield to Maturity (YTM)</div>
+                  <div className="text-3xl font-bold text-accent">{bondResult.ytm}%</div>
+                </ResultCard>
+                <div className="mt-6 rounded-2xl bg-background border border-border p-5 shadow-sm">
+                  <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">Yield Comparison (%)</h4>
+                  <div className="h-56">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={[{ name: "Current Yield", value: parseFloat(bondResult.currentYield) }, { name: "YTM", value: parseFloat(bondResult.ytm) }]}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                        <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12 }} />
+                        <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} unit="%" />
+                        <Tooltip formatter={(v) => `${v}%`} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
+                        <Bar dataKey="value" radius={[8, 8, 0, 0]} barSize={64}>
+                          <Cell fill="hsl(var(--primary))" />
+                          <Cell fill="hsl(var(--accent))" />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </>
             )}
             <TipBox>Current Yield = Annual Coupon ÷ Price. YTM approximates total return if held to maturity.</TipBox>
           </>
@@ -804,9 +915,35 @@ function ToolWorkspace({ tool, onBack }) {
               <NumInput label="Value B" value={inputs.b} onChange={set("b")} placeholder="150" />
             </div>
             {out != null && (
-              <ResultCard title="Result">
-                <div className="text-4xl font-extrabold text-accent">{out.toFixed(2)}{mode !== "of" ? "%" : ""}</div>
-              </ResultCard>
+              <>
+                <ResultCard title="Result">
+                  <div className="text-4xl font-extrabold text-accent">{out.toFixed(2)}{mode !== "of" ? "%" : ""}</div>
+                </ResultCard>
+                {mode === "of" ? (
+                  <div className="mt-6 rounded-2xl bg-background border border-border p-5 shadow-sm">
+                    <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">{a}% of {b}</h4>
+                    <div className="h-6 w-full rounded-full bg-secondary overflow-hidden">
+                      <div className="h-full bg-primary rounded-full transition-all duration-700" style={{ width: `${Math.min(a, 100)}%` }} />
+                    </div>
+                    <div className="mt-3 text-center text-sm text-muted-foreground">Result <strong className="text-primary">{out.toFixed(2)}</strong> of {b}</div>
+                  </div>
+                ) : (
+                  <div className="mt-6 rounded-2xl bg-background border border-border p-5 shadow-sm">
+                    <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">{mode === "isWhat" ? `${a} as % of ${b}` : `Change from ${a} to ${b}`}</h4>
+                    <div className="flex items-end justify-center gap-2 h-40">
+                      <div className="flex flex-col items-center gap-1">
+                        <div className="w-16 rounded-t-lg bg-primary transition-all duration-700" style={{ height: `${Math.min((mode === "isWhat" ? Math.min(a / b, 1) : 1) * 100, 100)}%` }} />
+                        <span className="text-xs text-muted-foreground">{mode === "isWhat" ? a : a}</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-1">
+                        <div className="w-16 rounded-t-lg bg-accent transition-all duration-700" style={{ height: `${Math.min((mode === "isWhat" ? 1 : b / a) * 100, 100)}%` }} />
+                        <span className="text-xs text-muted-foreground">{mode === "isWhat" ? b : b}</span>
+                      </div>
+                    </div>
+                    <div className="mt-3 text-center text-sm text-muted-foreground">{out.toFixed(2)}%</div>
+                  </div>
+                )}
+              </>
             )}
             <TipBox>"of" = A% of B • "isWhat" = A is what % of B • "change" = % change from A to B.</TipBox>
           </>
