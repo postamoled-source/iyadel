@@ -54,13 +54,65 @@ export function calcMolarMass(formula) {
   }
   return valid ? total : null;
 }
-export function evalFn(expr, x) {
-  let e = expr.trim().replace(/\^/g, "**");
-  e = e.replace(/\bsqrt\(/g, "Math.sqrt(").replace(/\bln\(/g, "Math.log(").replace(/\blog\(/g, "Math.log10(")
-    .replace(/\bsin\(/g, "Math.sin(").replace(/\bcos\(/g, "Math.cos(").replace(/\btan\(/g, "Math.tan(")
-    .replace(/\babs\(/g, "Math.abs(").replace(/\bexp\(/g, "Math.exp(");
+// Color palette for plotting multiple functions.
+export const FN_COLORS = ["#7c3aed", "#eab308", "#0ea5e9", "#ef4444", "#10b981", "#ec4899", "#f97316", "#14b8a6"];
+
+const MATH_FUNCS = {
+  sin: "Math.sin", cos: "Math.cos", tan: "Math.tan",
+  asin: "Math.asin", acos: "Math.acos", atan: "Math.atan",
+  sinh: "Math.sinh", cosh: "Math.cosh", tanh: "Math.tanh",
+  sqrt: "Math.sqrt", cbrt: "Math.cbrt",
+  ln: "Math.log", log: "Math.log10", log10: "Math.log10", log2: "Math.log2",
+  exp: "Math.exp", abs: "Math.abs",
+  floor: "Math.floor", ceil: "Math.ceil", round: "Math.round", sign: "Math.sign",
+};
+const MATH_CONSTS = { pi: "Math.PI", e: "Math.E", tau: "(2*Math.PI)" };
+const ALLOWED_IDS = new Set(["Math", "PI", "E", "x", "_fact", "NaN", "Infinity"]);
+
+// Lanczos approximation of the Gamma function — lets `n!` work for any real n.
+function _gamma(z) {
+  const g = 7;
+  const c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  if (z < 0.5) return Math.PI / (Math.sin(Math.PI * z) * _gamma(1 - z));
+  z -= 1;
+  let x = c[0];
+  for (let i = 1; i < g + 2; i++) x += c[i] / (z + i);
+  const t = z + g + 0.5;
+  return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+}
+const _fact = (n) => _gamma(Number(n) + 1);
+
+// Compiles a user math expression into a function f(x).
+// Throws a clear error for unknown functions/variables or invalid syntax.
+export function compileExpr(raw) {
+  let s = String(raw || "").trim();
+  if (!s) throw new Error("Expression is empty");
+  s = s.replace(/\^/g, "**");
+  s = s.replace(/(\d+(?:\.\d+)?)!/g, "_fact($1)");
+  s = s.replace(/([a-zA-Z_][a-zA-Z0-9_]*)!/g, "(_fact($1))");
+  for (const [k, v] of Object.entries(MATH_CONSTS)) {
+    s = s.replace(new RegExp(`\\b${k}\\b`, "g"), v);
+  }
+  for (const [k, v] of Object.entries(MATH_FUNCS)) {
+    s = s.replace(new RegExp(`\\b${k}\\b(?=\\s*\\()`, "g"), v);
+  }
+  // Detect unknown identifiers that are not property accesses (e.g. Math.sin).
+  const re = /[a-zA-Z_][a-zA-Z0-9_]*/g;
+  let m;
+  while ((m = re.exec(s)) !== null) {
+    const name = m[0];
+    if (s[m.index - 1] === ".") continue;
+    if (!ALLOWED_IDS.has(name)) throw new Error(`Unknown function or variable: "${name}"`);
+  }
+  let fn;
   try {
-    const fn = new Function("x", `return ${e}`);
-    return fn(x);
-  } catch { return NaN; }
+    fn = new Function("x", "_fact", `"use strict"; return ${s};`);
+  } catch {
+    throw new Error("Invalid expression syntax");
+  }
+  return (x) => fn(x, _fact);
+}
+
+export function evalFn(expr, x) {
+  try { return compileExpr(expr)(x); } catch { return NaN; }
 }

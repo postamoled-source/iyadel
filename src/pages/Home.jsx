@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
-import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, WORD_LIST, RIDDLES, convertUnit, scrambleWord, generatePuzzle, calcMolarMass, evalFn } from "@/lib/tool-utils";
+import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS,   WORD_LIST, RIDDLES, convertUnit, scrambleWord, generatePuzzle, calcMolarMass, compileExpr, FN_COLORS } from "@/lib/tool-utils";
 import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { trackEvent, useSeo } from "@/lib/analytics";
@@ -81,6 +81,15 @@ function TxtInput({ label, value, onChange, placeholder, type = "text" }) {
       <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
       <input type={type} value={value ?? ""} onChange={onChange} placeholder={placeholder}
         className="w-full rounded-2xl border border-border bg-background text-foreground px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" />
+    </div>
+  );
+}
+function FnInput({ label, value, onChange, placeholder }) {
+  return (
+    <div className="text-left">
+      <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
+      <textarea value={value ?? ""} onChange={onChange} placeholder={placeholder} rows={3}
+        className="w-full rounded-2xl border border-border bg-background text-foreground px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm resize-y font-mono text-sm" />
     </div>
   );
 }
@@ -873,34 +882,64 @@ function ToolWorkspace({ tool, onBack }) {
       }
       case "math-function-calculator": {
         const plot = () => {
-          const expr = inputs.expr || "sin(x)";
-          const data = [];
-          for (let x = -10; x <= 10; x += 0.2) {
-            const y = evalFn(expr, x);
-            if (!isNaN(y)) data.push({ x: +x.toFixed(2), y: +y.toFixed(3) });
-          }
-          setPlotData(data);
+          const lines = (inputs.expr || "sin(x)").split("\n").map((l) => l.trim()).filter(Boolean);
+          const fns = lines.map((raw, idx) => {
+            let compiled = null, error = null;
+            try { compiled = compileExpr(raw); } catch (err) { error = err.message; }
+            return { raw, label: `f${idx + 1}: ${raw}`, key: `f${idx}`, color: FN_COLORS[idx % FN_COLORS.length], compiled, error };
+          });
+          const grid = [];
+          for (let x = -10; x <= 10.001; x += 0.2) grid.push(+x.toFixed(2));
+          const data = grid.map((x) => {
+            const row = { x };
+            fns.forEach((f) => {
+              if (!f.compiled) return;
+              try {
+                const y = f.compiled(x);
+                if (typeof y === "number" && isFinite(y)) row[f.key] = +y.toFixed(4);
+              } catch {}
+            });
+            return row;
+          });
+          setPlotData({ data, fns });
         };
         return (
           <>
-            <TxtInput label="f(x) =" value={inputs.expr} onChange={set("expr")} placeholder="sin(x)" />
-            <p className="text-xs text-muted-foreground mt-2 text-left ml-1">Supports: sin, cos, tan, sqrt, ln, log, exp, abs, ^</p>
-            <div className="flex justify-center mt-6"><CalcButton onClick={plot}>Plot Function</CalcButton></div>
-            {plotData && plotData.length > 0 && (
-              <ResultCard title="Plot">
-                <div className="w-full h-72">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={plotData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="x" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis stroke="hsl(var(--muted-foreground))" />
-                      <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
-                      <Line type="monotone" dataKey="y" stroke="hsl(var(--primary))" dot={false} strokeWidth={2} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </ResultCard>
+            <FnInput label="f(x) =" value={inputs.expr} onChange={set("expr")} placeholder={"sin(x)\ncos(x)\nx^2"} />
+            <p className="text-xs text-muted-foreground mt-2 text-left ml-1">{t("One function per line. Supports:")} sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, sqrt, cbrt, ln, log, log2, exp, abs, floor, ceil, round, sign, pi, e, tau, ^, !</p>
+            <div className="flex justify-center mt-6"><CalcButton onClick={plot}>{t("Plot Function")}</CalcButton></div>
+            {plotData && plotData.fns && plotData.fns.length > 0 && (
+              <>
+                {plotData.fns.some((f) => f.error) && (
+                  <div className="mt-4 space-y-1.5 text-left">
+                    {plotData.fns.filter((f) => f.error).map((f, i) => (
+                      <div key={i} className="text-xs text-destructive bg-destructive/5 border border-destructive/20 rounded-lg px-3 py-2 break-all">
+                        ⚠ <span className="font-mono font-semibold">{f.raw}</span> — {f.error}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {plotData.fns.some((f) => !f.error) && (
+                  <ResultCard title={t("Plot")}>
+                    <div className="w-full h-72">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={plotData.data}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis dataKey="x" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+                          <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
+                          <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
+                          <Legend wrapperStyle={{ fontSize: 12 }} />
+                          {plotData.fns.filter((f) => !f.error).map((f) => (
+                            <Line key={f.key} type="monotone" dataKey={f.key} name={f.label} stroke={f.color} dot={false} strokeWidth={2} connectNulls isAnimationActive animationDuration={800} animationEasing="ease-out" />
+                          ))}
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </ResultCard>
+                )}
+              </>
             )}
+            <TipBox>{t("Enter one function per line to plot them together. pi and e are constants, ^ for powers, ! for factorial.")}</TipBox>
           </>
         );
       }
