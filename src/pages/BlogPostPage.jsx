@@ -33,17 +33,19 @@ export default function BlogPostPage() {
   const { t } = useI18n();
   const [searchParams] = useSearchParams();
   const slug = searchParams.get("slug");
+  const title = searchParams.get("title");
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
     (async () => {
-      let found = STATIC_BLOG.find((p) => p.slug === slug) || null;
+      const match = (p) => (slug && p.slug === slug) || (title && p.title === title);
+      let found = STATIC_BLOG.find(match) || null;
       if (!found) {
         try {
           const all = await BlogPostEntity.list("-created_date", 50);
-          found = (all || []).find((p) => p.slug === slug) || null;
+          found = (all || []).find(match) || null;
         } catch { found = null; }
       }
       if (active) { setPost(found); setLoading(false); }

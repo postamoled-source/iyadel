@@ -63,7 +63,12 @@ function BlogGrid() {
   const [activeCategory, setActiveCategory] = useState("All");
 
   useEffect(() => { BlogPostEntity.list("-created_date", 20).then(setPosts).catch(() => {}); }, []);
-  const items = posts.length > 0 ? posts : STATIC_BLOG;
+  const items = (() => {
+    const map = new Map();
+    STATIC_BLOG.forEach((p) => map.set(p.title, p));
+    posts.forEach((p) => { if (!map.has(p.title)) map.set(p.title, p); });
+    return Array.from(map.values());
+  })();
   const categories = ["All", ...Array.from(new Set(items.map((p) => p.category)))];
   const filtered = activeCategory === "All" ? items : items.filter((p) => p.category === activeCategory);
 
@@ -95,7 +100,7 @@ function BlogGrid() {
                   </div>
                   <h3 className="font-bold text-lg text-foreground mb-2 leading-snug">{t(post.title)}</h3>
                   <p className="text-sm text-muted-foreground flex-1">{t(post.excerpt)}</p>
-                  <Link to={`/Blog/post?slug=${encodeURIComponent(post.slug || "")}`} className="inline-flex items-center gap-1 text-primary text-sm font-semibold mt-4 hover:gap-2 transition-all">
+                  <Link to={`/Blog/post?slug=${encodeURIComponent(post.slug || "")}&title=${encodeURIComponent(post.title || "")}`} className="inline-flex items-center gap-1 text-primary text-sm font-semibold mt-4 hover:gap-2 transition-all">
                     {t("Read more")} <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
