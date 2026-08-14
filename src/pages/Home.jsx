@@ -4,7 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import MobileSelect from "@/components/MobileSelect";
 import PullToRefresh from "@/components/PullToRefresh";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
@@ -72,8 +72,8 @@ function NumInput({ label, value, onChange, placeholder }) {
   return (
     <div className="text-left">
       <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
-      <input type="number" value={value ?? ""} onChange={onChange} placeholder={placeholder}
-        className="w-full rounded-2xl border border-border bg-background text-foreground px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" />
+      <input type="number" inputMode="decimal" value={value ?? ""} onChange={onChange} placeholder={placeholder}
+        className="w-full rounded-2xl border border-border bg-background text-foreground text-base px-4 py-3.5 min-h-[52px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" />
     </div>
   );
 }
@@ -81,8 +81,8 @@ function TxtInput({ label, value, onChange, placeholder, type = "text" }) {
   return (
     <div className="text-left">
       <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
-      <input type={type} value={value ?? ""} onChange={onChange} placeholder={placeholder}
-        className="w-full rounded-2xl border border-border bg-background text-foreground px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" />
+      <input type={type} inputMode={type === "number" ? "decimal" : undefined} value={value ?? ""} onChange={onChange} placeholder={placeholder}
+        className="w-full rounded-2xl border border-border bg-background text-foreground text-base px-4 py-3.5 min-h-[52px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" />
     </div>
   );
 }
@@ -91,7 +91,7 @@ function FnInput({ label, value, onChange, placeholder }) {
     <div className="text-left">
       <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
       <textarea value={value ?? ""} onChange={onChange} placeholder={placeholder} rows={3}
-        className="w-full rounded-2xl border border-border bg-background text-foreground px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm resize-y font-mono text-sm" />
+        className="w-full rounded-2xl border border-border bg-background text-foreground text-base px-4 py-3 min-h-[52px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm resize-y font-mono" />
     </div>
   );
 }
@@ -99,14 +99,13 @@ function SelectField({ label, value, onChange, options }) {
   return (
     <div className="text-left">
       <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
-      <Select value={value} onValueChange={(v) => onChange({ target: { value: v } })}>
-        <SelectTrigger className="w-full rounded-2xl border border-border bg-background text-foreground px-4 py-3 h-auto text-base shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent">
-          <SelectValue placeholder={options[0]} />
-        </SelectTrigger>
-        <SelectContent className="max-h-72">
-          {options.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
-        </SelectContent>
-      </Select>
+      <MobileSelect
+        value={value}
+        onChange={(v) => onChange({ target: { value: v } })}
+        options={options}
+        placeholder={options[0]}
+        triggerClassName="w-full flex items-center gap-2 rounded-2xl border border-border bg-background text-foreground text-base px-4 py-3.5 h-auto min-h-[52px] shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+      />
     </div>
   );
 }

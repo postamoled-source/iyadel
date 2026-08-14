@@ -6,8 +6,13 @@ import { Menu, Moon, Sun, Globe } from "lucide-react";
 import { LOGO_URL } from "@/data/tools";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import MobileSelect from "./MobileSelect";
 import ProfileSheet from "./ProfileSheet";
+
+const LANG_OPTIONS = [
+  { value: "en", label: "🇬🇧 English" },
+  { value: "ar", label: "🇸🇦 العربية" },
+];
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
@@ -50,18 +55,14 @@ export default function Header() {
             {isDark ? t("Dark Mode") : t("Light Mode")}
           </button>
 
-          <div className="relative flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-medium text-card-foreground hover:border-primary/50 transition-all duration-300 select-none">
-            <Globe className="w-4 h-4 text-muted-foreground" />
-            <Select value={lang} onValueChange={(v) => setLang(v)}>
-              <SelectTrigger className="bg-transparent border-0 shadow-none focus:ring-0 px-0 py-0 h-auto w-auto min-w-0 text-xs font-medium text-card-foreground gap-1">
-                <SelectValue placeholder="🇬🇧 English" />
-              </SelectTrigger>
-              <SelectContent className="min-w-[10rem]">
-                <SelectItem value="en">🇬🇧 English</SelectItem>
-                <SelectItem value="ar">🇸🇦 العربية</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <MobileSelect
+            value={lang}
+            onChange={(v) => setLang(v)}
+            options={LANG_OPTIONS}
+            placeholder="🇬🇧 English"
+            leading={<Globe className="w-4 h-4 text-muted-foreground" />}
+            triggerClassName="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 h-auto w-auto min-w-0 text-xs font-medium text-card-foreground shadow-none focus:ring-0 hover:border-primary/50 transition-all duration-300"
+          />
 
           <ProfileSheet />
         </div>
@@ -93,18 +94,14 @@ export default function Header() {
                   <Link to="/Blog" className="text-lg font-medium text-foreground hover:text-primary transition-colors">{t("Blog")}</Link>
                   <Link to="/About" className="text-lg font-medium text-foreground hover:text-primary transition-colors">{t("About Us")}</Link>
                   <div className="h-px bg-border my-2" />
-                  <div className="relative flex items-center gap-2 rounded-xl border border-border bg-secondary px-3 py-3">
-                    <Globe className="w-4 h-4 text-muted-foreground" />
-                    <Select value={lang} onValueChange={(v) => setLang(v)}>
-                      <SelectTrigger className="bg-transparent border-0 shadow-none focus:ring-0 px-0 py-0 h-auto text-sm text-foreground flex-1">
-                        <SelectValue placeholder="🇬🇧 English" />
-                      </SelectTrigger>
-                      <SelectContent className="min-w-[10rem]">
-                        <SelectItem value="en">🇬🇧 English</SelectItem>
-                        <SelectItem value="ar">🇸🇦 العربية</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <MobileSelect
+                    value={lang}
+                    onChange={(v) => setLang(v)}
+                    options={LANG_OPTIONS}
+                    placeholder="🇬🇧 English"
+                    leading={<Globe className="w-4 h-4 text-muted-foreground" />}
+                    triggerClassName="flex items-center gap-2 rounded-xl border border-border bg-secondary px-3 py-3 h-auto w-full text-sm text-foreground shadow-none focus:ring-0"
+                  />
                 </nav>
               </SheetContent>
             </Sheet>
