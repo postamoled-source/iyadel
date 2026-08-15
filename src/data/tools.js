@@ -228,7 +228,7 @@ export const STATIC_TOOLS = [
     category: "Image Tools",
     description: "Sharpen, brighten, and dehaze any image.",
     icon: "Wand2",
-    content: "Image enhancement brings out detail and corrects lighting and haze. This tool lets you adjust brightness, contrast, saturation, sharpness, and dehaze with a live preview. All processing runs in your browser — your image is never uploaded, so it stays private. Apply sharpening gently; a little revives a soft photo, while too much creates halos around edges.",
+    content: "Image enhancement brings out detail and corrects lighting and haze. This tool offers one-tap presets (Auto, Vivid, B&W, Warm, Soft) plus manual sliders for brightness, contrast, saturation, sharpness, and dehaze — all with a live preview. When you like the result, download it as a PNG with one click. All processing runs in your browser, so your image is never uploaded and stays private. Apply sharpening gently; a little revives a soft photo, while too much creates halos around edges.",
     image: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/970acf7d9_generated_image.png",
   },
   {
@@ -237,7 +237,7 @@ export const STATIC_TOOLS = [
     category: "Image Tools",
     description: "Generate professional logo concepts with AI.",
     icon: "Palette",
-    content: "The logo maker uses AI image generation to create original logo concepts from your brand name and chosen style. Enter your brand name, pick a style, and optionally add a short tagline, then generate several versions to explore directions. Text in the logo may vary — treat the results as design inspiration you can refine in a design tool. Each generation uses a small number of image-integration credits.",
+    content: "The logo maker is a live design studio for your brand. Pick a template, add your brand name and tagline, choose an icon, font, and brand colors, and watch the logo update instantly on the canvas. Edit any field to refine the design, then download a transparent PNG ready for web, print, or social media. Everything runs in your browser — no design skills or account needed, and the logo is yours to keep.",
     image: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/a78ddc51a_generated_image.png",
   },
 ];

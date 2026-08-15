@@ -9,7 +9,6 @@ import PullToRefresh from "@/components/PullToRefresh";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { createPortal } from "react-dom";
 import { Image } from "@/components/ui/image";
-import { generateLogo } from "@/functions/generateLogo";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
@@ -122,6 +121,17 @@ function RangeField({ label, value, onChange, min, max, step = 1 }) {
       </div>
       <input type="range" min={min} max={max} step={step} value={value ?? min} onChange={onChange}
         className="w-full h-10 accent-primary cursor-pointer" />
+    </div>
+  );
+}
+function ColorField({ label, value, onChange }) {
+  return (
+    <div className="text-left">
+      <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
+      <div className="flex items-center gap-3 rounded-2xl border border-border bg-background px-4 py-2.5 min-h-[52px] shadow-sm">
+        <input type="color" value={value} onChange={onChange} className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent p-0" />
+        <span className="text-sm font-mono text-muted-foreground">{value}</span>
+      </div>
     </div>
   );
 }
@@ -243,6 +253,43 @@ function sharpenImage(src, w, h, amount) {
   }
   return out;
 }
+function drawLogo(ctx, p) {
+  const W = 600, H = 600;
+  ctx.clearRect(0, 0, W, H);
+  const ff = { Sans: "sans-serif", Serif: "serif", Mono: "monospace" }[p.font] || "sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  const cx = W / 2;
+  const brand = p.brand || "Your Brand";
+  const tag = p.tagline || "";
+  const icon = p.icon || "★";
+  const primary = p.primary || "#3b2a8c";
+  const accent = p.accent || "#f5a623";
+  const drawIcon = (y, size) => { ctx.font = size + "px serif"; ctx.fillStyle = primary; ctx.fillText(icon, cx, y); };
+  const drawBrand = (y, size) => { ctx.font = "bold " + size + "px " + ff; ctx.fillStyle = primary; ctx.fillText(brand, cx, y); };
+  const drawTag = (y, size) => { if (!tag) return; ctx.font = size + "px " + ff; ctx.fillStyle = accent; ctx.fillText(tag, cx, y); };
+  if (p.template === "Badge") {
+    ctx.strokeStyle = accent; ctx.lineWidth = 8;
+    ctx.beginPath(); ctx.arc(cx, 300, 250, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = primary; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(cx, 300, 232, 0, Math.PI * 2); ctx.stroke();
+    drawIcon(220, 110); drawBrand(330, 60); drawTag(395, 26);
+  } else if (p.template === "Modern") {
+    drawIcon(190, 80); drawBrand(300, 66);
+    ctx.fillStyle = accent; ctx.fillRect(cx - 110, 345, 220, 6);
+    drawTag(390, 26);
+  } else if (p.template === "Emblem") {
+    ctx.strokeStyle = primary; ctx.lineWidth = 6;
+    ctx.strokeRect(90, 130, 420, 340);
+    drawIcon(225, 100); drawBrand(320, 56); drawTag(385, 26);
+  } else if (p.template === "Bold") {
+    drawBrand(290, 92);
+    ctx.fillStyle = accent; ctx.fillRect(cx - 100, 345, 200, 8);
+    drawTag(400, 30);
+  } else {
+    drawIcon(215, 110); drawBrand(335, 62); drawTag(395, 28);
+  }
+}
 function ToolWorkspace({ tool, onBack }) {
   const { t, lang } = useI18n();
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -280,8 +327,7 @@ function ToolWorkspace({ tool, onBack }) {
   const [enhResult, setEnhResult] = useState(null);
   const [enhVersion, setEnhVersion] = useState(0);
   const enhOrigRef = useRef(null);
-  const [logoResult, setLogoResult] = useState(null);
-  const [logoBusy, setLogoBusy] = useState(false);
+  const logoCanvasRef = useRef(null);
 
   useEffect(() => {
     setInputs({}); setResult(null); setRiddleAttempts(3); setRiddleMsg(""); setRiddleGuess("");
@@ -294,7 +340,6 @@ function ToolWorkspace({ tool, onBack }) {
     setPdfFiles([]); setPdfReady(false); setCompressSrc(null); setCompressResult(null); setPlotData(null);
     setBgResult(null); setPdfBusy(false); setRiddle(RIDDLES[Math.floor(Math.random() * RIDDLES.length)]);
     setEnhSrc(null); setEnhResult(null); enhOrigRef.current = null; setEnhVersion(0);
-    setLogoResult(null); setLogoBusy(false);
     setShowGuide(false);
   }, [tool.slug]);
 
@@ -331,6 +376,23 @@ function ToolWorkspace({ tool, onBack }) {
     canvas.getContext("2d").putImageData(new ImageData(final, width, height), 0, 0);
     setEnhResult(canvas.toDataURL("image/png"));
   }, [enhVersion, inputs.brightness, inputs.contrast, inputs.saturation, inputs.sharpen, inputs.dehaze]);
+
+  // Live logo canvas: redraw on any input change.
+  useEffect(() => {
+    if (tool.slug !== "logo-maker") return;
+    const canvas = logoCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    drawLogo(ctx, {
+      template: inputs.template || "Minimalist",
+      brand: inputs.brandName || "",
+      tagline: inputs.tagline || "",
+      icon: inputs.icon || "★",
+      font: inputs.font || "Sans",
+      primary: inputs.primary || "#3b2a8c",
+      accent: inputs.accent || "#f5a623",
+    });
+  }, [tool.slug, inputs.template, inputs.brandName, inputs.tagline, inputs.icon, inputs.font, inputs.primary, inputs.accent]);
 
   const set = (k) => (e) => setInputs((p) => ({ ...p, [k]: e.target.value }));
 
@@ -1295,10 +1357,31 @@ function ToolWorkspace({ tool, onBack }) {
         );
       }
       case "image-enhancer": {
+        const presets = [
+          { name: "Auto", vals: { brightness: "10", contrast: "15", saturation: "10", sharpen: "20", dehaze: "20" } },
+          { name: "Vivid", vals: { brightness: "0", contrast: "20", saturation: "40", sharpen: "15", dehaze: "10" } },
+          { name: "B&W", vals: { brightness: "0", contrast: "10", saturation: "-100", sharpen: "10", dehaze: "0" } },
+          { name: "Warm", vals: { brightness: "8", contrast: "10", saturation: "25", sharpen: "10", dehaze: "15" } },
+          { name: "Soft", vals: { brightness: "12", contrast: "-10", saturation: "-5", sharpen: "0", dehaze: "0" } },
+        ];
+        const applyPreset = (vals) => setInputs((p) => ({ ...p, ...vals }));
+        const resetEnhance = () => setInputs((p) => ({ ...p, brightness: "0", contrast: "0", saturation: "0", sharpen: "0", dehaze: "0" }));
+        const downloadEnhanced = () => {
+          if (!enhResult) return;
+          const a = document.createElement("a");
+          a.href = enhResult; a.download = "enhanced.png";
+          document.body.appendChild(a); a.click(); a.remove();
+        };
         return (
           <>
             <input type="file" accept="image/*" onChange={(e) => { if (e.target.files[0]) { readFile(e.target.files[0], (url) => { setEnhSrc(url); setEnhResult(null); const img = new Image(); img.onload = () => { let { width: w, height: h } = img; if (Math.max(w, h) > 1000) { const s = 1000 / Math.max(w, h); w = Math.round(w * s); h = Math.round(h * s); } const c = document.createElement("canvas"); c.width = w; c.height = h; const cx = c.getContext("2d"); cx.drawImage(img, 0, 0, w, h); enhOrigRef.current = cx.getImageData(0, 0, w, h); setEnhVersion((v) => v + 1); }; img.src = url; }); } }} className="block mx-auto text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:text-primary-foreground file:px-4 file:py-2" />
             {enhSrc && <div className="mt-6"><img src={enhResult || enhSrc} alt="preview" className="max-h-64 mx-auto rounded-xl" /></div>}
+            <div className="mt-6 flex flex-wrap justify-center gap-2">
+              {presets.map((p) => (
+                <button key={p.name} onClick={() => applyPreset(p.vals)} className="px-4 py-2 rounded-full bg-card border border-border text-sm font-semibold text-card-foreground hover:bg-muted hover:border-primary/30 transition-all">{t(p.name)}</button>
+              ))}
+              <button onClick={resetEnhance} className="px-4 py-2 rounded-full bg-secondary border border-border text-sm font-semibold text-secondary-foreground hover:bg-muted transition-all">{t("Reset")}</button>
+            </div>
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
               <RangeField label={t("Brightness")} value={inputs.brightness || "0"} onChange={set("brightness")} min={-100} max={100} />
               <RangeField label={t("Contrast")} value={inputs.contrast || "0"} onChange={set("contrast")} min={-100} max={100} />
@@ -1309,42 +1392,38 @@ function ToolWorkspace({ tool, onBack }) {
             {enhResult && (
               <ResultCard title={t("Enhanced Image")}>
                 <img src={enhResult} alt="enhanced" className="max-h-72 mx-auto rounded-xl" />
-                <a href={enhResult} download="enhanced.png" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">{t("Download")} <ImageDown className="w-4 h-4" /></a>
+                <div className="flex justify-center mt-5"><Button onClick={downloadEnhanced} className="bg-primary text-primary-foreground rounded-2xl px-6 py-4 font-bold">{t("Download")} <ImageDown className="w-4 h-4 ml-2" /></Button></div>
               </ResultCard>
             )}
-            <TipBox>{t("Adjust the sliders for a live preview. Sharpen reduces blur, Dehaze cuts fog and haze. Processing runs in your browser — your image stays private.")}</TipBox>
+            <TipBox>{t("Use a preset for a quick start or fine-tune with the sliders, then download. All processing runs in your browser — your image stays private.")}</TipBox>
           </>
         );
       }
       case "logo-maker": {
-        const styles = ["Minimalist", "Modern", "Vintage", "Bold", "Emblem"];
-        const generate = async () => {
-          const name = (inputs.brandName || "").trim();
-          if (!name || logoBusy) return;
-          setLogoBusy(true);
-          try {
-            const res = await generateLogo({ name, style: inputs.style || "Minimalist", tagline: inputs.tagline || "" });
-            setLogoResult(res.data?.url || null);
-          } catch (e) {
-            setLogoResult(null);
-          } finally {
-            setLogoBusy(false);
-          }
+        const templates = ["Minimalist", "Badge", "Modern", "Emblem", "Bold"];
+        const icons = ["★", "🚀", "⚡", "🛡", "◆", "✦", "🎯", "🔥", "💎", "🌿"];
+        const fonts = ["Sans", "Serif", "Mono"];
+        const downloadLogo = () => {
+          const canvas = logoCanvasRef.current;
+          if (!canvas) return;
+          const a = document.createElement("a");
+          a.href = canvas.toDataURL("image/png"); a.download = "logo.png";
+          document.body.appendChild(a); a.click(); a.remove();
         };
         return (
           <>
-            <TxtInput label={t("Brand Name")} value={inputs.brandName} onChange={set("brandName")} placeholder="Acme Co." />
-            <div className="mt-6"><SelectField label={t("Style")} value={inputs.style || "Minimalist"} onChange={set("style")} options={styles} /></div>
-            <div className="mt-6"><TxtInput label={t("Tagline (optional)")} value={inputs.tagline} onChange={set("tagline")} placeholder="Quality you can trust" /></div>
-            <div className="flex justify-center mt-6"><CalcButton onClick={generate}>{logoBusy ? t("Generating...") : t("Generate Logo")}</CalcButton></div>
-            {logoBusy && <div className="mt-6 text-center text-muted-foreground">{t("Creating your logo... this can take a few seconds.")}</div>}
-            {logoResult && (
-              <ResultCard title={t("Your Logo")}>
-                <img src={logoResult} alt="logo" className="max-h-72 mx-auto rounded-xl bg-white p-2" />
-                <a href={logoResult} download="logo.png" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">{t("Download")} <ImageDown className="w-4 h-4" /></a>
-              </ResultCard>
-            )}
-            <TipBox>{t("AI generates original logo concepts from your brand name and style. Text in the logo may vary — treat results as design inspiration you can refine.")}</TipBox>
+            <canvas ref={logoCanvasRef} width={600} height={600} className="mx-auto rounded-2xl bg-white shadow-sm" style={{ width: "100%", maxWidth: 360 }} />
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <TxtInput label={t("Brand Name")} value={inputs.brandName} onChange={set("brandName")} placeholder="Acme Co." />
+              <TxtInput label={t("Tagline (optional)")} value={inputs.tagline} onChange={set("tagline")} placeholder="Quality you can trust" />
+              <SelectField label={t("Template")} value={inputs.template || "Minimalist"} onChange={set("template")} options={templates} />
+              <SelectField label={t("Icon")} value={inputs.icon || "★"} onChange={set("icon")} options={icons} />
+              <SelectField label={t("Font")} value={inputs.font || "Sans"} onChange={set("font")} options={fonts} />
+              <ColorField label={t("Primary Color")} value={inputs.primary || "#3b2a8c"} onChange={set("primary")} />
+            </div>
+            <div className="mt-5"><ColorField label={t("Accent Color")} value={inputs.accent || "#f5a623"} onChange={set("accent")} /></div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={downloadLogo}>{t("Download Logo")}</CalcButton></div>
+            <TipBox>{t("Compose a custom logo live: pick a template, icon, colors, and fonts, then download a transparent PNG. Edit any field to update the preview instantly.")}</TipBox>
           </>
         );
       }
