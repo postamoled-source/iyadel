@@ -401,6 +401,9 @@ const AR = {
     "عُد واستكشف جميع الأدوات المجانية (أكثر من 31) التي يقدمها TestPeak.",
   "6. Information Security": "6. أمان المعلومات",
   "7. Your Rights": "7. حقوقك",
+
+  "Restricted admin area — logging in or registering here does not grant admin access. Admin rights are assigned by invitation only.":
+    "منطقة محصورة للإدارة فقط — تسجيل الدخول أو إنشاء حساب هنا لا يمنحك صلاحيات المشرف. تُمنح صلاحية المشرف عبر دعوة من المشرف فقط.",
 };
 
 const I18nContext = createContext(null);

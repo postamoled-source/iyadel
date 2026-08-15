@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import { Plus, Trash2, Loader2, ImagePlus, Save, FileText } from "lucide-react";
+import { Plus, Trash2, Loader2, ImagePlus, Save, FileText, Eye, EyeOff } from "lucide-react";
 
 const BlogPostEntity = base44.entities.BlogPost;
 
@@ -22,7 +22,7 @@ export default function BlogManager() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [form, setForm] = useState({ title: "", slug: "", excerpt: "", content: "", category: "Finance", image_url: "" });
+  const [form, setForm] = useState({ title: "", slug: "", excerpt: "", content: "", category: "Finance", image_url: "", status: "published" });
   const [msg, setMsg] = useState(null);
   const quillRef = useRef(null);
 
@@ -98,9 +98,10 @@ export default function BlogManager() {
         category: form.category,
         image_url: form.image_url || "",
         date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+        status: form.status || "published",
       };
       await BlogPostEntity.create(data);
-      setForm({ title: "", slug: "", excerpt: "", content: "", category: "Finance", image_url: "" });
+      setForm({ title: "", slug: "", excerpt: "", content: "", category: "Finance", image_url: "", status: "published" });
       setMsg({ type: "success", text: "Post published successfully!" });
       load();
     } catch (err) {
@@ -113,6 +114,17 @@ export default function BlogManager() {
     if (!confirm("Delete this post permanently?")) return;
     try { await BlogPostEntity.delete(id); setPosts((p) => p.filter((x) => x.id !== id)); }
     catch (err) { setMsg({ type: "error", text: err.message || "Delete failed" }); }
+  };
+
+  const toggleStatus = async (post) => {
+    const next = post.status === "draft" ? "published" : "draft";
+    try {
+      await BlogPostEntity.update(post.id, { status: next });
+      setPosts((p) => p.map((x) => (x.id === post.id ? { ...x, status: next } : x)));
+      setMsg({ type: "success", text: next === "published" ? "Post published — now visible to visitors." : "Moved to draft — hidden from visitors." });
+    } catch (err) {
+      setMsg({ type: "error", text: err.message || "Update failed" });
+    }
   };
 
   return (
@@ -167,6 +179,14 @@ export default function BlogManager() {
             </select>
           </div>
           <div className="space-y-2">
+            <Label htmlFor="status">Publishing Status</Label>
+            <select id="status" value={form.status} onChange={set("status")}
+              className="w-full h-11 rounded-xl border border-border bg-background text-foreground text-sm px-3 focus:outline-none focus:ring-2 focus:ring-primary">
+              <option value="published">Published — visible to visitors</option>
+              <option value="draft">Draft — hidden from visitors</option>
+            </select>
+          </div>
+          <div className="space-y-2">
             <Label>Cover Image</Label>
             <div className="flex items-center gap-3">
               <label className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-secondary cursor-pointer transition-colors">
@@ -207,8 +227,18 @@ export default function BlogManager() {
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-foreground truncate">{p.title}</p>
-                  <p className="text-xs text-muted-foreground">{p.category} · {p.date}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-xs text-muted-foreground">{p.category} · {p.date}</span>
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase ${(p.status || "published") === "published" ? "bg-primary/10 text-primary" : "bg-amber-500/15 text-amber-600 dark:text-amber-400"}`}>
+                      {(p.status || "published") === "published" ? "Live" : "Draft"}
+                    </span>
+                  </div>
                 </div>
+                <button onClick={() => toggleStatus(p)} aria-label={p.status === "draft" ? "Publish" : "Move to draft"}
+                  title={p.status === "draft" ? "Publish" : "Move to draft"}
+                  className="shrink-0 w-9 h-9 rounded-lg border border-border text-foreground hover:bg-secondary flex items-center justify-center transition-colors">
+                  {p.status === "draft" ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                </button>
                 <button onClick={() => remove(p.id)} aria-label="Delete"
                   className="shrink-0 w-9 h-9 rounded-lg border border-border text-destructive hover:bg-destructive/10 flex items-center justify-center transition-colors">
                   <Trash2 className="w-4 h-4" />

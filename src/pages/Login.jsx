@@ -4,12 +4,14 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
+import { LogIn, Mail, Lock, Loader2, ShieldAlert } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
 
 export default function Login() {
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -53,6 +55,10 @@ export default function Login() {
         </>
       }
     >
+      <div className="mb-5 flex items-start gap-2.5 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-600 dark:text-amber-300 leading-relaxed">
+        <ShieldAlert className="w-4 h-4 mt-0.5 shrink-0" />
+        <span>{t("Restricted admin area — logging in or registering here does not grant admin access. Admin rights are assigned by invitation only.")}</span>
+      </div>
       <Button
         variant="outline"
         className="w-full h-12 text-sm font-medium mb-6"

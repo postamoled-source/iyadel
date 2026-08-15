@@ -60,6 +60,7 @@ export default function BlogPostPage() {
           found = (all || []).find(match) || null;
         } catch { found = null; }
       }
+      if (found && found.status === "draft") found = null;
       if (active) { setPost(found); setLoading(false); }
     })();
     return () => { active = false; };

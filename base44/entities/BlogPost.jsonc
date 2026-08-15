@@ -21,6 +21,14 @@
     },
     "image_url": {
       "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "published",
+        "draft"
+      ],
+      "default": "published"
     }
   },
   "required": [

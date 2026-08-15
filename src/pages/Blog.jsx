@@ -70,7 +70,7 @@ function BlogGrid() {
   const items = (() => {
     const map = new Map();
     STATIC_BLOG.forEach((p) => map.set(p.title, p));
-    posts.forEach((p) => { if (!map.has(p.title)) map.set(p.title, p); });
+    posts.filter((p) => (p.status || "published") === "published").forEach((p) => { if (!map.has(p.title)) map.set(p.title, p); });
     return Array.from(map.values());
   })();
   const categories = ["All", ...Array.from(new Set(items.map((p) => p.category)))];

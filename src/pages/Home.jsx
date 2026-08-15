@@ -1967,7 +1967,8 @@ function BlogTeaser() {
   const { t } = useI18n();
   const [posts, setPosts] = useState([]);
   useEffect(() => { BlogPostEntity.list("-created_date", 3).then(setPosts).catch(() => {}); }, []);
-  const items = (posts.length > 0 ? posts : STATIC_BLOG).slice(0, 3);
+  const published = posts.filter((p) => (p.status || "published") === "published");
+  const items = (published.length > 0 ? published : STATIC_BLOG).slice(0, 3);
 
   return (
     <section className="bg-background pb-16">
