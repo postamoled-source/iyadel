@@ -14,7 +14,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS,   WORD_LIST, RIDDLES, convertUnit, scrambleWord, generatePuzzle, calcMolarMass, compileExpr, FN_COLORS } from "@/lib/tool-utils";
-import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star, Wand2, Palette } from "lucide-react";
+import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star, Wand2, Palette, SlidersHorizontal } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { trackEvent, useSeo } from "@/lib/analytics";
 import { TOOL_CONTENT_AR, TOOL_GUIDES_AR } from "@/data/translations-ar";
@@ -266,6 +266,7 @@ function drawLogo(ctx, p) {
   const icon = p.icon || "★";
   const primary = p.primary || "#3b2a8c";
   const accent = p.accent || "#f5a623";
+  const sc = p.scale || 1;
   // Shrink the font so long names fit inside the canvas instead of overflowing.
   const fitSize = (text, maxSize, maxW, weight) => {
     let size = maxSize;
@@ -276,14 +277,14 @@ function drawLogo(ctx, p) {
     }
     return size;
   };
-  const drawIcon = (y, size) => { ctx.font = size + "px serif"; ctx.fillStyle = primary; ctx.fillText(icon, cx, y); };
+  const drawIcon = (y, size) => { ctx.font = (size * sc) + "px serif"; ctx.fillStyle = primary; ctx.fillText(icon, cx, y); };
   const drawBrand = (y, maxSize, maxW) => {
-    const size = fitSize(brand, maxSize, maxW, "bold ");
+    const size = fitSize(brand, maxSize * sc, maxW, "bold ");
     ctx.font = "bold " + size + "px " + ff; ctx.fillStyle = primary; ctx.fillText(brand, cx, y);
   };
   const drawTag = (y, maxSize, maxW) => {
     if (!tag) return;
-    const size = fitSize(tag, maxSize, maxW, "");
+    const size = fitSize(tag, maxSize * sc, maxW, "");
     ctx.font = size + "px " + ff; ctx.fillStyle = accent; ctx.fillText(tag, cx, y);
   };
   if (p.template === "Badge") {
@@ -349,6 +350,7 @@ function ToolWorkspace({ tool, onBack }) {
   const [aiLogos, setAiLogos] = useState([]);
   const [aiBusy, setAiBusy] = useState(false);
   const [aiSelected, setAiSelected] = useState(null);
+  const [showToolbar, setShowToolbar] = useState(false);
 
   useEffect(() => {
     setInputs({}); setResult(null); setRiddleAttempts(3); setRiddleMsg(""); setRiddleGuess("");
@@ -362,6 +364,7 @@ function ToolWorkspace({ tool, onBack }) {
     setBgResult(null); setPdfBusy(false); setRiddle(RIDDLES[Math.floor(Math.random() * RIDDLES.length)]);
     setEnhSrc(null); setEnhResult(null); enhOrigRef.current = null; setEnhVersion(0);
     setAiLogos([]); setAiBusy(false); setAiSelected(null);
+    setShowToolbar(false);
     setShowGuide(false);
   }, [tool.slug]);
 
@@ -414,8 +417,9 @@ function ToolWorkspace({ tool, onBack }) {
       font: inputs.font || "Sans",
       primary: inputs.primary || "#3b2a8c",
       accent: inputs.accent || "#f5a623",
+      scale: parseFloat(inputs.size || "100") / 100,
     });
-  }, [tool.slug, inputs.template, inputs.brandName, inputs.tagline, inputs.icon, inputs.font, inputs.primary, inputs.accent]);
+  }, [tool.slug, inputs.template, inputs.brandName, inputs.tagline, inputs.icon, inputs.font, inputs.primary, inputs.accent, inputs.size]);
 
   const set = (k) => (e) => setInputs((p) => ({ ...p, [k]: e.target.value }));
 
@@ -1466,7 +1470,57 @@ function ToolWorkspace({ tool, onBack }) {
         const sel = (k, v) => setInputs((p) => ({ ...p, [k]: v }));
         return (
           <>
-            <canvas ref={logoCanvasRef} width={1200} height={1200} className="mx-auto rounded-2xl shadow-sm" style={{ width: "100%", maxWidth: 360, background: "repeating-conic-gradient(hsl(var(--muted)) 0 25%, transparent 0 50%) 50% / 24px 24px" }} />
+            <div onClick={() => setShowToolbar((s) => !s)} className="relative cursor-pointer group mx-auto" style={{ maxWidth: 360 }}>
+              <canvas ref={logoCanvasRef} width={1200} height={1200} className="w-full rounded-2xl shadow-sm" style={{ background: "repeating-conic-gradient(hsl(var(--muted)) 0 25%, transparent 0 50%) 50% / 24px 24px" }} />
+              <div className="absolute inset-0 rounded-2xl flex items-end justify-center pb-3 pointer-events-none">
+                <span className="text-[11px] font-semibold text-foreground/70 bg-background/85 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 shadow-sm">
+                  <SlidersHorizontal className="w-3 h-3" /> {t("Click logo to customize")}
+                </span>
+              </div>
+            </div>
+
+            {showToolbar && (
+              <div className="mt-4 rounded-2xl border border-primary/30 bg-card shadow-lg p-4 animate-[fadeIn_0.3s_ease-out]">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5"><SlidersHorizontal className="w-3.5 h-3.5" /> {t("Design Toolbar")}</span>
+                  <button onClick={() => setShowToolbar(false)} className="w-7 h-7 rounded-full bg-secondary text-secondary-foreground hover:bg-muted flex items-center justify-center"><X className="w-4 h-4" /></button>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1.5 ml-1">{t("Primary Color")}</label>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {palette.map((c) => (
+                      <button key={c} onClick={() => sel("primary", c)} className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-110" style={{ background: c, borderColor: (inputs.primary || "#3b2a8c") === c ? "hsl(var(--foreground))" : "hsl(var(--border))" }} />
+                    ))}
+                    <input type="color" value={inputs.primary || "#3b2a8c"} onChange={set("primary")} className="w-9 h-9 rounded-lg cursor-pointer border border-border bg-transparent p-0" title={t("Custom color")} />
+                  </div>
+                </div>
+
+                <div className="mt-3">
+                  <label className="block text-xs font-medium text-muted-foreground mb-1.5 ml-1">{t("Accent Color")}</label>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {palette.map((c) => (
+                      <button key={c} onClick={() => sel("accent", c)} className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-110" style={{ background: c, borderColor: (inputs.accent || "#f5a623") === c ? "hsl(var(--foreground))" : "hsl(var(--border))" }} />
+                    ))}
+                    <input type="color" value={inputs.accent || "#f5a623"} onChange={set("accent")} className="w-9 h-9 rounded-lg cursor-pointer border border-border bg-transparent p-0" title={t("Custom color")} />
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <label className="block text-xs font-medium text-muted-foreground mb-1.5 ml-1">{t("Font")}</label>
+                  <div className="flex flex-wrap gap-2">
+                    {fonts.map((f) => (
+                      <button key={f} onClick={() => sel("font", f)} className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all border ${(inputs.font || "Sans") === f ? "bg-primary text-primary-foreground border-primary" : "bg-card text-card-foreground border-border hover:border-primary/40"}`}>{f}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <RangeField label={t("Text Size")} value={inputs.size ?? "100"} onChange={set("size")} min={70} max={150} step={5} />
+                </div>
+              </div>
+            )}
+
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
               <TxtInput label={t("Brand Name")} value={inputs.brandName} onChange={set("brandName")} placeholder="Acme Co." />
               <TxtInput label={t("Tagline (optional)")} value={inputs.tagline} onChange={set("tagline")} placeholder="Quality you can trust" />
@@ -1496,11 +1550,6 @@ function ToolWorkspace({ tool, onBack }) {
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <SelectField label={t("Font")} value={inputs.font || "Sans"} onChange={set("font")} options={fonts} />
-              <ColorField label={t("Primary Color")} value={inputs.primary || "#3b2a8c"} onChange={set("primary")} />
-            </div>
-            <div className="mt-5"><ColorField label={t("Accent Color")} value={inputs.accent || "#f5a623"} onChange={set("accent")} /></div>
             <div className="flex flex-wrap justify-center gap-3 mt-6">
               <CalcButton onClick={downloadLogo}>{t("Download Logo")}</CalcButton>
               <Button onClick={randomize} variant="outline" className="mt-6 rounded-2xl px-6 py-6 border-border bg-background text-foreground hover:bg-secondary"><Shuffle className="w-5 h-5 mr-2" />{t("Randomize")}</Button>

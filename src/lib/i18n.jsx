@@ -148,6 +148,10 @@ const AR = {
   "Modern": "حديث",
   "Emblem": "إمبلم",
   "Bold": "جريء",
+  "Click logo to customize": "انقر الشعار للتخصيص",
+  "Design Toolbar": "شريط التصميم",
+  "Text Size": "حجم النص",
+  "Custom color": "لون مخصص",
 
   // Why / About section (home)
   "Completely free": "مجاني تمامًا",
