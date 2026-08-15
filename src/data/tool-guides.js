@@ -403,4 +403,18 @@ export const TOOL_GUIDES = {
       "AI concepts are original ideas to inspire you — text in them may vary, so refine your favorite in the canvas if needed.",
     ],
   },
+  "whack-a-mole": {
+    intro: "Tap the moles as they pop up from their holes before they disappear.",
+    steps: [
+      "Press Start to begin the 30-second round.",
+      "Watch the 3×3 grid — moles pop up at random holes.",
+      "Tap a mole the instant it appears to score a point.",
+      "When time runs out, your total and best score are shown.",
+    ],
+    tips: [
+      "Keep your finger ready over the grid — speed beats aiming.",
+      "Moles stay up only briefly, so react fast.",
+      "Your best score is saved locally on your device.",
+    ],
+  },
 };

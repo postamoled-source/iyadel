@@ -404,6 +404,17 @@ const AR = {
 
   "Restricted admin area — logging in or registering here does not grant admin access. Admin rights are assigned by invitation only.":
     "منطقة محصورة للإدارة فقط — تسجيل الدخول أو إنشاء حساب هنا لا يمنحك صلاحيات المشرف. تُمنح صلاحية المشرف عبر دعوة من المشرف فقط.",
+
+  "Whack-a-Mole": "اطرب الفأر",
+  "Whack!": "اضرب!",
+  "Score": "النقاط",
+  "Time": "الوقت",
+  "Best": "الأفضل",
+  "Start": "ابدأ",
+  "Start Game": "ابدأ اللعبة",
+  "Time's up!": "انتهى الوقت!",
+  "Tap the moles as fast as you can before they hide again — 30 seconds!":
+    "اضرب الفئران بأسرع ما يمكن قبل أن تختبئ مجددًا — 30 ثانية!",
 };
 
 const I18nContext = createContext(null);
