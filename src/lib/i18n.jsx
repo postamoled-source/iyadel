@@ -138,6 +138,7 @@ const AR = {
   "Primary Color": "اللون الأساسي",
   "Accent Color": "اللون المميّز",
   "Download Logo": "تنزيل الشعار",
+  "Randomize": "عشوائي",
 
   // Why / About section (home)
   "Completely free": "مجاني تمامًا",

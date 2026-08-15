@@ -265,29 +265,46 @@ function drawLogo(ctx, p) {
   const icon = p.icon || "★";
   const primary = p.primary || "#3b2a8c";
   const accent = p.accent || "#f5a623";
+  // Shrink the font so long names fit inside the canvas instead of overflowing.
+  const fitSize = (text, maxSize, maxW, weight) => {
+    let size = maxSize;
+    ctx.font = weight + size + "px " + ff;
+    while (ctx.measureText(text).width > maxW && size > 14) {
+      size -= 2;
+      ctx.font = weight + size + "px " + ff;
+    }
+    return size;
+  };
   const drawIcon = (y, size) => { ctx.font = size + "px serif"; ctx.fillStyle = primary; ctx.fillText(icon, cx, y); };
-  const drawBrand = (y, size) => { ctx.font = "bold " + size + "px " + ff; ctx.fillStyle = primary; ctx.fillText(brand, cx, y); };
-  const drawTag = (y, size) => { if (!tag) return; ctx.font = size + "px " + ff; ctx.fillStyle = accent; ctx.fillText(tag, cx, y); };
+  const drawBrand = (y, maxSize, maxW) => {
+    const size = fitSize(brand, maxSize, maxW, "bold ");
+    ctx.font = "bold " + size + "px " + ff; ctx.fillStyle = primary; ctx.fillText(brand, cx, y);
+  };
+  const drawTag = (y, maxSize, maxW) => {
+    if (!tag) return;
+    const size = fitSize(tag, maxSize, maxW, "");
+    ctx.font = size + "px " + ff; ctx.fillStyle = accent; ctx.fillText(tag, cx, y);
+  };
   if (p.template === "Badge") {
     ctx.strokeStyle = accent; ctx.lineWidth = 8;
     ctx.beginPath(); ctx.arc(cx, 300, 250, 0, Math.PI * 2); ctx.stroke();
     ctx.strokeStyle = primary; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.arc(cx, 300, 232, 0, Math.PI * 2); ctx.stroke();
-    drawIcon(220, 110); drawBrand(330, 60); drawTag(395, 26);
+    drawIcon(220, 110); drawBrand(330, 60, 420); drawTag(395, 26, 400);
   } else if (p.template === "Modern") {
-    drawIcon(190, 80); drawBrand(300, 66);
+    drawIcon(190, 80); drawBrand(300, 66, 480);
     ctx.fillStyle = accent; ctx.fillRect(cx - 110, 345, 220, 6);
-    drawTag(390, 26);
+    drawTag(390, 26, 440);
   } else if (p.template === "Emblem") {
     ctx.strokeStyle = primary; ctx.lineWidth = 6;
     ctx.strokeRect(90, 130, 420, 340);
-    drawIcon(225, 100); drawBrand(320, 56); drawTag(385, 26);
+    drawIcon(225, 100); drawBrand(320, 56, 380); drawTag(385, 26, 360);
   } else if (p.template === "Bold") {
-    drawBrand(290, 92);
+    drawBrand(290, 92, 500);
     ctx.fillStyle = accent; ctx.fillRect(cx - 100, 345, 200, 8);
-    drawTag(400, 30);
+    drawTag(400, 30, 460);
   } else {
-    drawIcon(215, 110); drawBrand(335, 62); drawTag(395, 28);
+    drawIcon(215, 110); drawBrand(335, 62, 500); drawTag(395, 28, 460);
   }
 }
 function ToolWorkspace({ tool, onBack }) {
@@ -377,12 +394,13 @@ function ToolWorkspace({ tool, onBack }) {
     setEnhResult(canvas.toDataURL("image/png"));
   }, [enhVersion, inputs.brightness, inputs.contrast, inputs.saturation, inputs.sharpen, inputs.dehaze]);
 
-  // Live logo canvas: redraw on any input change.
+  // Live logo canvas: redraw on any input change (2× buffer for a crisp 1200px download).
   useEffect(() => {
     if (tool.slug !== "logo-maker") return;
     const canvas = logoCanvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
+    ctx.setTransform(2, 0, 0, 2, 0, 0);
     drawLogo(ctx, {
       template: inputs.template || "Minimalist",
       brand: inputs.brandName || "",
@@ -1401,8 +1419,9 @@ function ToolWorkspace({ tool, onBack }) {
       }
       case "logo-maker": {
         const templates = ["Minimalist", "Badge", "Modern", "Emblem", "Bold"];
-        const icons = ["★", "🚀", "⚡", "🛡", "◆", "✦", "🎯", "🔥", "💎", "🌿"];
+        const icons = ["★", "🚀", "⚡", "🛡", "◆", "✦", "🎯", "🔥", "💎", "🌿", "🌟", "⬢", "◎", "✺", "🍃"];
         const fonts = ["Sans", "Serif", "Mono"];
+        const palette = ["#3b2a8c", "#1e3a8a", "#0f766e", "#b45309", "#be123c", "#4338ca", "#0891b2", "#9333ea", "#ea580c", "#16a34a"];
         const downloadLogo = () => {
           const canvas = logoCanvasRef.current;
           if (!canvas) return;
@@ -1410,9 +1429,17 @@ function ToolWorkspace({ tool, onBack }) {
           a.href = canvas.toDataURL("image/png"); a.download = "logo.png";
           document.body.appendChild(a); a.click(); a.remove();
         };
+        const randomize = () => setInputs((p) => ({
+          ...p,
+          template: templates[Math.floor(Math.random() * templates.length)],
+          icon: icons[Math.floor(Math.random() * icons.length)],
+          font: fonts[Math.floor(Math.random() * fonts.length)],
+          primary: palette[Math.floor(Math.random() * palette.length)],
+          accent: palette[Math.floor(Math.random() * palette.length)],
+        }));
         return (
           <>
-            <canvas ref={logoCanvasRef} width={600} height={600} className="mx-auto rounded-2xl bg-white shadow-sm" style={{ width: "100%", maxWidth: 360 }} />
+            <canvas ref={logoCanvasRef} width={1200} height={1200} className="mx-auto rounded-2xl shadow-sm" style={{ width: "100%", maxWidth: 360, background: "repeating-conic-gradient(hsl(var(--muted)) 0 25%, transparent 0 50%) 50% / 24px 24px" }} />
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
               <TxtInput label={t("Brand Name")} value={inputs.brandName} onChange={set("brandName")} placeholder="Acme Co." />
               <TxtInput label={t("Tagline (optional)")} value={inputs.tagline} onChange={set("tagline")} placeholder="Quality you can trust" />
@@ -1422,7 +1449,10 @@ function ToolWorkspace({ tool, onBack }) {
               <ColorField label={t("Primary Color")} value={inputs.primary || "#3b2a8c"} onChange={set("primary")} />
             </div>
             <div className="mt-5"><ColorField label={t("Accent Color")} value={inputs.accent || "#f5a623"} onChange={set("accent")} /></div>
-            <div className="flex justify-center mt-6"><CalcButton onClick={downloadLogo}>{t("Download Logo")}</CalcButton></div>
+            <div className="flex flex-wrap justify-center gap-3 mt-6">
+              <CalcButton onClick={downloadLogo}>{t("Download Logo")}</CalcButton>
+              <Button onClick={randomize} variant="outline" className="mt-6 rounded-2xl px-6 py-6 border-border bg-background text-foreground hover:bg-secondary"><Shuffle className="w-5 h-5 mr-2" />{t("Randomize")}</Button>
+            </div>
             <TipBox>{t("Compose a custom logo live: pick a template, icon, colors, and fonts, then download a transparent PNG. Edit any field to update the preview instantly.")}</TipBox>
           </>
         );
