@@ -89,6 +89,7 @@ export default function BlogPostPage() {
   }
 
   const body = lang === "ar" ? (BLOG_CONTENT_AR[post.slug] || post.content) : post.content;
+  const isHtml = /<[a-z][\s\S]*>/i.test(body || "");
   const paragraphs = (body || "").split("\n").filter((p) => p.trim().length > 0);
 
   return (
@@ -124,6 +125,7 @@ export default function BlogPostPage() {
       )}
 
       <article className="max-w-3xl mx-auto px-6 mt-12">
+        <style>{`.prose-content img{max-width:100%;height:auto;border-radius:0.75rem;margin:1rem 0}.prose-content h1,.prose-content h2,.prose-content h3{font-weight:700;margin:1.2rem 0 .6rem;line-height:1.25}.prose-content a{color:hsl(var(--primary));text-decoration:underline}.prose-content ul,.prose-content ol{padding-left:1.4rem;margin:.6rem 0}.prose-content li{margin:.25rem 0}.prose-content blockquote{border-left:3px solid hsl(var(--primary));padding-left:1rem;opacity:.8;margin:.8rem 0}`}</style>
         <ReadingControls
           fontSize={fontSize}
           fontIndex={fontIndex}
@@ -133,17 +135,21 @@ export default function BlogPostPage() {
         />
         <div
           className="prose-content space-y-5 rounded-3xl border border-border p-6 sm:p-10 transition-colors duration-500"
-          style={{ background: readTheme.bg, color: readTheme.text }}
+          style={{ background: readTheme.bg, color: readTheme.text, fontSize: `${fontSize}px` }}
         >
-          {paragraphs.map((p, i) => (
-            <p
-              key={i}
-              className="leading-relaxed"
-              style={{ fontSize: `${fontSize}px`, color: readTheme.text }}
-            >
-              {p}
-            </p>
-          ))}
+          {isHtml ? (
+            <div style={{ color: readTheme.text }} dangerouslySetInnerHTML={{ __html: body }} />
+          ) : (
+            paragraphs.map((p, i) => (
+              <p
+                key={i}
+                className="leading-relaxed"
+                style={{ fontSize: `${fontSize}px`, color: readTheme.text }}
+              >
+                {p}
+              </p>
+            ))
+          )}
         </div>
 
         <div className="mt-14 rounded-3xl bg-gradient-to-br from-primary/10 to-accent/5 border border-primary/20 p-8 text-center">

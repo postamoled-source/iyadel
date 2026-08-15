@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 import { Plus, Trash2, Loader2, ImagePlus, Save, FileText } from "lucide-react";
 
 const BlogPostEntity = base44.entities.BlogPost;
@@ -22,6 +24,7 @@ export default function BlogManager() {
   const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({ title: "", slug: "", excerpt: "", content: "", category: "Finance", image_url: "" });
   const [msg, setMsg] = useState(null);
+  const quillRef = useRef(null);
 
   const load = async () => {
     setLoading(true);
@@ -32,7 +35,42 @@ export default function BlogManager() {
 
   const set = (k) => (e) => setForm((p) => ({ ...p, [k]: e.target.value }));
 
-  const onUpload = async (e) => {
+  // In-editor image upload: inserts an uploaded image into the rich text body.
+  const imageHandler = useCallback(() => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+    input.onchange = async () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      try {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        const editor = quillRef.current?.getEditor();
+        if (!editor) return;
+        const range = editor.getSelection(true) || { index: 0 };
+        editor.insertEmbed(range.index, "image", file_url);
+        editor.setSelection(range.index + 1);
+      } catch (err) {
+        setMsg({ type: "error", text: err.message || "Image upload failed" });
+      }
+    };
+  }, []);
+
+  const modules = useMemo(() => ({
+    toolbar: {
+      container: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link", "image"],
+        ["clean"],
+      ],
+      handlers: { image: imageHandler },
+    },
+  }), [imageHandler]);
+
+  const onCoverUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
@@ -50,11 +88,13 @@ export default function BlogManager() {
     if (!form.title.trim()) { setMsg({ type: "error", text: "Title is required" }); return; }
     setSaving(true);
     try {
+      // Strip empty paragraphs Quill may produce when the editor is untouched.
+      const cleanedContent = (form.content || "").replace(/<p><br><\/p>/g, "").trim();
       const data = {
         title: form.title.trim(),
         slug: form.slug.trim() || slugify(form.title),
         excerpt: form.excerpt.trim(),
-        content: form.content,
+        content: cleanedContent,
         category: form.category,
         image_url: form.image_url || "",
         date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
@@ -103,11 +143,22 @@ export default function BlogManager() {
             <Label htmlFor="excerpt">Excerpt</Label>
             <Input id="excerpt" value={form.excerpt} onChange={set("excerpt")} placeholder="Short summary..." className="h-11" />
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
-            <textarea id="content" value={form.content} onChange={set("content")} rows={6} placeholder="Write the article body here..."
-              className="w-full rounded-xl border border-border bg-background text-foreground text-sm px-4 py-3 resize-y focus:outline-none focus:ring-2 focus:ring-primary" />
+            <Label>Content (rich editor — upload images with the image button)</Label>
+            <div className="rounded-xl overflow-hidden border border-border">
+              <ReactQuill
+                ref={quillRef}
+                theme="snow"
+                value={form.content}
+                onChange={(val) => setForm((p) => ({ ...p, content: val }))}
+                modules={modules}
+                placeholder="Write your article here... use the image button to upload images into the body."
+                style={{ minHeight: 280 }}
+              />
+            </div>
           </div>
+
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
             <select id="category" value={form.category} onChange={set("category")}
@@ -120,8 +171,8 @@ export default function BlogManager() {
             <div className="flex items-center gap-3">
               <label className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-secondary cursor-pointer transition-colors">
                 {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
-                {uploading ? "Uploading..." : "Upload Image"}
-                <input type="file" accept="image/*" onChange={onUpload} className="hidden" />
+                {uploading ? "Uploading..." : "Upload Cover"}
+                <input type="file" accept="image/*" onChange={onCoverUpload} className="hidden" />
               </label>
               {form.image_url && <span className="text-xs text-muted-foreground truncate flex-1">Uploaded ✓</span>}
             </div>
