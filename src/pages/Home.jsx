@@ -1801,8 +1801,8 @@ function ToolsHub({ searchQuery = "" }) {
                     <Star className={`w-5 h-5 ${fav ? "fill-accent" : ""}`} />
                   </button>
                   
-                  <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-5 shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-500">
-                    <Icon className="w-7 h-7 text-primary-foreground" />
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-5 shadow-lg shadow-primary/30 group-hover:scale-110 group-hover:shadow-primary/40 transition-all duration-500">
+                    <Icon className="w-7 h-7 text-primary-foreground" strokeWidth={2.2} />
                   </div>
                   
                   <h3 className="text-xl font-bold text-card-foreground mb-1">{t(tool.name)}</h3>
