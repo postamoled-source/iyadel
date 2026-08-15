@@ -386,18 +386,21 @@ export const TOOL_GUIDES = {
     ],
   },
   "logo-maker": {
-    intro: "Design a custom logo live on a canvas with templates, icons, fonts, and brand colors.",
+    intro: "Design a custom logo live on a canvas with templates, icons, fonts, and brand colors, or generate several AI concepts from your brand name.",
     steps: [
       "Enter your Brand Name and an optional Tagline.",
       "Pick a Template — Minimalist, Badge, Modern, Emblem, or Bold.",
       "Choose an Icon, a Font, and your Primary and Accent colors.",
       "Watch the preview update live as you change any field.",
       "Press Download Logo to save a transparent PNG.",
+      "Or press Generate AI Logos to create several AI concepts at once.",
+      "Click any AI slot to preview it, then Download the one you like.",
     ],
     tips: [
       "Keep the brand name short for the cleanest layout.",
       "Match the accent color to your brand palette for consistency.",
       "Try several templates — each suits a different brand feel.",
+      "AI concepts are original ideas to inspire you — text in them may vary, so refine your favorite in the canvas if needed.",
     ],
   },
 };

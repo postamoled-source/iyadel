@@ -237,7 +237,7 @@ export const STATIC_TOOLS = [
     category: "Image Tools",
     description: "Generate professional logo concepts with AI.",
     icon: "Palette",
-    content: "The logo maker is a live design studio for your brand. Pick a template, add your brand name and tagline, choose an icon, font, and brand colors, and watch the logo update instantly on the canvas. Edit any field to refine the design, then download a transparent PNG ready for web, print, or social media. Everything runs in your browser — no design skills or account needed, and the logo is yours to keep.",
+    content: "The logo maker is a live design studio for your brand. Pick a template, add your brand name and tagline, choose an icon, font, and brand colors, and watch the logo update instantly on the canvas. Edit any field to refine the design, then download a transparent PNG ready for web, print, or social media. Want more ideas? Tap Generate AI Logos to create several original AI concepts from your brand name at once, click any slot to preview it, and download the one you like. Everything runs in your browser — no design skills or account needed, and the logo is yours to keep.",
     image: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/a78ddc51a_generated_image.png",
   },
 ];

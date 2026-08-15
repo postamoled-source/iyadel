@@ -139,6 +139,15 @@ const AR = {
   "Accent Color": "اللون المميّز",
   "Download Logo": "تنزيل الشعار",
   "Randomize": "عشوائي",
+  "AI Logo Concepts": "مفاهيم شعارات بالذكاء الاصطناعي",
+  "Generate AI Logos": "أنشئ شعارات بالذكاء الاصطناعي",
+  "AI Logo": "شعار بالذكاء الاصطناعي",
+  "Generate multiple original logo concepts from your brand name using AI. Click a slot to view and download.": "أنشئ عدة مفاهيم شعارات أصلية من اسم علامتك بالذكاء الاصطناعي. انقر خانة لعرض الشعار وتنزيله.",
+  "Minimalist": "بسيط",
+  "Badge": "شارة",
+  "Modern": "حديث",
+  "Emblem": "إمبلم",
+  "Bold": "جريء",
 
   // Why / About section (home)
   "Completely free": "مجاني تمامًا",

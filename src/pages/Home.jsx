@@ -9,6 +9,7 @@ import PullToRefresh from "@/components/PullToRefresh";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { createPortal } from "react-dom";
 import { Image as Img } from "@/components/ui/image";
+import { generateLogo } from "@/functions/generateLogo";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
@@ -345,6 +346,9 @@ function ToolWorkspace({ tool, onBack }) {
   const [enhVersion, setEnhVersion] = useState(0);
   const enhOrigRef = useRef(null);
   const logoCanvasRef = useRef(null);
+  const [aiLogos, setAiLogos] = useState([]);
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiSelected, setAiSelected] = useState(null);
 
   useEffect(() => {
     setInputs({}); setResult(null); setRiddleAttempts(3); setRiddleMsg(""); setRiddleGuess("");
@@ -357,6 +361,7 @@ function ToolWorkspace({ tool, onBack }) {
     setPdfFiles([]); setPdfReady(false); setCompressSrc(null); setCompressResult(null); setPlotData(null);
     setBgResult(null); setPdfBusy(false); setRiddle(RIDDLES[Math.floor(Math.random() * RIDDLES.length)]);
     setEnhSrc(null); setEnhResult(null); enhOrigRef.current = null; setEnhVersion(0);
+    setAiLogos([]); setAiBusy(false); setAiSelected(null);
     setShowGuide(false);
   }, [tool.slug]);
 
@@ -1422,6 +1427,7 @@ function ToolWorkspace({ tool, onBack }) {
         const icons = ["★", "🚀", "⚡", "🛡", "◆", "✦", "🎯", "🔥", "💎", "🌿", "🌟", "⬢", "◎", "✺", "🍃"];
         const fonts = ["Sans", "Serif", "Mono"];
         const palette = ["#3b2a8c", "#1e3a8a", "#0f766e", "#b45309", "#be123c", "#4338ca", "#0891b2", "#9333ea", "#ea580c", "#16a34a"];
+        const aiStyles = ["Minimalist", "Vintage emblem", "Modern geometric", "Bold typographic"];
         const downloadLogo = () => {
           const canvas = logoCanvasRef.current;
           if (!canvas) return;
@@ -1437,14 +1443,60 @@ function ToolWorkspace({ tool, onBack }) {
           primary: palette[Math.floor(Math.random() * palette.length)],
           accent: palette[Math.floor(Math.random() * palette.length)],
         }));
+        const generateAiLogos = async () => {
+          const name = (inputs.brandName || "").trim();
+          if (!name || aiBusy) return;
+          setAiBusy(true); setAiLogos([]); setAiSelected(null);
+          const results = await Promise.allSettled(
+            aiStyles.map((style) => generateLogo({ name, style, tagline: inputs.tagline || "" }))
+          );
+          setAiLogos(results.map((r, i) => (r.status === "fulfilled" && r.value?.data?.url ? { url: r.value.data.url, style: aiStyles[i] } : null)));
+          setAiBusy(false);
+        };
+        const downloadAi = async (url) => {
+          try {
+            const res = await fetch(url); const blob = await res.blob();
+            const objUrl = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = objUrl; a.download = "logo-ai.png";
+            document.body.appendChild(a); a.click(); a.remove();
+            URL.revokeObjectURL(objUrl);
+          } catch { window.open(url, "_blank"); }
+        };
+        const sel = (k, v) => setInputs((p) => ({ ...p, [k]: v }));
         return (
           <>
             <canvas ref={logoCanvasRef} width={1200} height={1200} className="mx-auto rounded-2xl shadow-sm" style={{ width: "100%", maxWidth: 360, background: "repeating-conic-gradient(hsl(var(--muted)) 0 25%, transparent 0 50%) 50% / 24px 24px" }} />
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
               <TxtInput label={t("Brand Name")} value={inputs.brandName} onChange={set("brandName")} placeholder="Acme Co." />
               <TxtInput label={t("Tagline (optional)")} value={inputs.tagline} onChange={set("tagline")} placeholder="Quality you can trust" />
-              <SelectField label={t("Template")} value={inputs.template || "Minimalist"} onChange={set("template")} options={templates} />
-              <SelectField label={t("Icon")} value={inputs.icon || "★"} onChange={set("icon")} options={icons} />
+            </div>
+
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-muted-foreground mb-2 ml-1">{t("Template")}</label>
+              <div className="flex flex-wrap gap-2">
+                {templates.map((tpl) => (
+                  <button key={tpl} onClick={() => sel("template", tpl)}
+                    className={`px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all border ${(inputs.template || "Minimalist") === tpl ? "bg-primary text-primary-foreground border-primary shadow-[0_0_20px_-5px_hsl(var(--primary)/0.5)]" : "bg-card text-card-foreground border-border hover:border-primary/40"}`}>
+                    {t(tpl)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-muted-foreground mb-2 ml-1">{t("Icon")}</label>
+              <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
+                {icons.map((ic) => (
+                  <button key={ic} onClick={() => sel("icon", ic)}
+                    className={`aspect-square rounded-xl text-2xl flex items-center justify-center transition-all border ${(inputs.icon || "★") === ic ? "bg-primary/10 border-primary text-primary scale-105" : "bg-card border-border hover:border-primary/40"}`}>
+                    {ic}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
               <SelectField label={t("Font")} value={inputs.font || "Sans"} onChange={set("font")} options={fonts} />
               <ColorField label={t("Primary Color")} value={inputs.primary || "#3b2a8c"} onChange={set("primary")} />
             </div>
@@ -1453,6 +1505,42 @@ function ToolWorkspace({ tool, onBack }) {
               <CalcButton onClick={downloadLogo}>{t("Download Logo")}</CalcButton>
               <Button onClick={randomize} variant="outline" className="mt-6 rounded-2xl px-6 py-6 border-border bg-background text-foreground hover:bg-secondary"><Shuffle className="w-5 h-5 mr-2" />{t("Randomize")}</Button>
             </div>
+
+            <div className="mt-10 pt-8 border-t border-border">
+              <div className="flex items-center gap-2 mb-2">
+                <Wand2 className="w-5 h-5 text-primary" />
+                <h4 className="font-bold text-foreground">{t("AI Logo Concepts")}</h4>
+              </div>
+              <p className="text-xs text-muted-foreground mb-4">{t("Generate multiple original logo concepts from your brand name using AI. Click a slot to view and download.")}</p>
+              <div className="flex justify-center"><CalcButton onClick={generateAiLogos}>{aiBusy ? t("Generating...") : t("Generate AI Logos")}</CalcButton></div>
+              {(aiBusy || aiLogos.length > 0) && (
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  {Array.from({ length: 4 }).map((_, i) => {
+                    const logo = aiLogos[i];
+                    return (
+                      <button key={i} onClick={() => logo && setAiSelected(i)} disabled={!logo}
+                        className={`relative aspect-square rounded-2xl overflow-hidden border bg-card transition-all ${logo ? "border-border hover:border-primary/50 hover:-translate-y-1 cursor-pointer" : "border-dashed border-border"} ${aiSelected === i ? "ring-2 ring-primary" : ""}`}>
+                        {logo ? (
+                          <>
+                            <img src={logo.url} alt={logo.style} className="w-full h-full object-cover" />
+                            <span className="absolute bottom-0 inset-x-0 bg-black/50 text-white text-[10px] py-1 px-2 truncate text-left">{logo.style}</span>
+                          </>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">{aiBusy && <RefreshCw className="w-6 h-6 text-muted-foreground animate-spin" />}</div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+              {aiSelected != null && aiLogos[aiSelected] && (
+                <ResultCard title={t("AI Logo") + " · " + aiLogos[aiSelected].style}>
+                  <img src={aiLogos[aiSelected].url} alt="logo" className="max-h-72 mx-auto rounded-xl bg-white p-2" />
+                  <div className="flex justify-center mt-5"><Button onClick={() => downloadAi(aiLogos[aiSelected].url)} className="bg-primary text-primary-foreground rounded-2xl px-6 py-4 font-bold">{t("Download")} <ImageDown className="w-4 h-4 ml-2" /></Button></div>
+                </ResultCard>
+              )}
+            </div>
+
             <TipBox>{t("Compose a custom logo live: pick a template, icon, colors, and fonts, then download a transparent PNG. Edit any field to update the preview instantly.")}</TipBox>
           </>
         );
