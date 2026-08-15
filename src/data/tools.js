@@ -191,6 +191,22 @@ export const STATIC_TOOLS = [
     content: "Word scramble presents a word with its letters mixed up and challenges you to find the original. It builds pattern recognition, spelling, and vocabulary, and is a classic language game. The scrambler ensures the result is never identical to the original word. It is a fun way to warm up your brain or pass a few minutes with a quick linguistic challenge.",
   },
   {
+    name: "2048",
+    slug: "game-2048",
+    category: "Games",
+    description: "Slide and merge tiles to reach 2048.",
+    icon: "Puzzle",
+    content: "2048 is a sliding tile puzzle. Swipe or use the arrow keys to move all tiles in one direction. When two tiles with the same number touch, they merge into one. Reach the 2048 tile to win — then keep going for a higher score. The game ends when the board is full and no moves remain.",
+  },
+  {
+    name: "Memory Match",
+    slug: "memory-match",
+    category: "Games",
+    description: "Flip cards and match all the pairs.",
+    icon: "Shuffle",
+    content: "Memory Match is a classic brain game. Flip two cards at a time to reveal symbols and find every matching pair in as few moves as possible. It sharpens memory and concentration and runs entirely in your browser, so nothing is stored. Keep practicing to beat your own best move count.",
+  },
+  {
     name: "Image Cropper",
     slug: "image-cropper",
     category: "Image Tools",

@@ -10,6 +10,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { createPortal } from "react-dom";
 import { Image as Img } from "@/components/ui/image";
 import { generateLogo } from "@/functions/generateLogo";
+import Game2048 from "@/components/games/Game2048";
+import MemoryMatch from "@/components/games/MemoryMatch";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
@@ -1594,6 +1596,10 @@ function ToolWorkspace({ tool, onBack }) {
           </>
         );
       }
+      case "game-2048":
+        return <Game2048 />;
+      case "memory-match":
+        return <MemoryMatch />;
       default:
         return (
           <div className="text-center py-10">
