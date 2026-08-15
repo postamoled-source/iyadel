@@ -133,7 +133,7 @@ export default function Privacy() {
               <Mail className="w-6 h-6 text-accent shrink-0" />
               <div>
                 <h3 className="font-bold text-foreground">{t("11. Contact Us")}</h3>
-                <a href="mailto:support@testpeak.net" className="text-primary hover:underline">support@testpeak.net</a>
+                <a href="mailto:support@testpriving.com" className="text-primary hover:underline">support@testpriving.com</a>
               </div>
             </div>
           </AnimatedElement>

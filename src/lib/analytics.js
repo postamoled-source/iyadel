@@ -39,7 +39,7 @@ export function useSeo({ title, description, image, path } = {}) {
     }
 
     if (path) {
-      const url = `https://testpeak.net${path}`;
+      const url = `https://testpriving.com${path}`;
       const canon = document.querySelector('link[rel="canonical"]');
       if (canon) canon.href = url;
       const ogUrl = document.querySelector('meta[property="og:url"]');
