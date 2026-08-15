@@ -110,7 +110,7 @@ function PrivacyPolicySection() {
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">{t("Privacy Policy")}</h2>
           <span className="text-sm text-muted-foreground">{t("Last Updated: August 15, 2026")}</span>
           <p className="text-muted-foreground mt-6 leading-relaxed">
-            {t("At TestPeak, we recognize the importance of your privacy and are committed to protecting it. This Privacy Policy explains how we collect, use, share, and protect your personal information.")}
+            {t("At TestPeak, your privacy comes first. We don't track you, we don't profile you, and most tools run entirely in your browser. This policy explains how the platform handles data.")}
           </p>
         </AnimatedElement>
         <div className="mt-10 space-y-8">

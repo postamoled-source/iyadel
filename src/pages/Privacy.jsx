@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useI18n } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { ShieldCheck, Mail, ChevronRight, Cookie, Server, MonitorSmartphone, EyeOff, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -81,6 +82,7 @@ const SECTIONS = [
 ];
 
 export default function Privacy() {
+  const { t } = useI18n();
   useSeo({
     title: "Privacy Policy — TestPeak",
     description: "TestPeak does not track you. Most tools run locally in your browser; a few features use our servers only when you actively use them. No analytics, no tracking cookies.",
@@ -97,10 +99,10 @@ export default function Privacy() {
               <EyeOff className="w-4 h-4 text-primary" />
               <span className="text-sm text-muted-foreground">TestPeak</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground mb-3">Privacy Policy</h1>
-            <span className="text-sm text-muted-foreground">Last Updated: August 15, 2026</span>
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground mb-3">{t("Privacy Policy")}</h1>
+            <span className="text-sm text-muted-foreground">{t("Last Updated: August 15, 2026")}</span>
             <p className="text-muted-foreground mt-6 leading-relaxed max-w-2xl mx-auto">
-              At TestPeak, your privacy comes first. We don't track you and we don't profile you. This policy explains which tools process information locally in your browser, and the few features that use our servers only when you actively use them.
+              {t("At TestPeak, your privacy comes first. We don't track you and we don't profile you. This policy explains which tools process information locally in your browser, and the few features that use our servers only when you actively use them.")}
             </p>
           </motion.div>
         </div>
@@ -117,8 +119,8 @@ export default function Privacy() {
                       <s.icon className="w-5 h-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-foreground mb-2">{s.title}</h3>
-                      <p className="text-muted-foreground leading-relaxed">{s.body}</p>
+                      <h3 className="text-lg font-bold text-foreground mb-2">{t(s.title)}</h3>
+                      <p className="text-muted-foreground leading-relaxed">{t(s.body)}</p>
                     </div>
                   </div>
                 </div>
@@ -130,7 +132,7 @@ export default function Privacy() {
             <div className="mt-8 rounded-2xl bg-gradient-to-br from-primary/15 to-accent/10 border border-primary/20 p-6 flex items-center gap-4">
               <Mail className="w-6 h-6 text-accent shrink-0" />
               <div>
-                <h3 className="font-bold text-foreground">11. Contact Us</h3>
+                <h3 className="font-bold text-foreground">{t("11. Contact Us")}</h3>
                 <a href="mailto:support@testpeak.net" className="text-primary hover:underline">support@testpeak.net</a>
               </div>
             </div>
@@ -145,12 +147,12 @@ export default function Privacy() {
             <div className="inline-flex items-center gap-2 mb-4 text-accent">
               <Sparkles className="w-5 h-5" />
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Ready to get started?</h2>
-            <p className="text-muted-foreground mb-8">Jump back in and explore all 31+ free tools TestPeak has to offer.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{t("Ready to get started?")}</h2>
+            <p className="text-muted-foreground mb-8">{t("Jump back in and explore all 31+ free tools TestPeak has to offer.")}</p>
             <Link to="/">
               <Button className="relative overflow-hidden rounded-xl px-8 py-6 text-lg bg-accent text-accent-foreground hover:scale-105 transition-transform duration-300 shadow-lg shadow-accent/20">
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-foreground/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />
-                <span className="relative z-10 flex items-center gap-2">Back to Tools <ChevronRight className="w-5 h-5" /></span>
+                <span className="relative z-10 flex items-center gap-2">{t("Back to Tools")} <ChevronRight className="w-5 h-5" /></span>
               </Button>
             </Link>
           </AnimatedElement>

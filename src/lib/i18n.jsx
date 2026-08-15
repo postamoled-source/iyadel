@@ -331,6 +331,76 @@ const AR = {
   "Top Tools Chart": "رسم الأدوات الأكثر استخداماً",
   "Usage by Category": "الاستخدام حسب الفئة",
   "Uses": "مرات استخدام",
+
+  // Privacy — re-crafted no-tracking policy (About / Home / Privacy pages)
+  "At TestPeak, your privacy comes first. We don't track you, we don't profile you, and most tools run entirely in your browser. This policy explains how the platform handles data.":
+    "في TestPeak، خصوصيتك أولًا. لا نُتابعك ولا نُنشئ ملفًا لك، وتعمل معظم الأدوات بالكامل في متصفحك. توضح هذه السياسة كيفية تعامل المنصة مع البيانات.",
+  "At TestPeak, your privacy comes first. We don't track you and we don't profile you. This policy explains which tools process information locally in your browser, and the few features that use our servers only when you actively use them.":
+    "في TestPeak، خصوصيتك أولًا. لا نُتابعك ولا نُنشئ ملفًا لك. توضح هذه السياسة أي الأدوات تُعالج المعلومات محليًا في متصفحك، والأدوات القليلة التي تستخدم خوادمنا فقط عند استخدامك لها فعلًا.",
+  "Last Updated: August 15, 2026": "آخر تحديث: 15 أغسطس 2026",
+
+  "1. We Don't Track You": "1. لا نُتابعك",
+  "TestPeak does not use Google Analytics or any third-party tracking. We do not record which tools you use or track your behavior. No tracking cookies are set.":
+    "لا يستخدم TestPeak أداة Google Analytics أو أي تتبّع خارجي. لا نسجّل الأدوات التي تستخدمها ولا نُتابع سلوكك. لا نضع أي ملفات تعقّب.",
+  "TestPeak uses no Google Analytics or third-party trackers. We do not record which tools you use or set tracking cookies.":
+    "لا يستخدم TestPeak أداة Google Analytics أو أي أدوات تتبّع خارجية. لا نسجّل الأدوات التي تستخدمها ولا نضع ملفات تعقّب.",
+  "TestPeak does not use Google Analytics or any third-party analytics or advertising trackers. We do not record which tools you open, track your visits, or build a profile of your behavior. No tracking cookies are ever set.":
+    "لا يستخدم TestPeak أداة Google Analytics أو أي أدوات تحليلات أو إعلانات خارجية. لا نسجّل الأدوات التي تفتحها ولا نُتابع زياراتك ولا نُنشئ ملفًا لسلوكك. لا نضع ملفات تعقّب أبدًا.",
+
+  "2. Local-First Processing": "2. المعالجة محلية أساسًا",
+  "Calculators, converters, the QR generator, and image tools (cropper, compressor, enhancer, background remover) run entirely in your browser. Your inputs and images never leave your device.":
+    "تعمل الحاسبات والمحوّلات ومولّد QR وأدوات الصور (القاطع والضاغط والمحسّن وإزالة الخلفية) بالكامل في متصفحك. مدخلاتك وصورك لا تغادر جهازك أبدًا.",
+  "Calculators, converters, the QR generator, and the image tools (cropper, compressor, enhancer, background remover) run entirely in your browser. Your inputs, values, and images never leave your device for these tools.":
+    "تعمل الحاسبات والمحوّلات ومولّد QR وأدوات الصور (القاطع والضاغط والمحسّن وإزالة الخلفية) بالكامل في متصفحك. مدخلاتك وقيمك وصورك لا تغادر جهازك أبدًا مع هذه الأدوات.",
+  "Calculators, converters, and image tools run in your browser. Only the AI Logo Maker and admin blog uploads use our servers, and only when you actively use them.":
+    "تعمل الحاسبات والمحوّلات وأدوات الصور في متصفحك. فقط مولّد الشعار بالذكاء الاصطناعي ورفع صور المدوّنة من المشرف يستخدمان خوادمنا، وذلك فقط عند استخدامهما فعلًا.",
+
+  "3. Tools That Use Our Servers": "3. أدوات تستخدم خوادمنا",
+  "The AI Logo Maker sends your brand name and tagline to generate logos, and blog images uploaded by admins are stored on our servers. These are actions you take, not passive tracking.":
+    "يُرسل مولّد الشعار بالذكاء الاصطناعي اسم علامتك ونصّها لإنشاء الشعارات، وتُخزَّن صور المدوّنة التي يرفعها المشرفون على خوادمنا. هذه أفعال تقوم بها أنت، لا تتبّعًا سلبيًا.",
+  "A few features use our servers only when you actively choose them: the AI Logo Maker sends your brand name and tagline to generate logo concepts, which are returned to you; and blog images uploaded by administrators are stored on our servers. These are actions you take — not passive tracking — and no usage profile is built from them.":
+    "بعض الميزات تستخدم خوادمنا فقط عند اختيارك لها فعلًا: يُرسل مولّد الشعار بالذكاء الاصطناعي اسم علامتك ونصّها لإنشاء مفاهيم شعارات تُعاد إليك؛ وتُخزَّن صور المدوّنة التي يرفعها المشرفون على خوادمنا. هذه أفعال تقوم بها أنت — لا تتبّعًا سلبيًا — ولا يُبنى منها أي ملف لاستخدامك.",
+
+  "4. Accounts": "4. الحسابات",
+  "If you create an account, we store your email address. We do not ask for your name or phone number.":
+    "إذا أنشأت حسابًا، نخزّن بريدك الإلكتروني فقط. لا نطلب اسمك أو رقم هاتفك.",
+  "Creating an account is optional. If you do, we store only your email address to identify you. We do not ask for your name or phone number.":
+    "إنشاء حساب اختياري. إذا فعلت، نخزّن بريدك الإلكتروني فقط للتعرف عليك. لا نطلب اسمك أو رقم هاتفك.",
+
+  "5. Cookies": "5. ملفات تعريف الارتباط",
+  "We use local storage only to remember your preferences (language, favorites). We do not use tracking cookies and share nothing with advertisers.":
+    "نستخدم التخزين المحلي فقط لتذكّر تفضيلاتك (اللغة، المفضّلة). لا نستخدم ملفات تعقّب ولا نشارك شيئًا مع المعلنين.",
+  "5. Cookies & Local Storage": "5. ملفات تعريف الارتباط والتخزين المحلي",
+  "We use local storage only to remember your preferences, such as your language and favorite tools. We do not use tracking cookies, and we share no data with advertisers or third parties.":
+    "نستخدم التخزين المحلي فقط لتذكّر تفضيلاتك مثل لغتك وأدواتك المفضّلة. لا نستخدم ملفات تعقّب ولا نشارك أي بيانات مع المعلنين أو أطراف ثالثة.",
+
+  "We apply appropriate technical and organizational measures. However, no security system is 100% guaranteed.":
+    "نتخذ تدابير تقنية وتنظيمية مناسبة. ومع ذلك، لا يوجد نظام أمان مضمون 100%.",
+  "We apply appropriate technical and organizational measures to protect any data we hold. However, no system is 100% secure, and we cannot guarantee absolute security.":
+    "نتخذ تدابير تقنية وتنظيمية مناسبة لحماية أي بيانات نحتفظ بها. ومع ذلك، لا يوجد نظام آمن 100%، ولا يمكننا ضمان أمان مطلق.",
+
+  "You may access, correct, or delete your personal data, object to its processing, and withdraw consent at any time. To exercise these rights, contact us at the email below.":
+    "يمكنك الوصول إلى بياناتك الشخصية أو تصحيحها أو حذفها، والاعتراض على معالجتها، وسحب موافقتك في أي وقت. لممارسة هذه الحقوق، تواصل معنا عبر البريد أدناه.",
+
+  "8. Financial & Health Disclaimer": "8. إخلاء المسؤولية المالية والصحية",
+  "All financial and health tools are for educational and informational purposes only and do not constitute professional advice.":
+    "جميع الأدوات المالية والصحية لأغراض تعليمية وإعلامية فقط، ولا تُعد نصيحة مهنية.",
+  "All financial and health tools (loans, interest, BMI, calories, etc.) are for educational and informational purposes only and do not constitute professional financial or medical advice.":
+    "جميع الأدوات المالية والصحية (القروض والفائدة ومؤشر كتلة الجسم والسعرات وغيرها) لأغراض تعليمية وإعلامية فقط، ولا تُعد نصيحة مالية أو طبية مهنية.",
+
+  "9. Children's Privacy": "9. خصوصية الأطفال",
+  "TestPeak is not directed at children under 13, and we do not knowingly collect personal information from children.":
+    "TestPeak غير موجّه للأطفال دون 13 عامًا، ولا نجمع عمدًا معلومات شخصية من الأطفال.",
+  "10. Changes to This Policy": "10. التغييرات على هذه السياسة",
+  "We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated revision date.":
+    "قد نُحدّث سياسة الخصوصية من حين لآخر. تُنشر التغييرات على هذه الصفحة مع تاريخ مراجعة مُحدّث.",
+
+  "9. Contact Us": "9. اتصل بنا",
+  "11. Contact Us": "11. اتصل بنا",
+  "Jump back in and explore all 31+ free tools TestPeak has to offer.":
+    "عُد واستكشف جميع الأدوات المجانية (أكثر من 31) التي يقدمها TestPeak.",
+  "6. Information Security": "6. أمان المعلومات",
+  "7. Your Rights": "7. حقوقك",
 };
 
 const I18nContext = createContext(null);
