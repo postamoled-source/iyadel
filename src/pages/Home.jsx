@@ -1879,6 +1879,7 @@ function AppStoreSection() {
                 <ul className="space-y-3 text-sm">
                   <li><Link to="/About" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"><Square className="w-3 h-3" /> {t("About Us")}</Link></li>
                   <li><Link to="/Privacy" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"><Square className="w-3 h-3" /> {t("Privacy Policy")}</Link></li>
+                  <li><Link to="/Dashboard" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"><ShieldCheck className="w-3 h-3" /> {t("Admin")}</Link></li>
                 </ul>
               </div>
               
