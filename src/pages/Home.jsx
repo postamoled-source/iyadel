@@ -8,11 +8,13 @@ import MobileSelect from "@/components/MobileSelect";
 import PullToRefresh from "@/components/PullToRefresh";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { createPortal } from "react-dom";
+import { Image } from "@/components/ui/image";
+import { generateLogo } from "@/functions/generateLogo";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS,   WORD_LIST, RIDDLES, convertUnit, scrambleWord, generatePuzzle, calcMolarMass, compileExpr, FN_COLORS } from "@/lib/tool-utils";
-import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star } from "lucide-react";
+import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star, Wand2, Palette } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { trackEvent, useSeo } from "@/lib/analytics";
 import { TOOL_CONTENT_AR, TOOL_GUIDES_AR } from "@/data/translations-ar";
@@ -25,7 +27,7 @@ const ToolUsageEntity = base44.entities.ToolUsage;
 const ICONS = {
   Calculator, TrendingUp, LineChart: LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight,
   Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical,
-  HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket
+  HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket, Wand2, Palette
 };
 
 
@@ -108,6 +110,18 @@ function SelectField({ label, value, onChange, options }) {
         placeholder={options[0]}
         triggerClassName="w-full flex items-center gap-2 rounded-2xl border border-border bg-background text-foreground text-base px-4 py-3.5 h-auto min-h-[52px] shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
       />
+    </div>
+  );
+}
+function RangeField({ label, value, onChange, min, max, step = 1 }) {
+  return (
+    <div className="text-left">
+      <div className="flex items-center justify-between mb-1.5 ml-1">
+        <label className="block text-sm font-medium text-muted-foreground">{label}</label>
+        <span className="text-xs font-bold text-primary tabular-nums">{value ?? min}</span>
+      </div>
+      <input type="range" min={min} max={max} step={step} value={value ?? min} onChange={onChange}
+        className="w-full h-10 accent-primary cursor-pointer" />
     </div>
   );
 }
@@ -205,6 +219,30 @@ function HeroSection({ toolCount, catCount, searchQuery, onSearchChange }) {
 }
 
 // ---------- Tool workspace (all calculators) ----------
+function sharpenImage(src, w, h, amount) {
+  const out = new Uint8ClampedArray(src.length);
+  const k = [0, -1, 0, -1, 5, -1, 0, -1, 0];
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      for (let ch = 0; ch < 3; ch++) {
+        let sum = 0;
+        for (let ky = -1; ky <= 1; ky++) {
+          for (let kx = -1; kx <= 1; kx++) {
+            const xx = x + kx < 0 ? 0 : x + kx >= w ? w - 1 : x + kx;
+            const yy = y + ky < 0 ? 0 : y + ky >= h ? h - 1 : y + ky;
+            sum += src[(yy * w + xx) * 4 + ch] * k[(ky + 1) * 3 + (kx + 1)];
+          }
+        }
+        const orig = src[i + ch];
+        const v = orig + amount * (sum - orig);
+        out[i + ch] = v < 0 ? 0 : v > 255 ? 255 : v;
+      }
+      out[i + 3] = src[i + 3];
+    }
+  }
+  return out;
+}
 function ToolWorkspace({ tool, onBack }) {
   const { t, lang } = useI18n();
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -238,6 +276,12 @@ function ToolWorkspace({ tool, onBack }) {
   const [compressSrc, setCompressSrc] = useState(null);
   const [compressResult, setCompressResult] = useState(null);
   const [plotData, setPlotData] = useState(null);
+  const [enhSrc, setEnhSrc] = useState(null);
+  const [enhResult, setEnhResult] = useState(null);
+  const [enhVersion, setEnhVersion] = useState(0);
+  const enhOrigRef = useRef(null);
+  const [logoResult, setLogoResult] = useState(null);
+  const [logoBusy, setLogoBusy] = useState(false);
 
   useEffect(() => {
     setInputs({}); setResult(null); setRiddleAttempts(3); setRiddleMsg(""); setRiddleGuess("");
@@ -249,8 +293,44 @@ function ToolWorkspace({ tool, onBack }) {
     setCropSrc(null); setCropResult(null); setBgSrc(null); setBgDone(false);
     setPdfFiles([]); setPdfReady(false); setCompressSrc(null); setCompressResult(null); setPlotData(null);
     setBgResult(null); setPdfBusy(false); setRiddle(RIDDLES[Math.floor(Math.random() * RIDDLES.length)]);
+    setEnhSrc(null); setEnhResult(null); enhOrigRef.current = null; setEnhVersion(0);
+    setLogoResult(null); setLogoBusy(false);
     setShowGuide(false);
   }, [tool.slug]);
+
+  // Live image enhancement: recompute from the original on every slider change.
+  useEffect(() => {
+    const orig = enhOrigRef.current;
+    if (!orig) return;
+    const b = parseFloat(inputs.brightness || "0");
+    const c = parseFloat(inputs.contrast || "0");
+    const s = parseFloat(inputs.saturation || "0");
+    const sh = parseFloat(inputs.sharpen || "0");
+    const dh = parseFloat(inputs.dehaze || "0");
+    const { width, height, data } = orig;
+    const cf = (259 * (c + 255)) / (255 * (259 - c));
+    const dcf = (259 * (dh * 1.2 + 255)) / (255 * (259 - dh * 1.2));
+    const sat = 1 + (s + dh * 0.4) / 100;
+    const out = new ImageData(width, height);
+    const d = out.data;
+    for (let i = 0; i < data.length; i += 4) {
+      let r = data[i] + b, g = data[i + 1] + b, bl = data[i + 2] + b;
+      r = cf * (r - 128) + 128; g = cf * (g - 128) + 128; bl = cf * (bl - 128) + 128;
+      r = dcf * (r - 128) + 128; g = dcf * (g - 128) + 128; bl = dcf * (bl - 128) + 128;
+      const gray = 0.299 * r + 0.587 * g + 0.114 * bl;
+      r = gray + (r - gray) * sat; g = gray + (g - gray) * sat; bl = gray + (bl - gray) * sat;
+      d[i] = r < 0 ? 0 : r > 255 ? 255 : r;
+      d[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
+      d[i + 2] = bl < 0 ? 0 : bl > 255 ? 255 : bl;
+      d[i + 3] = data[i + 3];
+    }
+    let final = d;
+    if (sh > 0) final = sharpenImage(d, width, height, sh / 100);
+    const canvas = document.createElement("canvas");
+    canvas.width = width; canvas.height = height;
+    canvas.getContext("2d").putImageData(new ImageData(final, width, height), 0, 0);
+    setEnhResult(canvas.toDataURL("image/png"));
+  }, [enhVersion, inputs.brightness, inputs.contrast, inputs.saturation, inputs.sharpen, inputs.dehaze]);
 
   const set = (k) => (e) => setInputs((p) => ({ ...p, [k]: e.target.value }));
 
@@ -1214,6 +1294,60 @@ function ToolWorkspace({ tool, onBack }) {
           </>
         );
       }
+      case "image-enhancer": {
+        return (
+          <>
+            <input type="file" accept="image/*" onChange={(e) => { if (e.target.files[0]) { readFile(e.target.files[0], (url) => { setEnhSrc(url); setEnhResult(null); const img = new Image(); img.onload = () => { let { width: w, height: h } = img; if (Math.max(w, h) > 1000) { const s = 1000 / Math.max(w, h); w = Math.round(w * s); h = Math.round(h * s); } const c = document.createElement("canvas"); c.width = w; c.height = h; const cx = c.getContext("2d"); cx.drawImage(img, 0, 0, w, h); enhOrigRef.current = cx.getImageData(0, 0, w, h); setEnhVersion((v) => v + 1); }; img.src = url; }); } }} className="block mx-auto text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:text-primary-foreground file:px-4 file:py-2" />
+            {enhSrc && <div className="mt-6"><img src={enhResult || enhSrc} alt="preview" className="max-h-64 mx-auto rounded-xl" /></div>}
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <RangeField label={t("Brightness")} value={inputs.brightness || "0"} onChange={set("brightness")} min={-100} max={100} />
+              <RangeField label={t("Contrast")} value={inputs.contrast || "0"} onChange={set("contrast")} min={-100} max={100} />
+              <RangeField label={t("Saturation")} value={inputs.saturation || "0"} onChange={set("saturation")} min={-100} max={100} />
+              <RangeField label={t("Sharpness")} value={inputs.sharpen || "0"} onChange={set("sharpen")} min={0} max={100} />
+              <RangeField label={t("Dehaze")} value={inputs.dehaze || "0"} onChange={set("dehaze")} min={0} max={100} />
+            </div>
+            {enhResult && (
+              <ResultCard title={t("Enhanced Image")}>
+                <img src={enhResult} alt="enhanced" className="max-h-72 mx-auto rounded-xl" />
+                <a href={enhResult} download="enhanced.png" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">{t("Download")} <ImageDown className="w-4 h-4" /></a>
+              </ResultCard>
+            )}
+            <TipBox>{t("Adjust the sliders for a live preview. Sharpen reduces blur, Dehaze cuts fog and haze. Processing runs in your browser — your image stays private.")}</TipBox>
+          </>
+        );
+      }
+      case "logo-maker": {
+        const styles = ["Minimalist", "Modern", "Vintage", "Bold", "Emblem"];
+        const generate = async () => {
+          const name = (inputs.brandName || "").trim();
+          if (!name || logoBusy) return;
+          setLogoBusy(true);
+          try {
+            const res = await generateLogo({ name, style: inputs.style || "Minimalist", tagline: inputs.tagline || "" });
+            setLogoResult(res.data?.url || null);
+          } catch (e) {
+            setLogoResult(null);
+          } finally {
+            setLogoBusy(false);
+          }
+        };
+        return (
+          <>
+            <TxtInput label={t("Brand Name")} value={inputs.brandName} onChange={set("brandName")} placeholder="Acme Co." />
+            <div className="mt-6"><SelectField label={t("Style")} value={inputs.style || "Minimalist"} onChange={set("style")} options={styles} /></div>
+            <div className="mt-6"><TxtInput label={t("Tagline (optional)")} value={inputs.tagline} onChange={set("tagline")} placeholder="Quality you can trust" /></div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={generate}>{logoBusy ? t("Generating...") : t("Generate Logo")}</CalcButton></div>
+            {logoBusy && <div className="mt-6 text-center text-muted-foreground">{t("Creating your logo... this can take a few seconds.")}</div>}
+            {logoResult && (
+              <ResultCard title={t("Your Logo")}>
+                <img src={logoResult} alt="logo" className="max-h-72 mx-auto rounded-xl bg-white p-2" />
+                <a href={logoResult} download="logo.png" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">{t("Download")} <ImageDown className="w-4 h-4" /></a>
+              </ResultCard>
+            )}
+            <TipBox>{t("AI generates original logo concepts from your brand name and style. Text in the logo may vary — treat results as design inspiration you can refine.")}</TipBox>
+          </>
+        );
+      }
       default:
         return (
           <div className="text-center py-10">
@@ -1254,6 +1388,11 @@ function ToolWorkspace({ tool, onBack }) {
           const guide = lang === "ar" ? TOOL_GUIDES_AR[tool.slug] : TOOL_GUIDES[tool.slug];
           return (
             <>
+              {tool.image && (
+                <div className="mt-10 rounded-2xl overflow-hidden border border-border">
+                  <Image src={tool.image} alt={t(tool.name)} fittingType="fill" className="w-full h-48" />
+                </div>
+              )}
               <div className="mt-10 rounded-2xl bg-secondary border border-border p-6 text-sm text-secondary-foreground leading-relaxed text-left">
                 <h3 className="font-bold text-foreground mb-3">{t("About this tool")}</h3>
                 <p>{aboutContent}</p>

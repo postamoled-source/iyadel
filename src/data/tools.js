@@ -222,4 +222,22 @@ export const STATIC_TOOLS = [
     icon: "ImageDown",
     content: "Image compression reduces file size by lowering quality slightly, balancing visual fidelity with storage and bandwidth savings. This tool re-encodes your image as JPEG at a chosen quality level and shows the before-and-after sizes. Lower quality means a smaller file but more visible artifacts, so pick the level that keeps the image looking good for its purpose. Compression happens locally, so your image stays private.",
   },
+  {
+    name: "Image Enhancer",
+    slug: "image-enhancer",
+    category: "Image Tools",
+    description: "Sharpen, brighten, and dehaze any image.",
+    icon: "Wand2",
+    content: "Image enhancement brings out detail and corrects lighting and haze. This tool lets you adjust brightness, contrast, saturation, sharpness, and dehaze with a live preview. All processing runs in your browser — your image is never uploaded, so it stays private. Apply sharpening gently; a little revives a soft photo, while too much creates halos around edges.",
+    image: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/970acf7d9_generated_image.png",
+  },
+  {
+    name: "Logo Maker",
+    slug: "logo-maker",
+    category: "Image Tools",
+    description: "Generate professional logo concepts with AI.",
+    icon: "Palette",
+    content: "The logo maker uses AI image generation to create original logo concepts from your brand name and chosen style. Enter your brand name, pick a style, and optionally add a short tagline, then generate several versions to explore directions. Text in the logo may vary — treat the results as design inspiration you can refine in a design tool. Each generation uses a small number of image-integration credits.",
+    image: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/a78ddc51a_generated_image.png",
+  },
 ];

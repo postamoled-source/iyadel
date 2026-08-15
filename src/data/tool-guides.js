@@ -371,4 +371,33 @@ export const TOOL_GUIDES = {
       "Compression happens locally, so your image stays private.",
     ],
   },
+  "image-enhancer": {
+    intro: "Improve a photo with live adjustments: brightness, contrast, saturation, sharpness, and dehaze — all in your browser.",
+    steps: [
+      "Click the file picker and choose an image.",
+      "Drag the Brightness, Contrast, Saturation, Sharpness, and Dehaze sliders — the preview updates live.",
+      "Use Sharpness to reduce blur and Dehaze to cut fog and haze.",
+      "Download the enhanced image as a PNG.",
+    ],
+    tips: [
+      "All processing is local — your image is never uploaded.",
+      "Large images are capped to 1000px for a fast preview; the download keeps that size.",
+      "A little sharpening goes a long way — too much creates halos around edges.",
+    ],
+  },
+  "logo-maker": {
+    intro: "Generate original logo concepts from your brand name and a style choice using AI image generation.",
+    steps: [
+      "Enter your Brand Name.",
+      "Pick a Style — Minimalist, Modern, Vintage, Bold, or Emblem.",
+      "Optionally add a short Tagline.",
+      "Press Generate Logo and wait a few seconds for the result.",
+      "Download the logo you like.",
+    ],
+    tips: [
+      "AI text can vary — treat results as concepts to refine in a design tool.",
+      "Try several styles to explore different directions.",
+      "Keep the brand name short for cleaner results.",
+    ],
+  },
 };
