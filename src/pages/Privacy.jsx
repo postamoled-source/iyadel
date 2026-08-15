@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ShieldCheck, Mail, ChevronRight, Cookie, Server, MonitorSmartphone, BarChart3, Sparkles } from "lucide-react";
+import { ShieldCheck, Mail, ChevronRight, Cookie, Server, MonitorSmartphone, EyeOff, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSeo } from "@/lib/analytics";
 
@@ -29,63 +29,53 @@ function AnimatedElement({ children, className, delay = 0 }) {
 
 const SECTIONS = [
   {
-    icon: BarChart3,
-    title: "1. Information We Collect",
-    body: "We collect only what is necessary to operate TestPeak. When you create an account, we store your email address. We do not ask visitors for their name or phone number. We also collect limited data automatically — such as IP address, browser type, device type, and the pages or tools you open — using cookies and local storage.",
-  },
-  {
-    icon: BarChart3,
-    title: "2. Analytics",
-    body: "We use Google Analytics 4 to understand how visitors use the site in aggregate (e.g., popular tools, visit duration, device type). Google may set cookies and collect anonymized usage data under its own privacy policy. You can disable cookies in your browser settings. Additionally, when you open a tool, we record an anonymous usage event (tool name, category, and timestamp) on our servers to power our analytics dashboard.",
+    icon: EyeOff,
+    title: "1. We Don't Track You",
+    body: "TestPeak does not use Google Analytics or any third-party analytics or advertising trackers. We do not record which tools you open, track your visits, or build a profile of your behavior. No tracking cookies are ever set.",
   },
   {
     icon: MonitorSmartphone,
-    title: "3. Local vs Server Processing",
-    body: "Most tools process your input entirely inside your browser — nothing is sent to our servers. This includes the calculators, unit converters, QR generator, and the image tools (cropper, compressor, enhancer, and background remover). Your images and values never leave your device for these tools.",
+    title: "2. Local-First Processing",
+    body: "Calculators, converters, the QR generator, and the image tools (cropper, compressor, enhancer, background remover) run entirely in your browser. Your inputs, values, and images never leave your device for these tools.",
   },
   {
     icon: Server,
-    title: "4. Tools That Send Data to Our Servers",
-    body: "A few features require server-side processing: (a) the AI Logo Maker sends your brand name and tagline to our server to generate logo concepts, which are then stored and returned to you; (b) blog cover and in-article images uploaded by administrators are stored on our servers; (c) account registration stores your email. Everything else runs locally in your browser.",
+    title: "3. Tools That Use Our Servers",
+    body: "A few features use our servers only when you actively choose them: the AI Logo Maker sends your brand name and tagline to generate logo concepts, which are returned to you; and blog images uploaded by administrators are stored on our servers. These are actions you take — not passive tracking — and no usage profile is built from them.",
   },
   {
     icon: ShieldCheck,
-    title: "5. How We Use Your Information",
-    body: "We use the information we collect to provide and improve our services, communicate with you about your account, analyze and understand usage, maintain security, and comply with legal obligations.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "6. Sharing Information",
-    body: "We do not sell or rent your personal information. We may share data with trusted service providers who process it on our behalf under their own privacy policies — for example Google (Analytics) and the AI providers that power the Logo Maker. We may also disclose information when required by law.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "7. Information Security",
-    body: "We apply appropriate technical and organizational measures to protect your information. However, no system is 100% secure, and we cannot guarantee absolute security.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "8. Your Rights",
-    body: "You have the right to access, correct, or delete your personal data, to object to its processing, and to withdraw consent at any time. To exercise these rights, contact us at the email below.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "9. Financial & Health Disclaimer",
-    body: "All financial and health tools (loans, interest, BMI, calories, etc.) are for educational and informational purposes only and do not constitute professional financial or medical advice.",
+    title: "4. Accounts",
+    body: "Creating an account is optional. If you do, we store only your email address to identify you. We do not ask for your name or phone number.",
   },
   {
     icon: Cookie,
-    title: "10. Cookies",
-    body: "We use cookies and local storage to remember your preferences (such as language and favorites) and to measure usage. You can disable cookies in your browser; some features that rely on them may be limited.",
+    title: "5. Cookies & Local Storage",
+    body: "We use local storage only to remember your preferences, such as your language and favorite tools. We do not use tracking cookies, and we share no data with advertisers or third parties.",
   },
   {
     icon: ShieldCheck,
-    title: "11. Children's Privacy",
+    title: "6. Information Security",
+    body: "We apply appropriate technical and organizational measures to protect any data we hold. However, no system is 100% secure, and we cannot guarantee absolute security.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "7. Your Rights",
+    body: "You may access, correct, or delete your personal data, object to its processing, and withdraw consent at any time. To exercise these rights, contact us at the email below.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "8. Financial & Health Disclaimer",
+    body: "All financial and health tools (loans, interest, BMI, calories, etc.) are for educational and informational purposes only and do not constitute professional financial or medical advice.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "9. Children's Privacy",
     body: "TestPeak is not directed at children under 13, and we do not knowingly collect personal information from children.",
   },
   {
     icon: ShieldCheck,
-    title: "12. Changes to This Policy",
+    title: "10. Changes to This Policy",
     body: "We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated revision date.",
   },
 ];
@@ -93,7 +83,7 @@ const SECTIONS = [
 export default function Privacy() {
   useSeo({
     title: "Privacy Policy — TestPeak",
-    description: "How TestPeak collects, uses, and protects your information. Most tools run locally in your browser; a few features send limited data to our servers for processing and analytics.",
+    description: "TestPeak does not track you. Most tools run locally in your browser; a few features use our servers only when you actively use them. No analytics, no tracking cookies.",
     path: "/Privacy",
   });
   return (
@@ -104,13 +94,13 @@ export default function Privacy() {
         <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: "easeOut" }}>
             <div className="inline-flex items-center gap-2 rounded-full bg-secondary border border-border px-4 py-1.5 mb-5">
-              <ShieldCheck className="w-4 h-4 text-primary" />
+              <EyeOff className="w-4 h-4 text-primary" />
               <span className="text-sm text-muted-foreground">TestPeak</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground mb-3">Privacy Policy</h1>
             <span className="text-sm text-muted-foreground">Last Updated: August 15, 2026</span>
             <p className="text-muted-foreground mt-6 leading-relaxed max-w-2xl mx-auto">
-              At TestPeak, we respect your privacy. This policy explains what data we collect, how we use it, and which tools process information locally in your browser versus on our servers.
+              At TestPeak, your privacy comes first. We don't track you and we don't profile you. This policy explains which tools process information locally in your browser, and the few features that use our servers only when you actively use them.
             </p>
           </motion.div>
         </div>
@@ -140,7 +130,7 @@ export default function Privacy() {
             <div className="mt-8 rounded-2xl bg-gradient-to-br from-primary/15 to-accent/10 border border-primary/20 p-6 flex items-center gap-4">
               <Mail className="w-6 h-6 text-accent shrink-0" />
               <div>
-                <h3 className="font-bold text-foreground">13. Contact Us</h3>
+                <h3 className="font-bold text-foreground">11. Contact Us</h3>
                 <a href="mailto:support@testpeak.net" className="text-primary hover:underline">support@testpeak.net</a>
               </div>
             </div>

@@ -94,22 +94,21 @@ function AboutUsSection() {
 function PrivacyPolicySection() {
   const { t } = useI18n();
   const sections = [
-    { title: "1. Information We Collect", body: "When you create an account, we store your email address. We do not ask visitors for their name or phone number. We also collect limited data automatically — IP, browser type, device type, and the tools you open — using cookies and local storage." },
-    { title: "2. Analytics", body: "We use Google Analytics 4 to understand aggregate usage, and record an anonymous event (tool name, category, timestamp) when you open a tool. You can disable cookies in your browser." },
-    { title: "3. Local vs Server Processing", body: "Most tools run entirely in your browser — calculators, converters, QR generator, and image tools (cropper, compressor, enhancer, background remover). Your inputs and images never leave your device for these tools." },
-    { title: "4. Tools That Use Our Servers", body: "A few features send data to our servers: the AI Logo Maker (brand name and tagline), blog images uploaded by admins, and account registration. Everything else is processed locally." },
-    { title: "5. How We Use Your Information", body: "We use information to provide and improve services, communicate with you, analyze usage, and comply with legal obligations." },
-    { title: "6. Sharing Information", body: "We do not sell or rent your personal information. We may share data with trusted providers (e.g., Google Analytics, AI providers) who process it under their own policies." },
-    { title: "7. Information Security", body: "We apply appropriate technical and organizational measures. However, no security system is 100% guaranteed." },
-    { title: "8. Your Rights", body: "You have the right to access, correct, delete, object to processing, and withdraw consent at any time." },
-    { title: "9. Financial & Health Disclaimer", body: "All financial and health tools are for educational and informational purposes only and do not constitute professional advice." },
+    { title: "1. We Don't Track You", body: "TestPeak does not use Google Analytics or any third-party tracking. We do not record which tools you use or track your behavior. No tracking cookies are set." },
+    { title: "2. Local-First Processing", body: "Calculators, converters, the QR generator, and image tools (cropper, compressor, enhancer, background remover) run entirely in your browser. Your inputs and images never leave your device." },
+    { title: "3. Tools That Use Our Servers", body: "The AI Logo Maker sends your brand name and tagline to generate logos, and blog images uploaded by admins are stored on our servers. These are actions you take, not passive tracking." },
+    { title: "4. Accounts", body: "If you create an account, we store your email address. We do not ask for your name or phone number." },
+    { title: "5. Cookies", body: "We use local storage only to remember your preferences (language, favorites). We do not use tracking cookies and share nothing with advertisers." },
+    { title: "6. Information Security", body: "We apply appropriate technical and organizational measures. However, no security system is 100% guaranteed." },
+    { title: "7. Your Rights", body: "You have the right to access, correct, delete, object to processing, and withdraw consent at any time." },
+    { title: "8. Financial & Health Disclaimer", body: "All financial and health tools are for educational and informational purposes only and do not constitute professional advice." },
   ];
   return (
     <section id="privacy-policy" className="bg-background py-16 sm:py-24">
       <div className="max-w-4xl mx-auto px-6">
         <AnimatedElement>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">{t("Privacy Policy")}</h2>
-          <span className="text-sm text-muted-foreground">{t("Last Updated: August 13, 2026")}</span>
+          <span className="text-sm text-muted-foreground">{t("Last Updated: August 15, 2026")}</span>
           <p className="text-muted-foreground mt-6 leading-relaxed">
             {t("At TestPeak, we recognize the importance of your privacy and are committed to protecting it. This Privacy Policy explains how we collect, use, share, and protect your personal information.")}
           </p>
@@ -128,7 +127,7 @@ function PrivacyPolicySection() {
           <div className="mt-10 rounded-2xl bg-gradient-to-br from-primary/15 to-accent/10 border border-primary/20 p-6 flex items-center gap-4">
             <Mail className="w-6 h-6 text-accent shrink-0" />
             <div>
-              <h3 className="font-bold text-foreground">{t("10. Contact Us")}</h3>
+              <h3 className="font-bold text-foreground">{t("9. Contact Us")}</h3>
               <a href="mailto:support@testpeak.net" className="text-primary hover:underline">support@testpeak.net</a>
             </div>
           </div>

@@ -24,7 +24,6 @@ import { TOOL_GUIDES } from "@/data/tool-guides";
 
 const ToolEntity = base44.entities.Tool;
 const BlogPostEntity = base44.entities.BlogPost;
-const ToolUsageEntity = base44.entities.ToolUsage;
 
 const ICONS = {
   Calculator, TrendingUp, LineChart: LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight,
@@ -1725,7 +1724,6 @@ function ToolsHub({ searchQuery = "" }) {
     setActiveCategory(tool.category);
     setSearchParams({ tool: tool.slug });
     trackEvent("tool_select", { tool_slug: tool.slug, tool_name: tool.name, category: tool.category });
-    ToolUsageEntity.create({ slug: tool.slug, tool_name: tool.name, category: tool.category }).catch(() => {});
   };
   const clearTool = () => {
     const next = new URLSearchParams(searchParams);
@@ -2018,19 +2016,19 @@ function PrivacyTeaser() {
               <Square className="w-6 h-6 text-primary stroke-[2.5]" />
               <h2 className="text-2xl sm:text-3xl font-extrabold text-card-foreground">{t("Privacy Policy")}</h2>
             </div>
-            <p className="text-xs text-muted-foreground mb-8 uppercase tracking-wider">{t("Last Updated: August 13, 2026")}</p>
+            <p className="text-xs text-muted-foreground mb-8 uppercase tracking-wider">{t("Last Updated: August 15, 2026")}</p>
             
             <div className="space-y-6 text-sm text-muted-foreground">
-              <p>{t("At TestPeak, we recognize the importance of your privacy and are committed to protecting it. This Privacy Policy explains how we collect, use, share, and protect your personal information.")}</p>
+              <p>{t("At TestPeak, your privacy comes first. We don't track you, we don't profile you, and most tools run entirely in your browser. This policy explains how the platform handles data.")}</p>
               
               <div>
-                <strong className="text-foreground text-base block mb-1">{t("1. Information We Collect")}</strong>
-                <p>{t("We collect two main types: information you provide voluntarily (name, email, phone) and information collected automatically (IP, browser type, cookies).")}</p>
+                <strong className="text-foreground text-base block mb-1">{t("1. We Don't Track You")}</strong>
+                <p>{t("TestPeak uses no Google Analytics or third-party trackers. We do not record which tools you use or set tracking cookies.")}</p>
               </div>
               
               <div>
-                <strong className="text-foreground text-base block mb-1">{t("2. How We Use Your Information")}</strong>
-                <p>{t("We use information to provide and improve services, communicate with you, analyze usage, and comply with legal obligations.")}</p>
+                <strong className="text-foreground text-base block mb-1">{t("2. Local-First Processing")}</strong>
+                <p>{t("Calculators, converters, and image tools run in your browser. Only the AI Logo Maker and admin blog uploads use our servers, and only when you actively use them.")}</p>
               </div>
               
               <div className="pt-4">
