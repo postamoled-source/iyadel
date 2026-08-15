@@ -94,13 +94,15 @@ function AboutUsSection() {
 function PrivacyPolicySection() {
   const { t } = useI18n();
   const sections = [
-    { title: "1. Information We Collect", body: "We collect two main types: information you provide voluntarily (name, email, phone) and information collected automatically (IP, browser type, cookies)." },
-    { title: "2. How We Use Your Information", body: "We use information to provide and improve services, communicate with you, analyze usage, and comply with legal obligations." },
-    { title: "3. Sharing Information", body: "We do not sell or rent your personal information. We may share data with trusted partners to help operate our site." },
-    { title: "4. Information Security", body: "We use appropriate technical and organizational measures. However, no security system is 100% guaranteed." },
-    { title: "5. Your Rights", body: "You have the right to access, correct, delete, object to processing, and withdraw consent at any time." },
-    { title: "6. Privacy Policy for Image Tools", body: "All image processing tools work locally within your browser. No images are uploaded or stored on our servers." },
-    { title: "7. Financial Disclaimer", body: "All financial tools are for educational and informational purposes only, and do not constitute financial advice." },
+    { title: "1. Information We Collect", body: "When you create an account, we store your email address. We do not ask visitors for their name or phone number. We also collect limited data automatically — IP, browser type, device type, and the tools you open — using cookies and local storage." },
+    { title: "2. Analytics", body: "We use Google Analytics 4 to understand aggregate usage, and record an anonymous event (tool name, category, timestamp) when you open a tool. You can disable cookies in your browser." },
+    { title: "3. Local vs Server Processing", body: "Most tools run entirely in your browser — calculators, converters, QR generator, and image tools (cropper, compressor, enhancer, background remover). Your inputs and images never leave your device for these tools." },
+    { title: "4. Tools That Use Our Servers", body: "A few features send data to our servers: the AI Logo Maker (brand name and tagline), blog images uploaded by admins, and account registration. Everything else is processed locally." },
+    { title: "5. How We Use Your Information", body: "We use information to provide and improve services, communicate with you, analyze usage, and comply with legal obligations." },
+    { title: "6. Sharing Information", body: "We do not sell or rent your personal information. We may share data with trusted providers (e.g., Google Analytics, AI providers) who process it under their own policies." },
+    { title: "7. Information Security", body: "We apply appropriate technical and organizational measures. However, no security system is 100% guaranteed." },
+    { title: "8. Your Rights", body: "You have the right to access, correct, delete, object to processing, and withdraw consent at any time." },
+    { title: "9. Financial & Health Disclaimer", body: "All financial and health tools are for educational and informational purposes only and do not constitute professional advice." },
   ];
   return (
     <section id="privacy-policy" className="bg-background py-16 sm:py-24">
@@ -126,7 +128,7 @@ function PrivacyPolicySection() {
           <div className="mt-10 rounded-2xl bg-gradient-to-br from-primary/15 to-accent/10 border border-primary/20 p-6 flex items-center gap-4">
             <Mail className="w-6 h-6 text-accent shrink-0" />
             <div>
-              <h3 className="font-bold text-foreground">{t("8. Contact Us")}</h3>
+              <h3 className="font-bold text-foreground">{t("10. Contact Us")}</h3>
               <a href="mailto:support@testpeak.net" className="text-primary hover:underline">support@testpeak.net</a>
             </div>
           </div>
@@ -144,7 +146,7 @@ function CTASection() {
       <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
         <AnimatedElement>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{t("Ready to get started?")}</h2>
-          <p className="text-muted-foreground mb-8">{t("Jump back in and explore all 26+ free tools TestPeak has to offer.")}</p>
+          <p className="text-muted-foreground mb-8">{t("Jump back in and explore all 31+ free tools TestPeak has to offer.")}</p>
           <Link to="/">
             <Button className="relative overflow-hidden rounded-xl px-8 py-6 text-lg bg-accent text-accent-foreground hover:scale-105 transition-transform duration-300 shadow-lg shadow-accent/20">
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-foreground/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />
