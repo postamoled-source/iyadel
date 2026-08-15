@@ -166,6 +166,8 @@ const AR = {
   "Play again": "العب مجددًا",
   "Swipe or use arrow keys to move. Merge equal tiles to reach 2048.": "اسحب أو استخدم أسهم لوحة المفاتيح للتحريك. ادمج البلاطات المتساوية للوصول إلى 2048.",
   "Flip two cards at a time and find every matching pair.": "اقلب بطاقتين في كل مرة واعثر على كل زوج متطابق.",
+  "Brain Games Aren't a Waste of Time: How They Train Memory for Kids and Adults": "ألعاب العقل ليست مضيعة للوقت: كيف تدرّب الذاكرة للأطفال والكبار",
+  "Instead of mindless scrolling, brain games quietly build memory, focus, and problem-solving — for your child and for you. Here's why playing together matters.": "بدل التصفح المفرغ، تبني ألعاب العقل الذاكرة والتركيز وحل المشكلات بهدوء — لطفلك ولك. إليك لماذا يهم اللعب معًا.",
 
   // Why / About section (home)
   "Completely free": "مجاني تمامًا",
