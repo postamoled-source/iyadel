@@ -8,7 +8,7 @@ import MobileSelect from "@/components/MobileSelect";
 import PullToRefresh from "@/components/PullToRefresh";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { createPortal } from "react-dom";
-import { Image } from "@/components/ui/image";
+import { Image as Img } from "@/components/ui/image";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
@@ -1469,7 +1469,7 @@ function ToolWorkspace({ tool, onBack }) {
             <>
               {tool.image && (
                 <div className="mt-10 rounded-2xl overflow-hidden border border-border">
-                  <Image src={tool.image} alt={t(tool.name)} fittingType="fill" className="w-full h-48" />
+                  <Img src={tool.image} alt={t(tool.name)} fittingType="fill" className="w-full h-48" />
                 </div>
               )}
               <div className="mt-10 rounded-2xl bg-secondary border border-border p-6 text-sm text-secondary-foreground leading-relaxed text-left">
