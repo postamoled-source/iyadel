@@ -9,7 +9,9 @@ const W = 320, H = 440;
 const GAME_SECONDS = 30;
 const GRAVITY = 0.24;
 const BALL_R = 7;
-const SPEED = 10.5;
+const MIN_SPEED = 9;
+const MAX_SPEED = 19;
+const CHARGE_MS = 800;
 const TARGET_COUNT = 6;
 const COLORS = ["#5b3aa8", "#f5a623", "#e0533a", "#2a9d8f", "#3a6ea5"];
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -36,6 +38,8 @@ export default function BallLauncher() {
   const targetsRef = useRef([]);
   const aimRef = useRef(-Math.PI / 2);
   const chargingRef = useRef(false);
+  const chargeStartRef = useRef(0);
+  const powerRef = useRef(0);
   const rafRef = useRef(null);
   const countdownRef = useRef(null);
 
@@ -110,9 +114,16 @@ export default function BallLauncher() {
   const drawAim = (ctx) => {
     if (!chargingRef.current || phaseRef.current !== "running") return;
     const bx = W / 2, by = H - 40; const ang = aimRef.current;
-    ctx.save(); ctx.strokeStyle = hslA("--primary", 0.5); ctx.lineWidth = 2;
+    const p = powerRef.current;
+    // aim line length and color scale with charge power
+    const len = 60 + p * 120;
+    ctx.save(); ctx.strokeStyle = hslA(p > 0.7 ? "--accent" : "--primary", 0.35 + p * 0.5); ctx.lineWidth = 2 + p * 4;
     ctx.setLineDash([4, 6]); ctx.beginPath(); ctx.moveTo(bx, by);
-    ctx.lineTo(bx + Math.cos(ang) * 90, by + Math.sin(ang) * 90); ctx.stroke(); ctx.restore();
+    ctx.lineTo(bx + Math.cos(ang) * len, by + Math.sin(ang) * len); ctx.stroke(); ctx.restore();
+    // power bar above the cannon base
+    const bw = 54, bh = 6; const bx0 = bx - bw / 2, by0 = by + 20;
+    ctx.fillStyle = hslA("--border", 0.6); ctx.fillRect(bx0, by0, bw, bh);
+    ctx.fillStyle = p > 0.7 ? hsl("--accent") : hsl("--primary"); ctx.fillRect(bx0, by0, bw * p, bh);
   };
 
   const loop = useCallback(() => {
@@ -148,6 +159,9 @@ export default function BallLauncher() {
       if (popped) { balls.splice(i, 1); continue; }
       drawBall(ctx, b);
     }
+    if (chargingRef.current) {
+      powerRef.current = Math.min(1, (performance.now() - chargeStartRef.current) / CHARGE_MS);
+    }
     drawCannon(ctx); drawAim(ctx);
     rafRef.current = requestAnimationFrame(loop);
   }, [spawnTarget]);
@@ -174,14 +188,15 @@ export default function BallLauncher() {
   };
   const updateAim = (px, py) => {
     const by = H - 40; let ang = Math.atan2(py - by, px - W / 2);
-    if (ang >= 0) ang = -Math.PI / 2;
+    if (ang >= 0) ang = px < W / 2 ? -Math.PI + 0.15 : -0.15;
     ang = Math.max(-Math.PI + 0.15, Math.min(-0.15, ang));
     aimRef.current = ang;
   };
   const onDown = (e) => {
     e.preventDefault(); resumeAudio();
     if (phaseRef.current !== "running") return;
-    const { x, y } = toCanvas(e); updateAim(x, y); chargingRef.current = true;
+    const { x, y } = toCanvas(e); updateAim(x, y);
+    chargingRef.current = true; chargeStartRef.current = performance.now(); powerRef.current = 0;
   };
   const onMove = (e) => {
     if (!chargingRef.current || phaseRef.current !== "running") return;
@@ -195,10 +210,12 @@ export default function BallLauncher() {
   };
   const fire = () => {
     const ang = aimRef.current; const bx = W / 2, by = H - 40;
+    const speed = MIN_SPEED + powerRef.current * (MAX_SPEED - MIN_SPEED);
     ballsRef.current.push({
       x: bx + Math.cos(ang) * 24, y: by + Math.sin(ang) * 24,
-      vx: Math.cos(ang) * SPEED, vy: Math.sin(ang) * SPEED,
+      vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed,
     });
+    powerRef.current = 0;
     playLaunch();
   };
 
