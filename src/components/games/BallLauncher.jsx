@@ -10,10 +10,10 @@ const GAME_SECONDS = 30;
 const GRAVITY = 0.15;
 const DRAG = 0.998;
 const BALL_R = 7;
-const MIN_SPEED = 11;
-const MAX_SPEED = 22;
+const MIN_SPEED = 6;
+const MAX_SPEED = 13;
 const CHARGE_MS = 700;
-const TARGET_COUNT = 6;
+const TARGET_COUNT = 12;
 const COLORS = ["#5b3aa8", "#f5a623", "#e0533a", "#2a9d8f", "#3a6ea5"];
 const rand = (a, b) => a + Math.random() * (b - a);
 // Canvas APIs can't parse CSS variables like "hsl(var(--card))", so resolve
@@ -248,16 +248,10 @@ export default function BallLauncher() {
   const fire = () => {
     const ang = aimRef.current; const bx = W / 2, by = H - 40;
     const speed = MIN_SPEED + powerRef.current * (MAX_SPEED - MIN_SPEED);
-    // higher charge launches a cluster of balls in a small spread
-    const count = powerRef.current > 0.5 ? 3 : 1;
-    const spread = 0.12;
-    for (let i = 0; i < count; i++) {
-      const a = ang + (count > 1 ? (i - (count - 1) / 2) * spread : 0);
-      ballsRef.current.push({
-        x: bx + Math.cos(a) * 24, y: by + Math.sin(a) * 24,
-        vx: Math.cos(a) * speed, vy: Math.sin(a) * speed,
-      });
-    }
+    ballsRef.current.push({
+      x: bx + Math.cos(ang) * 24, y: by + Math.sin(ang) * 24,
+      vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed,
+    });
     powerRef.current = 0;
     playLaunch();
   };
