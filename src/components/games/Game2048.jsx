@@ -6,56 +6,86 @@ import { motion, AnimatePresence } from "framer-motion";
 import { playMove, playMerge, playWin, playGameOver, playStart, resumeAudio } from "@/lib/game-sounds";
 
 const SIZE = 4;
+const GAP = 10;
+let idCounter = 1;
+const newId = () => idCounter++;
+const rand = (n) => Math.floor(Math.random() * n);
+
 const emptyBoard = () => Array.from({ length: SIZE }, () => Array(SIZE).fill(0));
 
-function spawnTile(b) {
-  const cells = [];
-  for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (b[r][c] === 0) cells.push([r, c]);
-  if (!cells.length) return b;
-  const [r, c] = cells[Math.floor(Math.random() * cells.length)];
-  b[r][c] = Math.random() < 0.9 ? 2 : 4;
-  return b;
-}
-
-function compressLine(line) {
-  const vals = line.filter((v) => v);
-  const out = [];
-  let gained = 0;
-  for (let i = 0; i < vals.length; i++) {
-    if (i + 1 < vals.length && vals[i] === vals[i + 1]) { out.push(vals[i] * 2); gained += vals[i] * 2; i++; }
-    else out.push(vals[i]);
-  }
-  while (out.length < SIZE) out.push(0);
-  return { line: out, gained };
-}
-
-function moveBoard(b, dir) {
-  const nb = b.map((row) => row.slice());
-  let gained = 0, changed = false;
-  const apply = (get, set) => {
-    for (let i = 0; i < SIZE; i++) {
-      const line = get(i);
-      const res = compressLine(line);
-      gained += res.gained;
-      set(i, res.line);
-      if (line.some((v, k) => v !== res.line[k])) changed = true;
-    }
-  };
-  if (dir === 0) apply((i) => nb[i], (i, l) => { nb[i] = l; });
-  else if (dir === 2) apply((i) => nb[i].slice().reverse(), (i, l) => { nb[i] = l.reverse(); });
-  else if (dir === 1) apply((i) => nb.map((row) => row[i]), (i, l) => { for (let r = 0; r < SIZE; r++) nb[r][i] = l[r]; });
-  else apply((i) => nb.map((row) => row[i]).reverse(), (i, l) => { const back = l.reverse(); for (let r = 0; r < SIZE; r++) nb[r][i] = back[r]; });
-  return { board: nb, gained, changed };
-}
-
-function isGameOver(b) {
+const isGameOver = (b) => {
   for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
     if (b[r][c] === 0) return false;
     if (c + 1 < SIZE && b[r][c] === b[r][c + 1]) return false;
     if (r + 1 < SIZE && b[r][c] === b[r + 1][c]) return false;
   }
   return true;
-}
+};
+
+// Build the four lines of cell coordinates for a move, ordered from the edge
+// tiles travel toward (so compression fills from that edge).
+const buildLines = (dir) => {
+  const lines = [];
+  for (let i = 0; i < SIZE; i++) {
+    const line = [];
+    for (let j = 0; j < SIZE; j++) {
+      let r, c;
+      if (dir === 0) { r = i; c = j; }
+      else if (dir === 2) { r = i; c = SIZE - 1 - j; }
+      else if (dir === 1) { r = j; c = i; }
+      else { r = SIZE - 1 - j; c = i; }
+      line.push([r, c]);
+    }
+    lines.push(line);
+  }
+  return lines;
+};
+
+// Returns survivors (kept tiles with new positions), ghosts (merged-away
+// tiles that slide to the merge cell then fade), score gained, and the
+// resulting numeric board (for spawn + game-over checks).
+const applyMove = (tiles, dir) => {
+  const grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+  tiles.forEach((t) => { grid[t.r][t.c] = t; });
+  const board = emptyBoard();
+  const survivors = [];
+  const ghosts = [];
+  let gained = 0, changed = false;
+
+  for (const line of buildLines(dir)) {
+    const lineTiles = line.map(([r, c]) => grid[r][c]).filter(Boolean);
+    let target = 0, k = 0;
+    while (k < lineTiles.length) {
+      const t = lineTiles[k];
+      const [tr, tc] = line[target];
+      if (k + 1 < lineTiles.length && lineTiles[k + 1].value === t.value) {
+        const m = lineTiles[k + 1];
+        if (t.r !== tr || t.c !== tc || m.r !== tr || m.c !== tc) changed = true;
+        survivors.push({ id: t.id, value: t.value * 2, r: tr, c: tc, state: "merged" });
+        ghosts.push({ id: m.id, value: m.value, r: tr, c: tc, state: "removing" });
+        board[tr][tc] = t.value * 2;
+        gained += t.value * 2;
+        k += 2; target++;
+        changed = true;
+      } else {
+        if (t.r !== tr || t.c !== tc) changed = true;
+        survivors.push({ id: t.id, value: t.value, r: tr, c: tc, state: "normal" });
+        board[tr][tc] = t.value;
+        k++; target++;
+      }
+    }
+  }
+  return { survivors, ghosts, gained, changed, board };
+};
+
+const makeTile = (board) => {
+  const cells = [];
+  for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (board[r][c] === 0) cells.push([r, c]);
+  if (!cells.length) return null;
+  const [r, c] = cells[rand(cells.length)];
+  const value = Math.random() < 0.9 ? 2 : 4;
+  return { id: newId(), value, r, c, state: "new" };
+};
 
 // Per-value gradient backgrounds for a richer, cohesive look.
 const TILE = {
@@ -72,37 +102,57 @@ const TILE = {
   2048: "from-yellow-300 via-amber-400 to-orange-500 text-amber-950",
 };
 
+const initialTiles = () => {
+  const b = emptyBoard();
+  const tiles = [];
+  for (let i = 0; i < 2; i++) {
+    const t = makeTile(b);
+    if (t) { tiles.push(t); b[t.r][t.c] = t.value; }
+  }
+  return tiles;
+};
+
 export default function Game2048() {
   const { t } = useI18n();
-  const [board, setBoard] = useState(() => { const b = emptyBoard(); spawnTile(b); spawnTile(b); return b; });
+  const [tiles, setTiles] = useState(initialTiles);
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(() => { try { return Number(localStorage.getItem("tp_2048_best") || 0); } catch { return 0; } });
   const [over, setOver] = useState(false);
   const [won, setWon] = useState(false);
-  const [pop, setPop] = useState(0); // bump to trigger merge-pulse on merged tiles
+  const [bw, setBw] = useState(320);
   const touch = useRef(null);
-  const mergedRef = useRef(null);
+  const tilesRef = useRef(tiles);
+  const boardRef = useRef(null);
+
+  useEffect(() => {
+    const el = boardRef.current;
+    if (!el) return;
+    const update = () => setBw(el.clientWidth);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const cell = (bw - GAP * (SIZE - 1)) / SIZE;
+  const at = (i) => i * (cell + GAP);
 
   const doMove = (dir) => {
     if (over) return;
-    const prev = board;
-    const { board: nb, gained, changed } = moveBoard(prev, dir);
+    const cur = tilesRef.current.filter((x) => x.state !== "removing");
+    const { survivors, ghosts, gained, changed, board } = applyMove(cur, dir);
     if (!changed) return;
-    // detect which cells merged (value grew) for a pulse
-    const merged = new Set();
-    for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
-      if (prev[r][c] !== 0 && nb[r][c] > prev[r][c]) merged.add(r * SIZE + c);
-    }
-    mergedRef.current = merged;
-    spawnTile(nb);
-    setBoard(nb);
-    setPop((p) => p + 1);
+    const spawn = makeTile(board);
+    const all = [...survivors, ...ghosts];
+    if (spawn) { all.push(spawn); board[spawn.r][spawn.c] = spawn.value; }
+    tilesRef.current = all;
+    setTiles(all);
     if (gained > 0) playMerge(); else playMove();
     const ns = score + gained;
     setScore(ns);
     if (ns > best) { setBest(ns); try { localStorage.setItem("tp_2048_best", String(ns)); } catch {} }
-    if (!won && nb.some((row) => row.some((v) => v >= 2048))) { setWon(true); playWin(); }
-    if (isGameOver(nb)) { setOver(true); playGameOver(); }
+    if (!won && survivors.some((x) => x.value >= 2048)) { setWon(true); playWin(); }
+    if (isGameOver(board)) { setOver(true); playGameOver(); }
   };
 
   useEffect(() => {
@@ -133,8 +183,9 @@ export default function Game2048() {
 
   const restart = () => {
     resumeAudio(); playStart();
-    const b = emptyBoard(); spawnTile(b); spawnTile(b);
-    setBoard(b); setScore(0); setOver(false); setWon(false); setPop((p) => p + 1);
+    const nt = initialTiles();
+    tilesRef.current = nt;
+    setTiles(nt); setScore(0); setOver(false); setWon(false);
   };
 
   return (
@@ -160,32 +211,47 @@ export default function Game2048() {
         className="relative mx-auto rounded-3xl p-3 shadow-lg w-fit overflow-hidden
           bg-gradient-to-br from-violet-500/15 via-sky-400/10 to-amber-300/20 border border-primary/20"
       >
-        {/* soft decorative glows */}
         <div className="pointer-events-none absolute -top-10 -left-10 w-32 h-32 rounded-full bg-primary/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-accent/20 blur-3xl" />
 
-        <div className="relative grid grid-cols-4 gap-2.5" style={{ width: "min(80vw, 340px)", height: "min(80vw, 340px)" }}>
-          {board.flat().map((v, i) => {
-            const isMerged = mergedRef.current && mergedRef.current.has(i);
-            return (
-              <div key={i} className="rounded-xl">
-                <AnimatePresence>
-                  {v !== 0 && (
-                    <motion.div
-                      key={`${i}-${v}-${isMerged ? pop : 0}`}
-                      initial={{ scale: 0.3, opacity: 0 }}
-                      animate={{ scale: isMerged ? [1, 1.18, 1] : 1, opacity: 1 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ type: "spring", stiffness: 420, damping: 26, duration: isMerged ? 0.28 : 0.22 }}
-                      className={`w-full h-full rounded-xl bg-gradient-to-br ${TILE[v] || "from-primary to-accent text-primary-foreground"} flex items-center justify-center font-extrabold tabular-nums shadow-md ${v >= 1024 ? "text-lg" : v >= 128 ? "text-2xl" : "text-3xl"}`}
-                    >
-                      {v}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            );
-          })}
+        <div ref={boardRef} className="relative" style={{ width: "min(80vw, 340px)", height: "min(80vw, 340px)" }}>
+          {/* empty background cells */}
+          <div className="absolute inset-0 grid grid-cols-4 gap-2.5">
+            {Array.from({ length: 16 }).map((_, i) => (
+              <div key={i} className="rounded-xl bg-background/50 border border-border/40" />
+            ))}
+          </div>
+
+          {/* tiles */}
+          <div className="absolute inset-0">
+            {tiles.map((tile) => (
+              <motion.div
+                key={tile.id}
+                initial={{
+                  left: at(tile.c),
+                  top: at(tile.r),
+                  scale: tile.state === "new" ? 0 : 1,
+                  opacity: tile.state === "new" ? 0 : tile.state === "removing" ? 1 : 1,
+                }}
+                animate={{
+                  left: at(tile.c),
+                  top: at(tile.r),
+                  scale: tile.state === "merged" ? [1, 1.2, 1] : 1,
+                  opacity: tile.state === "removing" ? 0 : 1,
+                }}
+                transition={{
+                  left: { duration: 0.16, ease: "easeInOut" },
+                  top: { duration: 0.16, ease: "easeInOut" },
+                  scale: { duration: 0.22, ease: "easeOut" },
+                  opacity: { duration: tile.state === "removing" ? 0.12 : 0.12 },
+                }}
+                style={{ position: "absolute", width: cell, height: cell }}
+                className={`rounded-xl bg-gradient-to-br ${TILE[tile.value] || "from-primary to-accent text-primary-foreground"} flex items-center justify-center font-extrabold tabular-nums shadow-md ${tile.value >= 1024 ? "text-lg" : tile.value >= 128 ? "text-2xl" : "text-3xl"}`}
+              >
+                {tile.value}
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         <AnimatePresence>
