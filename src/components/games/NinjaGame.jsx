@@ -72,29 +72,84 @@ const THEMES = [
 function makeRng(seed) { let s = seed % 233280; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; }
 
 const WW = 2800;
+// Three hand-built, progressively harder layouts. Platforms, enemies, scrolls,
+// traps, torches and the bonfire differ per level; only the painted theme +
+// decoration reuse idx. `hp` scales enemy toughness.
+const LEVELS = [
+  {
+    hp: 2,
+    platforms: [
+      { x: 340, y: 372, w: 140 }, { x: 600, y: 300, w: 120 }, { x: 860, y: 380, w: 160 },
+      { x: 1140, y: 320, w: 140 }, { x: 1420, y: 360, w: 170 }, { x: 1720, y: 290, w: 130 },
+      { x: 2010, y: 360, w: 160 }, { x: 2300, y: 310, w: 150 }, { x: 2520, y: 370, w: 150 },
+    ],
+    enemies: [
+      { x: 480, y: GROUND - 44, range: [430, 600] },
+      { x: 900, y: 380 - 44, range: [860, 1020], plat: true },
+      { x: 1460, y: GROUND - 44, range: [1400, 1580] },
+      { x: 2050, y: GROUND - 44, range: [2000, 2160] },
+      { x: 2330, y: 310 - 44, range: [2300, 2440], plat: true },
+    ],
+    scrolls: [{ x: 390, y: 332 }, { x: 660, y: 260 }, { x: 1190, y: 280 }, { x: 1470, y: 320 }, { x: 1760, y: 250 }, { x: 2360, y: 270 }, { x: 2570, y: 330 }],
+    traps: [{ x: 780, w: 50 }, { x: 1640, w: 50 }, { x: 2180, w: 60 }],
+    torches: [220, 760, 1320, 1860, 2440],
+    bonfire: 2680,
+  },
+  {
+    hp: 2,
+    platforms: [
+      { x: 300, y: 360, w: 120 }, { x: 520, y: 280, w: 110 }, { x: 740, y: 360, w: 120 },
+      { x: 960, y: 290, w: 120 }, { x: 1180, y: 360, w: 130 }, { x: 1400, y: 260, w: 120 },
+      { x: 1620, y: 340, w: 130 }, { x: 1850, y: 280, w: 120 }, { x: 2080, y: 360, w: 140 },
+      { x: 2320, y: 300, w: 130 }, { x: 2540, y: 360, w: 150 },
+    ],
+    enemies: [
+      { x: 400, y: GROUND - 44, range: [300, 440] },
+      { x: 780, y: 360 - 44, range: [740, 860], plat: true },
+      { x: 1000, y: 290 - 44, range: [960, 1080], plat: true },
+      { x: 1240, y: GROUND - 44, range: [1180, 1310] },
+      { x: 1660, y: 340 - 44, range: [1620, 1750], plat: true },
+      { x: 2120, y: GROUND - 44, range: [2080, 2220] },
+      { x: 2360, y: 300 - 44, range: [2320, 2450], plat: true },
+    ],
+    scrolls: [{ x: 350, y: 320 }, { x: 570, y: 240 }, { x: 1010, y: 250 }, { x: 1250, y: 320 }, { x: 1450, y: 220 }, { x: 1880, y: 240 }, { x: 2370, y: 260 }, { x: 2590, y: 320 }],
+    traps: [{ x: 640, w: 50 }, { x: 1300, w: 60 }, { x: 1960, w: 70 }, { x: 2460, w: 50 }],
+    torches: [200, 680, 1180, 1700, 2200, 2580],
+    bonfire: 2660,
+  },
+  {
+    hp: 3,
+    platforms: [
+      { x: 280, y: 360, w: 110 }, { x: 480, y: 270, w: 100 }, { x: 680, y: 350, w: 110 },
+      { x: 880, y: 260, w: 100 }, { x: 1080, y: 340, w: 110 }, { x: 1280, y: 240, w: 100 },
+      { x: 1480, y: 320, w: 110 }, { x: 1680, y: 250, w: 100 }, { x: 1880, y: 330, w: 110 },
+      { x: 2100, y: 260, w: 100 }, { x: 2300, y: 340, w: 120 }, { x: 2520, y: 280, w: 120 },
+    ],
+    enemies: [
+      { x: 380, y: GROUND - 44, range: [280, 440] },
+      { x: 720, y: 350 - 44, range: [680, 790], plat: true },
+      { x: 1120, y: GROUND - 44, range: [1080, 1190] },
+      { x: 1300, y: 240 - 44, range: [1280, 1380], plat: true },
+      { x: 1520, y: 320 - 44, range: [1480, 1590], plat: true },
+      { x: 1920, y: GROUND - 44, range: [1880, 1990] },
+      { x: 2140, y: 260 - 44, range: [2100, 2200], plat: true },
+      { x: 2360, y: GROUND - 44, range: [2300, 2420] },
+      { x: 2560, y: 280 - 44, range: [2520, 2640], plat: true },
+    ],
+    scrolls: [{ x: 320, y: 320 }, { x: 520, y: 230 }, { x: 920, y: 220 }, { x: 1320, y: 200 }, { x: 1720, y: 210 }, { x: 2140, y: 220 }, { x: 2360, y: 300 }, { x: 2580, y: 240 }],
+    traps: [{ x: 580, w: 50 }, { x: 980, w: 60 }, { x: 1380, w: 60 }, { x: 1780, w: 70 }, { x: 2200, w: 60 }, { x: 2480, w: 60 }],
+    torches: [180, 620, 1080, 1480, 1880, 2280, 2560],
+    bonfire: 2680,
+  },
+];
+
 const buildLevel = (idx) => {
+  const L = LEVELS[idx];
   const rnd = makeRng(idx * 1337 + 7);
-  const platforms = [
-    { x: 320, y: 372, w: 150 }, { x: 580, y: 300, w: 120 }, { x: 840, y: 380, w: 170 },
-    { x: 1120, y: 320, w: 150 }, { x: 1400, y: 250, w: 130 }, { x: 1670, y: 360, w: 190 },
-    { x: 1960, y: 300, w: 150 }, { x: 2230, y: 380, w: 170 }, { x: 2480, y: 320, w: 150 },
-  ];
-  const enemies = [
-    { x: 470, y: GROUND - 44, range: [430, 560] },
-    { x: 880, y: 380 - 44, range: [840, 1010], plat: true },
-    { x: 1180, y: GROUND - 44, range: [1120, 1270] },
-    { x: 1700, y: GROUND - 44, range: [1640, 1860] },
-    { x: 1980, y: 300 - 44, range: [1960, 2110], plat: true },
-    { x: 2280, y: GROUND - 44, range: [2230, 2400] },
-  ].map((e) => ({ ...e, w: 26, h: 44, hp: 2, dir: 1, vy: 0, hurt: 0, dead: false }));
-  const scrolls = [{ x: 380, y: 332 }, { x: 640, y: 260 }, { x: 1170, y: 280 }, { x: 1450, y: 210 }, { x: 2030, y: 260 }, { x: 2540, y: 280 }];
-  const traps = [{ x: 760, w: 50 }, { x: 1560, w: 50 }, { x: 1900, w: 60 }];
-  const torches = [200, 740, 1300, 1820, 2420];
-  const bonfire = 2620;
-  // decoration
+  const enemies = L.enemies.map((e) => ({ ...e, w: 26, h: 44, hp: L.hp, dir: 1, vx: 0, vy: 0, hurt: 0, dead: false }));
   const trees = []; for (let i = 0; i < 26; i++) trees.push({ x: i * 120 + rnd() * 60, h: 120 + rnd() * 140, type: idx === 1 ? "bamboo" : "tree" });
   const mountains = []; for (let i = 0; i < 30; i++) mountains.push({ x: i * 110, h: 120 + rnd() * 120, w: 160 + rnd() * 100 });
-  return { platforms, enemies, scrolls, traps, torches, bonfire, trees, mountains, gate: { x: WW - 90, y: GROUND - 120, w: 64, h: 120 }, rnd };
+  return { platforms: L.platforms, enemies, scrolls: L.scrolls, traps: L.traps, torches: L.torches, bonfire: L.bonfire, trees, mountains, gate: { x: WW - 90, y: GROUND - 120, w: 64, h: 120 }, rnd };
 };
 
 // ---------- drawing helpers ----------
@@ -320,6 +375,7 @@ export default function NinjaGame() {
   const canvasRef = useRef(null);
   const stateRef = useRef(null);
   const keys = useRef({ left: false, right: false, down: false, run: false });
+  const jumpBuf = useRef(0);
   const [hud, setHud] = useState({ hp: 5, score: 0, shuriken: 6, level: 1, total: THEMES.length });
   const [phase, setPhase] = useState("ready");
   const [running, setRunning] = useState(false);
@@ -340,7 +396,7 @@ export default function NinjaGame() {
     const level = buildLevel(idx);
     stateRef.current = {
       idx, level,
-      player: { x: 60, y: GROUND - 50, w: 24, h: 50, vx: 0, vy: 0, facing: 1, onGround: true, jumps: 0, swing: 0, shuriken: 6, hurt: 0, atkCd: 0, hp: 5, crouch: false, dropT: 0, surface: null },
+      player: { x: 60, y: GROUND - 50, w: 24, h: 50, vx: 0, vy: 0, facing: 1, onGround: true, jumps: 0, swing: 0, shuriken: 6, hurt: 0, atkCd: 0, hp: 5, crouch: false, dropT: 0, surface: null, coyote: 0 },
       enemies: level.enemies, scrolls: level.scrolls.map((s) => ({ ...s, taken: false })),
       shurikens: [], particles: [], score: 0, cleared: false, time: 0,
     };
@@ -355,17 +411,20 @@ export default function NinjaGame() {
     const level = buildLevel(nl);
     s.idx = nl; s.level = level;
     s.player.hp = Math.min(5, s.player.hp + 1);
-    Object.assign(s.player, { x: 60, y: GROUND - 50, vx: 0, vy: 0, facing: 1, onGround: true, jumps: 0, swing: 0, shuriken: Math.max(s.player.shuriken, 6), hurt: 0, atkCd: 0, crouch: false, dropT: 0, surface: null });
+    Object.assign(s.player, { x: 60, y: GROUND - 50, vx: 0, vy: 0, facing: 1, onGround: true, jumps: 0, swing: 0, shuriken: Math.max(s.player.shuriken, 6), hurt: 0, atkCd: 0, crouch: false, dropT: 0, surface: null, coyote: 0 });
     s.enemies = level.enemies; s.scrolls = level.scrolls.map((sc) => ({ ...sc, taken: false })); s.shurikens = []; s.particles = []; s.cleared = false;
     setHud((h) => ({ ...h, level: nl + 1, shuriken: s.player.shuriken, hp: s.player.hp }));
     SFX.levelUp();
   }, []);
 
+  const tryJump = (p) => {
+    if (p.onGround || p.coyote > 0) { p.vy = -11.5; p.onGround = false; p.jumps = 1; p.coyote = 0; jumpBuf.current = 0; SFX.jump(); }
+    else if (p.jumps < MAX_JUMPS) { p.vy = -10; p.jumps++; jumpBuf.current = 0; SFX.jump(); }
+  };
   const doJump = useCallback(() => {
     const s = stateRef.current; if (!s || phase !== "playing") return;
-    const p = s.player;
-    if (p.onGround) { p.vy = -11.5; p.onGround = false; p.jumps = 1; SFX.jump(); }
-    else if (p.jumps < MAX_JUMPS) { p.vy = -10; p.jumps++; SFX.jump(); }
+    jumpBuf.current = 0.12;
+    tryJump(s.player);
   }, [phase]);
   const doAttack = useCallback(() => {
     const s = stateRef.current; if (!s || phase !== "playing") return;
@@ -435,6 +494,8 @@ export default function NinjaGame() {
       }
     }
     p.x = Math.max(0, Math.min(WW - p.w, p.x));
+    if (p.onGround) p.coyote = 0.1; else if (p.coyote > 0) p.coyote -= dt;
+    if (jumpBuf.current > 0) { jumpBuf.current -= dt; if (p.onGround) tryJump(p); }
     if (p.swing > 0) p.swing -= dt; if (p.atkCd > 0) p.atkCd -= dt; if (p.hurt > 0) p.hurt -= dt;
     // scrolls
     s.scrolls.forEach((sc) => {
