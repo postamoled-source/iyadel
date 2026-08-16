@@ -12,6 +12,7 @@ export const STATIC_TOOLS = [
     category: "Finance",
     description: "Monthly payment, total interest, and amortization schedule.",
     icon: "Calculator",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/c3a51e959_generated_image.png",
     content: "A loan calculator helps you understand the true cost of borrowing before you commit. Enter the loan amount, annual interest rate, and term in months to see your monthly payment, the total interest paid, and the total amount repaid. Interest is calculated on the declining balance, so making extra payments early can significantly reduce the total interest. Always compare offers from several banks and check for any hidden fees or insurance added to the principal.",
   },
   {
@@ -20,6 +21,7 @@ export const STATIC_TOOLS = [
     category: "Finance",
     description: "Compare your money growth over time.",
     icon: "TrendingUp",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/171caa095_generated_image.png",
     content: "Interest is the fee paid for using money, and it comes in two main forms. Simple interest grows linearly based only on your original principal, while compound interest earns interest on both the principal and the accumulated interest — accelerating your returns over time. The frequency of compounding (yearly, monthly, or daily) has a meaningful impact: the more frequent the compounding, the faster your money grows. This difference is why compound interest is often called the most powerful force in finance for long-term savers.",
   },
   {
@@ -28,6 +30,7 @@ export const STATIC_TOOLS = [
     category: "Finance",
     description: "Current yield and yield to maturity (YTM).",
     icon: "LineChart",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/3acc17b4b_generated_image.png",
     content: "Bonds are debt instruments that pay a fixed coupon and return their face value at maturity. Current yield measures the annual coupon relative to the bond's current market price, while yield to maturity (YTM) estimates the total annualized return if you hold the bond until it matures. YTM accounts for both the coupon payments and any gain or loss from buying the bond at a discount or premium to its face value. Comparing these two figures helps you judge whether a bond is fairly priced relative to similar investments.",
   },
   {
@@ -36,6 +39,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Get your health classification instantly.",
     icon: "Activity",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/547f577b2_generated_image.png",
     content: "Body Mass Index (BMI) estimates body fat from your weight and height, classifying results as underweight, normal, overweight, or obese. It is a quick screening tool widely used by health professionals, but it does not distinguish between muscle and fat — very muscular people may register as overweight without being unhealthy. BMI works best as a starting point alongside other measures like waist circumference and body-fat percentage. For a complete assessment, consult a healthcare provider rather than relying on BMI alone.",
   },
   {
@@ -44,6 +48,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Estimate calories burned during activity.",
     icon: "Flame",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/9aab25421_generated_image.png",
     content: "Calorie burn during exercise depends on your weight, the activity, and how long you do it. This tool uses MET (Metabolic Equivalent of Task) values, which estimate the intensity of common activities from walking to swimming. Heavier individuals burn more calories for the same activity, and higher-intensity workouts burn more per minute. Remember that these are estimates — actual burn varies with fitness level, metabolism, and effort, so use the result as a guide rather than an exact figure.",
   },
   {
@@ -140,6 +145,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Plot mathematical functions.",
     icon: "FunctionSquare",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/7320e9d3e_generated_image.png",
     content: "A function plotter visualizes mathematical functions by evaluating an expression across a range of x values. This tool supports common functions — sin, cos, tan, sqrt, ln, log, exp, abs — and the power operator (^). Plotting helps you understand behavior like roots, maxima, minima, and asymptotes that are hard to see from the formula alone. It is a quick way to explore equations for study, teaching, or checking homework.",
   },
   {
@@ -148,6 +154,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Quick percentage calculations.",
     icon: "Percent",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/ad024adb3_generated_image.png",
     content: "Percentages express a value as a fraction of 100, and they appear everywhere — discounts, taxes, statistics, and finance. This tool handles three common cases: finding a percentage of a number, finding what percentage one number is of another, and calculating the percentage change between two values. Percentage change is especially useful for comparing growth or decline over time. Knowing which mode to use avoids the common mistake of confusing 'percent of' with 'percent of what'.",
   },
   {
@@ -156,6 +163,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Speed, distance, time and Ohm's Law.",
     icon: "Atom",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/5d87d63db_generated_image.png",
     content: "Physics calculators solve fundamental motion and electricity equations. The speed, distance, and time relations are connected: speed = distance ÷ time, distance = speed × time, and time = distance ÷ speed. Ohm's Law links voltage, current, and resistance: I = V ÷ R. These formulas are the backbone of mechanics and electronics and are useful for students, hobbyists, and engineers working through practical problems.",
   },
   {
@@ -164,6 +172,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Calculate molar mass instantly.",
     icon: "FlaskConical",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/21a81ebd5_generated_image.png",
     content: "Molar mass is the mass of one mole of a substance, calculated by adding the atomic weights of all atoms in its formula. This tool parses a chemical formula (like H2O or C6H12O6) and sums the standard atomic weights of each element multiplied by its count. Knowing molar mass is essential for converting between grams and moles in lab work, stoichiometry, and solution preparation. The supported element set covers the most common elements; for exotic ones, add their atomic weights.",
   },
   {
