@@ -228,9 +228,9 @@ export const STATIC_TOOLS = [
     name: "Snake",
     slug: "snake-game",
     category: "Games",
-    description: "Classic snake in a nature garden — smooth glide, eat the fruit to grow longer.",
+    description: "Classic snake reimagined — elegant levels, glowing gems, and speed that climbs every level.",
     icon: "Spline",
-    content: "Snake is the timeless arcade classic reimagined on a calm nature garden. Guide a green serpent across a grassy field dotted with wildflowers and drifting butterflies — swipe or use the arrow keys to steer, and eat the red fruit to grow longer. The snake glides smoothly between cells, speeding up slightly as your score climbs. Hit a wall or your own body and the round ends; your best score is saved on your device. Synthesized sound effects mark every turn, bite, and game over. Everything runs in your browser — no data is stored.",
+    content: "Snake is the timeless arcade classic reimagined with an elegant twist. Guide a glowing serpent across a deep indigo board swept by soft ambient light — swipe or use the arrow keys to steer. Eat the red fruit to grow, and grab the glowing gems that appear with each new level for bonus points. The snake starts slow and relaxed, then speeds up steadily as you climb levels, so every stage feels fresh. Hit a wall or your own body and the round ends; your best score is saved on your device. Synthesized sound effects mark every turn, bite, gem, and level up. Everything runs in your browser — no data is stored.",
   },
   {
     name: "Image Cropper",
