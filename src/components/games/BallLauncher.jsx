@@ -7,11 +7,12 @@ import { playLaunch, playBounce, playPop, playGameOver, playStart, resumeAudio }
 const LOGO_URL = "https://media.base44.com/images/public/6a7e76e3396b41955b675542/307ba8fe6_generated_image.png";
 const W = 320, H = 440;
 const GAME_SECONDS = 30;
-const GRAVITY = 0.24;
+const GRAVITY = 0.15;
+const DRAG = 0.998;
 const BALL_R = 7;
-const MIN_SPEED = 9;
-const MAX_SPEED = 19;
-const CHARGE_MS = 800;
+const MIN_SPEED = 11;
+const MAX_SPEED = 22;
+const CHARGE_MS = 700;
 const TARGET_COUNT = 6;
 const COLORS = ["#5b3aa8", "#f5a623", "#e0533a", "#2a9d8f", "#3a6ea5"];
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -20,6 +21,14 @@ const rand = (a, b) => a + Math.random() * (b - a);
 const cssVar = (name) => window.getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const hsl = (name) => `hsl(${cssVar(name)})`;
 const hslA = (name, a) => `hsl(${cssVar(name)} / ${a})`;
+const cloud = (ctx, x, y, r) => {
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.arc(x + r * 0.9, y + r * 0.2, r * 0.8, 0, Math.PI * 2);
+  ctx.arc(x - r * 0.9, y + r * 0.2, r * 0.75, 0, Math.PI * 2);
+  ctx.arc(x + r * 0.3, y - r * 0.5, r * 0.7, 0, Math.PI * 2);
+  ctx.fill();
+};
 
 export default function BallLauncher() {
   const { t } = useI18n();
@@ -70,12 +79,40 @@ export default function BallLauncher() {
   }, []);
 
   const drawBg = (ctx) => {
-    const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, hsl("--card"));
-    g.addColorStop(1, hsl("--secondary"));
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    ctx.strokeStyle = hsl("--border"); ctx.lineWidth = 1;
+    // sky
+    const sky = ctx.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0, "#bfe3ff");
+    sky.addColorStop(0.6, "#e8f4ff");
+    sky.addColorStop(1, "#f3ead3");
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+    // sun
+    const sun = ctx.createRadialGradient(W - 56, 58, 5, W - 56, 58, 42);
+    sun.addColorStop(0, "rgba(255,236,170,0.95)");
+    sun.addColorStop(1, "rgba(255,236,170,0)");
+    ctx.fillStyle = sun; ctx.beginPath(); ctx.arc(W - 56, 58, 42, 0, Math.PI * 2); ctx.fill();
+    // clouds
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    cloud(ctx, 64, 78, 22); cloud(ctx, 200, 46, 18); cloud(ctx, 250, 120, 14);
+    // far hills
+    ctx.fillStyle = "#a8d48a";
+    ctx.beginPath(); ctx.moveTo(0, H - 26);
+    ctx.quadraticCurveTo(W * 0.25, H - 130, W * 0.5, H - 64);
+    ctx.quadraticCurveTo(W * 0.78, H - 8, W, H - 72); ctx.lineTo(W, H - 26); ctx.closePath(); ctx.fill();
+    // near hills
+    ctx.fillStyle = "#8cc46f";
+    ctx.beginPath(); ctx.moveTo(0, H - 26);
+    ctx.quadraticCurveTo(W * 0.35, H - 78, W * 0.7, H - 44);
+    ctx.quadraticCurveTo(W * 0.88, H - 26, W, H - 34); ctx.lineTo(W, H - 26); ctx.closePath(); ctx.fill();
+    // grass ground
+    ctx.fillStyle = "#5fa04a"; ctx.fillRect(0, H - 26, W, 26);
+    ctx.strokeStyle = "rgba(255,255,255,0.18)"; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(0, H - 26); ctx.lineTo(W, H - 26); ctx.stroke();
+    // grass blades
+    ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.lineWidth = 1;
+    for (let i = 0; i < 14; i++) {
+      const gx = i * (W / 14) + 6;
+      ctx.beginPath(); ctx.moveTo(gx, H - 26); ctx.lineTo(gx + 1, H - 31); ctx.stroke();
+    }
   };
 
   const drawBubble = (ctx, tg) => {
@@ -142,7 +179,7 @@ export default function BallLauncher() {
     const balls = ballsRef.current;
     for (let i = balls.length - 1; i >= 0; i--) {
       const b = balls[i];
-      b.vy += GRAVITY; b.x += b.vx; b.y += b.vy;
+      b.vy += GRAVITY; b.vx *= DRAG; b.vy *= DRAG; b.x += b.vx; b.y += b.vy;
       if (b.x < BALL_R) { b.x = BALL_R; b.vx = Math.abs(b.vx) * 0.8; playBounce(); }
       if (b.x > W - BALL_R) { b.x = W - BALL_R; b.vx = -Math.abs(b.vx) * 0.8; playBounce(); }
       if (b.y < BALL_R) { b.y = BALL_R; b.vy = Math.abs(b.vy) * 0.8; playBounce(); }
@@ -211,10 +248,16 @@ export default function BallLauncher() {
   const fire = () => {
     const ang = aimRef.current; const bx = W / 2, by = H - 40;
     const speed = MIN_SPEED + powerRef.current * (MAX_SPEED - MIN_SPEED);
-    ballsRef.current.push({
-      x: bx + Math.cos(ang) * 24, y: by + Math.sin(ang) * 24,
-      vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed,
-    });
+    // higher charge launches a cluster of balls in a small spread
+    const count = powerRef.current > 0.5 ? 3 : 1;
+    const spread = 0.12;
+    for (let i = 0; i < count; i++) {
+      const a = ang + (count > 1 ? (i - (count - 1) / 2) * spread : 0);
+      ballsRef.current.push({
+        x: bx + Math.cos(a) * 24, y: by + Math.sin(a) * 24,
+        vx: Math.cos(a) * speed, vy: Math.sin(a) * speed,
+      });
+    }
     powerRef.current = 0;
     playLaunch();
   };
