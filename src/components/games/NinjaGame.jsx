@@ -251,15 +251,25 @@ function drawNinja(ctx, p, cx, t) {
 }
 
 function drawEnemy(ctx, e, cx, t) {
-  const x = e.x - cx + e.w / 2, y = e.y;
-  ctx.save(); ctx.translate(x, y); ctx.scale(e.dir, 1); ctx.fillStyle = "#000";
-  const sw = Math.sin(t * 9) * 0.5;
+  const x = e.x - cx + e.w / 2, y = e.y, f = e.dir;
+  const sp = Math.min(Math.abs(e.vx || 0), 2);
+  const moving = sp > 0.3;
+  const phase = moving ? t * 13 : 0;
+  const lean = moving ? 0.16 : 0;
+  ctx.save();
+  ctx.translate(x, y + e.h);
+  ctx.rotate(lean * f);
+  ctx.scale(f, 1);
+  ctx.translate(0, -e.h);
+  ctx.fillStyle = "#000";
+  const amp = moving ? 0.5 + sp * 0.15 : 0;
+  const sw = Math.sin(phase) * amp;
   const legY = e.h - 18;
-  ctx.save(); ctx.translate(-5, legY); ctx.rotate(sw); ctx.fillRect(-3, 0, 6, 18); ctx.restore();
-  ctx.save(); ctx.translate(5, legY); ctx.rotate(-sw); ctx.fillRect(-3, 0, 6, 18); ctx.restore();
+  const drawLeg = (ox, rot) => { ctx.save(); ctx.translate(ox, legY); ctx.rotate(rot); ctx.fillRect(-3, 0, 6, 11); ctx.translate(0, 11); ctx.rotate(Math.max(0, rot) * 0.4); ctx.fillRect(-2.5, 0, 5, 7); ctx.restore(); };
+  drawLeg(-5, sw); drawLeg(5, -sw);
   ctx.fillRect(-7, 12, 14, e.h - 30);
   // arm + sword
-  ctx.save(); ctx.translate(6, 16); ctx.rotate(0.2); ctx.fillRect(-2, 0, 5, 14); ctx.fillStyle = "#3a3a3a"; ctx.fillRect(0, -18, 2, 20); ctx.restore();
+  ctx.save(); ctx.translate(6, 16); ctx.rotate(0.2 + (moving ? Math.sin(phase) * 0.3 : 0)); ctx.fillRect(-2, 0, 5, 14); ctx.fillStyle = "#3a3a3a"; ctx.fillRect(0, -18, 2, 20); ctx.restore();
   // head + conical hat
   ctx.fillStyle = "#000"; ctx.beginPath(); ctx.arc(0, 8, 6, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.moveTo(-11, 3); ctx.lineTo(11, 3); ctx.lineTo(0, -10); ctx.closePath(); ctx.fill();
@@ -436,8 +446,14 @@ export default function NinjaGame() {
     // enemies
     s.enemies.forEach((e) => {
       if (e.dead) return; if (e.hurt > 0) e.hurt -= dt;
-      e.x += e.dir * 1.3; if (e.x < e.range[0]) e.dir = 1; if (e.x + e.w > e.range[1]) e.dir = -1;
-      e.dir = p.x > e.x ? 1 : -1; // face player
+      const dx = (p.x + p.w / 2) - (e.x + e.w / 2);
+      const near = Math.abs(dx) < 190 && Math.abs((p.y + p.h) - (e.y + e.h)) < 90;
+      const ev = near ? Math.sign(dx) * 1.9 : e.dir * 1.0;
+      e.vx = (e.vx || 0) + (ev - (e.vx || 0)) * 0.18;
+      e.x += e.vx;
+      if (e.x < e.range[0]) { e.x = e.range[0]; e.dir = 1; e.vx = 0; }
+      if (e.x + e.w > e.range[1]) { e.x = e.range[1] - e.w; e.dir = -1; e.vx = 0; }
+      if (near) e.dir = Math.sign(dx) || e.dir;
       e.vy += GRAVITY; const eold = e.y; e.y += e.vy;
       if (e.y + e.h >= GROUND) { e.y = GROUND - e.h; e.vy = 0; }
       for (const pl of s.level.platforms) {
@@ -530,10 +546,16 @@ export default function NinjaGame() {
   }, [doJump, doAttack, doShuriken]);
 
   const holdBtn = (k) => ({
-    onPointerDown: (e) => { e.preventDefault(); keys.current[k] = true; },
-    onPointerUp: () => { keys.current[k] = false; },
-    onPointerLeave: () => { keys.current[k] = false; },
-    onPointerCancel: () => { keys.current[k] = false; },
+    onTouchStart: (e) => { e.preventDefault(); keys.current[k] = true; },
+    onTouchEnd: (e) => { e.preventDefault(); keys.current[k] = false; },
+    onTouchCancel: () => { keys.current[k] = false; },
+    onMouseDown: () => { keys.current[k] = true; },
+    onMouseUp: () => { keys.current[k] = false; },
+    onMouseLeave: () => { keys.current[k] = false; },
+  });
+  const tap = (fn) => ({
+    onTouchStart: (e) => { e.preventDefault(); fn(); },
+    onClick: () => fn(),
   });
 
   return (
@@ -588,10 +610,10 @@ export default function NinjaGame() {
         </AnimatePresence>
       </div>
 
-      <div className="mt-4 w-full max-w-[400px] flex items-end justify-between gap-2">
+      <div className="mt-4 w-full max-w-[400px] flex items-end justify-between gap-2 touch-none select-none">
         <div className="grid grid-cols-3 grid-rows-3 gap-1.5" style={{ width: 156 }}>
           <span />
-          <button onPointerDown={(e) => { e.preventDefault(); doJump(); }} className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center text-foreground active:bg-primary/20 transition-colors text-base font-bold">▲</button>
+          <button {...tap(doJump)} className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center text-foreground active:bg-primary/20 transition-colors text-base font-bold">▲</button>
           <span />
           <button {...holdBtn("left")} className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center text-foreground active:bg-primary/20 transition-colors"><ChevronLeft className="w-6 h-6" /></button>
           <button {...holdBtn("down")} className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center text-foreground active:bg-primary/20 transition-colors text-base font-bold">▼</button>
@@ -601,9 +623,9 @@ export default function NinjaGame() {
         <div className="flex flex-col items-center gap-2">
           <div className="flex gap-2">
             <button {...holdBtn("run")} className="px-3 h-12 rounded-2xl bg-amber-400/15 border border-amber-400/40 flex items-center justify-center text-amber-600 font-extrabold text-xs active:bg-amber-400/30 transition-colors">{t("RUN")}</button>
-            <button onPointerDown={(e) => { e.preventDefault(); doShuriken(); }} disabled={hud.shuriken <= 0} className="w-12 h-12 rounded-2xl bg-cyan-400/15 border border-cyan-400/40 flex items-center justify-center text-cyan-500 active:scale-95 transition-transform disabled:opacity-40"><Crosshair className="w-6 h-6" /></button>
+            <button {...tap(doShuriken)} disabled={hud.shuriken <= 0} className="w-12 h-12 rounded-2xl bg-cyan-400/15 border border-cyan-400/40 flex items-center justify-center text-cyan-500 active:scale-95 transition-transform disabled:opacity-40"><Crosshair className="w-6 h-6" /></button>
           </div>
-          <button onPointerDown={(e) => { e.preventDefault(); doAttack(); }} className="w-16 h-16 rounded-2xl bg-primary/15 border border-primary/40 flex items-center justify-center text-primary active:scale-95 transition-transform"><Swords className="w-7 h-7" /></button>
+          <button {...tap(doAttack)} className="w-16 h-16 rounded-2xl bg-primary/15 border border-primary/40 flex items-center justify-center text-primary active:scale-95 transition-transform"><Swords className="w-7 h-7" /></button>
         </div>
       </div>
     </div>
