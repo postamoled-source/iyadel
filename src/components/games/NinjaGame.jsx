@@ -195,30 +195,38 @@ function drawBonfire(ctx, bx, cx, t) {
 
 function drawNinja(ctx, p, cx, t) {
   const x = p.x - cx + p.w / 2, y = p.y, f = p.facing;
+  const sp = Math.min(Math.abs(p.vx), 6);
+  const moving = sp > 0.5 && p.onGround;
+  const running = sp > 4;
+  const phase = moving ? t * (running ? 16 : 11) : 0;
+  const lean = moving ? (running ? 0.28 : 0.15) : 0;
   ctx.save();
-  ctx.translate(x, y);
+  ctx.translate(x, y + p.h);
+  ctx.rotate(lean * f);
   ctx.scale(f, 1);
+  ctx.scale(1, p.crouch ? 0.6 : 1);
+  ctx.translate(0, -p.h);
   ctx.fillStyle = "#000";
   // flowing scarf behind
-  const sl = 16 + Math.min(Math.abs(p.vx) * 4, 16) + Math.sin(t * 10) * 3;
+  const sl = 16 + sp * 3.5 + Math.sin(t * 10) * 3 + (running ? 14 : 0);
   ctx.beginPath(); ctx.moveTo(-3, 14); ctx.quadraticCurveTo(-sl * 0.6, 9, -sl, 12 + Math.sin(t * 12) * 4); ctx.lineTo(-sl, 18 + Math.sin(t * 12) * 4); ctx.quadraticCurveTo(-sl * 0.6, 19, -3, 21); ctx.closePath(); ctx.fill();
-  // legs
-  const moving = Math.abs(p.vx) > 0.4 && p.onGround;
-  const sw = moving ? Math.sin(t * 14) * 0.5 : 0;
+  // two-segment legs
   const legY = p.h - 20;
-  const drawLeg = (ox, rot) => { ctx.save(); ctx.translate(ox, legY); ctx.rotate(rot); ctx.fillRect(-3, 0, 6, 20); ctx.restore(); };
-  drawLeg(-5, sw); drawLeg(5, -sw);
-  if (!p.onGround) { drawLeg(-5, 0.4); drawLeg(5, 0.15); }
+  const amp = moving ? (running ? 0.7 : 0.5) : 0;
+  const sw = Math.sin(phase) * amp;
+  const drawLeg = (ox, rot, bend) => { ctx.save(); ctx.translate(ox, legY); ctx.rotate(rot); ctx.fillRect(-3, 0, 6, 12); ctx.translate(0, 12); ctx.rotate(bend); ctx.fillRect(-2.5, 0, 5, 8); ctx.restore(); };
+  if (!p.onGround) { drawLeg(-5, 0.55, 0.5); drawLeg(5, 0.25, 0.35); }
+  else { drawLeg(-5, sw, Math.max(0, sw) * 0.5); drawLeg(5, -sw, Math.max(0, -sw) * 0.5); }
   // torso
-  ctx.fillRect(-7, 13, 14, p.h - 32);
+  ctx.fillRect(-7, 13, 14, p.h - 30);
   // back arm
-  ctx.save(); ctx.translate(-6, 16); ctx.rotate(moving ? Math.sin(t * 14) * 0.4 : 0); ctx.fillRect(-3, 0, 5, 15); ctx.restore();
-  // sword on back (diagonal)
-  ctx.save(); ctx.translate(-2, 30); ctx.rotate(-0.5); ctx.fillStyle = "#1a1a1a"; ctx.fillRect(-1.5, -22, 3, 28); ctx.restore();
+  ctx.save(); ctx.translate(-6, 16); ctx.rotate(moving ? Math.sin(phase + Math.PI) * (running ? 0.6 : 0.4) : 0); ctx.fillRect(-3, 0, 5, 14); ctx.restore();
+  // sword sheathed on back
+  ctx.save(); ctx.translate(-2, 28); ctx.rotate(-0.5); ctx.fillStyle = "#1a1a1a"; ctx.fillRect(-1.5, -22, 3, 26); ctx.restore();
   // front arm + sword
   ctx.save(); ctx.translate(6, 17);
-  if (p.swing > 0) { const k = 1 - p.swing / 0.22; ctx.rotate(-1.2 + k * 2.2); }
-  else ctx.rotate(moving ? Math.sin(t * 14 + 0.5) * 0.35 : 0);
+  if (p.swing > 0) { const k = 1 - p.swing / 0.22; ctx.rotate(-1.3 + k * 2.4); }
+  else ctx.rotate(moving ? Math.sin(phase) * (running ? 0.5 : 0.3) : 0);
   ctx.fillStyle = "#000"; ctx.fillRect(-2, 0, 5, 14);
   ctx.fillStyle = "#cfe6ff"; ctx.fillRect(0, -22, 2, 24);
   ctx.restore();
@@ -301,7 +309,7 @@ export default function NinjaGame() {
   const { t } = useI18n();
   const canvasRef = useRef(null);
   const stateRef = useRef(null);
-  const keys = useRef({ left: false, right: false });
+  const keys = useRef({ left: false, right: false, down: false, run: false });
   const [hud, setHud] = useState({ hp: 5, score: 0, shuriken: 6, level: 1, total: THEMES.length });
   const [phase, setPhase] = useState("ready");
   const [running, setRunning] = useState(false);
@@ -322,7 +330,7 @@ export default function NinjaGame() {
     const level = buildLevel(idx);
     stateRef.current = {
       idx, level,
-      player: { x: 60, y: GROUND - 50, w: 24, h: 50, vx: 0, vy: 0, facing: 1, onGround: true, jumps: 0, swing: 0, shuriken: 6, hurt: 0, atkCd: 0, hp: 5 },
+      player: { x: 60, y: GROUND - 50, w: 24, h: 50, vx: 0, vy: 0, facing: 1, onGround: true, jumps: 0, swing: 0, shuriken: 6, hurt: 0, atkCd: 0, hp: 5, crouch: false, dropT: 0, surface: null },
       enemies: level.enemies, scrolls: level.scrolls.map((s) => ({ ...s, taken: false })),
       shurikens: [], particles: [], score: 0, cleared: false, time: 0,
     };
@@ -337,7 +345,7 @@ export default function NinjaGame() {
     const level = buildLevel(nl);
     s.idx = nl; s.level = level;
     s.player.hp = Math.min(5, s.player.hp + 1);
-    Object.assign(s.player, { x: 60, y: GROUND - 50, vx: 0, vy: 0, facing: 1, onGround: true, jumps: 0, swing: 0, shuriken: Math.max(s.player.shuriken, 6), hurt: 0, atkCd: 0 });
+    Object.assign(s.player, { x: 60, y: GROUND - 50, vx: 0, vy: 0, facing: 1, onGround: true, jumps: 0, swing: 0, shuriken: Math.max(s.player.shuriken, 6), hurt: 0, atkCd: 0, crouch: false, dropT: 0, surface: null });
     s.enemies = level.enemies; s.scrolls = level.scrolls.map((sc) => ({ ...sc, taken: false })); s.shurikens = []; s.particles = []; s.cleared = false;
     setHud((h) => ({ ...h, level: nl + 1, shuriken: s.player.shuriken, hp: s.player.hp }));
     SFX.levelUp();
@@ -392,18 +400,28 @@ export default function NinjaGame() {
 
   const stepGame = (dt, s) => {
     const p = s.player; s.time += dt;
-    const speed = 3.2;
-    p.vx = 0;
-    if (keys.current.left) { p.vx = -speed; p.facing = -1; }
-    if (keys.current.right) { p.vx = speed; p.facing = 1; }
+    const want = (keys.current.right ? 1 : 0) - (keys.current.left ? 1 : 0);
+    p.crouch = false;
+    if (p.dropT > 0) p.dropT -= dt;
+    if (keys.current.down) {
+      if (p.onGround && p.surface === "plat" && p.dropT <= 0) { p.dropT = 0.4; p.onGround = false; p.vy = 1.5; p.jumps = 1; }
+      else if (p.onGround && p.dropT <= 0) p.crouch = true;
+    }
+    const speed = (keys.current.run && p.onGround && !p.crouch) ? 5.4 : 3.0;
+    const target = want * speed;
+    if (want !== 0) p.facing = want;
+    const acc = p.onGround ? 0.3 : 0.15;
+    p.vx += (target - p.vx) * acc;
+    if (p.crouch) p.vx *= 0.55;
+    if (want === 0) p.vx *= p.onGround ? 0.82 : 0.96;
     p.vy += GRAVITY;
     const oldY = p.y;
     p.x += p.vx; p.y += p.vy;
-    p.onGround = false;
-    if (p.y + p.h >= GROUND) { p.y = GROUND - p.h; p.vy = 0; p.onGround = true; p.jumps = 0; }
-    for (const pl of s.level.platforms) {
+    p.onGround = false; p.surface = null;
+    if (p.y + p.h >= GROUND) { p.y = GROUND - p.h; p.vy = 0; p.onGround = true; p.jumps = 0; p.surface = "ground"; }
+    if (p.dropT <= 0) for (const pl of s.level.platforms) {
       if (p.vy >= 0 && oldY + p.h <= pl.y + 10 && p.y + p.h >= pl.y && p.x + p.w > pl.x + 2 && p.x < pl.x + pl.w - 2) {
-        p.y = pl.y - p.h; p.vy = 0; p.onGround = true; p.jumps = 0;
+        p.y = pl.y - p.h; p.vy = 0; p.onGround = true; p.jumps = 0; p.surface = "plat";
       }
     }
     p.x = Math.max(0, Math.min(WW - p.w, p.x));
@@ -495,6 +513,8 @@ export default function NinjaGame() {
     const down = (e) => {
       if (["ArrowLeft", "a", "A"].includes(e.key)) keys.current.left = true;
       if (["ArrowRight", "d", "D"].includes(e.key)) keys.current.right = true;
+      if (["ArrowDown", "s", "S"].includes(e.key)) keys.current.down = true;
+      if (e.key === "Shift") keys.current.run = true;
       if (["ArrowUp", "w", "W", " "].includes(e.key)) { doJump(); e.preventDefault(); }
       if (e.key === "j" || e.key === "J") doAttack();
       if (e.key === "k" || e.key === "K") doShuriken();
@@ -502,12 +522,19 @@ export default function NinjaGame() {
     const up = (e) => {
       if (["ArrowLeft", "a", "A"].includes(e.key)) keys.current.left = false;
       if (["ArrowRight", "d", "D"].includes(e.key)) keys.current.right = false;
+      if (["ArrowDown", "s", "S"].includes(e.key)) keys.current.down = false;
+      if (e.key === "Shift") keys.current.run = false;
     };
     window.addEventListener("keydown", down); window.addEventListener("keyup", up);
     return () => { window.removeEventListener("keydown", down); window.removeEventListener("keyup", up); };
   }, [doJump, doAttack, doShuriken]);
 
-  const hold = (k, v) => () => { keys.current[k] = v; };
+  const holdBtn = (k) => ({
+    onPointerDown: (e) => { e.preventDefault(); keys.current[k] = true; },
+    onPointerUp: () => { keys.current[k] = false; },
+    onPointerLeave: () => { keys.current[k] = false; },
+    onPointerCancel: () => { keys.current[k] = false; },
+  });
 
   return (
     <div className="select-none flex flex-col items-center">
@@ -538,7 +565,7 @@ export default function NinjaGame() {
               <div className="flex items-center gap-2 text-2xl font-extrabold text-foreground"><Swords className="w-7 h-7 text-primary" /> {t("Ninja Quest")}</div>
               <p className="text-sm text-muted-foreground max-w-[300px]">{t("A shadow ninja in a painted world. Run, double-jump, slash samurai, throw shurikens, collect scrolls, dodge spikes, and reach the gate across 3 maps.")}</p>
               <div className="text-[11px] text-muted-foreground/80 leading-relaxed">
-                {t("Move")}: ← → · {t("Jump")}: ↑ (×3) · {t("Sword")}: J · {t("Shuriken")}: K
+                {t("Move")}: ← → · {t("Run")}: Shift · {t("Jump")}: ↑ · {t("Down")}: ↓ · {t("Sword")}: J · {t("Shuriken")}: K
               </div>
               <Button onClick={newGame} className="bg-primary text-primary-foreground rounded-2xl px-8 py-5 text-base font-bold"><Play className="w-5 h-5 mr-2" />{t("Start")}</Button>
             </motion.div>
@@ -561,17 +588,22 @@ export default function NinjaGame() {
         </AnimatePresence>
       </div>
 
-      <div className="mt-4 w-full max-w-[400px] flex items-center justify-between gap-3">
-        <div className="flex gap-2">
-          <button onTouchStart={hold("left", true)} onTouchEnd={hold("left", false)} onMouseDown={hold("left", true)} onMouseUp={hold("left", false)} onMouseLeave={hold("left", false)}
-            className="w-14 h-14 rounded-2xl bg-card border border-border flex items-center justify-center text-foreground active:bg-primary/20 transition-colors"><ChevronLeft className="w-7 h-7" /></button>
-          <button onTouchStart={hold("right", true)} onTouchEnd={hold("right", false)} onMouseDown={hold("right", true)} onMouseUp={hold("right", false)} onMouseLeave={hold("right", false)}
-            className="w-14 h-14 rounded-2xl bg-card border border-border flex items-center justify-center text-foreground active:bg-primary/20 transition-colors"><ChevronRight className="w-7 h-7" /></button>
+      <div className="mt-4 w-full max-w-[400px] flex items-end justify-between gap-2">
+        <div className="grid grid-cols-3 grid-rows-3 gap-1.5" style={{ width: 156 }}>
+          <span />
+          <button onPointerDown={(e) => { e.preventDefault(); doJump(); }} className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center text-foreground active:bg-primary/20 transition-colors text-base font-bold">▲</button>
+          <span />
+          <button {...holdBtn("left")} className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center text-foreground active:bg-primary/20 transition-colors"><ChevronLeft className="w-6 h-6" /></button>
+          <button {...holdBtn("down")} className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center text-foreground active:bg-primary/20 transition-colors text-base font-bold">▼</button>
+          <button {...holdBtn("right")} className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center text-foreground active:bg-primary/20 transition-colors"><ChevronRight className="w-6 h-6" /></button>
+          <span /><span /><span />
         </div>
-        <div className="flex gap-2">
-          <button onClick={doAttack} className="w-14 h-14 rounded-2xl bg-primary/15 border border-primary/40 flex items-center justify-center text-primary active:scale-95 transition-transform"><Swords className="w-6 h-6" /></button>
-          <button onClick={doShuriken} disabled={hud.shuriken <= 0} className="w-14 h-14 rounded-2xl bg-cyan-400/15 border border-cyan-400/40 flex items-center justify-center text-cyan-500 active:scale-95 transition-transform disabled:opacity-40"><Crosshair className="w-6 h-6" /></button>
-          <button onClick={doJump} className="w-14 h-14 rounded-2xl bg-card border border-border flex items-center justify-center text-foreground active:scale-95 transition-transform text-xl font-bold">↑</button>
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex gap-2">
+            <button {...holdBtn("run")} className="px-3 h-12 rounded-2xl bg-amber-400/15 border border-amber-400/40 flex items-center justify-center text-amber-600 font-extrabold text-xs active:bg-amber-400/30 transition-colors">{t("RUN")}</button>
+            <button onPointerDown={(e) => { e.preventDefault(); doShuriken(); }} disabled={hud.shuriken <= 0} className="w-12 h-12 rounded-2xl bg-cyan-400/15 border border-cyan-400/40 flex items-center justify-center text-cyan-500 active:scale-95 transition-transform disabled:opacity-40"><Crosshair className="w-6 h-6" /></button>
+          </div>
+          <button onPointerDown={(e) => { e.preventDefault(); doAttack(); }} className="w-16 h-16 rounded-2xl bg-primary/15 border border-primary/40 flex items-center justify-center text-primary active:scale-95 transition-transform"><Swords className="w-7 h-7" /></button>
         </div>
       </div>
     </div>
