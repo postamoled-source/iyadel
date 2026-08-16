@@ -5,12 +5,15 @@ import { Play, RotateCcw, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Tro
 import { motion, AnimatePresence } from "framer-motion";
 
 const SIZE = 360, GRID = 15, CELL = SIZE / GRID;
-const LEVEL_EVERY = 5;        // points needed to climb one level
-const BASE_STEP = 205;        // ms per step at level 1 (slow, relaxed start)
-const STEP_DECAY = 15;        // ms faster per level
-const MIN_STEP = 78;
-const TREASURE_TTL = 9000;    // ms a treasure stays on the board
+const LEVEL_EVERY = 4;        // points needed to climb one level (faster progression)
+const BASE_STEP = 210;        // ms per step at level 1 (slow, relaxed start)
+const STEP_DECAY = 18;        // ms faster per level — steeper, more thrilling curve
+const MIN_STEP = 62;          // hard cap: very fast at high levels
+const TREASURE_TTL = 8000;    // ms a treasure stays on the board
 const TREASURE_VALUE = 3;
+const WALLS_FROM_LEVEL = 3;   // obstacles begin to appear from level 3
+const WALLS_PER_LEVEL = 2;    // extra wall blocks added per level-up
+const MAX_WALLS = 18;         // cap so the board never becomes unplayable
 
 // ---------- Audio (Web Audio API) ----------
 let actx;
@@ -35,16 +38,31 @@ const SFX = {
 const lerp = (a, b, t) => a + (b - a) * t;
 const levelFor = (score) => 1 + Math.floor(score / LEVEL_EVERY);
 const stepFor = (level) => Math.max(MIN_STEP, BASE_STEP - (level - 1) * STEP_DECAY);
-const emptyCell = (snake, food, treasure) => {
+const emptyCell = (snake, food, treasure, walls) => {
   let f;
   do {
     f = { x: Math.floor(Math.random() * GRID), y: Math.floor(Math.random() * GRID) };
   } while (
     snake.some((s) => s.x === f.x && s.y === f.y) ||
     (food && food.x === f.x && food.y === f.y) ||
-    (treasure && treasure.x === f.x && treasure.y === f.y)
+    (treasure && treasure.x === f.x && treasure.y === f.y) ||
+    (walls && walls.some((w) => w.x === f.x && w.y === f.y))
   );
   return f;
+};
+// Place walls far from the snake's head so the player always gets a fair chance.
+const addWalls = (count, snake, food, treasure, walls) => {
+  const added = [];
+  let guard = 0;
+  while (added.length < count && guard < 60) {
+    guard++;
+    const w = emptyCell(snake, food, treasure, [...walls, ...added]);
+    // keep a clear lane around the head
+    const head = snake[0];
+    if (Math.abs(w.x - head.x) + Math.abs(w.y - head.y) < 3) continue;
+    added.push(w);
+  }
+  return added;
 };
 
 export default function SnakeGame() {
@@ -56,6 +74,8 @@ export default function SnakeGame() {
   const [best, setBest] = useState(() => { try { return parseInt(localStorage.getItem("snake_best") || "0", 10) || 0; } catch { return 0; } });
   const [phase, setPhase] = useState("ready");
   const [running, setRunning] = useState(false);
+  const [showFlash, setShowFlash] = useState(false);
+  const flashTimer = useRef(null);
   const rafRef = useRef(0);
   const timeRef = useRef(0);
   const touch = useRef(null);
@@ -67,9 +87,9 @@ export default function SnakeGame() {
     st.current = {
       snake, prev: snake.map((s) => ({ ...s })), grew: false,
       dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 },
-      food, treasure: null, acc: 0, step: stepFor(1), score: 0, level: 1, dead: false,
+      food, treasure: null, walls: [], acc: 0, step: stepFor(1), score: 0, level: 1, dead: false,
     };
-    setScore(0); setLevel(1); setPhase("playing"); setRunning(true);
+    setScore(0); setLevel(1); setPhase("playing"); setRunning(true); setShowFlash(false);
   }, []);
 
   const setDir = useCallback((d) => {
@@ -93,12 +113,13 @@ export default function SnakeGame() {
     const nh = { x: head.x + s.dir.x, y: head.y + s.dir.y };
     if (nh.x < 0 || nh.y < 0 || nh.x >= GRID || nh.y >= GRID) { s.dead = true; gameOver(); return; }
     for (let i = 0; i < s.snake.length - 1; i++) { if (s.snake[i].x === nh.x && s.snake[i].y === nh.y) { s.dead = true; gameOver(); return; } }
+    if (s.walls.some((w) => w.x === nh.x && w.y === nh.y)) { s.dead = true; gameOver(); return; }
     s.prev = s.snake.map((p) => ({ ...p }));
     s.snake.unshift(nh);
     let ate = false;
     if (nh.x === s.food.x && nh.y === s.food.y) {
       ate = true; s.score += 1; SFX.eat();
-      s.food = emptyCell(s.snake, s.food, s.treasure);
+      s.food = emptyCell(s.snake, s.food, s.treasure, s.walls);
     } else if (s.treasure && nh.x === s.treasure.x && nh.y === s.treasure.y) {
       ate = true; s.score += TREASURE_VALUE; SFX.treasure(); s.treasure = null;
     }
@@ -107,7 +128,15 @@ export default function SnakeGame() {
       const nl = levelFor(s.score);
       if (nl > s.level) {
         s.level = nl; setLevel(nl); SFX.level();
-        if (!s.treasure) s.treasure = { ...emptyCell(s.snake, s.food, null), exp: performance.now() + TREASURE_TTL };
+        if (!s.treasure) s.treasure = { ...emptyCell(s.snake, s.food, null, s.walls), exp: performance.now() + TREASURE_TTL };
+        // gradually add obstacle walls from the chosen level for extra challenge
+        if (nl >= WALLS_FROM_LEVEL && s.walls.length < MAX_WALLS) {
+          s.walls = [...s.walls, ...addWalls(WALLS_PER_LEVEL, s.snake, s.food, s.treasure, s.walls)].slice(0, MAX_WALLS);
+        }
+        // brief "Level Up" flash for excitement
+        setShowFlash(true);
+        if (flashTimer.current) clearTimeout(flashTimer.current);
+        flashTimer.current = setTimeout(() => setShowFlash(false), 1100);
       }
       s.step = stepFor(s.level);
     } else {
@@ -166,6 +195,10 @@ export default function SnakeGame() {
       const pulse = 0.85 + Math.sin(time * 6) * 0.15;
       drawGem(c, s.treasure.x * CELL + CELL / 2, s.treasure.y * CELL + CELL / 2, pulse);
     }
+    // obstacle walls (appear gradually from higher levels)
+    if (s && s.walls.length) {
+      for (const w of s.walls) drawWall(c, w.x * CELL + CELL / 2, w.y * CELL + CELL / 2, time);
+    }
     // snake
     if (s) {
       const n = s.prev.length; const tp = Math.max(0, Math.min(1, s.acc / s.step));
@@ -201,6 +234,17 @@ export default function SnakeGame() {
     c.strokeStyle = "rgba(255,255,255,0.7)"; c.lineWidth = 1.2; c.beginPath();
     c.moveTo(0, -CELL * 0.34); c.lineTo(CELL * 0.27, 0); c.lineTo(0, CELL * 0.34); c.lineTo(-CELL * 0.27, 0); c.closePath(); c.stroke();
     c.restore();
+  }
+  function drawWall(c, x, y, time) {
+    const pulse = 0.5 + Math.sin(time * 2 + x * 0.1) * 0.12;
+    c.fillStyle = `rgba(244,63,94,${0.16 + pulse * 0.08})`;
+    c.beginPath(); c.arc(x, y, CELL * 0.48, 0, Math.PI * 2); c.fill();
+    const grd = c.createLinearGradient(x - CELL * 0.4, y - CELL * 0.4, x + CELL * 0.4, y + CELL * 0.4);
+    grd.addColorStop(0, "#9f1239"); grd.addColorStop(1, "#7f1d1d");
+    c.fillStyle = grd;
+    c.beginPath(); c.arc(x, y, CELL * 0.36, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = "rgba(251,113,133,0.7)"; c.lineWidth = 1.5;
+    c.beginPath(); c.arc(x, y, CELL * 0.36, 0, Math.PI * 2); c.stroke();
   }
   function drawSeg(c, x, y, isHead, dir, i, len) {
     const r = isHead ? CELL * 0.44 : CELL * 0.4;
@@ -277,6 +321,25 @@ export default function SnakeGame() {
               <div className="text-2xl font-extrabold text-destructive">{t("Game Over")}</div>
               <div className="text-sm text-muted-foreground">{t("Score")}: <span className="font-bold text-foreground">{score}</span> · {t("Level")}: <span className="font-bold text-violet-300">{level}</span> · {t("Best")}: <span className="font-bold text-amber-500">{best}</span></div>
               <Button onClick={newGame} className="bg-primary text-primary-foreground rounded-2xl px-6 py-4"><RotateCcw className="w-4 h-4 mr-2" />{t("Play again")}</Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {showFlash && phase === "playing" && (
+            <motion.div
+              key="lvl-flash"
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.4 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            >
+              <div className="text-center">
+                <div className="text-4xl font-black tracking-tight bg-gradient-to-r from-amber-300 via-fuchsia-400 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_2px_12px_rgba(167,139,250,0.6)]">
+                  {t("Level")} {level}
+                </div>
+                <div className="mt-1 text-xs font-bold uppercase tracking-[0.3em] text-amber-200/90">{t("Level Up")}</div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
