@@ -39,28 +39,34 @@ const SFX = {
   over: () => { [392, 330, 262].forEach((f, i) => setTimeout(() => beep(f, 0.3, "sawtooth", 0.2), i * 200)); },
   win: () => { [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => beep(f, 0.22, "triangle", 0.2), i * 130)); },
 };
-const SCALE = [440, 523.25, 587.33, 659.25, 783.99, 880];
-let musicTimer = null, musicOn = false;
-const startMusic = () => {
-  if (musicOn) return; musicOn = true; let step = 0;
-  const tick = () => {
-    if (!musicOn) return; const c = ctx();
-    const f = SCALE[Math.floor(Math.random() * SCALE.length)];
-    const o = c.createOscillator(); const g = c.createGain();
-    o.type = "triangle"; o.frequency.value = f;
-    g.gain.setValueAtTime(0.05, c.currentTime); g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.5);
-    o.connect(g).connect(c.destination); o.start(); o.stop(c.currentTime + 0.5);
-    if (step % 2 === 0) {
-      const d = c.createOscillator(); const dg = c.createGain();
-      d.type = "sine"; d.frequency.value = 110;
-      dg.gain.setValueAtTime(0.04, c.currentTime); dg.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.8);
-      d.connect(dg).connect(c.destination); d.start(); d.stop(c.currentTime + 0.8);
-    }
-    step++; musicTimer = setTimeout(tick, 360);
-  };
-  tick();
+// Exciting action track: driving 140 BPM E-minor groove — kick, snare, hats, bass riff + pentatonic lead.
+const STEP16 = 0.10714; // 16th note @ 140 BPM
+const KICK = [1,0,0,0, 1,0,0,1, 1,0,0,0, 1,0,1,0];
+const SNARE = [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,1];
+const HAT = [0,1,1,1, 0,1,1,1, 0,1,1,1, 0,1,1,1];
+const BASS = [82.41,0,82.41,123.47,0,82.41,164.81,0, 98.00,0,98.00,146.83,0,98.00,196.00,0];
+const LEAD = [0,0,659.25,0,783.99,0,659.25,587.33,0,659.25,0,880.00,783.99,0,659.25,0];
+let musicOn = false, musicStep = 0, nextNoteTime = 0, schedulerTimer = null;
+const mKick = (when) => { const c = ctx(); const o = c.createOscillator(); const g = c.createGain(); o.type = "sine"; o.frequency.setValueAtTime(150, when); o.frequency.exponentialRampToValueAtTime(45, when + 0.12); g.gain.setValueAtTime(0.22, when); g.gain.exponentialRampToValueAtTime(0.001, when + 0.16); o.connect(g).connect(c.destination); o.start(when); o.stop(when + 0.18); };
+const mSnare = (when) => { const c = ctx(); const len = Math.floor(c.sampleRate * 0.12); const buf = c.createBuffer(1, len, c.sampleRate); const d = buf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len); const src = c.createBufferSource(); src.buffer = buf; const f = c.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 1900; const g = c.createGain(); g.gain.value = 0.16; src.connect(f).connect(g).connect(c.destination); src.start(when); };
+const mHat = (when) => { const c = ctx(); const len = Math.floor(c.sampleRate * 0.03); const buf = c.createBuffer(1, len, c.sampleRate); const d = buf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1); const src = c.createBufferSource(); src.buffer = buf; const f = c.createBiquadFilter(); f.type = "highpass"; f.frequency.value = 7000; const g = c.createGain(); g.gain.setValueAtTime(0.05, when); g.gain.exponentialRampToValueAtTime(0.001, when + 0.03); src.connect(f).connect(g).connect(c.destination); src.start(when); };
+const mBass = (when, f0) => { const c = ctx(); const o = c.createOscillator(); const g = c.createGain(); const f = c.createBiquadFilter(); o.type = "sawtooth"; o.frequency.value = f0; f.type = "lowpass"; f.frequency.value = 700; o.connect(f); f.connect(g); g.gain.setValueAtTime(0.13, when); g.gain.exponentialRampToValueAtTime(0.001, when + 0.18); g.connect(c.destination); o.start(when); o.stop(when + 0.2); };
+const mLead = (when, f0) => { const c = ctx(); const o = c.createOscillator(); const g = c.createGain(); o.type = "square"; o.frequency.value = f0; o.connect(g); g.gain.setValueAtTime(0.07, when); g.gain.exponentialRampToValueAtTime(0.001, when + 0.22); g.connect(c.destination); o.start(when); o.stop(when + 0.24); };
+const scheduleMusic = () => {
+  if (!musicOn) return; const c = ctx();
+  while (nextNoteTime < c.currentTime + 0.2) {
+    const s = musicStep % 16;
+    if (KICK[s]) mKick(nextNoteTime);
+    if (SNARE[s]) mSnare(nextNoteTime);
+    if (HAT[s]) mHat(nextNoteTime);
+    if (BASS[s]) mBass(nextNoteTime, BASS[s]);
+    if (LEAD[s]) mLead(nextNoteTime, LEAD[s]);
+    nextNoteTime += STEP16; musicStep++;
+  }
+  schedulerTimer = setTimeout(scheduleMusic, 25);
 };
-const stopMusic = () => { musicOn = false; if (musicTimer) { clearTimeout(musicTimer); musicTimer = null; } };
+const startMusic = () => { if (musicOn) return; musicOn = true; musicStep = 0; nextNoteTime = ctx().currentTime + 0.1; scheduleMusic(); };
+const stopMusic = () => { musicOn = false; if (schedulerTimer) { clearTimeout(schedulerTimer); schedulerTimer = null; } };
 
 // ---------- Levels ----------
 const LEVELS = [
@@ -94,6 +100,7 @@ const BLACK = () => new THREE.MeshBasicMaterial({ color: 0x000000 });
 const box = (w, h, d) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), BLACK());
 // limb pivoting at its top (shoulder/hip)
 const limb = (w, h) => { const g = new THREE.Group(); const m = box(w, h, 1); m.position.y = -h / 2; g.add(m); return g; };
+const disposeObj = (obj) => { obj.traverse((c) => { if (c.geometry) c.geometry.dispose(); if (c.material) { const m = c.material; if (m.map) m.map.dispose(); (Array.isArray(m) ? m : [m]).forEach((mm) => mm.dispose()); } }); };
 
 function gradientTexture(top, bottom) {
   const c = document.createElement("canvas"); c.width = 4; c.height = 256;
@@ -165,6 +172,9 @@ export default function NinjaGame() {
   const [hud, setHud] = useState({ hp: 5, score: 0, fire: 0, level: 1, total: LEVELS.length });
   const [phase, setPhase] = useState("ready");
   const [running, setRunning] = useState(false);
+  const flashRef = useRef(null);
+  const bannerRef = useRef(null);
+  const aliveRef = useRef(true);
 
   const burst = (s, x, y, color) => {
     for (let i = 0; i < 10; i++) s.particles.push({ x, y, vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6 - 2, life: 0.5, color });
@@ -232,7 +242,7 @@ export default function NinjaGame() {
     const ref = sceneRef.current; if (!ref) return;
     // clear dynamic groups
     const toRemove = []; ref.scene.children.forEach((c) => { if (c.userData.dynamic) toRemove.push(c); });
-    toRemove.forEach((c) => ref.scene.remove(c));
+    toRemove.forEach((c) => { ref.scene.remove(c); disposeObj(c); });
     const L = LEVELS[lvl];
     // environment
     const { env, torches } = buildEnv(ref.scene, L.theme, L.sky);
@@ -262,7 +272,7 @@ export default function NinjaGame() {
     const lvl = 0;
     if (!sceneRef.current) setupScene();
     loadLevel(lvl);
-    const enemies = LEVELS[lvl].enemies.map((e) => ({ ...e, w: e.big ? 34 : 28, h: 44, dir: 1, hp: e.hp || (e.big ? 3 : 2), vy: 0, hurt: 0, dead: false, jumpT: 0 }));
+    const enemies = LEVELS[lvl].enemies.map((e) => ({ ...e, w: e.big ? 34 : 28, h: 44, y: GROUND - 44, dir: 1, hp: e.hp || (e.big ? 3 : 2), vy: 0, hurt: 0, dead: false, jumpT: 0 }));
     stateRef.current = {
       level: lvl,
       player: { x: 30, y: GROUND - 50, w: 26, h: 50, vx: 0, vy: 0, facing: 1, onGround: true, hp: 5, fire: 0, swing: 0, hurt: 0, atkCd: 0 },
@@ -277,12 +287,13 @@ export default function NinjaGame() {
     const nl = s.level + 1;
     if (nl >= LEVELS.length) { setPhase("won"); setRunning(false); stopMusic(); SFX.win(); return; }
     loadLevel(nl);
-    const enemies = LEVELS[nl].enemies.map((e) => ({ ...e, w: e.big ? 34 : 28, h: 44, dir: 1, hp: e.hp || (e.big ? 3 : 2), vy: 0, hurt: 0, dead: false, jumpT: 0 }));
+    const enemies = LEVELS[nl].enemies.map((e) => ({ ...e, w: e.big ? 34 : 28, h: 44, y: GROUND - 44, dir: 1, hp: e.hp || (e.big ? 3 : 2), vy: 0, hurt: 0, dead: false, jumpT: 0 }));
     s.level = nl; s.enemies = enemies; s.projectiles = []; s.particles = [];
     s.treasure = { ...LEVELS[nl].treasure, taken: false, bob: 0 };
+    s.player.hp = Math.min(5, s.player.hp + 1);
     Object.assign(s.player, { x: 30, y: GROUND - 50, vx: 0, vy: 0, fire: 0, swing: 0, hurt: 0, atkCd: 0 });
     s.cleared = false;
-    setHud((h) => ({ ...h, level: nl + 1 }));
+    setHud((h) => ({ ...h, level: nl + 1, fire: 0, hp: s.player.hp }));
     SFX.levelUp();
   }, [loadLevel]);
 
@@ -312,10 +323,11 @@ export default function NinjaGame() {
 
   // mount renderer
   useEffect(() => {
+    aliveRef.current = true;
     const { renderer } = setupScene();
     const mount = mountRef.current; mount.appendChild(renderer.domElement);
     renderer.domElement.style.width = "100%"; renderer.domElement.style.height = "auto"; renderer.domElement.style.display = "block";
-    return () => { stopMusic(); setRunning(false); renderer.dispose(); if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement); sceneRef.current = null; };
+    return () => { aliveRef.current = false; stopMusic(); setRunning(false); renderer.dispose(); if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement); sceneRef.current = null; };
   }, [setupScene]);
 
   // keyboard
@@ -374,6 +386,7 @@ export default function NinjaGame() {
     E.partPool.forEach((sp, i) => { const pt = s.particles[i]; if (pt) { sp.visible = true; sp.position.set(SX(pt.x), SY(pt.y), 6); const sc = Math.max(pt.life * 2, 0) * 14; sp.scale.setScalar(sc); } else sp.visible = false; });
     // torch flicker
     E.torches.forEach((tr) => { tr.flame.scale.setScalar(30 + Math.random() * 10); });
+    if (flashRef.current) flashRef.current.style.opacity = s.player.hurt > 0 ? String(Math.min(s.player.hurt * 0.7, 0.5)) : "0";
   };
 
   // game loop
@@ -418,7 +431,7 @@ export default function NinjaGame() {
         e.vy += GRAVITY; e.y += e.vy; if (e.y + e.h >= GROUND) { e.y = GROUND - e.h; e.vy = 0; } e.dir = dx >= 0 ? 1 : -1;
       }
       if (p.hurt <= 0 && p.x < e.x + e.w && p.x + p.w > e.x && p.y < e.y + e.h && p.y + p.h > e.y) {
-        p.hp -= 1; p.hurt = 1; SFX.hurt(); setHud((h) => ({ ...h, hp: p.hp })); p.vx = -p.facing * 4; p.vy = -6;
+        p.hp -= 1; p.hurt = 1; SFX.hurt(); setHud((h) => ({ ...h, hp: p.hp })); p.x = Math.max(0, Math.min(VW - p.w, p.x - p.facing * 12)); p.vy = -6;
         if (p.hp <= 0) { setPhase("over"); setRunning(false); stopMusic(); SFX.over(); }
       }
     });
@@ -436,7 +449,7 @@ export default function NinjaGame() {
       return true;
     });
     s.particles = s.particles.filter((pt) => { pt.vy += 0.3; pt.x += pt.vx; pt.y += pt.vy; pt.life -= dt; return pt.life > 0; });
-    if (!s.cleared && s.enemies.every((e) => e.dead)) { s.cleared = true; setTimeout(() => nextLevel(), 600); }
+    if (!s.cleared && s.enemies.every((e) => e.dead)) { s.cleared = true; if (bannerRef.current) bannerRef.current.style.opacity = "1"; setTimeout(() => { if (bannerRef.current) bannerRef.current.style.opacity = "0"; if (aliveRef.current) nextLevel(); }, 750); }
   };
 
   const hold = (k, v) => () => { keys.current[k] = v; };
@@ -460,6 +473,10 @@ export default function NinjaGame() {
         <div ref={mountRef} className="w-full" />
         <div className="absolute top-2 left-1/2 -translate-x-1/2 text-[11px] font-bold text-white/90 bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm">
           {LEVELS[hud.level - 1]?.name}
+        </div>
+        <div ref={flashRef} className="pointer-events-none absolute inset-0 transition-opacity duration-100" style={{ opacity: 0, background: "radial-gradient(circle at center, transparent 35%, rgba(220,40,40,0.5) 100%)" }} />
+        <div ref={bannerRef} className="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-300" style={{ opacity: 0 }}>
+          <div className="text-3xl font-extrabold text-amber-400 drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">{t("Level Cleared!")}</div>
         </div>
 
         <AnimatePresence>
