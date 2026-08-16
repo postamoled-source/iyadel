@@ -39,6 +39,15 @@ export const playPop = () => { tone(680, 0.07, "square", 0.13); setTimeout(() =>
 export const playWhack = () => { tone(200, 0.05, "square", 0.16, 110); };
 export const playSqueak = () => tone(880, 0.06, "square", 0.08, 1320);
 
+// 2048
+export const playMove = () => tone(260, 0.05, "triangle", 0.05);
+export const playMerge = () => { tone(520, 0.06, "sine", 0.12); setTimeout(() => tone(780, 0.08, "sine", 0.1), 40); };
+export const playWin = () => {
+  tone(523, 0.1, "sine", 0.12);
+  setTimeout(() => tone(659, 0.1, "sine", 0.12), 100);
+  setTimeout(() => tone(784, 0.16, "sine", 0.12), 200);
+};
+
 // Shared
 export const playGameOver = () => {
   tone(440, 0.18, "sine", 0.14, 220);
