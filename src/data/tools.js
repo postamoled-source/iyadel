@@ -225,13 +225,13 @@ export const STATIC_TOOLS = [
     content: "Ball Launcher is a 2D physics game. A cannon at the bottom aims toward your finger — tap and release to launch a ball in a gravity arc toward floating bubbles. Pop a bubble to score 10 points; new bubbles keep spawning so the board stays full. You have 30 seconds to score as much as you can, and your best result is saved on your device. The game sharpens aim and trajectory intuition and runs entirely in your browser, so nothing is stored. Beat your own high score every round.",
   },
   {
-    name: "Ninja Quest 3D",
+    name: "Ninja Quest",
     slug: "ninja-quest",
     category: "Games",
-    description: "A 3D silhouette ninja game — sword, fireballs, soldiers, monsters, 3 levels, Shadow-Fight style.",
+    description: "A shadow-art ninja platformer — double-jump, katana, shurikens, scrolls, 3 maps.",
     icon: "Swords",
     logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/637172422_generated_image.png",
-    content: "Ninja Quest 3D is a three-dimensional action game in a Shadow-Fight silhouette style. The ninja, soldiers, monsters, terrain, and props are rendered as solid black 3D silhouettes against layered atmospheric backdrops — a sunset bamboo forest, a torch-lit cave, and a moonlit castle — with real depth, parallax, and a side orthographic camera. Control a masked ninja with a katana: move, jump, and slash through soldiers and monsters. Grab the glowing treasure to charge fireballs and hurl them at tougher enemies. Clear every enemy in a level to advance through three stages. The game features synthesized ninja-style background music and sound effects and runs entirely in your browser, so nothing is stored. Control a masked ninja with a katana: move, jump, and slash through soldiers and monsters. Grab the glowing treasure to charge fireballs and hurl them at tougher enemies. Clear every enemy in a level to advance through three stages — a bamboo forest, a cursed cave, and a night castle — each with its own background, foes, and treasure. The game features synthesized ninja-style background music and sound effects and runs entirely in your browser, so nothing is stored.",
+    content: "Ninja Quest is a shadow-silhouette platformer inspired by Ninja Arashi. Play a ronin ninja with a wide-brimmed hat and a flowing scarf, rendered as a solid black silhouette against painted, multi-layer parallax backdrops — a dusk forest, a misty bamboo grove, and moonlit hills. Run, double- and triple-jump across platforms, slash samurai with your katana, throw shurikens, collect glowing scrolls for ammo and score, dodge spike traps, and reach the glowing gate at the end of each map. Three hand-built levels with increasing challenge, synthesized driving action music, and crisp sound effects. Everything runs in your browser — no data is stored. Control a masked ninja with a katana: move, jump, and slash through soldiers and monsters. Grab the glowing treasure to charge fireballs and hurl them at tougher enemies. Clear every enemy in a level to advance through three stages — a bamboo forest, a cursed cave, and a night castle — each with its own background, foes, and treasure. The game features synthesized ninja-style background music and sound effects and runs entirely in your browser, so nothing is stored.",
   },
   {
     name: "Image Cropper",
