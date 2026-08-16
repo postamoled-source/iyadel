@@ -13,6 +13,11 @@ const SPEED = 10.5;
 const TARGET_COUNT = 6;
 const COLORS = ["#5b3aa8", "#f5a623", "#e0533a", "#2a9d8f", "#3a6ea5"];
 const rand = (a, b) => a + Math.random() * (b - a);
+// Canvas APIs can't parse CSS variables like "hsl(var(--card))", so resolve
+// the token to its computed HSL channels at draw time.
+const cssVar = (name) => window.getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const hsl = (name) => `hsl(${cssVar(name)})`;
+const hslA = (name, a) => `hsl(${cssVar(name)} / ${a})`;
 
 export default function BallLauncher() {
   const { t } = useI18n();
@@ -62,10 +67,10 @@ export default function BallLauncher() {
 
   const drawBg = (ctx) => {
     const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, "hsl(var(--card))");
-    g.addColorStop(1, "hsl(var(--secondary))");
+    g.addColorStop(0, hsl("--card"));
+    g.addColorStop(1, hsl("--secondary"));
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    ctx.strokeStyle = "hsl(var(--border))"; ctx.lineWidth = 1;
+    ctx.strokeStyle = hsl("--border"); ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(0, H - 26); ctx.lineTo(W, H - 26); ctx.stroke();
   };
 
@@ -91,21 +96,21 @@ export default function BallLauncher() {
     const ang = aimRef.current;
     // barrel
     ctx.save(); ctx.translate(bx, by); ctx.rotate(ang);
-    ctx.fillStyle = "hsl(var(--primary))";
+    ctx.fillStyle = hsl("--primary");
     ctx.fillRect(0, -7, 26, 14);
-    ctx.fillStyle = "hsl(var(--accent))"; ctx.fillRect(22, -9, 5, 18);
+    ctx.fillStyle = hsl("--accent"); ctx.fillRect(22, -9, 5, 18);
     ctx.restore();
     // base
     ctx.beginPath(); ctx.arc(bx, by, 16, 0, Math.PI * 2);
-    ctx.fillStyle = "hsl(var(--primary))"; ctx.fill();
-    ctx.strokeStyle = "hsl(var(--accent))"; ctx.lineWidth = 3; ctx.stroke();
-    ctx.beginPath(); ctx.arc(bx, by, 6, 0, Math.PI * 2); ctx.fillStyle = "hsl(var(--accent))"; ctx.fill();
+    ctx.fillStyle = hsl("--primary"); ctx.fill();
+    ctx.strokeStyle = hsl("--accent"); ctx.lineWidth = 3; ctx.stroke();
+    ctx.beginPath(); ctx.arc(bx, by, 6, 0, Math.PI * 2); ctx.fillStyle = hsl("--accent"); ctx.fill();
   };
 
   const drawAim = (ctx) => {
     if (!chargingRef.current || phaseRef.current !== "running") return;
     const bx = W / 2, by = H - 40; const ang = aimRef.current;
-    ctx.save(); ctx.strokeStyle = "hsl(var(--primary) / 0.5)"; ctx.lineWidth = 2;
+    ctx.save(); ctx.strokeStyle = hslA("--primary", 0.5); ctx.lineWidth = 2;
     ctx.setLineDash([4, 6]); ctx.beginPath(); ctx.moveTo(bx, by);
     ctx.lineTo(bx + Math.cos(ang) * 90, by + Math.sin(ang) * 90); ctx.stroke(); ctx.restore();
   };
