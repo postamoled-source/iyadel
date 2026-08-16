@@ -225,6 +225,14 @@ export const STATIC_TOOLS = [
     content: "Ball Launcher is a 2D physics game. A cannon at the bottom aims toward your finger — tap and release to launch a ball in a gravity arc toward floating bubbles. Pop a bubble to score 10 points; new bubbles keep spawning so the board stays full. You have 30 seconds to score as much as you can, and your best result is saved on your device. The game sharpens aim and trajectory intuition and runs entirely in your browser, so nothing is stored. Beat your own high score every round.",
   },
   {
+    name: "Ninja Quest",
+    slug: "ninja-quest",
+    category: "Games",
+    description: "A 2D ninja action game — sword, fireballs, soldiers, monsters, and 3 levels.",
+    icon: "Swords",
+    content: "Ninja Quest is a 2D action platformer. Control a masked ninja with a katana: move, jump, and slash through soldiers and monsters. Grab the glowing treasure to charge fireballs and hurl them at tougher enemies. Clear every enemy in a level to advance through three stages — a bamboo forest, a cursed cave, and a night castle — each with its own background, foes, and treasure. The game features synthesized ninja-style background music and sound effects and runs entirely in your browser, so nothing is stored.",
+  },
+  {
     name: "Image Cropper",
     slug: "image-cropper",
     category: "Image Tools",
