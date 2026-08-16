@@ -3,6 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, ArrowRight, Trophy, Sigma } from "lucide-react";
+import { playCorrect, playWrong, playShuffle, resumeAudio } from "@/lib/game-sounds";
 
 const rand = (n) => Math.floor(Math.random() * n);
 const pick = (a) => a[rand(a.length)];
@@ -37,14 +38,15 @@ export default function MathPuzzleGame() {
   const [result, setResult] = useState(null);
   const [score, setScore] = useState(0);
 
-  const choose = (lv) => { setLevel(lv); setQ(LEVELS[lv - 1]()); setAns(""); setResult(null); };
-  const next = () => { setQ(LEVELS[level - 1]()); setAns(""); setResult(null); };
+  const choose = (lv) => { resumeAudio(); playShuffle(); setLevel(lv); setQ(LEVELS[lv - 1]()); setAns(""); setResult(null); };
+  const next = () => { resumeAudio(); playShuffle(); setQ(LEVELS[level - 1]()); setAns(""); setResult(null); };
 
   const check = () => {
+    resumeAudio();
     const val = parseFloat(ans);
-    if (isNaN(val)) { setResult({ ok: false, msg: `${t("Wrong. The answer was")} ${q.answer}` }); return; }
-    if (Math.abs(val - q.answer) < 0.01) { setScore((s) => s + 1); setResult({ ok: true, msg: t("Correct! 🎉") }); }
-    else setResult({ ok: false, msg: `${t("Wrong. The answer was")} ${q.answer}` });
+    if (isNaN(val)) { playWrong(); setResult({ ok: false, msg: `${t("Wrong. The answer was")} ${q.answer}` }); return; }
+    if (Math.abs(val - q.answer) < 0.01) { playCorrect(); setScore((s) => s + 1); setResult({ ok: true, msg: t("Correct! 🎉") }); }
+    else { playWrong(); setResult({ ok: false, msg: `${t("Wrong. The answer was")} ${q.answer}` }); }
   };
 
   return (

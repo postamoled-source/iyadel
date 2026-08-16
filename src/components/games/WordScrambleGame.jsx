@@ -3,6 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, RefreshCw, Sparkles, Trophy } from "lucide-react";
+import { playCorrect, playWrong, playShuffle, resumeAudio } from "@/lib/game-sounds";
 
 const rand = (n) => Math.floor(Math.random() * n);
 
@@ -37,15 +38,17 @@ export default function WordScrambleGame() {
   const totalLetters = useMemo(() => word.replace(/\s/g, "").length, [word]);
 
   const next = () => {
+    resumeAudio(); playShuffle();
     let w = WORDS[rand(WORDS.length)];
     if (w === word) w = WORDS[(WORDS.indexOf(word) + 1) % WORDS.length];
     setWord(w); setGuess(""); setResult(null);
   };
 
   const check = () => {
+    resumeAudio();
     const norm = (s) => s.trim().toUpperCase().replace(/\s+/g, " ");
-    if (norm(guess) === norm(word)) { setScore((s) => s + 1); setResult({ ok: true, msg: t("Correct! 🎉") }); }
-    else setResult({ ok: false, msg: `${t("Wrong. The word was")} "${word}"` });
+    if (norm(guess) === norm(word)) { playCorrect(); setScore((s) => s + 1); setResult({ ok: true, msg: t("Correct! 🎉") }); }
+    else { playWrong(); setResult({ ok: false, msg: `${t("Wrong. The word was")} "${word}"` }); }
   };
 
   return (
