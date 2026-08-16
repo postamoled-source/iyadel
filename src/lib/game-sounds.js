@@ -48,6 +48,15 @@ export const playWin = () => {
   setTimeout(() => tone(784, 0.16, "sine", 0.12), 200);
 };
 
+// Puzzle games (Math Puzzle, Word Scramble)
+export const playCorrect = () => {
+  tone(523, 0.08, "sine", 0.12);
+  setTimeout(() => tone(784, 0.09, "sine", 0.12), 70);
+  setTimeout(() => tone(1047, 0.12, "sine", 0.12), 140);
+};
+export const playWrong = () => tone(220, 0.2, "sawtooth", 0.1, 110);
+export const playShuffle = () => { tone(400, 0.05, "triangle", 0.08, 700); };
+
 // Shared
 export const playGameOver = () => {
   tone(440, 0.18, "sine", 0.14, 220);
