@@ -15,10 +15,12 @@ import MemoryMatch from "@/components/games/MemoryMatch";
 import WhackAMole from "@/components/games/WhackAMole";
 import BallLauncher from "@/components/games/BallLauncher";
 import SnakeGame from "@/components/games/SnakeGame";
+import MathPuzzleGame from "@/components/games/MathPuzzleGame";
+import WordScrambleGame from "@/components/games/WordScrambleGame";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
-import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS,   WORD_LIST, RIDDLES, convertUnit, scrambleWord, generatePuzzle, calcMolarMass, compileExpr, FN_COLORS } from "@/lib/tool-utils";
+import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, RIDDLES, convertUnit, calcMolarMass, compileExpr, FN_COLORS } from "@/lib/tool-utils";
 import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, SlidersHorizontal, Swords, Spline } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { trackEvent, useSeo } from "@/lib/analytics";
@@ -324,14 +326,6 @@ function ToolWorkspace({ tool, onBack }) {
   const [riddle, setRiddle] = useState(() => RIDDLES[0]);
   const [bgResult, setBgResult] = useState(null);
   const [pdfBusy, setPdfBusy] = useState(false);
-  const [puzzleLevel, setPuzzleLevel] = useState("Easy");
-  const [puzzleQ, setPuzzleQ] = useState(() => generatePuzzle("Easy"));
-  const [puzzleAns, setPuzzleAns] = useState("");
-  const [puzzleResult, setPuzzleResult] = useState("");
-  const [word, setWord] = useState(() => WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)]);
-  const [scrambled, setScrambled] = useState("");
-  const [scrambleGuess, setScrambleGuess] = useState("");
-  const [scrambleResult, setScrambleResult] = useState("");
   const [speedTest, setSpeedTest] = useState({ running: false, ping: null, download: null, upload: null });
   const [qrUrl, setQrUrl] = useState(null);
   const [shareLinks, setShareLinks] = useState(null);
@@ -358,9 +352,6 @@ function ToolWorkspace({ tool, onBack }) {
 
   useEffect(() => {
     setInputs({}); setResult(null); setRiddleAttempts(3); setRiddleMsg(""); setRiddleGuess("");
-    setPuzzleQ(generatePuzzle("Easy")); setPuzzleLevel("Easy"); setPuzzleAns(""); setPuzzleResult("");
-    const w = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
-    setWord(w); setScrambled(scrambleWord(w)); setScrambleGuess(""); setScrambleResult("");
     setSpeedTest({ running: false, ping: null, download: null, upload: null });
     setQrUrl(null); setShareLinks(null); setPolicyText("");
     setCropSrc(null); setCropResult(null); setBgSrc(null); setBgDone(false);
@@ -1239,48 +1230,10 @@ function ToolWorkspace({ tool, onBack }) {
           </>
         );
       }
-      case "math-puzzle": {
-        const check = () => {
-          if (parseInt(puzzleAns) === puzzleQ.answer) setPuzzleResult("Correct! 🎉");
-          else setPuzzleResult(`Wrong. The answer was ${puzzleQ.answer}.`);
-        };
-        const next = () => { setPuzzleQ(generatePuzzle(puzzleLevel)); setPuzzleAns(""); setPuzzleResult(""); };
-        return (
-          <>
-            <div className="rounded-2xl bg-background border border-border p-6 mb-6 text-center">
-              <p className="text-3xl font-extrabold text-foreground">{puzzleQ.text}</p>
-            </div>
-            <SelectField label="Difficulty" value={puzzleLevel} onChange={(e) => { setPuzzleLevel(e.target.value); setPuzzleQ(generatePuzzle(e.target.value)); setPuzzleAns(""); setPuzzleResult(""); }} options={["Easy", "Medium", "Hard", "Expert"]} />
-            <NumInput label="Your Answer" value={puzzleAns} onChange={(e) => setPuzzleAns(e.target.value)} placeholder="?" />
-            <div className="flex flex-wrap justify-center gap-3 mt-6">
-              <CalcButton onClick={check}>Check</CalcButton>
-              <Button onClick={next} variant="outline" className="mt-6 rounded-2xl px-6 py-6">Next Puzzle</Button>
-            </div>
-            {puzzleResult && <ResultCard title="Result"><div className="text-lg font-semibold text-foreground">{puzzleResult}</div></ResultCard>}
-          </>
-        );
-      }
-      case "word-scramble": {
-        const check = () => {
-          if (scrambleGuess.trim().toUpperCase() === word) setScrambleResult("Correct! 🎉");
-          else setScrambleResult(`Wrong. The word was "${word}".`);
-        };
-        const next = () => { const w = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)]; setWord(w); setScrambled(scrambleWord(w)); setScrambleGuess(""); setScrambleResult(""); };
-        return (
-          <>
-            <div className="rounded-2xl bg-background border border-border p-6 mb-6 text-center">
-              <p className="text-sm text-muted-foreground mb-2">Unscramble the letters:</p>
-              <p className="text-3xl font-extrabold tracking-[0.3em] text-foreground">{scrambled}</p>
-            </div>
-            <TxtInput label="Your Answer" value={scrambleGuess} onChange={(e) => setScrambleGuess(e.target.value)} placeholder="Type the word" />
-            <div className="flex flex-wrap justify-center gap-3 mt-6">
-              <CalcButton onClick={check}>Check</CalcButton>
-              <Button onClick={next} variant="outline" className="mt-6 rounded-2xl px-6 py-6">New Word</Button>
-            </div>
-            {scrambleResult && <ResultCard title="Result"><div className="text-lg font-semibold text-foreground">{scrambleResult}</div></ResultCard>}
-          </>
-        );
-      }
+      case "math-puzzle":
+        return <MathPuzzleGame />;
+      case "word-scramble":
+        return <WordScrambleGame />;
       case "image-cropper": {
         const cropResultData = cropResult && cropResult.url ? cropResult : null;
         return (
