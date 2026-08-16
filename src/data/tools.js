@@ -57,6 +57,7 @@ export const STATIC_TOOLS = [
     category: "Converters",
     description: "Convert between 30 world currencies.",
     icon: "DollarSign",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/6c12dfff1_generated_image.png",
     content: "Currency conversion translates an amount from one currency to another using exchange rates. This tool references a fixed set of rates for 30 world currencies for quick, offline-friendly estimates. In real markets, rates fluctuate constantly and include a spread between buying and selling prices, so the figure here may differ slightly from what a bank or card provider offers at the moment of a transaction. For large or time-sensitive transfers, always confirm the live rate and any fees with your provider.",
   },
   {
@@ -65,6 +66,7 @@ export const STATIC_TOOLS = [
     category: "Converters",
     description: "Convert between distance units.",
     icon: "Ruler",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/896013a8d_generated_image.png",
     content: "Distance conversion lets you move between metric and imperial units, such as miles, kilometers, yards, and meters. The metric system is decimal-based and used in most of the world, while the imperial system is still common in a few countries, notably the United States. All conversions here are calculated through a base unit (meters) to stay accurate across very large or very small values. This is useful for travel, mapping, engineering, and any task that mixes unit systems.",
   },
   {
@@ -73,6 +75,7 @@ export const STATIC_TOOLS = [
     category: "Converters",
     description: "Convert between weight units.",
     icon: "Weight",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/2a0c4487c_generated_image.png",
     content: "Weight conversion handles mass units from grams and kilograms to pounds, ounces, and tons. The kilogram is the base unit of mass in the metric system, while pounds and ounces belong to the imperial system still used in the US and a few other regions. Conversions go through grams as the common reference to keep precision consistent across ranges. Whether you are cooking, shipping, or lifting, accurate unit conversion prevents costly mistakes.",
   },
   {
@@ -81,6 +84,7 @@ export const STATIC_TOOLS = [
     category: "Converters",
     description: "Convert between area units.",
     icon: "Square",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/147d16423_generated_image.png",
     content: "Area conversion translates surface measurements between square meters, square feet, acres, hectares, and more. Real estate and agriculture often mix metric and imperial units, making a reliable converter essential when comparing land sizes. An acre and a hectare are both common land measures, but they differ significantly in size — a hectare is roughly 2.47 acres. All conversions use square meters as the base for consistent results.",
   },
   {
@@ -89,6 +93,7 @@ export const STATIC_TOOLS = [
     category: "Converters",
     description: "Convert between time units.",
     icon: "Clock",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/8e0c30207_generated_image.png",
     content: "Time conversion moves between days, hours, minutes, seconds, and milliseconds. Time is built on a non-decimal system (24 hours, 60 minutes), which makes mental conversion error-prone — a tool eliminates that risk. It is handy for scheduling, calculating durations, working with media timestamps, and syncing across time zones. Conversions here use seconds as the base unit to stay precise down to the millisecond.",
   },
   {
@@ -97,6 +102,7 @@ export const STATIC_TOOLS = [
     category: "Converters",
     description: "Convert between speed units.",
     icon: "Gauge",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/eaaa451e7_generated_image.png",
     content: "Speed conversion translates velocity between kilometers per hour, miles per hour, meters per second, and knots. Kilometers per hour is standard in most countries, while miles per hour is used in the US and UK, and knots are used in aviation and maritime contexts. Meters per second is the SI unit often used in physics and engineering. Use this converter when comparing vehicle speeds, reading scientific data, or working across regional standards.",
   },
   {
@@ -105,6 +111,7 @@ export const STATIC_TOOLS = [
     category: "Converters",
     description: "Test download, upload and latency.",
     icon: "Wifi",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/bcc9dd5e4_generated_image.png",
     content: "An internet speed test measures three things: ping (latency), download speed, and upload speed. Ping is the round-trip time for data to travel to a server and back, important for gaming and video calls. Download speed affects streaming and loading, while upload speed matters for sending files and live broadcasting. For the most accurate result, close bandwidth-heavy apps, connect via cable if possible, and run the test a few times to average out spikes.",
   },
   {
@@ -113,6 +120,7 @@ export const STATIC_TOOLS = [
     category: "Converters",
     description: "Create a custom QR code easily.",
     icon: "QrCode",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/127d80fb9_generated_image.png",
     content: "A QR (Quick Response) code stores information — usually a URL or text — in a scannable two-dimensional pattern. This generator encodes your text or link into a QR image you can download and print or share digitally. QR codes are widely used for menus, payments, business cards, and product packaging. Your data is encoded on demand and not stored, so the code works offline and stays private.",
   },
   {
@@ -121,6 +129,7 @@ export const STATIC_TOOLS = [
     category: "Converters",
     description: "Generate shareable social links.",
     icon: "Link2",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/d9aa9b6cf_generated_image.png",
     content: "Share link generators build ready-to-use URLs that open a platform's native share dialog with your content pre-filled. Each social network expects a slightly different URL format for the page link and optional message. Use these links in emails, websites, or messages to encourage sharing without requiring users to copy and paste. This is a simple way to boost engagement and make your content easy to spread.",
   },
   {
@@ -129,6 +138,7 @@ export const STATIC_TOOLS = [
     category: "Converters",
     description: "Generate a GDPR-compliant policy.",
     icon: "ShieldCheck",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/a8caa39b2_generated_image.png",
     content: "A privacy policy explains what data your app or website collects and how it is used, and it is required by many laws including GDPR and app store policies. This generator produces a clear, structured policy using your app name, site URL, and contact email. While it covers the standard sections — data collection, usage, cookies, and user rights — you should review it with a legal professional to ensure it fits your specific data practices and jurisdiction. Always keep the policy updated as your data handling changes.",
   },
   {
@@ -137,6 +147,7 @@ export const STATIC_TOOLS = [
     category: "Converters",
     description: "Create random, copy-ready promo codes.",
     icon: "Ticket",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/4e1b754ca_generated_image.png",
     content: "Coupon codes are short unique strings used for discounts, promotions, and tracking marketing campaigns. This generator creates batches of random codes with your chosen length, character set, and an optional prefix. The default character set excludes easily confused characters (O, I, 0, 1) so codes stay readable when printed or typed. Use dashes to break long codes into readable groups, and generate enough codes to cover your campaign plus extras.",
   },
   {
@@ -181,6 +192,7 @@ export const STATIC_TOOLS = [
     category: "Games",
     description: "Solve puzzles and riddles.",
     icon: "HelpCircle",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/25609ebee_generated_image.png",
     content: "Riddles exercise lateral thinking by describing something indirectly and asking you to infer the answer. They improve vocabulary, logic, and creative problem-solving, making them popular for all ages. This game gives you a limited number of attempts per riddle so you can guess thoughtfully before the answer is revealed. Try a new riddle to keep your reasoning skills sharp and discover different styles of wordplay.",
   },
   {
@@ -189,6 +201,7 @@ export const STATIC_TOOLS = [
     category: "Games",
     description: "Sharpen your mental math.",
     icon: "Puzzle",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/9f56aa402_generated_image.png",
     content: "Mental math puzzles sharpen arithmetic speed and number sense through quick, randomized problems. Choose a difficulty level to match your skill — from Easy single-digit sums to Expert multi-step calculations. Regular practice improves working memory and makes everyday math feel effortless. Each puzzle generates a fresh question, so you can practice as long as you like without repeats.",
   },
   {
@@ -197,6 +210,7 @@ export const STATIC_TOOLS = [
     category: "Games",
     description: "Unscramble the word.",
     icon: "Shuffle",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0aeed49d1_generated_image.png",
     content: "Word scramble presents a word with its letters mixed up and challenges you to find the original. It builds pattern recognition, spelling, and vocabulary, and is a classic language game. The scrambler ensures the result is never identical to the original word. It is a fun way to warm up your brain or pass a few minutes with a quick linguistic challenge.",
   },
   {
@@ -205,6 +219,7 @@ export const STATIC_TOOLS = [
     category: "Games",
     description: "Slide and merge tiles to reach 2048.",
     icon: "Puzzle",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/e4f608e16_generated_image.png",
     content: "2048 is a sliding tile puzzle. Swipe or use the arrow keys to move all tiles in one direction. When two tiles with the same number touch, they merge into one. Reach the 2048 tile to win — then keep going for a higher score. The game ends when the board is full and no moves remain.",
   },
   {
@@ -213,6 +228,7 @@ export const STATIC_TOOLS = [
     category: "Games",
     description: "Flip cards and match all the pairs.",
     icon: "Shuffle",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/36a02bf1d_generated_image.png",
     content: "Memory Match is a classic brain game. Flip two cards at a time to reveal symbols and find every matching pair in as few moves as possible. It sharpens memory and concentration and runs entirely in your browser, so nothing is stored. Keep practicing to beat your own best move count.",
   },
   {
@@ -248,6 +264,7 @@ export const STATIC_TOOLS = [
     category: "Image Tools",
     description: "Upload and crop an image.",
     icon: "Crop",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/03d097074_generated_image.png",
     content: "Cropping trims an image to a chosen region to improve composition or fit a required aspect ratio. This tool crops to a centered square, which is ideal for profile pictures, avatars, and thumbnails where a consistent shape matters. Cropping happens entirely in your browser — your image is never uploaded, so it stays private. Download the result instantly in PNG format.",
   },
   {
@@ -256,6 +273,7 @@ export const STATIC_TOOLS = [
     category: "Image Tools",
     description: "Remove backgrounds automatically.",
     icon: "Eraser",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/8bf263945_generated_image.png",
     content: "Removing an image's background isolates the subject for use in designs, collages, or product catalogs. This tool detects the dominant background color from the image corners and makes similar pixels transparent. It works best on images with a solid, uniform background and a clearly contrasting subject. All processing is local to your browser, so nothing is uploaded and your images stay private.",
   },
   {
@@ -264,6 +282,7 @@ export const STATIC_TOOLS = [
     category: "Image Tools",
     description: "Combine images into a single PDF.",
     icon: "FileImage",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/7ac14b389_generated_image.png",
     content: "Combining multiple images into a single PDF makes them easy to share, print, or archive in one file. This tool lets you add several images and generates a multi-page PDF with each image centered on its page. It runs entirely in your browser, so your images never leave your device. The result is a standard PDF you can open on any device or send as one attachment.",
   },
   {
@@ -272,6 +291,7 @@ export const STATIC_TOOLS = [
     category: "Image Tools",
     description: "Compress images while keeping quality.",
     icon: "ImageDown",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/bb1569cdd_generated_image.png",
     content: "Image compression reduces file size by lowering quality slightly, balancing visual fidelity with storage and bandwidth savings. This tool re-encodes your image as JPEG at a chosen quality level and shows the before-and-after sizes. Lower quality means a smaller file but more visible artifacts, so pick the level that keeps the image looking good for its purpose. Compression happens locally, so your image stays private.",
   },
   {
