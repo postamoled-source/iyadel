@@ -17,6 +17,7 @@ import BallLauncher from "@/components/games/BallLauncher";
 import SnakeGame from "@/components/games/SnakeGame";
 import MathPuzzleGame from "@/components/games/MathPuzzleGame";
 import WordScrambleGame from "@/components/games/WordScrambleGame";
+import GameMusicButton from "@/components/games/GameMusicButton";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
@@ -1224,6 +1225,7 @@ function ToolWorkspace({ tool, onBack }) {
             <div className="flex flex-wrap justify-center gap-3 mt-6">
               <CalcButton onClick={guess}>Submit Answer</CalcButton>
               <Button onClick={next} variant="outline" className="mt-6 rounded-2xl px-6 py-6">New Riddle</Button>
+              <GameMusicButton theme="riddle" className="mt-6" />
             </div>
             {riddleMsg && <ResultCard title="Result"><div className="text-lg font-semibold text-foreground">{riddleMsg}</div></ResultCard>}
             <TipBox>Attempts left: {riddleAttempts}</TipBox>

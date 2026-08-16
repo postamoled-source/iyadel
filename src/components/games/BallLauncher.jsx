@@ -3,6 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Play, Crosshair } from "lucide-react";
 import { playLaunch, playBounce, playPop, playGameOver, playStart, resumeAudio } from "@/lib/game-sounds";
+import GameMusicButton from "@/components/games/GameMusicButton";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a7e76e3396b41955b675542/307ba8fe6_generated_image.png";
 const W = 320, H = 440;
@@ -270,11 +271,14 @@ export default function BallLauncher() {
           <Stat label={t("Time")} value={`${timeLeft}s`} className="text-foreground" />
           <Stat label={t("Best")} value={best} className="text-accent" />
         </div>
-        {!running && (
-          <Button onClick={start} className="rounded-2xl px-4 py-4 shrink-0">
-            <Play className="w-4 h-4 mr-2" />{over ? t("Play again") : t("Start")}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {!running && (
+            <Button onClick={start} className="rounded-2xl px-4 py-4 shrink-0">
+              <Play className="w-4 h-4 mr-2" />{over ? t("Play again") : t("Start")}
+            </Button>
+          )}
+          <GameMusicButton theme="balllauncher" />
+        </div>
       </div>
 
       <div className="relative mx-auto w-fit">

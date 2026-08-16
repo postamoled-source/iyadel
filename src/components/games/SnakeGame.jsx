@@ -3,6 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Play, RotateCcw, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Trophy, Gem } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import GameMusicButton from "@/components/games/GameMusicButton";
 
 const SIZE = 360, GRID = 15, CELL = SIZE / GRID;
 const LEVEL_EVERY = 4;        // points needed to climb one level (faster progression)
@@ -302,7 +303,10 @@ export default function SnakeGame() {
           <Gem className="w-3.5 h-3.5 text-cyan-300" />
           <span className="text-muted-foreground">{t("Level")}: </span><span className="font-extrabold text-violet-300 tabular-nums">{level}</span>
         </div>
-        <div><span className="text-muted-foreground">{t("Best")}: </span><span className="font-extrabold text-amber-500 tabular-nums">{best}</span></div>
+        <div className="flex items-center gap-2">
+          <GameMusicButton theme="snake" />
+          <div><span className="text-muted-foreground">{t("Best")}: </span><span className="font-extrabold text-amber-500 tabular-nums">{best}</span></div>
+        </div>
       </div>
 
       <div className="relative rounded-2xl overflow-hidden border border-violet-500/40 shadow-xl shadow-violet-900/40" style={{ width: "min(92vw, 360px)", height: "min(92vw, 360px)" }}>

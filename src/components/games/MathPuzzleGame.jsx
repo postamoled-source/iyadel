@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, ArrowRight, Trophy, Sigma } from "lucide-react";
 import { playCorrect, playWrong, playShuffle, resumeAudio } from "@/lib/game-sounds";
+import GameMusicButton from "@/components/games/GameMusicButton";
 
 const rand = (n) => Math.floor(Math.random() * n);
 const pick = (a) => a[rand(a.length)];
@@ -56,9 +57,12 @@ export default function MathPuzzleGame() {
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("Score")}</div>
           <div className="text-xl font-extrabold text-primary tabular-nums">{score}</div>
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-violet-500/15 border border-violet-400/30">
-          <Sigma className="w-4 h-4 text-violet-400" />
-          <span className="text-sm font-bold text-violet-300">{t("Level")} {level}</span>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-violet-500/15 border border-violet-400/30">
+            <Sigma className="w-4 h-4 text-violet-400" />
+            <span className="text-sm font-bold text-violet-300">{t("Level")} {level}</span>
+          </div>
+          <GameMusicButton theme="mathpuzzle" />
         </div>
       </div>
 

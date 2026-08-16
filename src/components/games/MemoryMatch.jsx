@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Trophy } from "lucide-react";
+import GameMusicButton from "@/components/games/GameMusicButton";
 
 const SYMBOLS = ["🚀", "⚡", "🎯", "💎", "🔥", "🌟", "🛡", "✦"];
 
@@ -51,7 +52,10 @@ export default function MemoryMatch() {
             <div className="text-xl font-extrabold text-primary tabular-nums">{matched.length / 2}/{SYMBOLS.length}</div>
           </div>
         </div>
-        <Button onClick={restart} variant="outline" className="rounded-2xl px-4 py-4"><RotateCcw className="w-4 h-4 mr-2" />{t("New Game")}</Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={restart} variant="outline" className="rounded-2xl px-4 py-4"><RotateCcw className="w-4 h-4 mr-2" />{t("New Game")}</Button>
+          <GameMusicButton theme="memory" />
+        </div>
       </div>
 
       <div className="relative mx-auto w-fit">

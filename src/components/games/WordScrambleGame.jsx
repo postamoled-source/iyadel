@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, RefreshCw, Sparkles, Trophy } from "lucide-react";
 import { playCorrect, playWrong, playShuffle, resumeAudio } from "@/lib/game-sounds";
+import GameMusicButton from "@/components/games/GameMusicButton";
 
 const rand = (n) => Math.floor(Math.random() * n);
 
@@ -58,9 +59,12 @@ export default function WordScrambleGame() {
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("Score")}</div>
           <div className="text-xl font-extrabold text-primary tabular-nums">{score}</div>
         </div>
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="px-2.5 py-1 rounded-full bg-violet-500/15 border border-violet-400/30 text-violet-300 font-bold">{words.length} {t("words")}</span>
-          <span className="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 font-bold">{totalLetters} {t("letters")}</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="px-2.5 py-1 rounded-full bg-violet-500/15 border border-violet-400/30 text-violet-300 font-bold">{words.length} {t("words")}</span>
+            <span className="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 font-bold">{totalLetters} {t("letters")}</span>
+          </div>
+          <GameMusicButton theme="wordscramble" />
         </div>
       </div>
 

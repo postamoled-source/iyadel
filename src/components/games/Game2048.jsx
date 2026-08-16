@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { RotateCcw, Trophy, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { playMove, playMerge, playWin, playGameOver, playStart, resumeAudio } from "@/lib/game-sounds";
+import GameMusicButton from "@/components/games/GameMusicButton";
 
 const SIZE = 4;
 const GAP = 10;
@@ -201,7 +202,10 @@ export default function Game2048() {
             <div className="text-xl font-extrabold text-primary tabular-nums">{best}</div>
           </div>
         </div>
-        <Button onClick={restart} variant="outline" className="rounded-2xl px-4 py-4"><RotateCcw className="w-4 h-4 mr-2" />{t("New Game")}</Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={restart} variant="outline" className="rounded-2xl px-4 py-4"><RotateCcw className="w-4 h-4 mr-2" />{t("New Game")}</Button>
+          <GameMusicButton theme="2048" />
+        </div>
       </div>
 
       <div

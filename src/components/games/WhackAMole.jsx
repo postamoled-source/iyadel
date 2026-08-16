@@ -3,6 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Hammer, RotateCcw, Trophy, Play } from "lucide-react";
 import { playWhack, playStart, playGameOver, resumeAudio } from "@/lib/game-sounds";
+import GameMusicButton from "@/components/games/GameMusicButton";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a7e76e3396b41955b675542/1c8de136a_generated_image.png";
 const HOLES = 9;
@@ -130,6 +131,7 @@ export default function WhackAMole() {
             <Play className="w-4 h-4 mr-2" />{over ? t("Play again") : t("Start")}
           </Button>
         )}
+        <GameMusicButton theme="whackamole" />
       </div>
 
       <div className="relative mx-auto w-fit">

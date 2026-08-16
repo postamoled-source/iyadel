@@ -51,6 +51,8 @@ const AR = {
   "letters": "حروف",
   "Classic snake reimagined — elegant levels, glowing gems, and speed that climbs every level.": "الثعبان الكلاسيكي بثوب جديد — مستويات أنيقة وجواهر متوهجة وسرعة تتزايد مع كل مستوى.",
   "Level Up": "مستوى أعلى",
+  "Music": "موسيقى",
+  "Game Over": "انتهت اللعبة",
   "Swipe or arrows to steer. Eat the fruit and gems to grow — don't hit the walls or yourself!": "اسحب أو استخدم الأسهم للتوجيه. كُل الفاكهة والجواهر لتكبر — وتجنّب الجدران وجسمك!",
   "Image Tools": "أدوات الصور",
   "About this tool": "حول هذه الأداة",
