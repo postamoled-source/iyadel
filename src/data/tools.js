@@ -212,6 +212,7 @@ export const STATIC_TOOLS = [
     category: "Games",
     description: "Tap the moles before they hide. 30-second reflex challenge.",
     icon: "Hammer",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/1c8de136a_generated_image.png",
     content: "Whack-a-Mole is a classic 2D reflex game. Moles pop up from a 3×3 grid of holes at random and stay visible only briefly — tap one the instant it appears to score. You have 30 seconds to hit as many as you can, and your best score is saved on your device. It sharpens hand-eye coordination and reaction speed and runs entirely in your browser, so nothing is stored. Beat your own high score every round.",
   },
   {
@@ -220,6 +221,7 @@ export const STATIC_TOOLS = [
     category: "Games",
     description: "Aim and fire balls to pop floating bubbles. 30-second target challenge.",
     icon: "Crosshair",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/307ba8fe6_generated_image.png",
     content: "Ball Launcher is a 2D physics game. A cannon at the bottom aims toward your finger — tap and release to launch a ball in a gravity arc toward floating bubbles. Pop a bubble to score 10 points; new bubbles keep spawning so the board stays full. You have 30 seconds to score as much as you can, and your best result is saved on your device. The game sharpens aim and trajectory intuition and runs entirely in your browser, so nothing is stored. Beat your own high score every round.",
   },
   {
