@@ -417,4 +417,19 @@ export const TOOL_GUIDES = {
       "Your best score is saved locally on your device.",
     ],
   },
+  "ball-launcher": {
+    intro: "Aim the cannon with your finger and fire balls to pop floating bubbles.",
+    steps: [
+      "Press Start to begin the 30-second round.",
+      "Touch and drag on the play field to aim the cannon.",
+      "Release to launch a ball in a gravity arc toward the bubbles.",
+      "Pop a bubble for 10 points — new bubbles keep appearing.",
+      "When time runs out, your total and best score are shown.",
+    ],
+    tips: [
+      "Aim slightly above a bubble so gravity drops the ball onto it.",
+      "Bubbles drift sideways — lead them like a moving target.",
+      "Balls bounce off the walls, so bank shots can reach tricky spots.",
+    ],
+  },
 };

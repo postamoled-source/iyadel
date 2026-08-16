@@ -2,7 +2,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Hammer, RotateCcw, Trophy, Play } from "lucide-react";
+import { playWhack, playStart, playGameOver, resumeAudio } from "@/lib/game-sounds";
 
+const LOGO_URL = "https://media.base44.com/images/public/6a7e76e3396b41955b675542/1c8de136a_generated_image.png";
 const HOLES = 9;
 const SECONDS = 30;
 
@@ -53,9 +55,11 @@ export default function WhackAMole() {
       try { localStorage.setItem("whackBest", String(nb)); } catch {}
       return nb;
     });
+    playGameOver();
   }, []);
 
   const start = () => {
+    resumeAudio();
     clearHide();
     scoreRef.current = 0;
     timeRef.current = SECONDS;
@@ -64,6 +68,7 @@ export default function WhackAMole() {
     setMoles(Array(HOLES).fill(0));
     setBurst({});
     setPhase("running");
+    playStart();
   };
 
   useEffect(() => {
@@ -92,6 +97,7 @@ export default function WhackAMole() {
     if (hideTimers.current[i]) { clearTimeout(hideTimers.current[i]); delete hideTimers.current[i]; }
     setScore((s) => s + 1);
     scoreRef.current += 1;
+    playWhack();
     setBurst((b) => ({ ...b, [i]: i + "-" + Date.now() }));
     setTimeout(() => setBurst((b) => { const n = { ...b }; delete n[i]; return n; }), 350);
   };
@@ -101,6 +107,9 @@ export default function WhackAMole() {
 
   return (
     <div className="select-none">
+      <div className="flex flex-col items-center mb-4">
+        <img src={LOGO_URL} alt={t("Whack-a-Mole")} className="w-16 h-16 rounded-2xl object-contain drop-shadow-md" />
+      </div>
       <div className="flex items-center justify-between mb-4 gap-3">
         <div className="flex gap-2.5">
           <div className="rounded-2xl bg-card border border-border px-3.5 py-2 text-center min-w-[64px]">

@@ -415,6 +415,10 @@ const AR = {
   "Time's up!": "انتهى الوقت!",
   "Tap the moles as fast as you can before they hide again — 30 seconds!":
     "اضرب الفئران بأسرع ما يمكن قبل أن تختبئ مجددًا — 30 ثانية!",
+  "Ball Launcher": "قاذفة الكرة",
+  "Whack-a-Mole": "اطرب الفأر",
+  "Tap & aim to launch balls at the bubbles — 30 seconds!":
+    "المس وصوّب لإطلاق الكرات نحو الفقاعات — 30 ثانية!",
 };
 
 const I18nContext = createContext(null);
