@@ -230,6 +230,7 @@ export const STATIC_TOOLS = [
     category: "Games",
     description: "A 2D ninja action game — sword, fireballs, soldiers, monsters, and 3 levels.",
     icon: "Swords",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/637172422_generated_image.png",
     content: "Ninja Quest is a 2D action platformer. Control a masked ninja with a katana: move, jump, and slash through soldiers and monsters. Grab the glowing treasure to charge fireballs and hurl them at tougher enemies. Clear every enemy in a level to advance through three stages — a bamboo forest, a cursed cave, and a night castle — each with its own background, foes, and treasure. The game features synthesized ninja-style background music and sound effects and runs entirely in your browser, so nothing is stored.",
   },
   {
