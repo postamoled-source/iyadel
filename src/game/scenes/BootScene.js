@@ -65,5 +65,25 @@ export class BootScene extends Phaser.Scene {
       repeat: -1,
       ease: 'Sine.inOut',
     });
+
+    const prompt = this.add
+      .text(width / 2, height - 80, 'TAP / PRESS ENTER TO START', {
+        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontSize: '18px',
+        color: '#e6e1ff',
+      })
+      .setOrigin(0.5);
+    this.tweens.add({
+      targets: prompt,
+      alpha: { from: 0.3, to: 1 },
+      duration: 600,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.inOut',
+    });
+
+    const start = () => this.scene.start('Play');
+    this.input.keyboard.once('keydown-ENTER', start);
+    this.input.once('pointerdown', start);
   }
 }
