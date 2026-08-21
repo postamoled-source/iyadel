@@ -12,6 +12,8 @@ import {
 } from '@/lib/game-sounds';
 import { startMusic, stopMusic } from '@/lib/game-music';
 import { SaveManager } from '../save/SaveManager';
+import { Effects } from '../effects/Effects';
+import { buildParallax } from '../effects/Parallax';
 
 const LEVEL_WIDTH = 3200;
 
@@ -32,6 +34,7 @@ export class PlayScene extends Phaser.Scene {
     bg.fillGradientStyle(0x1a1430, 0x1a1430, 0x3a2a6a, 0x0b0a14, 1);
     bg.fillRect(0, 0, LEVEL_WIDTH, 720);
     bg.setScrollFactor(0.2);
+    buildParallax(this, LEVEL_WIDTH, 720);
 
     // Ground + platforms (static group).
     this.platforms = this.physics.add.staticGroup();
@@ -124,6 +127,9 @@ export class PlayScene extends Phaser.Scene {
     this.bossBarBg = null;
     this.victoryShown = false;
 
+    // Visual polish (Phase 10).
+    this.effects = new Effects(this);
+
     // Audio (Phase 8).
     this.soundOn = true;
     setSfxMuted(false);
@@ -191,7 +197,7 @@ export class PlayScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.enemyMgr.enemyBullets, (player, b) => {
       b.destroy();
       if (player.takeDamage(10, this.time.now)) this.gameOver();
-      else playHurt();
+      else { playHurt(); this.effects.shake(0.01, 120); }
       this.refreshHud();
     });
 
@@ -275,8 +281,12 @@ export class PlayScene extends Phaser.Scene {
     if (boss.hit(2)) {
       boss.kill();
       this.score += 5000;
+      this.effects.burst(boss.x, boss.y, 0xff5c6c, 40, 320);
+      this.effects.shake(0.02, 350);
+      this.effects.flash(0xff5c6c);
       playBossDie();
     } else {
+      this.effects.burst(bullet.x, bullet.y, 0x9a6cff, 6, 120);
       playBossHit();
     }
     this.refreshHud();
@@ -322,6 +332,7 @@ export class PlayScene extends Phaser.Scene {
       const ex = enemy.x;
       const ey = enemy.y;
       enemy.destroy();
+      this.effects.burst(ex, ey, 0xff8a3c, 14);
       this.maybeDropPickup(ex, ey);
       playEnemyDie();
     } else {
@@ -342,13 +353,14 @@ export class PlayScene extends Phaser.Scene {
     else if (pickup.type === 'shield') player.shieldUntil = this.time.now + 6000;
     else if (pickup.type === 'gem') this.score += 250;
     pickup.destroy();
+    this.effects.burst(player.x, player.y, 0xf5c451, 10, 150);
     playPickup();
     this.refreshHud();
   }
 
   touchEnemy(player, enemy) {
     if (player.takeDamage(15, this.time.now)) this.gameOver();
-    else playHurt();
+    else { playHurt(); this.effects.shake(0.012, 150); }
     this.refreshHud();
   }
 
