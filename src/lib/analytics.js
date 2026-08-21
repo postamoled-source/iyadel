@@ -20,7 +20,7 @@ export function trackEvent(eventName, params = {}) {
 // SEO hook: updates document title, meta description, and canonical URL per page.
 export function useSeo({ title, description, image, path } = {}) {
   useEffect(() => {
-    const base = "TestPeak";
+    const base = "iyadel";
     if (title) document.title = `${title} | ${base}`;
 
     if (description) {
