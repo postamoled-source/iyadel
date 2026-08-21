@@ -187,9 +187,9 @@ function HeroSection({ toolCount, catCount, searchQuery, onSearchChange }) {
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
 
           <div className="flex items-center justify-center gap-4 mb-6" style={{ animation: "floatC 6s ease-in-out infinite" }}>
-            <img src={LOGO_URL} alt="TestPeak" className="w-12 h-12 md:w-16 md:h-16 rounded-2xl object-cover shadow-lg shadow-primary/30" />
+            <img src={LOGO_URL} alt="iyadel" className="w-12 h-12 md:w-16 md:h-16 rounded-2xl object-cover shadow-lg shadow-primary/30" />
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient-x">
-              TestPeak
+              iyadel
             </h1>
           </div>
           
@@ -519,7 +519,7 @@ function ToolWorkspace({ tool, onBack }) {
       case "loan-calculator": {
         const P = parseFloat(inputs.amount), annualRate = parseFloat(inputs.rate), n = parseFloat(inputs.term);
         const r = annualRate / 100 / 12;
-        const payment = P && annualRate && n ? (r === 0 ? P / n : (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)) : null;
+        const payment = (P && n && !isNaN(annualRate)) ? (r === 0 ? P / n : (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)) : null;
         const loanResult = payment != null ? { payment: payment.toFixed(2), interest: (payment * n - P).toFixed(2), total: (payment * n).toFixed(2) } : null;
         const calc = () => setResult(loanResult);
         return (
