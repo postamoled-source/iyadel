@@ -1,11 +1,9 @@
-# robots.txt for iyadel — https://iyadel.com/
 User-agent: *
 Allow: /
-Disallow: /Dashboard
 Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
 Disallow: /reset-password
+Disallow: /Dashboard
 
-# Sitemap
 Sitemap: https://iyadel.com/sitemap.xml
