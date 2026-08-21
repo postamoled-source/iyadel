@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock, Loader2, AlertTriangle } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
+import { useSeo } from "@/lib/analytics";
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -15,6 +16,7 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  useSeo({ title: "Set new password", description: "Set a new password for your iyadel account.", path: "/reset-password" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
