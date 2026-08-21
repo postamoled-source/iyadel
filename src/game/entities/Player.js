@@ -14,6 +14,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.facing = 1; // 1 = right, -1 = left
     this.canShoot = true;
     this.fireCooldown = 240;
+    this.maxHp = 100;
+    this.hp = 100;
+    this.invulnUntil = 0;
+  }
+
+  takeDamage(d, time) {
+    if (time < this.invulnUntil) return false;
+    this.hp -= d;
+    this.invulnUntil = time + 900;
+    this.setTint(0xff5c6c);
+    this.scene.time.delayedCall(220, () => this.clearTint());
+    return this.hp <= 0;
   }
 
   moveLeft() {

@@ -3,6 +3,7 @@
 import Phaser from 'phaser';
 import { Player } from '../entities/Player';
 import { WeaponManager, WEAPONS } from '../weapons/Weapons';
+import { EnemyManager } from '../entities/Enemy';
 
 const LEVEL_WIDTH = 3200;
 
@@ -81,9 +82,60 @@ export class PlayScene extends Phaser.Scene {
       .setDepth(41)
       .setScrollFactor(0);
 
+    // Enemies (Phase 5).
+    this.enemyMgr = new EnemyManager(this);
+    this.enemyMgr.spawn('walker', 720, 400);
+    this.enemyMgr.spawn('walker', 1500, 300);
+    this.enemyMgr.spawn('drone', 1000, 180);
+    this.enemyMgr.spawn('drone', 2000, 150);
+    this.enemyMgr.spawn('turret', 1240, 330);
+    this.enemyMgr.spawn('turret', 2720, 430);
+
+    // HUD: score + health bar.
+    this.score = 0;
+    this.scoreHud = this.add
+      .text(20, 70, 'SCORE 0', {
+        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontSize: '16px',
+        color: '#ffffff',
+        backgroundColor: '#00000066',
+        padding: { x: 8, y: 4 },
+      })
+      .setScrollFactor(0)
+      .setDepth(40);
+    this.add
+      .rectangle(24, 50, 164, 16, 0x000000, 0.45)
+      .setOrigin(0, 0.5)
+      .setScrollFactor(0)
+      .setDepth(40);
+    this.hpBar = this.add
+      .rectangle(24, 50, 160, 12, 0x52d9a8)
+      .setOrigin(0, 0.5)
+      .setScrollFactor(0)
+      .setDepth(41);
+
     // Collisions.
     this.physics.add.collider(this.player, this.platforms);
     this.physics.add.collider(this.bullets, this.platforms, (bullet) => bullet.destroy());
+    this.physics.add.collider(this.enemyMgr.ground, this.platforms);
+    this.physics.add.collider(this.enemyMgr.enemyBullets, this.platforms, (b) => b.destroy());
+    this.physics.add.collider(this.bullets, this.enemyMgr.ground, (bullet, enemy) =>
+      this.hitEnemy(bullet, enemy)
+    );
+    this.physics.add.collider(this.bullets, this.enemyMgr.air, (bullet, enemy) =>
+      this.hitEnemy(bullet, enemy)
+    );
+    this.physics.add.collider(this.player, this.enemyMgr.ground, (player, enemy) =>
+      this.touchEnemy(player, enemy)
+    );
+    this.physics.add.collider(this.player, this.enemyMgr.air, (player, enemy) =>
+      this.touchEnemy(player, enemy)
+    );
+    this.physics.add.overlap(this.player, this.enemyMgr.enemyBullets, (player, b) => {
+      b.destroy();
+      if (player.takeDamage(10, this.time.now)) this.gameOver();
+      this.refreshHud();
+    });
 
     // Controls state shared by keyboard + on-screen buttons.
     this.controls = { left: false, right: false, jump: false, fire: false };
@@ -113,6 +165,23 @@ export class PlayScene extends Phaser.Scene {
     if (jumpPressed) this.player.jump();
 
     if (this.controls.fire) this.weapons.fire(this.player, this.bullets, this.time.now);
+
+    this.enemyMgr.update(this.player, this.time.now);
+    this.refreshHud();
+  }
+
+  hitEnemy(bullet, enemy) {
+    bullet.destroy();
+    if (enemy.hit(1)) {
+      this.score += enemy.value;
+      enemy.destroy();
+    }
+    this.refreshHud();
+  }
+
+  touchEnemy(player, enemy) {
+    if (player.takeDamage(15, this.time.now)) this.gameOver();
+    this.refreshHud();
   }
 
   switchWeapon(key) {
@@ -128,6 +197,30 @@ export class PlayScene extends Phaser.Scene {
   refreshWeaponHud() {
     const w = WEAPONS[this.weapons.current];
     this.weaponHud.setText(`⚔ ${w.name}`);
+  }
+
+  refreshHud() {
+    this.refreshWeaponHud();
+    const ratio = Math.max(0, this.player.hp) / this.player.maxHp;
+    this.hpBar.width = 160 * ratio;
+    this.hpBar.fillColor = ratio > 0.5 ? 0x52d9a8 : ratio > 0.25 ? 0xf5c451 : 0xff5c6c;
+    this.scoreHud.setText('SCORE ' + this.score);
+  }
+
+  gameOver() {
+    this.scene.pause();
+    const { width, height } = this.scale;
+    this.add
+      .text(width / 2, height / 2, 'GAME OVER\nTAP TO RESTART', {
+        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontSize: '36px',
+        color: '#ff5c6c',
+        align: 'center',
+      })
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(60);
+    this.input.once('pointerdown', () => this.scene.restart());
   }
 
   buildTouchControls() {
@@ -204,6 +297,33 @@ export class PlayScene extends Phaser.Scene {
       g.fillStyle(0x8a6cff, 1);
       g.fillRoundedRect(0, 0, 160, 6, 3);
       g.generateTexture('platform', 160, 20);
+      g.destroy();
+    }
+    if (!this.textures.exists('drone')) {
+      const g = this.make.graphics({ add: false });
+      g.fillStyle(0xff5c6c, 1);
+      g.fillCircle(14, 14, 14);
+      g.fillStyle(0xffffff, 1);
+      g.fillRect(8, 8, 4, 4);
+      g.generateTexture('drone', 28, 28);
+      g.destroy();
+    }
+    if (!this.textures.exists('walker')) {
+      const g = this.make.graphics({ add: false });
+      g.fillStyle(0xff8a3c, 1);
+      g.fillRect(2, 6, 28, 26);
+      g.fillStyle(0xffc36b, 1);
+      g.fillRect(6, 0, 20, 10);
+      g.generateTexture('walker', 32, 32);
+      g.destroy();
+    }
+    if (!this.textures.exists('turret')) {
+      const g = this.make.graphics({ add: false });
+      g.fillStyle(0x9a6cff, 1);
+      g.fillRoundedRect(2, 8, 28, 22, 4);
+      g.fillStyle(0x6c4dff, 1);
+      g.fillRect(12, 0, 8, 12);
+      g.generateTexture('turret', 32, 30);
       g.destroy();
     }
   }
