@@ -44,6 +44,7 @@ export class IyadelGame3D {
     this._initInput();
 
     this.clock = new THREE.Clock();
+    this.running = true;
     this.animate = this.animate.bind(this);
     this.raf = requestAnimationFrame(this.animate);
 
