@@ -30,7 +30,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       this.hp = 3;
       this.value = 200;
       this.setGravityY(1500);
-      this.body.setImovable(true);
+      this.body.setImmovable(true);
     }
   }
 
