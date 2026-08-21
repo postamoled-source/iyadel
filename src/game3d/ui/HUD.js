@@ -78,60 +78,61 @@ export class HUD {
     this.ctrl = this._mk('', 'position:absolute;inset:0;');
     this.root.appendChild(this.ctrl);
 
-    // D-Pad lives inside its own wrapper so we can reposition the whole cluster
-    // (normal: bottom-left; forced-landscape: bottom-center -> screen-left).
-    this.dpadWrap = this._mk('', 'position:absolute;width:150px;height:200px;');
-    const ds = 46;
+    // ---- LEFT: movement D-pad (Free-Fire-style compact cross) ----
+    this.dpadWrap = this._mk('', 'position:absolute;width:124px;height:124px;');
+    const ds = 38;
     const mk = (label, x, y, key) => {
-      const b = this._btn(label, `left:${x}px;top:${y}px;width:${ds}px;height:${ds}px;border-radius:12px;background:rgba(108,77,255,.55);font-size:18px;`,
+      const b = this._btn(label, `left:${x}px;top:${y}px;width:${ds}px;height:${ds}px;border-radius:50%;background:rgba(20,24,40,.55);font-size:16px;`,
         () => this.input.setHeld(key, true),
         () => this.input.setHeld(key, false));
       this.dpadWrap.appendChild(b);
     };
-    mk('▲', 52, 52, 'up');
-    mk('◄', 0, 104, 'left');
-    mk('►', 104, 104, 'right');
-    mk('▼', 52, 156, 'down');
-    this.runBtn = this._btn('RUN', `left:53px;top:0;width:44px;height:44px;border-radius:50%;background:rgba(245,195,81,.35);font-size:12px;`,
-      () => { this.input.setHeld('sprint', !this.input.held.sprint); this.runBtn.style.background = this.input.held.sprint ? 'rgba(245,195,81,.85)' : 'rgba(245,195,81,.35)'; });
-    this.dpadWrap.appendChild(this.runBtn);
+    mk('▲', 43, 0, 'up');
+    mk('◄', 0, 43, 'left');
+    mk('►', 86, 43, 'right');
+    mk('▼', 43, 86, 'down');
 
-    // Action cluster in its own wrapper (normal: bottom-right; forced-landscape: top-center -> screen-right).
-    this.actionWrap = this._mk('', 'position:absolute;width:180px;height:190px;');
+    // ---- RIGHT: combat cluster — big FIRE + small action buttons around it ----
+    this.actionWrap = this._mk('', 'position:absolute;width:188px;height:188px;');
     const r = (label, x, y, size, color, action, hold) => {
-      const b = this._btn(label, `left:${x}px;top:${y}px;width:${size}px;height:${size}px;border-radius:${size / 2}px;background:${color};font-size:${size < 56 ? 10 : 12}px;`,
+      const b = this._btn(label, `left:${x}px;top:${y}px;width:${size}px;height:${size}px;border-radius:50%;background:${color};font-size:${size < 50 ? 9 : 11}px;`,
         () => { if (hold) this.input.setHeld(action, true); else this.input.press(action); },
         () => { if (hold) this.input.setHeld(action, false); });
       this.actionWrap.appendChild(b);
     };
-    r('FIRE', 110, 120, 64, 'rgba(245,120,60,.7)', 'fire', true);
-    r('JUMP', 48, 128, 52, 'rgba(58,168,82,.65)', 'jump', true);
-    r('GREN', 118, 64, 46, 'rgba(108,77,255,.65)', 'grenade', false);
-    r('MISS', 62, 68, 46, 'rgba(200,70,90,.65)', 'missile', false);
-    r('DODGE', 114, 14, 40, 'rgba(90,168,255,.6)', 'dodge', false);
-    r('ABILITY', 62, 18, 40, 'rgba(245,195,81,.6)', 'ability', false);
+    // FIRE — big, bottom-right thumb position
+    r('FIRE', 122, 122, 60, 'rgba(245,80,60,.78)', 'fire', true);
+    // JUMP — just left of FIRE
+    r('JUMP', 64, 128, 44, 'rgba(58,168,82,.7)', 'jump', true);
+    // small utility buttons arcing above FIRE
+    r('GREN', 128, 78, 40, 'rgba(108,77,255,.7)', 'grenade', false);
+    r('MISS', 78, 74, 40, 'rgba(200,70,90,.7)', 'missile', false);
+    r('DODGE', 130, 30, 38, 'rgba(90,168,255,.7)', 'dodge', false);
+    r('ABIL', 80, 26, 38, 'rgba(245,195,81,.7)', 'ability', false);
+    // weapon switch — far left of the cluster
+    r('SWAP', 18, 96, 40, 'rgba(120,120,140,.7)', 'switch', false);
 
     this.ctrl.appendChild(this.dpadWrap);
     this.ctrl.appendChild(this.actionWrap);
     this.setRotated(false);
   }
-  // Reposition the control clusters for the current orientation. When the stage
-  // is CSS-rotated 90° to fake landscape, stage-bottom maps to screen-left and
-  // stage-top maps to screen-right — so the D-pad goes bottom-center and the
-  // action cluster top-center, keeping thumbs on opposite sides of the screen.
+  // Free-Fire placement: movement bottom-left, fire cluster bottom-right.
+  // When the stage is CSS-rotated 90° (forced landscape on a portrait screen),
+  // stage-bottom-right maps to screen-bottom-left and stage-top-right maps to
+  // screen-bottom-right, so both clusters stay under the thumbs.
   setRotated(rotated) {
     this.rotated = rotated;
-    const place = (el, style) => {
-      el.style.left = style.left; el.style.top = style.top;
-      el.style.right = style.right; el.style.bottom = style.bottom;
-      el.style.transform = style.transform;
+    const place = (el, s) => {
+      el.style.left = s.left; el.style.top = s.top;
+      el.style.right = s.right; el.style.bottom = s.bottom;
+      el.style.transform = s.transform;
     };
     if (rotated) {
-      place(this.dpadWrap, { left: '50%', top: 'auto', right: 'auto', bottom: '20px', transform: 'translateX(-50%)' });
-      place(this.actionWrap, { left: '50%', top: '20px', right: 'auto', bottom: 'auto', transform: 'translateX(-50%)' });
+      place(this.dpadWrap, { left: 'auto', top: 'auto', right: '16px', bottom: '18px', transform: 'none' });
+      place(this.actionWrap, { left: 'auto', top: '18px', right: '16px', bottom: 'auto', transform: 'none' });
     } else {
-      place(this.dpadWrap, { left: '14px', top: 'auto', right: 'auto', bottom: '16px', transform: 'none' });
-      place(this.actionWrap, { left: 'auto', top: 'auto', right: '14px', bottom: '14px', transform: 'none' });
+      place(this.dpadWrap, { left: '18px', top: 'auto', right: 'auto', bottom: '18px', transform: 'none' });
+      place(this.actionWrap, { left: 'auto', top: 'auto', right: '18px', bottom: '18px', transform: 'none' });
     }
   }
   _buildScreens() {
