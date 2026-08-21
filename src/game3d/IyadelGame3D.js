@@ -218,6 +218,7 @@ export class IyadelGame3D {
     this.hud.showVictory(Math.round(this.score), best);
   }
   resize() { this.engine.resize(); }
+  setRotated(v) { this.hud.setRotated(v); }
   _enterImmersive() {
     try {
       const el = this.container.parentElement || this.container;
