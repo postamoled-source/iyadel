@@ -259,6 +259,15 @@ export const STATIC_TOOLS = [
     content: "Snake is the timeless arcade classic reimagined with an elegant twist. Guide a glowing serpent across a deep indigo board swept by soft ambient light — swipe or use the arrow keys to steer. Eat the red fruit to grow, and grab the glowing gems that appear with each new level for bonus points. The snake starts slow and relaxed, then speeds up steadily as you climb levels, so every stage feels fresh. Hit a wall or your own body and the round ends; your best score is saved on your device. Synthesized sound effects mark every turn, bite, gem, and level up. Everything runs in your browser — no data is stored.",
   },
   {
+    name: "IYADEL",
+    slug: "iyadel-game",
+    category: "Games",
+    description: "Neo-Pulse run-and-gun action platformer. Fight through levels and defeat the boss.",
+    icon: "Swords",
+    logo: LOGO_URL,
+    content: "IYADEL is an original 2D high-speed action platformer set in a futuristic Neo-Pulse universe. Run, jump, and gun through scrolling levels packed with drones, walkers, and turrets, collect gems and power-ups, then face a multi-phase boss at the end of each level. Switch between Pulse, Spread, and Rapid weapons on the fly, climb the level ladder with rising difficulty, and unlock achievements as you beat your high score. Everything runs in your browser with synthesized sound and music.",
+  },
+  {
     name: "Image Cropper",
     slug: "image-cropper",
     category: "Image Tools",

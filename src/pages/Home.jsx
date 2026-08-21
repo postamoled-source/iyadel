@@ -21,6 +21,7 @@ import SnakeGame from "@/components/games/SnakeGame";
 import MathPuzzleGame from "@/components/games/MathPuzzleGame";
 import WordScrambleGame from "@/components/games/WordScrambleGame";
 import GameMusicButton from "@/components/games/GameMusicButton";
+import Game from "@/pages/Game";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
@@ -1603,6 +1604,8 @@ function ToolWorkspace({ tool, onBack }) {
         return <BallLauncher />;
       case "snake-game":
         return <SnakeGame />;
+      case "iyadel-game":
+        return <Game />;
       default:
         return (
           <div className="text-center py-10">
