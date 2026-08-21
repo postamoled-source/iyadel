@@ -26,6 +26,8 @@ export class Engine {
     this._resize = this._resize.bind(this);
     this._resize();
     window.addEventListener('resize', this._resize);
+    this._ro = new ResizeObserver(() => this._resize());
+    this._ro.observe(container);
 
     this._loop = this._loop.bind(this);
     requestAnimationFrame(this._loop);
@@ -48,6 +50,7 @@ export class Engine {
   dispose() {
     this.running = false;
     window.removeEventListener('resize', this._resize);
+    this._ro && this._ro.disconnect();
     this.renderer.dispose();
     const el = this.renderer.domElement;
     if (el.parentNode) el.parentNode.removeChild(el);
