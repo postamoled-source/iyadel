@@ -68,7 +68,7 @@ export default function Header() {
         {/* Mobile */}
         <div className="sm:hidden flex items-center justify-between w-full">
           <Link to="/" className="flex items-center gap-2 shrink-0">
-            <img src={LOGO_URL} alt="iyadel" className="w-8 h-8 rounded-lg object-cover" />
+            <img src={LOGO_URL} alt="iyadel" className="w-9 h-9 object-contain drop-shadow-[0_4px_10px_hsl(var(--primary)/0.35)]" />
             <span className="font-bold text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">iyadel</span>
           </Link>
           <div className="flex items-center gap-2">
