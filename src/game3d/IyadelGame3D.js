@@ -224,16 +224,11 @@ export class IyadelGame3D {
       const el = this.container.parentElement || this.container;
       const fs = el.requestFullscreen || el.webkitRequestFullscreen;
       if (fs) { const p = fs.call(el); if (p && p.catch) p.catch(() => {}); }
-      if (screen.orientation && screen.orientation.lock) {
-        const p = screen.orientation.lock('landscape');
-        if (p && p.catch) p.catch(() => {});
-      }
-    } catch (e) { /* fullscreen/orientation not available — CSS fallback handles landscape */ }
+    } catch (e) { /* fullscreen not available */ }
   }
   _exitImmersive() {
     try {
       if (document.fullscreenElement) { const p = document.exitFullscreen(); if (p && p.catch) p.catch(() => {}); }
-      if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
     } catch (e) {}
   }
   destroy() {
