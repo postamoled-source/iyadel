@@ -16,6 +16,14 @@ export const RIDDLES = [
   { q: "What gets wetter the more it dries?", answer: "towel" },
 ];
 
+export const RIDDLES_AR = [
+  { q: "أتحدث بلا فم وأسمع بلا أذنين. ليس لي جسم، لكنني أحيى مع الريح. ما أنا؟", answer: "صدى" },
+  { q: "كلما أخذت أكثر، تركت وراءك أكثر. ما هما؟", answer: "خطوات" },
+  { q: "ما الذي له مفاتيح لكنه لا يفتح الأقفال؟", answer: "بيانو" },
+  { q: "أكون طويلاً عندما أصغر، وقصيرًا عندما أكبر. ما أنا؟", answer: "شمعة" },
+  { q: "ما الذي يزداد بللاً كلما جف أكثر؟", answer: "منشفة" },
+];
+
 export function convertUnit(value, units, from, to) {
   const v = parseFloat(value);
   if (isNaN(v) || !units[from] || !units[to]) return null;

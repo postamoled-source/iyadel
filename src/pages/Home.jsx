@@ -11,6 +11,7 @@ import { createPortal } from "react-dom";
 import { Image as Img } from "@/components/ui/image";
 import { generateLogo } from "@/functions/generateLogo";
 import Logo from "@/components/Logo";
+import GameIcon from "@/components/game-icons";
 import Game2048 from "@/components/games/Game2048";
 import MemoryMatch from "@/components/games/MemoryMatch";
 import WhackAMole from "@/components/games/WhackAMole";
@@ -22,7 +23,7 @@ import GameMusicButton from "@/components/games/GameMusicButton";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
-import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, RIDDLES, convertUnit, calcMolarMass, compileExpr, FN_COLORS } from "@/lib/tool-utils";
+import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, RIDDLES, RIDDLES_AR, convertUnit, calcMolarMass, compileExpr, FN_COLORS } from "@/lib/tool-utils";
 import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, SlidersHorizontal, Swords, Spline } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { trackEvent, useSeo } from "@/lib/analytics";
@@ -319,13 +320,14 @@ function drawLogo(ctx, p) {
 }
 function ToolWorkspace({ tool, onBack }) {
   const { t, lang } = useI18n();
+  const riddles = lang === "ar" ? RIDDLES_AR : RIDDLES;
   const { isFavorite, toggleFavorite } = useFavorites();
   const [inputs, setInputs] = useState({});
   const [result, setResult] = useState(null);
   const [riddleAttempts, setRiddleAttempts] = useState(3);
   const [riddleMsg, setRiddleMsg] = useState("");
   const [riddleGuess, setRiddleGuess] = useState("");
-  const [riddle, setRiddle] = useState(() => RIDDLES[0]);
+  const [riddle, setRiddle] = useState(() => riddles[0]);
   const [bgResult, setBgResult] = useState(null);
   const [pdfBusy, setPdfBusy] = useState(false);
   const [speedTest, setSpeedTest] = useState({ running: false, ping: null, download: null, upload: null });
@@ -358,7 +360,7 @@ function ToolWorkspace({ tool, onBack }) {
     setQrUrl(null); setShareLinks(null); setPolicyText("");
     setCropSrc(null); setCropResult(null); setBgSrc(null); setBgDone(false);
     setPdfFiles([]); setPdfReady(false); setCompressSrc(null); setCompressResult(null); setPlotData(null);
-    setBgResult(null); setPdfBusy(false); setRiddle(RIDDLES[Math.floor(Math.random() * RIDDLES.length)]);
+    setBgResult(null); setPdfBusy(false);     setRiddle(riddles[Math.floor(Math.random() * riddles.length)]);
     setEnhSrc(null); setEnhResult(null); enhOrigRef.current = null; setEnhVersion(0);
     setAiLogos([]); setAiBusy(false); setAiSelected(null);
     setShowToolbar(false);
@@ -526,28 +528,28 @@ function ToolWorkspace({ tool, onBack }) {
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <NumInput label="Loan Amount" value={inputs.amount} onChange={set("amount")} placeholder="10000" />
-              <NumInput label="Annual Rate (%)" value={inputs.rate} onChange={set("rate")} placeholder="6.5" />
-              <NumInput label="Term (Months)" value={inputs.term} onChange={set("term")} placeholder="36" />
+              <NumInput label={t("Loan Amount")} value={inputs.amount} onChange={set("amount")} placeholder="10000" />
+              <NumInput label={t("Annual Rate (%)")} value={inputs.rate} onChange={set("rate")} placeholder="6.5" />
+              <NumInput label={t("Term (Months)")} value={inputs.term} onChange={set("term")} placeholder="36" />
             </div>
-            <div className="flex justify-center mt-6"><CalcButton onClick={calc}>Calculate Loan</CalcButton></div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={calc}>{t("Calculate Loan")}</CalcButton></div>
             {loanResult && (
               <>
-                <ResultCard title="Your Results">
-                  <div className="text-card-foreground text-lg mb-2">Monthly Payment</div>
+                <ResultCard title={t("Your Results")}>
+                  <div className="text-card-foreground text-lg mb-2">{t("Monthly Payment")}</div>
                   <div className="text-4xl font-extrabold text-primary mb-6">${loanResult.payment}</div>
                   <div className="flex flex-wrap justify-center gap-6 text-card-foreground">
-                    <div>Total Interest: <strong className="text-accent ml-1">${loanResult.interest}</strong></div>
-                    <div>Total Amount: <strong className="text-accent ml-1">${loanResult.total}</strong></div>
+                    <div>{t("Total Interest:")} <strong className="text-accent ml-1">${loanResult.interest}</strong></div>
+                    <div>{t("Total Amount:")} <strong className="text-accent ml-1">${loanResult.total}</strong></div>
                   </div>
                 </ResultCard>
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
-                    <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">Principal vs Interest</h4>
+                    <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">{t("Principal vs Interest")}</h4>
                     <div className="h-56">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
-                          <Pie data={[{ name: "Principal", value: P }, { name: "Interest", value: parseFloat(loanResult.interest) }]} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3} isAnimationActive animationDuration={900} animationEasing="ease-out">
+                          <Pie data={[{ name: t("Principal"), value: P }, { name: t("Interest"), value: parseFloat(loanResult.interest) }]} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3} isAnimationActive animationDuration={900} animationEasing="ease-out">
                             <Cell fill="hsl(var(--primary))" />
                             <Cell fill="hsl(var(--accent))" />
                           </Pie>
@@ -558,7 +560,7 @@ function ToolWorkspace({ tool, onBack }) {
                     </div>
                   </div>
                   <div className="rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
-                    <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">Balance Over Time</h4>
+                    <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">{t("Balance Over Time")}</h4>
                     <div className="h-56">
                       <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={Array.from({ length: Math.min(Math.round(n) + 1, 60) }, (_, i) => {
@@ -584,7 +586,7 @@ function ToolWorkspace({ tool, onBack }) {
                 </div>
               </>
             )}
-            <TipBox><strong>Indicator:</strong> Interest is calculated on the remaining balance. Always compare multiple bank offers.</TipBox>
+            <TipBox>{t("Indicator: Interest is calculated on the remaining balance. Always compare multiple bank offers.")}</TipBox>
           </>
         );
       }
@@ -601,30 +603,30 @@ function ToolWorkspace({ tool, onBack }) {
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <NumInput label="Principal Amount" value={inputs.principal} onChange={set("principal")} placeholder="5000" />
-              <NumInput label="Interest Rate (%)" value={inputs.rate} onChange={set("rate")} placeholder="7" />
-              <NumInput label="Duration (Years)" value={inputs.years} onChange={set("years")} placeholder="10" />
-              <SelectField label="Compound Frequency" value={inputs.compound || "Yearly"} onChange={set("compound")} options={Object.keys(compounds)} />
+              <NumInput label={t("Principal Amount")} value={inputs.principal} onChange={set("principal")} placeholder="5000" />
+              <NumInput label={t("Interest Rate (%)")} value={inputs.rate} onChange={set("rate")} placeholder="7" />
+              <NumInput label={t("Duration (Years)")} value={inputs.years} onChange={set("years")} placeholder="10" />
+              <SelectField label={t("Compound Frequency")} value={inputs.compound || "Yearly"} onChange={set("compound")} options={Object.keys(compounds).map((k) => ({ value: k, label: t(k) }))} />
             </div>
-            <div className="flex justify-center mt-6"><CalcButton onClick={calc}>Calculate Interest</CalcButton></div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={calc}>{t("Calculate Interest")}</CalcButton></div>
             {interestResult && (
               <>
-                <ResultCard title="Comparison">
+                <ResultCard title={t("Comparison")}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
                     <div className="bg-background rounded-2xl p-6 border border-border shadow-sm">
-                      <div className="text-sm text-muted-foreground mb-1">Simple Interest Earned</div>
+                      <div className="text-sm text-muted-foreground mb-1">{t("Simple Interest Earned")}</div>
                       <div className="text-2xl font-bold text-primary">${interestResult.simple}</div>
-                      <div className="text-sm text-muted-foreground mt-2">Final Amount: <strong className="text-foreground">${interestResult.finalSimple}</strong></div>
+                      <div className="text-sm text-muted-foreground mt-2">{t("Final Amount:")} <strong className="text-foreground">${interestResult.finalSimple}</strong></div>
                     </div>
                     <div className="bg-background rounded-2xl p-6 border border-border shadow-sm">
-                      <div className="text-sm text-muted-foreground mb-1">Compound Interest Earned</div>
+                      <div className="text-sm text-muted-foreground mb-1">{t("Compound Interest Earned")}</div>
                       <div className="text-2xl font-bold text-accent">${interestResult.compound}</div>
-                      <div className="text-sm text-muted-foreground mt-2">Final Amount: <strong className="text-foreground">${interestResult.finalCompound}</strong></div>
+                      <div className="text-sm text-muted-foreground mt-2">{t("Final Amount:")} <strong className="text-foreground">${interestResult.finalCompound}</strong></div>
                     </div>
                   </div>
                 </ResultCard>
                 <div className="mt-6 rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
-                  <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">Growth Over Time</h4>
+                  <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">{t("Growth Over Time")}</h4>
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={Array.from({ length: Math.round(t) + 1 }, (_, yr) => {
@@ -647,8 +649,8 @@ function ToolWorkspace({ tool, onBack }) {
                         <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} />
                         <Tooltip formatter={(v) => `$${v.toLocaleString()}`} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))" }} />
                         <Legend wrapperStyle={{ fontSize: 12 }} />
-                        <Area type="monotone" dataKey="Simple" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#gSimple)" isAnimationActive animationDuration={1000} animationEasing="ease-out" />
-                        <Area type="monotone" dataKey="Compound" stroke="hsl(var(--accent))" strokeWidth={2} fill="url(#gCompound)" isAnimationActive animationDuration={1100} animationBegin={150} animationEasing="ease-out" />
+                        <Area type="monotone" dataKey="Simple" name={t("Simple")} stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#gSimple)" isAnimationActive animationDuration={1000} animationEasing="ease-out" />
+                        <Area type="monotone" dataKey="Compound" name={t("Compound")} stroke="hsl(var(--accent))" strokeWidth={2} fill="url(#gCompound)" isAnimationActive animationDuration={1100} animationBegin={150} animationEasing="ease-out" />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
@@ -672,22 +674,22 @@ function ToolWorkspace({ tool, onBack }) {
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <NumInput label="Amount" value={inputs.amount} onChange={set("amount")} placeholder="100" />
-              <SelectField label="From Currency" value={inputs.from || "USD"} onChange={set("from")} options={currencies} />
-              <SelectField label="To Currency" value={inputs.to || "EUR"} onChange={set("to")} options={currencies} />
+              <NumInput label={t("Amount")} value={inputs.amount} onChange={set("amount")} placeholder="100" />
+              <SelectField label={t("From Currency")} value={inputs.from || "USD"} onChange={set("from")} options={currencies} />
+              <SelectField label={t("To Currency")} value={inputs.to || "EUR"} onChange={set("to")} options={currencies} />
             </div>
-            <div className="flex flex-wrap justify-center gap-4 mt-8">
-              <CalcButton onClick={calc}>Convert Currency</CalcButton>
-              <Button onClick={swap} variant="outline" className="mt-6 rounded-2xl border-border bg-background text-foreground hover:bg-secondary hover:text-secondary-foreground h-[72px] px-6"><ArrowLeftRight className="w-5 h-5 mr-2" />Swap</Button>
+            <div className="flex flex-wrap justify-center gap-4">
+              <CalcButton onClick={calc}>{t("Convert Currency")}</CalcButton>
+              <CalcButton onClick={swap} variant="secondary"><ArrowLeftRight className="w-5 h-5" />{t("Swap")}</CalcButton>
             </div>
             {result && (
               <>
-                <ResultCard title="Conversion Result">
+                <ResultCard title={t("Conversion Result")}>
                   <div className="text-xl text-card-foreground mb-2">{inputs.amount} {result.from} =</div>
                   <div className="text-5xl font-extrabold text-accent">{result.value} <span className="text-2xl text-card-foreground/70 ml-1">{result.to}</span></div>
                 </ResultCard>
                 <div className="mt-6 rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
-                  <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">Value Comparison</h4>
+                  <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">{t("Value Comparison")}</h4>
                   <div className="flex items-end justify-center gap-4 h-40">
                     <div className="flex flex-col items-center gap-1 w-24">
                       <div className="text-xs font-bold text-primary">{inputs.amount}</div>
@@ -703,7 +705,7 @@ function ToolWorkspace({ tool, onBack }) {
                 </div>
               </>
             )}
-            <TipBox>Rates provided for informational purposes. They are updated daily from reliable sources but may not reflect exact trading values.</TipBox>
+            <TipBox>{t("Rates provided for informational purposes. They are updated daily from reliable sources but may not reflect exact trading values.")}</TipBox>
           </>
         );
       }
@@ -713,28 +715,28 @@ function ToolWorkspace({ tool, onBack }) {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div className="rounded-2xl bg-background border border-border p-8 text-center shadow-sm relative overflow-hidden group">
                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <h4 className="text-sm font-medium text-muted-foreground mb-3 relative z-10">Ping</h4>
-                <div className="text-4xl font-bold text-foreground relative z-10">{speedTest.ping ?? "—"} <small className="text-lg font-normal text-muted-foreground">ms</small></div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-3 relative z-10">{t("Ping")}</h4>
+                <div className="text-4xl font-bold text-foreground relative z-10">{speedTest.ping ?? "—"} <small className="text-lg font-normal text-muted-foreground">{t("ms")}</small></div>
               </div>
               <div className="rounded-2xl bg-background border border-border p-8 text-center shadow-sm relative overflow-hidden group">
                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <h4 className="text-sm font-medium text-muted-foreground mb-3 relative z-10">Download</h4>
-                <div className="text-4xl font-bold text-primary relative z-10">{speedTest.download ?? "—"} <small className="text-lg font-normal text-primary/70">Mbps</small></div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-3 relative z-10">{t("Download")}</h4>
+                <div className="text-4xl font-bold text-primary relative z-10">{speedTest.download ?? "—"} <small className="text-lg font-normal text-primary/70">{t("Mbps")}</small></div>
               </div>
               <div className="rounded-2xl bg-background border border-border p-8 text-center shadow-sm relative overflow-hidden group">
                 <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <h4 className="text-sm font-medium text-muted-foreground mb-3 relative z-10">Upload</h4>
-                <div className="text-4xl font-bold text-accent relative z-10">{speedTest.upload ?? "—"} <small className="text-lg font-normal text-accent/70">Mbps</small></div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-3 relative z-10">{t("Upload")}</h4>
+                <div className="text-4xl font-bold text-accent relative z-10">{speedTest.upload ?? "—"} <small className="text-lg font-normal text-accent/70">{t("Mbps")}</small></div>
               </div>
             </div>
-            <div className="mt-8 text-center text-card-foreground font-medium">{speedTest.running ? "Measuring your connection..." : "Press Start Test to begin."}</div>
+            <div className="mt-8 text-center text-card-foreground font-medium">{speedTest.running ? t("Measuring your connection...") : t("Press Start Test to begin.")}</div>
             <div className="flex justify-center mt-6">
               <CalcButton onClick={runSpeedTest}>
                 {speedTest.running ? <RefreshCw className="w-5 h-5 mr-2 inline animate-spin" /> : <Play className="w-5 h-5 mr-2 inline" />}
-                {speedTest.running ? "Testing..." : "Start Speed Test"}
+                {speedTest.running ? t("Testing...") : t("Start Speed Test")}
               </CalcButton>
             </div>
-            <TipBox>Close bandwidth-heavy applications for the most accurate result.</TipBox>
+            <TipBox>{t("Close bandwidth-heavy applications for the most accurate result.")}</TipBox>
           </>
         );
       }
@@ -766,20 +768,20 @@ function ToolWorkspace({ tool, onBack }) {
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <NumInput label="Number of Codes" value={inputs.count} onChange={set("count")} placeholder="5" />
-              <NumInput label="Code Length" value={inputs.length} onChange={set("length")} placeholder="8" />
-              <TxtInput label="Prefix (optional)" value={inputs.prefix} onChange={set("prefix")} placeholder="SALE" />
-              <NumInput label="Dash every N (0 = off)" value={inputs.dashEvery} onChange={set("dashEvery")} placeholder="4" />
+              <NumInput label={t("Number of Codes")} value={inputs.count} onChange={set("count")} placeholder="5" />
+              <NumInput label={t("Code Length")} value={inputs.length} onChange={set("length")} placeholder="8" />
+              <TxtInput label={t("Prefix (optional)")} value={inputs.prefix} onChange={set("prefix")} placeholder="SALE" />
+              <NumInput label={t("Dash every N (0 = off)")} value={inputs.dashEvery} onChange={set("dashEvery")} placeholder="4" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
-              <SelectField label="Character Set" value={inputs.charset || "Alphanumeric"} onChange={set("charset")} options={Object.keys(charsetOptions)} />
+              <SelectField label={t("Character Set")} value={inputs.charset || "Alphanumeric"} onChange={set("charset")} options={Object.keys(charsetOptions).map((k) => ({ value: k, label: t(k) }))} />
             </div>
-            <div className="flex justify-center mt-6"><CalcButton onClick={generate}>Generate Coupons</CalcButton></div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={generate}>{t("Generate Coupons")}</CalcButton></div>
             {codes.length > 0 && (
-              <ResultCard title={`${codes.length} Coupon${codes.length > 1 ? "s" : ""} Generated`}>
+              <ResultCard title={`${codes.length} ${t("Coupons Generated")}`}>
                 <div className="flex justify-center mb-6">
                   <button onClick={copyAll} className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-secondary transition-colors">
-                    <Copy className="w-4 h-4" /> Copy All
+                    <Copy className="w-4 h-4" /> {t("Copy All")}
                   </button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-1">
@@ -794,7 +796,7 @@ function ToolWorkspace({ tool, onBack }) {
                 </div>
               </ResultCard>
             )}
-            <TipBox><strong>Tip:</strong> The default set excludes easily-confused characters (O, I, 0, 1) so codes stay readable.</TipBox>
+            <TipBox>{t("Tip: The default set excludes easily-confused characters (O, I, 0, 1) so codes stay readable.")}</TipBox>
           </>
         );
       }
@@ -809,22 +811,22 @@ function ToolWorkspace({ tool, onBack }) {
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <NumInput label="Face Value ($)" value={inputs.face} onChange={set("face")} placeholder="1000" />
-              <NumInput label="Current Price ($)" value={inputs.price} onChange={set("price")} placeholder="950" />
-              <NumInput label="Annual Coupon ($)" value={inputs.coupon} onChange={set("coupon")} placeholder="50" />
-              <NumInput label="Years to Maturity" value={inputs.years} onChange={set("years")} placeholder="5" />
+              <NumInput label={t("Face Value ($)")} value={inputs.face} onChange={set("face")} placeholder="1000" />
+              <NumInput label={t("Current Price ($)")} value={inputs.price} onChange={set("price")} placeholder="950" />
+              <NumInput label={t("Annual Coupon ($)")} value={inputs.coupon} onChange={set("coupon")} placeholder="50" />
+              <NumInput label={t("Years to Maturity")} value={inputs.years} onChange={set("years")} placeholder="5" />
             </div>
-            <div className="flex justify-center mt-6"><CalcButton onClick={calc}>Calculate Yield</CalcButton></div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={calc}>{t("Calculate Yield")}</CalcButton></div>
             {bondResult && (
               <>
-                <ResultCard title="Bond Yield">
-                  <div className="text-sm text-muted-foreground mb-1">Current Yield</div>
+                <ResultCard title={t("Bond Yield")}>
+                  <div className="text-sm text-muted-foreground mb-1">{t("Current Yield")}</div>
                   <div className="text-3xl font-bold text-primary mb-4">{bondResult.currentYield}%</div>
-                  <div className="text-sm text-muted-foreground mb-1">Yield to Maturity (YTM)</div>
+                  <div className="text-sm text-muted-foreground mb-1">{t("Yield to Maturity (YTM)")}</div>
                   <div className="text-3xl font-bold text-accent">{bondResult.ytm}%</div>
                 </ResultCard>
                 <div className="mt-6 rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
-                  <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">Yield Comparison (%)</h4>
+                  <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">{t("Yield Comparison (%)")}</h4>
                   <div className="h-56">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={[{ name: "Current Yield", value: parseFloat(bondResult.currentYield) }, { name: "YTM", value: parseFloat(bondResult.ytm) }]}>
@@ -849,20 +851,20 @@ function ToolWorkspace({ tool, onBack }) {
       case "bmi-calculator": {
         const w = parseFloat(inputs.weight), h = parseFloat(inputs.height) / 100;
         const bmi = w && h ? w / (h * h) : null;
-        const cat = bmi ? (bmi < 18.5 ? "Underweight" : bmi < 25 ? "Normal weight" : bmi < 30 ? "Overweight" : "Obese") : null;
+        const cat = bmi ? (bmi < 18.5 ? t("Underweight") : bmi < 25 ? t("Normal weight") : bmi < 30 ? t("Overweight") : t("Obese")) : null;
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <NumInput label="Weight (kg)" value={inputs.weight} onChange={set("weight")} placeholder="70" />
-              <NumInput label="Height (cm)" value={inputs.height} onChange={set("height")} placeholder="175" />
+              <NumInput label={t("Weight (kg)")} value={inputs.weight} onChange={set("weight")} placeholder="70" />
+              <NumInput label={t("Height (cm)")} value={inputs.height} onChange={set("height")} placeholder="175" />
             </div>
             {bmi && (
-              <ResultCard title="Your BMI">
+              <ResultCard title={t("Your BMI")}>
                 <div className="text-5xl font-extrabold text-primary mb-3">{bmi.toFixed(1)}</div>
                 <div className="text-lg font-semibold text-accent">{cat}</div>
               </ResultCard>
             )}
-            <TipBox>BMI is a general indicator. Consult a doctor for a complete health assessment.</TipBox>
+            <TipBox>{t("BMI is a general indicator. Consult a doctor for a complete health assessment.")}</TipBox>
           </>
         );
       }
@@ -874,17 +876,17 @@ function ToolWorkspace({ tool, onBack }) {
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <NumInput label="Weight (kg)" value={inputs.weight} onChange={set("weight")} placeholder="70" />
-              <NumInput label="Duration (min)" value={inputs.minutes} onChange={set("minutes")} placeholder="30" />
+              <NumInput label={t("Weight (kg)")} value={inputs.weight} onChange={set("weight")} placeholder="70" />
+              <NumInput label={t("Duration (min)")} value={inputs.minutes} onChange={set("minutes")} placeholder="30" />
             </div>
-            <SelectField label="Activity" value={inputs.activity || "Walking"} onChange={set("activity")} options={Object.keys(metMap)} />
+            <SelectField label={t("Activity")} value={inputs.activity || "Walking"} onChange={set("activity")} options={Object.keys(metMap).map((k) => ({ value: k, label: t(k) }))} />
             {cal != null && (
-              <ResultCard title="Calories Burned">
+              <ResultCard title={t("Calories Burned")}>
                 <div className="text-5xl font-extrabold text-primary mb-2">{Math.round(cal)}</div>
-                <div className="text-muted-foreground">kcal</div>
+                <div className="text-muted-foreground">{t("kcal")}</div>
               </ResultCard>
             )}
-            <TipBox>Estimates based on MET values. Actual burn varies by intensity and metabolism.</TipBox>
+            <TipBox>{t("Estimates based on MET values. Actual burn varies by intensity and metabolism.")}</TipBox>
           </>
         );
       }
@@ -895,14 +897,14 @@ function ToolWorkspace({ tool, onBack }) {
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <NumInput label="Value" value={inputs.value} onChange={set("value")} placeholder="1" />
-              <SelectField label="From" value={from} onChange={set("from")} options={Object.keys(DISTANCE_UNITS)} />
-              <SelectField label="To" value={to} onChange={set("to")} options={Object.keys(DISTANCE_UNITS)} />
+              <NumInput label={t("Value")} value={inputs.value} onChange={set("value")} placeholder="1" />
+              <SelectField label={t("From")} value={from} onChange={set("from")} options={Object.keys(DISTANCE_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("To")} value={to} onChange={set("to")} options={Object.keys(DISTANCE_UNITS).map((k) => ({ value: k, label: t(k) }))} />
             </div>
             {out != null && (
-              <ResultCard title="Result">
+              <ResultCard title={t("Result")}>
                 <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
-                <div className="text-muted-foreground mt-2">{to}</div>
+                <div className="text-muted-foreground mt-2">{t(to)}</div>
               </ResultCard>
             )}
           </>
@@ -915,14 +917,14 @@ function ToolWorkspace({ tool, onBack }) {
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <NumInput label="Value" value={inputs.value} onChange={set("value")} placeholder="1" />
-              <SelectField label="From" value={from} onChange={set("from")} options={Object.keys(WEIGHT_UNITS)} />
-              <SelectField label="To" value={to} onChange={set("to")} options={Object.keys(WEIGHT_UNITS)} />
+              <NumInput label={t("Value")} value={inputs.value} onChange={set("value")} placeholder="1" />
+              <SelectField label={t("From")} value={from} onChange={set("from")} options={Object.keys(WEIGHT_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("To")} value={to} onChange={set("to")} options={Object.keys(WEIGHT_UNITS).map((k) => ({ value: k, label: t(k) }))} />
             </div>
             {out != null && (
-              <ResultCard title="Result">
+              <ResultCard title={t("Result")}>
                 <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
-                <div className="text-muted-foreground mt-2">{to}</div>
+                <div className="text-muted-foreground mt-2">{t(to)}</div>
               </ResultCard>
             )}
           </>
@@ -935,14 +937,14 @@ function ToolWorkspace({ tool, onBack }) {
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <NumInput label="Value" value={inputs.value} onChange={set("value")} placeholder="1" />
-              <SelectField label="From" value={from} onChange={set("from")} options={Object.keys(AREA_UNITS)} />
-              <SelectField label="To" value={to} onChange={set("to")} options={Object.keys(AREA_UNITS)} />
+              <NumInput label={t("Value")} value={inputs.value} onChange={set("value")} placeholder="1" />
+              <SelectField label={t("From")} value={from} onChange={set("from")} options={Object.keys(AREA_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("To")} value={to} onChange={set("to")} options={Object.keys(AREA_UNITS).map((k) => ({ value: k, label: t(k) }))} />
             </div>
             {out != null && (
-              <ResultCard title="Result">
+              <ResultCard title={t("Result")}>
                 <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
-                <div className="text-muted-foreground mt-2">{to}</div>
+                <div className="text-muted-foreground mt-2">{t(to)}</div>
               </ResultCard>
             )}
           </>
@@ -955,14 +957,14 @@ function ToolWorkspace({ tool, onBack }) {
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <NumInput label="Value" value={inputs.value} onChange={set("value")} placeholder="1" />
-              <SelectField label="From" value={from} onChange={set("from")} options={Object.keys(TIME_UNITS)} />
-              <SelectField label="To" value={to} onChange={set("to")} options={Object.keys(TIME_UNITS)} />
+              <NumInput label={t("Value")} value={inputs.value} onChange={set("value")} placeholder="1" />
+              <SelectField label={t("From")} value={from} onChange={set("from")} options={Object.keys(TIME_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("To")} value={to} onChange={set("to")} options={Object.keys(TIME_UNITS).map((k) => ({ value: k, label: t(k) }))} />
             </div>
             {out != null && (
-              <ResultCard title="Result">
+              <ResultCard title={t("Result")}>
                 <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
-                <div className="text-muted-foreground mt-2">{to}</div>
+                <div className="text-muted-foreground mt-2">{t(to)}</div>
               </ResultCard>
             )}
           </>
@@ -976,13 +978,13 @@ function ToolWorkspace({ tool, onBack }) {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <NumInput label="Value" value={inputs.value} onChange={set("value")} placeholder="100" />
-              <SelectField label="From" value={from} onChange={set("from")} options={Object.keys(SPEED_UNITS)} />
-              <SelectField label="To" value={to} onChange={set("to")} options={Object.keys(SPEED_UNITS)} />
+              <SelectField label={t("From")} value={from} onChange={set("from")} options={Object.keys(SPEED_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("To")} value={to} onChange={set("to")} options={Object.keys(SPEED_UNITS).map((k) => ({ value: k, label: t(k) }))} />
             </div>
             {out != null && (
-              <ResultCard title="Result">
+              <ResultCard title={t("Result")}>
                 <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
-                <div className="text-muted-foreground mt-2">{to}</div>
+                <div className="text-muted-foreground mt-2">{t(to)}</div>
               </ResultCard>
             )}
           </>
@@ -993,14 +995,14 @@ function ToolWorkspace({ tool, onBack }) {
         const src = data ? `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(data)}` : null;
         return (
           <>
-            <TxtInput label="Text or URL" value={inputs.text} onChange={set("text")} placeholder="https://testpriving.com" />
+            <TxtInput label={t("Text or URL")} value={inputs.text} onChange={set("text")} placeholder="https://testpriving.com" />
             {src && (
-              <ResultCard title="Your QR Code">
+              <ResultCard title={t("Your QR Code")}>
                 <img src={src} alt="QR Code" className="w-48 h-48 mx-auto rounded-xl bg-white p-2" />
-                <a href={src} download="qr-code.png" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">Download <ImageDown className="w-4 h-4" /></a>
+                <a href={src} download="qr-code.png" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">{t("Download")} <ImageDown className="w-4 h-4" /></a>
               </ResultCard>
             )}
-            <TipBox>Your QR code is generated on demand and not stored anywhere.</TipBox>
+            <TipBox>{t("Your QR code is generated on demand and not stored anywhere.")}</TipBox>
           </>
         );
       }
@@ -1015,10 +1017,10 @@ function ToolWorkspace({ tool, onBack }) {
         } : null;
         return (
           <>
-            <TxtInput label="Page URL" value={inputs.url} onChange={set("url")} placeholder="https://testpriving.com" />
-            <TxtInput label="Message (optional)" value={inputs.text} onChange={set("text")} placeholder="Check this out!" />
+            <TxtInput label={t("Page URL")} value={inputs.url} onChange={set("url")} placeholder="https://testpriving.com" />
+            <TxtInput label={t("Message (optional)")} value={inputs.text} onChange={set("text")} placeholder="Check this out!" />
             {links && (
-              <ResultCard title="Share Links">
+              <ResultCard title={t("Share Links")}>
                 <div className="grid grid-cols-2 gap-3">
                   {Object.entries(links).map(([k, v]) => (
                     <a key={k} href={v} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl bg-background border border-border px-4 py-3 text-sm font-semibold text-foreground hover:border-primary/50 hover:text-primary transition-all"><Send className="w-4 h-4" /> {k}</a>
@@ -1039,15 +1041,15 @@ function ToolWorkspace({ tool, onBack }) {
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <TxtInput label="App Name" value={inputs.appName} onChange={set("appName")} placeholder="iyadel" />
-              <TxtInput label="Site URL" value={inputs.siteUrl} onChange={set("siteUrl")} placeholder="https://testpriving.com" />
-              <TxtInput label="Contact Email" value={inputs.email} onChange={set("email")} placeholder="support@testpriving.com" />
+              <TxtInput label={t("App Name")} value={inputs.appName} onChange={set("appName")} placeholder="iyadel" />
+              <TxtInput label={t("Site URL")} value={inputs.siteUrl} onChange={set("siteUrl")} placeholder="https://testpriving.com" />
+              <TxtInput label={t("Contact Email")} value={inputs.email} onChange={set("email")} placeholder="support@testpriving.com" />
             </div>
-            <div className="flex justify-center mt-6"><CalcButton onClick={generate}>Generate Policy</CalcButton></div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={generate}>{t("Generate Policy")}</CalcButton></div>
             {policyText && (
-              <ResultCard title="Generated Privacy Policy">
+              <ResultCard title={t("Generated Privacy Policy")}>
                 <pre className="text-left text-sm whitespace-pre-wrap text-muted-foreground max-h-72 overflow-y-auto bg-background rounded-xl p-4 border border-border">{policyText}</pre>
-                <button onClick={copy} className="inline-flex items-center gap-2 mt-4 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-secondary"><Copy className="w-4 h-4" /> Copy</button>
+                <button onClick={copy} className="inline-flex items-center gap-2 mt-4 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-secondary"><Copy className="w-4 h-4" /> {t("Copy")}</button>
               </ResultCard>
             )}
           </>
@@ -1124,27 +1126,27 @@ function ToolWorkspace({ tool, onBack }) {
           : (mode === "change") ? (a && b ? ((b - a) / a * 100) : null) : null;
         return (
           <>
-            <SelectField label="Calculation Type" value={mode} onChange={set("mode")} options={["of", "isWhat", "change"]} />
+            <SelectField label={t("Calculation Type")} value={mode} onChange={set("mode")} options={[{ value: "of", label: t("of") }, { value: "isWhat", label: t("isWhat") }, { value: "change", label: t("change") }]} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
-              <NumInput label="Value A" value={inputs.a} onChange={set("a")} placeholder="20" />
-              <NumInput label="Value B" value={inputs.b} onChange={set("b")} placeholder="150" />
+              <NumInput label={t("Value A")} value={inputs.a} onChange={set("a")} placeholder="20" />
+              <NumInput label={t("Value B")} value={inputs.b} onChange={set("b")} placeholder="150" />
             </div>
             {out != null && (
               <>
-                <ResultCard title="Result">
+                <ResultCard title={t("Result")}>
                   <div className="text-4xl font-extrabold text-accent">{out.toFixed(2)}{mode !== "of" ? "%" : ""}</div>
                 </ResultCard>
                 {mode === "of" ? (
                   <div className="mt-6 rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
-                    <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">{a}% of {b}</h4>
+                    <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">{a}% {t("ofB")} {b}</h4>
                     <div className="h-6 w-full rounded-full bg-secondary overflow-hidden">
                       <div className="h-full bg-primary rounded-full transition-all duration-700" style={{ width: `${Math.min(a, 100)}%` }} />
                     </div>
-                    <div className="mt-3 text-center text-sm text-muted-foreground">Result <strong className="text-primary">{out.toFixed(2)}</strong> of {b}</div>
+                    <div className="mt-3 text-center text-sm text-muted-foreground">{t("Result")} <strong className="text-primary">{out.toFixed(2)}</strong> {t("ofB")} {b}</div>
                   </div>
                 ) : (
                   <div className="mt-6 rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
-                    <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">{mode === "isWhat" ? `${a} as % of ${b}` : `Change from ${a} to ${b}`}</h4>
+                    <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">{mode === "isWhat" ? `${a} ${t("asPctOf")} ${b}` : `${t("changeFrom")} ${a} ${t("toWord")} ${b}`}</h4>
                     <div className="flex items-end justify-center gap-2 h-40">
                       <div className="flex flex-col items-center gap-1">
                         <div className="w-16 rounded-t-lg bg-primary transition-all duration-700" style={{ height: `${Math.min((mode === "isWhat" ? Math.min(a / b, 1) : 1) * 100, 100)}%` }} />
@@ -1160,32 +1162,32 @@ function ToolWorkspace({ tool, onBack }) {
                 )}
               </>
             )}
-            <TipBox>"of" = A% of B • "isWhat" = A is what % of B • "change" = % change from A to B.</TipBox>
+            <TipBox>{t("Percentage tip")}</TipBox>
           </>
         );
       }
       case "physics-calculators": {
         const mode = inputs.mode || "speed";
         const a = parseFloat(inputs.a), b = parseFloat(inputs.b);
-        let la = "Distance (m)", lb = "Time (s)", unit = "m/s";
-        if (mode === "distance") { la = "Speed (m/s)"; lb = "Time (s)"; unit = "m"; }
-        else if (mode === "time") { la = "Distance (m)"; lb = "Speed (m/s)"; unit = "s"; }
-        else if (mode === "ohm") { la = "Voltage (V)"; lb = "Resistance (Ω)"; unit = "A"; }
+        let la = t("Distance (m)"), lb = t("Time (s)"), unit = "m/s";
+        if (mode === "distance") { la = t("Speed (m/s)"); lb = t("Time (s)"); unit = "m"; }
+        else if (mode === "time") { la = t("Distance (m)"); lb = t("Speed (m/s)"); unit = "s"; }
+        else if (mode === "ohm") { la = t("Voltage (V)"); lb = t("Resistance (Ω)"); unit = "A"; }
         const res = (mode === "ohm") ? (a && b ? a / b : null) : (mode === "distance") ? (a && b ? a * b : null) : (a && b ? a / b : null);
         return (
           <>
-            <SelectField label="Calculation" value={mode} onChange={set("mode")} options={["speed", "distance", "time", "ohm"]} />
+            <SelectField label={t("Calculation")} value={mode} onChange={set("mode")} options={[{ value: "speed", label: t("speed") }, { value: "distance", label: t("distance") }, { value: "time", label: t("time") }, { value: "ohm", label: t("ohm") }]} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
               <NumInput label={la} value={inputs.a} onChange={set("a")} placeholder="100" />
               <NumInput label={lb} value={inputs.b} onChange={set("b")} placeholder="10" />
             </div>
             {res != null && (
-              <ResultCard title="Result">
+              <ResultCard title={t("Result")}>
                 <div className="text-4xl font-extrabold text-accent">{res.toFixed(3)}</div>
                 <div className="text-muted-foreground mt-2">{unit}</div>
               </ResultCard>
             )}
-            <TipBox>Speed = Distance ÷ Time • Ohm's Law: I = V ÷ R.</TipBox>
+            <TipBox>{t("Speed = Distance ÷ Time • Ohm's Law: I = V ÷ R.")}</TipBox>
           </>
         );
       }
@@ -1193,43 +1195,43 @@ function ToolWorkspace({ tool, onBack }) {
         const mass = calcMolarMass(inputs.formula || "");
         return (
           <>
-            <TxtInput label="Chemical Formula" value={inputs.formula} onChange={set("formula")} placeholder="H2O" />
+            <TxtInput label={t("Chemical Formula")} value={inputs.formula} onChange={set("formula")} placeholder="H2O" />
             {mass != null ? (
-              <ResultCard title="Molar Mass">
+              <ResultCard title={t("Molar Mass")}>
                 <div className="text-4xl font-extrabold text-accent">{mass.toFixed(3)}</div>
                 <div className="text-muted-foreground mt-2">g/mol</div>
               </ResultCard>
             ) : inputs.formula ? (
-              <TipBox>Could not parse the formula. Use element symbols like H2O, NaCl, or C6H12O6.</TipBox>
+              <TipBox>{t("Could not parse the formula. Use element symbols like H2O, NaCl, or C6H12O6.")}</TipBox>
             ) : null}
-            <TipBox>Enter a formula like H2O, NaCl, or C6H12O6. Supports common elements.</TipBox>
+            <TipBox>{t("Enter a formula like H2O, NaCl, or C6H12O6. Supports common elements.")}</TipBox>
           </>
         );
       }
       case "riddle-game": {
         const guess = () => {
-          if (riddleGuess.trim().toLowerCase() === riddle.answer.toLowerCase()) setRiddleMsg("Correct! 🎉");
+          if (riddleGuess.trim().toLowerCase() === riddle.answer.toLowerCase()) setRiddleMsg(t("Correct! 🎉"));
           else {
             const left = riddleAttempts - 1;
             setRiddleAttempts(left);
-            setRiddleMsg(left > 0 ? `Wrong. ${left} attempt${left > 1 ? "s" : ""} left.` : `Out of attempts! The answer was "${riddle.answer}".`);
+            setRiddleMsg(left > 0 ? `${t("Wrong.")} ${left} ${t("attempt(s) left.")}` : `${t("Out of attempts! The answer was")} "${riddle.answer}".`);
           }
         };
-        const next = () => { setRiddle(RIDDLES[Math.floor(Math.random() * RIDDLES.length)]); setRiddleGuess(""); setRiddleMsg(""); setRiddleAttempts(3); };
+        const next = () => {     setRiddle(riddles[Math.floor(Math.random() * riddles.length)]); setRiddleGuess(""); setRiddleMsg(""); setRiddleAttempts(3); };
         return (
           <>
             <div className="rounded-2xl bg-background border border-border p-6 mb-6">
-              <p className="text-lg font-semibold text-foreground mb-2">Riddle</p>
+              <p className="text-lg font-semibold text-foreground mb-2">{t("Riddle")}</p>
               <p className="text-muted-foreground">{riddle.q}</p>
             </div>
-            <TxtInput label="Your Answer" value={riddleGuess} onChange={(e) => setRiddleGuess(e.target.value)} placeholder="Type your guess" />
+            <TxtInput label={t("Your Answer")} value={riddleGuess} onChange={(e) => setRiddleGuess(e.target.value)} placeholder={t("Type your guess")} />
             <div className="flex flex-wrap justify-center gap-3 mt-6">
-              <CalcButton onClick={guess}>Submit Answer</CalcButton>
-              <Button onClick={next} variant="outline" className="mt-6 rounded-2xl px-6 py-6">New Riddle</Button>
+              <CalcButton onClick={guess}>{t("Submit Answer")}</CalcButton>
+              <Button onClick={next} variant="outline" className="mt-6 rounded-2xl px-6 py-6">{t("New Riddle")}</Button>
               <GameMusicButton theme="riddle" className="mt-6" />
             </div>
             {riddleMsg && <ResultCard title="Result"><div className="text-lg font-semibold text-foreground">{riddleMsg}</div></ResultCard>}
-            <TipBox>Attempts left: {riddleAttempts}</TipBox>
+            <TipBox>{t("Attempts left:")} {riddleAttempts}</TipBox>
           </>
         );
       }
@@ -1764,13 +1766,19 @@ function ToolsHub({ searchQuery = "" }) {
                     <Star className={`w-5 h-5 ${fav ? "fill-accent" : ""}`} />
                   </button>
                   
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-5 shadow-[0_12px_26px_-6px_hsl(var(--primary)/0.55),inset_0_1px_0_0_hsl(0_0%_100%/0.3),inset_0_-3px_6px_0_hsl(0_0%_0%/0.15)] group-hover:scale-110 group-hover:shadow-[0_16px_32px_-6px_hsl(var(--primary)/0.65)] transition-all duration-500 overflow-hidden">
-                    {tool.logo ? (
-                      <img src={tool.logo} alt={t(tool.name)} className="w-full h-full object-cover" />
-                    ) : (
-                      <Icon className="w-7 h-7 text-primary-foreground" strokeWidth={2.2} />
-                    )}
-                  </div>
+                  {tool.category === "Games" ? (
+                    <div className="w-16 h-16 mb-5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                      <GameIcon slug={tool.slug} className="w-16 h-16" />
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-5 shadow-[0_12px_26px_-6px_hsl(var(--primary)/0.55),inset_0_1px_0_0_hsl(0_0%_100%/0.3),inset_0_-3px_6px_0_hsl(0_0%_0%/0.15)] group-hover:scale-110 group-hover:shadow-[0_16px_32px_-6px_hsl(var(--primary)/0.65)] transition-all duration-500 overflow-hidden">
+                      {tool.logo ? (
+                        <img src={tool.logo} alt={t(tool.name)} className="w-full h-full object-cover" />
+                      ) : (
+                        <Icon className="w-7 h-7 text-primary-foreground" strokeWidth={2.2} />
+                      )}
+                    </div>
+                  )}
                   
                   <h3 className="text-xl font-bold text-card-foreground mb-1">{t(tool.name)}</h3>
                   <span className="text-sm font-medium text-muted-foreground">{t(tool.category)}</span>
