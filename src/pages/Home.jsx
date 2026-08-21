@@ -10,6 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { createPortal } from "react-dom";
 import { Image as Img } from "@/components/ui/image";
 import { generateLogo } from "@/functions/generateLogo";
+import Logo from "@/components/Logo";
 import Game2048 from "@/components/games/Game2048";
 import MemoryMatch from "@/components/games/MemoryMatch";
 import WhackAMole from "@/components/games/WhackAMole";
@@ -187,7 +188,7 @@ function HeroSection({ toolCount, catCount, searchQuery, onSearchChange }) {
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
 
           <div className="flex items-center justify-center gap-4 mb-6" style={{ animation: "floatC 6s ease-in-out infinite" }}>
-            <img src={LOGO_URL} alt="iyadel" className="w-14 h-14 md:w-20 md:h-20 object-contain drop-shadow-[0_8px_20px_hsl(var(--primary)/0.35)]" />
+            <Logo />
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient-x">
               iyadel
             </h1>

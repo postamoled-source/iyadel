@@ -4,6 +4,7 @@ import { useTheme } from "next-themes";
 import { useI18n } from "@/lib/i18n";
 import { Moon, Sun, Globe } from "lucide-react";
 import { LOGO_URL } from "@/data/tools";
+import Logo from "./Logo";
 import MobileSelect from "./MobileSelect";
 import ProfileSheet from "./ProfileSheet";
 
@@ -68,7 +69,7 @@ export default function Header() {
         {/* Mobile */}
         <div className="sm:hidden flex items-center justify-between w-full">
           <Link to="/" className="flex items-center gap-2 shrink-0">
-            <img src={LOGO_URL} alt="iyadel" className="w-9 h-9 object-contain drop-shadow-[0_4px_10px_hsl(var(--primary)/0.35)]" />
+            <Logo className="w-9 h-9" />
             <span className="font-bold text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">iyadel</span>
           </Link>
           <div className="flex items-center gap-2">
