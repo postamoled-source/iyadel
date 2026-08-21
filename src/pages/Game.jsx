@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { createGame } from '@/game/config';
+import { IyadelGame3D } from '@/game3d/IyadelGame3D';
 import { useSeo } from '@/lib/analytics';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -9,16 +9,16 @@ export default function Game() {
   const gameRef = useRef(null);
 
   useSeo({
-    title: 'IYADEL Game',
-    description: 'Play IYADEL — a fast 2D action run-and-gun game built into the iyadel platform.',
+    title: 'IYADEL 3D Game',
+    description: 'Play IYADEL 3D — a fast 3D run-and-gun action game built with Three.js.',
     path: '/Game',
   });
 
   useEffect(() => {
     if (!containerRef.current || gameRef.current) return;
-    gameRef.current = createGame(containerRef.current);
+    gameRef.current = new IyadelGame3D(containerRef.current);
     return () => {
-      gameRef.current?.destroy(true);
+      gameRef.current?.destroy();
       gameRef.current = null;
     };
   }, []);
@@ -30,7 +30,7 @@ export default function Game() {
           <ArrowLeft className="w-4 h-4" />
           Back
         </Link>
-        <span className="text-sm font-semibold text-foreground">IYADEL</span>
+        <span className="text-sm font-semibold text-foreground">IYADEL 3D</span>
       </div>
       <div ref={containerRef} className="flex-1 w-full" />
     </div>
