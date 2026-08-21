@@ -72,7 +72,7 @@ export class IyadelGame3D {
     this.scene.background = this._skyTexture();
     this.scene.fog = new THREE.Fog(0x8a3a1a, 22, 64);
     this.camera = new THREE.PerspectiveCamera(60, 1, 0.1, 200);
-    this.camera.position.set(0, 12, -11);
+    this.camera.position.set(0, 5.5, -7.5);
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
@@ -562,10 +562,16 @@ export class IyadelGame3D {
     }
     this.parts.armR.rotation.x = this.firing ? -0.7 : 0;
 
-    // Camera follow.
-    const camTarget = this.playerPos.clone().add(new THREE.Vector3(0, 12, -11));
+    // Cinematic third-person follow: behind the hero along facing, looking ahead.
+    const dist = this.sprint ? 9 : 7.5;
+    const camTarget = this.playerPos.clone()
+      .add(this.facing.clone().multiplyScalar(-dist))
+      .add(new THREE.Vector3(0, 5.5, 0));
     this.camera.position.lerp(camTarget, 0.08);
-    this.camera.lookAt(this.playerPos.x, this.playerPos.y + 1, this.playerPos.z);
+    const look = this.playerPos.clone()
+      .add(this.facing.clone().multiplyScalar(4))
+      .add(new THREE.Vector3(0, 1.2, 0));
+    this.camera.lookAt(look);
 
     // Firing.
     this.fireCd -= dt;
