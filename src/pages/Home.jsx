@@ -1030,7 +1030,7 @@ function ToolWorkspace({ tool, onBack }) {
       }
       case "privacy-policy-generator": {
         const generate = () => {
-          const name = inputs.appName || "TestPeak", site = inputs.siteUrl || "https://testpriving.com", email = inputs.email || "support@testpriving.com";
+          const name = inputs.appName || "iyadel", site = inputs.siteUrl || "https://testpriving.com", email = inputs.email || "support@testpriving.com";
           const text = `Privacy Policy for ${name}\n\nLast Updated: ${new Date().toLocaleDateString()}\n\n${name} ("we", "us", "our") operates ${site}. This policy explains what data we collect and how we use it.\n\n1. Information We Collect\nWe collect information you provide voluntarily and data collected automatically (IP address, browser type, cookies).\n\n2. How We Use Your Information\nWe use information to provide and improve our services, communicate with you, and analyze usage.\n\n3. Cookies\nWe use cookies to improve your experience. You can disable cookies in your browser settings.\n\n4. Third-Party Services\nWe may use third-party tools that collect data according to their own privacy policies.\n\n5. Your Rights\nYou may access, correct, or delete your personal data at any time. Contact us at ${email}.\n\n6. Security\nWe take reasonable measures to protect your data, though no system is 100% secure.\n\n7. Changes to This Policy\nWe may update this policy. Changes will be posted on this page.\n\nContact: ${email}`;
           setPolicyText(text);
         };
@@ -1038,7 +1038,7 @@ function ToolWorkspace({ tool, onBack }) {
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <TxtInput label="App Name" value={inputs.appName} onChange={set("appName")} placeholder="TestPeak" />
+              <TxtInput label="App Name" value={inputs.appName} onChange={set("appName")} placeholder="iyadel" />
               <TxtInput label="Site URL" value={inputs.siteUrl} onChange={set("siteUrl")} placeholder="https://testpriving.com" />
               <TxtInput label="Contact Email" value={inputs.email} onChange={set("email")} placeholder="support@testpriving.com" />
             </div>
@@ -1297,7 +1297,7 @@ function ToolWorkspace({ tool, onBack }) {
               pdf.addImage(pdfFiles[i], "JPEG", (pw - dw) / 2, (ph - dh) / 2, dw, dh);
             }
           }
-          pdf.save("testpeak-images.pdf");
+          pdf.save("iyadel-images.pdf");
           setPdfBusy(false);
         };
         return (
@@ -1832,11 +1832,11 @@ function AppStoreSection() {
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent pointer-events-none" />
             
             <div className="flex-1 relative z-10">
-              <h3 className="text-2xl font-bold text-card-foreground mb-4">{t("TestPeak Platform")}</h3>
+              <h3 className="text-2xl font-bold text-card-foreground mb-4">{t("iyadel Platform")}</h3>
               <p className="text-muted-foreground mb-6 text-sm leading-relaxed max-w-sm">
                 {t("31+ interactive and accurate tools in one place. Finance, health, converters, math, brain games, and image processing — completely free and secure.")}
               </p>
-              <p className="text-xs text-muted-foreground/60 mt-auto pt-6">{t("© 2026 TestPeak — All Rights Reserved")}</p>
+              <p className="text-xs text-muted-foreground/60 mt-auto pt-6">{t("© 2026 iyadel — All Rights Reserved")}</p>
             </div>
             
             <div className="flex-1 relative z-10 grid grid-cols-2 gap-8">
@@ -1883,7 +1883,7 @@ function AppStoreSection() {
   );
 }
 
-// ---------- Why TestPeak & About Content ----------
+// ---------- Why iyadel & About Content ----------
 function WhySection() {
   const { t } = useI18n();
   const features = [
@@ -1903,7 +1903,7 @@ function WhySection() {
             </div>
             
             <p className="text-card-foreground/80 mb-10 text-lg">
-              <strong className="text-foreground">TestPeak</strong> {t("is an")} <strong className="text-foreground">{t("integrated tools platform")}</strong> {t("that provides a wide range of free and interactive tools covering users' daily needs across various domains.")}
+              <strong className="text-foreground">iyadel</strong> {t("is an")} <strong className="text-foreground">{t("integrated tools platform")}</strong> {t("that provides a wide range of free and interactive tools covering users' daily needs across various domains.")}
             </p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1921,7 +1921,7 @@ function WhySection() {
             </div>
             
             <p className="text-sm text-muted-foreground mt-10 italic">
-              "{t("The TestPeak team works passionately to deliver the best digital experience.")}"
+              "{t("The iyadel team works passionately to deliver the best digital experience.")}"
             </p>
           </div>
         </AnimatedElement>
@@ -1988,11 +1988,11 @@ function PrivacyTeaser() {
             <p className="text-xs text-muted-foreground mb-8 uppercase tracking-wider">{t("Last Updated: August 15, 2026")}</p>
             
             <div className="space-y-6 text-sm text-muted-foreground">
-              <p>{t("At TestPeak, your privacy comes first. We don't track you, we don't profile you, and most tools run entirely in your browser. This policy explains how the platform handles data.")}</p>
+              <p>{t("At iyadel, your privacy comes first. We don't track you, we don't profile you, and most tools run entirely in your browser. This policy explains how the platform handles data.")}</p>
               
               <div>
                 <strong className="text-foreground text-base block mb-1">{t("1. We Don't Track You")}</strong>
-                <p>{t("TestPeak uses no Google Analytics or third-party trackers. We do not record which tools you use or set tracking cookies.")}</p>
+                <p>{t("iyadel uses no Google Analytics or third-party trackers. We do not record which tools you use or set tracking cookies.")}</p>
               </div>
               
               <div>

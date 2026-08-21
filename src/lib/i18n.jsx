@@ -203,17 +203,17 @@ const AR = {
   "31+ tools": "أكثر من 31 أداة",
   "Finance, Health, Converters, Math, Brain Games, and Image Tools.":
     "التمويل والصحة والمحولات والرياضيات وألعاب العقل وأدوات الصور.",
-  "The TestPeak team works passionately to deliver the best digital experience.":
-    "يعمل فريق TestPeak بشغف لتقديم أفضل تجربة رقمية.",
+  "The iyadel team works passionately to deliver the best digital experience.":
+    "يعمل فريق iyadel بشغف لتقديم أفضل تجربة رقمية.",
 
   // App store / footer block
-  "TestPeak Platform": "منصة TestPeak",
+  "iyadel Platform": "منصة iyadel",
   "31+ interactive and accurate tools in one place. Finance, health, converters, math, brain games, and image processing — completely free and secure.":
     "أكثر من 31 أداة تفاعلية ودقيقة في مكان واحد. تمويل وصحة ومحولات ورياضيات وألعاب عقل ومعالجة صور — مجانية تمامًا وآمنة.",
   "31+ interactive and accurate tools in one place — designed to simplify your daily life.":
     "أكثر من 31 أداة تفاعلية ودقيقة في مكان واحد — مصممة لتبسيط حياتك اليومية.",
-  "© 2026 TestPeak — All Rights Reserved": "© 2026 TestPeak — جميع الحقوق محفوظة",
-  "2026 TestPeak — All Rights Reserved": "2026 TestPeak — جميع الحقوق محفوظة",
+  "© 2026 iyadel — All Rights Reserved": "© 2026 iyadel — جميع الحقوق محفوظة",
+  "2026 iyadel — All Rights Reserved": "2026 iyadel — جميع الحقوق محفوظة",
   "Quick Links": "روابط سريعة",
   "Social": "التواصل الاجتماعي",
   "Get it on": "احصل عليه على",
@@ -229,8 +229,8 @@ const AR = {
   // Privacy teaser
   "Privacy Policy": "سياسة الخصوصية",
   "Last Updated: August 13, 2026": "آخر تحديث: 13 أغسطس 2026",
-  "At TestPeak, we recognize the importance of your privacy and are committed to protecting it. This Privacy Policy explains how we collect, use, share, and protect your personal information.":
-    "في TestPeak، ندرك أهمية خصوصيتك ونلتزم بحمايتها. توضح سياسة الخصوصية هذه كيف نجمع بياناتك الشخصية ونستخدمها ونشاركها ونحميها.",
+  "At iyadel, we recognize the importance of your privacy and are committed to protecting it. This Privacy Policy explains how we collect, use, share, and protect your personal information.":
+    "في iyadel، ندرك أهمية خصوصيتك ونلتزم بحمايتها. توضح سياسة الخصوصية هذه كيف نجمع بياناتك الشخصية ونستخدمها ونشاركها ونحميها.",
   "1. Information We Collect": "1. المعلومات التي نجمعها",
   "We collect two main types: information you provide voluntarily (name, email, phone) and information collected automatically (IP, browser type, cookies).":
     "نجمع نوعين رئيسيين: المعلومات التي تقدمها طوعًا (الاسم والبريد والهاتف) والمعلومات التي تُجمع تلقائيًا (عنوان IP ونوع المتصفح وملفات تعريف الارتباط).",
@@ -245,7 +245,7 @@ const AR = {
   "that provides a wide range of free and interactive tools covering users' daily needs across various domains.": "توفر مجموعة واسعة من الأدوات المجانية والتفاعلية التي تغطي الاحتياجات اليومية للمستخدمين في مختلف المجالات.",
 
   // Blog page
-  "TestPeak Blog": "مدونة TestPeak",
+  "iyadel Blog": "مدونة iyadel",
   "Read the latest": "اقرأ أحدث",
   "articles & tips": "المقالات والنصائح",
   "Practical guides on finance, health and productivity — powered by the same tools you use every day.": "أدلة عملية حول التمويل والصحة والإنتاجية — مدعومة بالأدوات نفسها التي تستخدمها كل يوم.",
@@ -315,10 +315,10 @@ const AR = {
   "Remove from favorites": "إزالة من المفضّلة",
 
   // About page
-  "About TestPeak": "عن TestPeak",
+  "About iyadel": "عن iyadel",
   "Built to make life": "صُمّمت لجعل الحياة",
   "simpler": "أبسط",
-  "TestPeak is an integrated tools platform providing free, interactive tools that cover your daily needs across finance, health, math, converters, games and images.": "TestPeak منصة أدوات متكاملة توفّر أدوات مجانية وتفاعلية تغطي احتياجاتك اليومية في التمويل والصحة والرياضيات والمحولات والألعاب والصور.",
+  "iyadel is an integrated tools platform providing free, interactive tools that cover your daily needs across finance, health, math, converters, games and images.": "iyadel منصة أدوات متكاملة توفّر أدوات مجانية وتفاعلية تغطي احتياجاتك اليومية في التمويل والصحة والرياضيات والمحولات والألعاب والصور.",
   "Completely free — no registration or payment required.": "مجاني تمامًا — لا حاجة للتسجيل أو الدفع.",
   "Secure & private — all processing happens in your browser, no data is uploaded to any server.": "آمن وخاص — تتم جميع المعالجات في متصفحك، ولا يتم رفع أي بيانات إلى أي خادم.",
   "Works on all devices — mobile, tablet, or desktop.": "يعمل على جميع الأجهزة — جوال أو جهاز لوحي أو حاسوب.",
@@ -337,7 +337,7 @@ const AR = {
   "All financial tools are for educational and informational purposes only, and do not constitute financial advice.": "جميع الأدوات المالية لأغراض تعليمية وإعلامية فقط، ولا تُعد نصيحة مالية.",
   "8. Contact Us": "8. اتصل بنا",
   "Ready to get started?": "جاهز للبدء؟",
-  "Jump back in and explore all 26+ free tools TestPeak has to offer.": "عُد واستكشف جميع الأدوات المجانية (أكثر من 26) التي يقدمها TestPeak.",
+  "Jump back in and explore all 26+ free tools iyadel has to offer.": "عُد واستكشف جميع الأدوات المجانية (أكثر من 26) التي يقدمها iyadel.",
   "Back to Tools": "العودة إلى الأدوات",
 
   // Dashboard
@@ -356,19 +356,19 @@ const AR = {
   "Uses": "مرات استخدام",
 
   // Privacy — re-crafted no-tracking policy (About / Home / Privacy pages)
-  "At TestPeak, your privacy comes first. We don't track you, we don't profile you, and most tools run entirely in your browser. This policy explains how the platform handles data.":
-    "في TestPeak، خصوصيتك أولًا. لا نُتابعك ولا نُنشئ ملفًا لك، وتعمل معظم الأدوات بالكامل في متصفحك. توضح هذه السياسة كيفية تعامل المنصة مع البيانات.",
-  "At TestPeak, your privacy comes first. We don't track you and we don't profile you. This policy explains which tools process information locally in your browser, and the few features that use our servers only when you actively use them.":
-    "في TestPeak، خصوصيتك أولًا. لا نُتابعك ولا نُنشئ ملفًا لك. توضح هذه السياسة أي الأدوات تُعالج المعلومات محليًا في متصفحك، والأدوات القليلة التي تستخدم خوادمنا فقط عند استخدامك لها فعلًا.",
+  "At iyadel, your privacy comes first. We don't track you, we don't profile you, and most tools run entirely in your browser. This policy explains how the platform handles data.":
+    "في iyadel، خصوصيتك أولًا. لا نُتابعك ولا نُنشئ ملفًا لك، وتعمل معظم الأدوات بالكامل في متصفحك. توضح هذه السياسة كيفية تعامل المنصة مع البيانات.",
+  "At iyadel, your privacy comes first. We don't track you and we don't profile you. This policy explains which tools process information locally in your browser, and the few features that use our servers only when you actively use them.":
+    "في iyadel، خصوصيتك أولًا. لا نُتابعك ولا نُنشئ ملفًا لك. توضح هذه السياسة أي الأدوات تُعالج المعلومات محليًا في متصفحك، والأدوات القليلة التي تستخدم خوادمنا فقط عند استخدامك لها فعلًا.",
   "Last Updated: August 15, 2026": "آخر تحديث: 15 أغسطس 2026",
 
   "1. We Don't Track You": "1. لا نُتابعك",
-  "TestPeak does not use Google Analytics or any third-party tracking. We do not record which tools you use or track your behavior. No tracking cookies are set.":
-    "لا يستخدم TestPeak أداة Google Analytics أو أي تتبّع خارجي. لا نسجّل الأدوات التي تستخدمها ولا نُتابع سلوكك. لا نضع أي ملفات تعقّب.",
-  "TestPeak uses no Google Analytics or third-party trackers. We do not record which tools you use or set tracking cookies.":
-    "لا يستخدم TestPeak أداة Google Analytics أو أي أدوات تتبّع خارجية. لا نسجّل الأدوات التي تستخدمها ولا نضع ملفات تعقّب.",
-  "TestPeak does not use Google Analytics or any third-party analytics or advertising trackers. We do not record which tools you open, track your visits, or build a profile of your behavior. No tracking cookies are ever set.":
-    "لا يستخدم TestPeak أداة Google Analytics أو أي أدوات تحليلات أو إعلانات خارجية. لا نسجّل الأدوات التي تفتحها ولا نُتابع زياراتك ولا نُنشئ ملفًا لسلوكك. لا نضع ملفات تعقّب أبدًا.",
+  "iyadel does not use Google Analytics or any third-party tracking. We do not record which tools you use or track your behavior. No tracking cookies are set.":
+    "لا يستخدم iyadel أداة Google Analytics أو أي تتبّع خارجي. لا نسجّل الأدوات التي تستخدمها ولا نُتابع سلوكك. لا نضع أي ملفات تعقّب.",
+  "iyadel uses no Google Analytics or third-party trackers. We do not record which tools you use or set tracking cookies.":
+    "لا يستخدم iyadel أداة Google Analytics أو أي أدوات تتبّع خارجية. لا نسجّل الأدوات التي تستخدمها ولا نضع ملفات تعقّب.",
+  "iyadel does not use Google Analytics or any third-party analytics or advertising trackers. We do not record which tools you open, track your visits, or build a profile of your behavior. No tracking cookies are ever set.":
+    "لا يستخدم iyadel أداة Google Analytics أو أي أدوات تحليلات أو إعلانات خارجية. لا نسجّل الأدوات التي تفتحها ولا نُتابع زياراتك ولا نُنشئ ملفًا لسلوكك. لا نضع ملفات تعقّب أبدًا.",
 
   "2. Local-First Processing": "2. المعالجة محلية أساسًا",
   "Calculators, converters, the QR generator, and image tools (cropper, compressor, enhancer, background remover) run entirely in your browser. Your inputs and images never leave your device.":
@@ -412,16 +412,16 @@ const AR = {
     "جميع الأدوات المالية والصحية (القروض والفائدة ومؤشر كتلة الجسم والسعرات وغيرها) لأغراض تعليمية وإعلامية فقط، ولا تُعد نصيحة مالية أو طبية مهنية.",
 
   "9. Children's Privacy": "9. خصوصية الأطفال",
-  "TestPeak is not directed at children under 13, and we do not knowingly collect personal information from children.":
-    "TestPeak غير موجّه للأطفال دون 13 عامًا، ولا نجمع عمدًا معلومات شخصية من الأطفال.",
+  "iyadel is not directed at children under 13, and we do not knowingly collect personal information from children.":
+    "iyadel غير موجّه للأطفال دون 13 عامًا، ولا نجمع عمدًا معلومات شخصية من الأطفال.",
   "10. Changes to This Policy": "10. التغييرات على هذه السياسة",
   "We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated revision date.":
     "قد نُحدّث سياسة الخصوصية من حين لآخر. تُنشر التغييرات على هذه الصفحة مع تاريخ مراجعة مُحدّث.",
 
   "9. Contact Us": "9. اتصل بنا",
   "11. Contact Us": "11. اتصل بنا",
-  "Jump back in and explore all 31+ free tools TestPeak has to offer.":
-    "عُد واستكشف جميع الأدوات المجانية (أكثر من 31) التي يقدمها TestPeak.",
+  "Jump back in and explore all 31+ free tools iyadel has to offer.":
+    "عُد واستكشف جميع الأدوات المجانية (أكثر من 31) التي يقدمها iyadel.",
   "6. Information Security": "6. أمان المعلومات",
   "7. Your Rights": "7. حقوقك",
 

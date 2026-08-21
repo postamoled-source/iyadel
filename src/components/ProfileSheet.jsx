@@ -87,7 +87,7 @@ export default function ProfileSheet() {
               </div>
               <div className="min-w-0">
                 <div className="font-semibold text-foreground truncate">
-                  {user?.full_name || "TestPeak User"}
+                  {user?.full_name || "iyadel User"}
                 </div>
                 <div className="text-sm text-muted-foreground flex items-center gap-1 truncate">
                   <Mail className="w-3 h-3 shrink-0" />

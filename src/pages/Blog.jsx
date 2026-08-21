@@ -46,7 +46,7 @@ function HeroSection() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-secondary border border-border px-4 py-1.5 mb-5">
               <Sparkles className="w-4 h-4 text-accent" />
-              <span className="text-sm text-muted-foreground">{t("TestPeak Blog")}</span>
+              <span className="text-sm text-muted-foreground">{t("iyadel Blog")}</span>
             </div>
             <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-foreground mb-4">
               {t("Read the latest")} <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient-x">{t("articles & tips")}</span>
@@ -165,7 +165,7 @@ function NewsletterSection() {
 export default function Blog() {
   useSeo({
     title: "Blog — Finance, Health & Productivity Tips",
-    description: "Read the latest TestPeak articles and practical guides on finance, health, and productivity — backed by free online calculators and tools.",
+    description: "Read the latest iyadel articles and practical guides on finance, health, and productivity — backed by free online calculators and tools.",
     path: "/Blog",
   });
   return (

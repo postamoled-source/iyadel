@@ -38,13 +38,13 @@ function HeroSection() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: "easeOut" }} className="text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-secondary border border-border px-4 py-1.5 mb-5">
             <Sparkles className="w-4 h-4 text-accent" />
-            <span className="text-sm text-muted-foreground">{t("About TestPeak")}</span>
+            <span className="text-sm text-muted-foreground">{t("About iyadel")}</span>
           </div>
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-foreground mb-4">
             {t("Built to make life")} <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient-x">{t("simpler")}</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t("TestPeak is an integrated tools platform providing free, interactive tools that cover your daily needs across finance, health, math, converters, games and images.")}
+            {t("iyadel is an integrated tools platform providing free, interactive tools that cover your daily needs across finance, health, math, converters, games and images.")}
           </p>
         </motion.div>
       </div>
@@ -68,7 +68,7 @@ function AboutUsSection() {
         <AnimatedElement>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">{t("About Us")}</h2>
           <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
-            <strong className="text-foreground">TestPeak</strong> {t("is an")} <strong className="text-foreground">{t("integrated tools platform")}</strong> {t("that provides a wide range of free and interactive tools covering users' daily needs across various domains.")}
+            <strong className="text-foreground">iyadel</strong> {t("is an")} <strong className="text-foreground">{t("integrated tools platform")}</strong> {t("that provides a wide range of free and interactive tools covering users' daily needs across various domains.")}
           </p>
         </AnimatedElement>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -84,7 +84,7 @@ function AboutUsSection() {
           ))}
         </div>
         <AnimatedElement delay={300}>
-          <p className="text-muted-foreground mt-10 italic text-center">{t("The TestPeak team works passionately to deliver the best digital experience.")}</p>
+          <p className="text-muted-foreground mt-10 italic text-center">{t("The iyadel team works passionately to deliver the best digital experience.")}</p>
         </AnimatedElement>
       </div>
     </section>
@@ -94,7 +94,7 @@ function AboutUsSection() {
 function PrivacyPolicySection() {
   const { t } = useI18n();
   const sections = [
-    { title: "1. We Don't Track You", body: "TestPeak does not use Google Analytics or any third-party tracking. We do not record which tools you use or track your behavior. No tracking cookies are set." },
+    { title: "1. We Don't Track You", body: "iyadel does not use Google Analytics or any third-party tracking. We do not record which tools you use or track your behavior. No tracking cookies are set." },
     { title: "2. Local-First Processing", body: "Calculators, converters, the QR generator, and image tools (cropper, compressor, enhancer, background remover) run entirely in your browser. Your inputs and images never leave your device." },
     { title: "3. Tools That Use Our Servers", body: "The AI Logo Maker sends your brand name and tagline to generate logos, and blog images uploaded by admins are stored on our servers. These are actions you take, not passive tracking." },
     { title: "4. Accounts", body: "If you create an account, we store your email address. We do not ask for your name or phone number." },
@@ -110,7 +110,7 @@ function PrivacyPolicySection() {
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">{t("Privacy Policy")}</h2>
           <span className="text-sm text-muted-foreground">{t("Last Updated: August 15, 2026")}</span>
           <p className="text-muted-foreground mt-6 leading-relaxed">
-            {t("At TestPeak, your privacy comes first. We don't track you, we don't profile you, and most tools run entirely in your browser. This policy explains how the platform handles data.")}
+            {t("At iyadel, your privacy comes first. We don't track you, we don't profile you, and most tools run entirely in your browser. This policy explains how the platform handles data.")}
           </p>
         </AnimatedElement>
         <div className="mt-10 space-y-8">
@@ -145,7 +145,7 @@ function CTASection() {
       <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
         <AnimatedElement>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{t("Ready to get started?")}</h2>
-          <p className="text-muted-foreground mb-8">{t("Jump back in and explore all 31+ free tools TestPeak has to offer.")}</p>
+          <p className="text-muted-foreground mb-8">{t("Jump back in and explore all 31+ free tools iyadel has to offer.")}</p>
           <Link to="/">
             <Button className="relative overflow-hidden rounded-xl px-8 py-6 text-lg bg-accent text-accent-foreground hover:scale-105 transition-transform duration-300 shadow-lg shadow-accent/20">
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-foreground/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />
@@ -160,8 +160,8 @@ function CTASection() {
 
 export default function About() {
   useSeo({
-    title: "About TestPeak — Free, Private, Cross-Platform Tools",
-    description: "Learn about TestPeak — an integrated platform of 31+ free, private, cross-platform online tools covering finance, health, converters, math, games, and image processing.",
+    title: "About iyadel — Free, Private, Cross-Platform Tools",
+    description: "Learn about iyadel — an integrated platform of 31+ free, private, cross-platform online tools covering finance, health, converters, math, games, and image processing.",
     path: "/About",
   });
   return (

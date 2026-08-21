@@ -32,7 +32,7 @@ const SECTIONS = [
   {
     icon: EyeOff,
     title: "1. We Don't Track You",
-    body: "TestPeak does not use Google Analytics or any third-party analytics or advertising trackers. We do not record which tools you open, track your visits, or build a profile of your behavior. No tracking cookies are ever set.",
+    body: "iyadel does not use Google Analytics or any third-party analytics or advertising trackers. We do not record which tools you open, track your visits, or build a profile of your behavior. No tracking cookies are ever set.",
   },
   {
     icon: MonitorSmartphone,
@@ -72,7 +72,7 @@ const SECTIONS = [
   {
     icon: ShieldCheck,
     title: "9. Children's Privacy",
-    body: "TestPeak is not directed at children under 13, and we do not knowingly collect personal information from children.",
+    body: "iyadel is not directed at children under 13, and we do not knowingly collect personal information from children.",
   },
   {
     icon: ShieldCheck,
@@ -84,8 +84,8 @@ const SECTIONS = [
 export default function Privacy() {
   const { t } = useI18n();
   useSeo({
-    title: "Privacy Policy — TestPeak",
-    description: "TestPeak does not track you. Most tools run locally in your browser; a few features use our servers only when you actively use them. No analytics, no tracking cookies.",
+    title: "Privacy Policy — iyadel",
+    description: "iyadel does not track you. Most tools run locally in your browser; a few features use our servers only when you actively use them. No analytics, no tracking cookies.",
     path: "/Privacy",
   });
   return (
@@ -97,12 +97,12 @@ export default function Privacy() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: "easeOut" }}>
             <div className="inline-flex items-center gap-2 rounded-full bg-secondary border border-border px-4 py-1.5 mb-5">
               <EyeOff className="w-4 h-4 text-primary" />
-              <span className="text-sm text-muted-foreground">TestPeak</span>
+              <span className="text-sm text-muted-foreground">iyadel</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground mb-3">{t("Privacy Policy")}</h1>
             <span className="text-sm text-muted-foreground">{t("Last Updated: August 15, 2026")}</span>
             <p className="text-muted-foreground mt-6 leading-relaxed max-w-2xl mx-auto">
-              {t("At TestPeak, your privacy comes first. We don't track you and we don't profile you. This policy explains which tools process information locally in your browser, and the few features that use our servers only when you actively use them.")}
+              {t("At iyadel, your privacy comes first. We don't track you and we don't profile you. This policy explains which tools process information locally in your browser, and the few features that use our servers only when you actively use them.")}
             </p>
           </motion.div>
         </div>
@@ -148,7 +148,7 @@ export default function Privacy() {
               <Sparkles className="w-5 h-5" />
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{t("Ready to get started?")}</h2>
-            <p className="text-muted-foreground mb-8">{t("Jump back in and explore all 31+ free tools TestPeak has to offer.")}</p>
+            <p className="text-muted-foreground mb-8">{t("Jump back in and explore all 31+ free tools iyadel has to offer.")}</p>
             <Link to="/">
               <Button className="relative overflow-hidden rounded-xl px-8 py-6 text-lg bg-accent text-accent-foreground hover:scale-105 transition-transform duration-300 shadow-lg shadow-accent/20">
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-foreground/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />

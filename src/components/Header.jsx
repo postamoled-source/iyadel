@@ -68,8 +68,8 @@ export default function Header() {
         {/* Mobile */}
         <div className="sm:hidden flex items-center justify-between w-full">
           <Link to="/" className="flex items-center gap-2 shrink-0">
-            <img src={LOGO_URL} alt="TestPeak" className="w-8 h-8 rounded-lg object-cover" />
-            <span className="font-bold text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TestPeak</span>
+            <img src={LOGO_URL} alt="iyadel" className="w-8 h-8 rounded-lg object-cover" />
+            <span className="font-bold text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">iyadel</span>
           </Link>
           <div className="flex items-center gap-2">
             <button

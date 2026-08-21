@@ -1,5 +1,5 @@
 {
-  "name": "Captured: testpeak.net",
+  "name": "Captured: iyadel.net",
   "site": {
     "installCommand": "npm install",
     "buildCommand": "npm run build",
