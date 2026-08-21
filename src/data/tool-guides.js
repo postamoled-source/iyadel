@@ -74,7 +74,7 @@ export const TOOL_GUIDES = {
     ],
   },
   "currency-converter": {
-    intro: "Convert an amount between 30 world currencies using a fixed reference rate set.",
+    intro: "Convert an amount between 166 world currencies using live exchange rates.",
     steps: [
       "Enter the Amount you want to convert.",
       "Pick the From currency.",
@@ -82,8 +82,8 @@ export const TOOL_GUIDES = {
       "Press Convert Currency (or Swap to reverse the direction).",
     ],
     tips: [
-      "Rates are fixed references — live rates fluctuate and include a spread.",
-      "For large transfers, confirm the live rate and any fees with your provider.",
+      "Rates are fetched live and update with each refresh.",
+      "For large transfers, confirm the rate and any fees with your provider.",
       "Use Swap to quickly check the reverse conversion.",
     ],
   },

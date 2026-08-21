@@ -55,10 +55,10 @@ export const STATIC_TOOLS = [
     name: "Currency Converter",
     slug: "currency-converter",
     category: "Converters",
-    description: "Convert between 30 world currencies.",
+    description: "Convert between 166 world currencies with live rates.",
     icon: "DollarSign",
     logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/6c12dfff1_generated_image.png",
-    content: "Currency conversion translates an amount from one currency to another using exchange rates. This tool references a fixed set of rates for 30 world currencies for quick, offline-friendly estimates. In real markets, rates fluctuate constantly and include a spread between buying and selling prices, so the figure here may differ slightly from what a bank or card provider offers at the moment of a transaction. For large or time-sensitive transfers, always confirm the live rate and any fees with your provider.",
+    content: "Currency conversion translates an amount from one currency to another using exchange rates. This tool fetches live exchange rates for 166 world currencies from a reliable source, so your result reflects current market values. In real markets, rates fluctuate constantly and include a spread between buying and selling prices, so the figure here may differ slightly from what a bank or card provider offers at the moment of a transaction. For large or time-sensitive transfers, always confirm the rate and any fees with your provider.",
   },
   {
     name: "Distance Converter",

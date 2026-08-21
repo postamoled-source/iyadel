@@ -106,7 +106,7 @@ const AR = {
   "Current yield and yield to maturity (YTM).": "العائد الحالي والعائد حتى الاستحقاق.",
   "Get your health classification instantly.": "احصل على تصنيفك الصحي فورًا.",
   "Estimate calories burned during activity.": "قدّر السعرات المحروقة أثناء النشاط.",
-  "Convert between 30 world currencies.": "حوّل بين 30 عملة عالمية.",
+  "Convert between 166 world currencies with live rates.": "حوّل بين 166 عملة عالمية بأسعار صرف حية.",
   "Convert between distance units.": "حوّل بين وحدات المسافة.",
   "Convert between weight units.": "حوّل بين وحدات الوزن.",
   "Convert between area units.": "حوّل بين وحدات المساحة.",
