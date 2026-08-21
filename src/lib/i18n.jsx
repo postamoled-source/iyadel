@@ -428,6 +428,8 @@ const AR = {
   "Restricted admin area — logging in or registering here does not grant admin access. Admin rights are assigned by invitation only.":
     "منطقة محصورة للإدارة فقط — تسجيل الدخول أو إنشاء حساب هنا لا يمنحك صلاحيات المشرف. تُمنح صلاحية المشرف عبر دعوة من المشرف فقط.",
 
+  "Tap the moles before they hide. 30-second reflex challenge.": "اضرب الفئران قبل أن تختبئ. تحدٍّ سرعي لمدة 30 ثانية.",
+  "Aim and fire balls to pop floating bubbles. 30-second target challenge.": "صوّب وأطلق الكرات لتفقيع الفقاعات الطافية. تحدٍّ هدف لمدة 30 ثانية.",
   "Whack-a-Mole": "اطرب الفأر",
   "Whack!": "اضرب!",
   "Score": "النقاط",
