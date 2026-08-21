@@ -6,6 +6,11 @@ import { WeaponManager, WEAPONS } from '../weapons/Weapons';
 import { EnemyManager } from '../entities/Enemy';
 import { PickupManager } from '../entities/Pickup';
 import { Boss } from '../entities/Boss';
+import {
+  playShoot, playJump, playEnemyHit, playEnemyDie, playHurt,
+  playPickup, playBossHit, playBossDie, playVictory, playGameOver, setSfxMuted,
+} from '@/lib/game-sounds';
+import { startMusic, stopMusic } from '@/lib/game-music';
 
 const LEVEL_WIDTH = 3200;
 
@@ -118,6 +123,19 @@ export class PlayScene extends Phaser.Scene {
     this.bossBarBg = null;
     this.victoryShown = false;
 
+    // Audio (Phase 8).
+    this.soundOn = true;
+    setSfxMuted(false);
+    startMusic('iyadel');
+    this.muteBtn = this.add
+      .text(this.scale.width - 24, 24, '🔊', { fontSize: '24px' })
+      .setOrigin(1, 0)
+      .setScrollFactor(0)
+      .setDepth(50)
+      .setInteractive({ useHandCursor: true });
+    this.muteBtn.on('pointerdown', () => this.toggleMute());
+    this.events.once('shutdown', () => stopMusic());
+
     // HUD: score + health bar.
     this.score = 0;
     this.scoreHud = this.add
@@ -161,6 +179,7 @@ export class PlayScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.enemyMgr.enemyBullets, (player, b) => {
       b.destroy();
       if (player.takeDamage(10, this.time.now)) this.gameOver();
+      else playHurt();
       this.refreshHud();
     });
 
@@ -189,9 +208,9 @@ export class PlayScene extends Phaser.Scene {
     else if (right) this.player.moveRight();
     else this.player.stop();
 
-    if (jumpPressed) this.player.jump();
+    if (jumpPressed && this.player.jump()) playJump();
 
-    if (this.controls.fire) this.weapons.fire(this.player, this.bullets, this.time.now);
+    if (this.controls.fire && this.weapons.fire(this.player, this.bullets, this.time.now)) playShoot();
 
     this.enemyMgr.update(this.player, this.time.now);
     if (!this.bossSpawned && this.player.x > 2800) this.spawnBoss();
@@ -244,6 +263,9 @@ export class PlayScene extends Phaser.Scene {
     if (boss.hit(2)) {
       boss.kill();
       this.score += 5000;
+      playBossDie();
+    } else {
+      playBossHit();
     }
     this.refreshHud();
   }
@@ -262,6 +284,8 @@ export class PlayScene extends Phaser.Scene {
 
   victory() {
     this.victoryShown = true;
+    stopMusic();
+    playVictory();
     this.scene.pause();
     const { width, height } = this.scale;
     this.add
@@ -279,12 +303,16 @@ export class PlayScene extends Phaser.Scene {
 
   hitEnemy(bullet, enemy) {
     bullet.destroy();
-    if (enemy.hit(1)) {
+    const dead = enemy.hit(1);
+    if (dead) {
       this.score += enemy.value;
       const ex = enemy.x;
       const ey = enemy.y;
       enemy.destroy();
       this.maybeDropPickup(ex, ey);
+      playEnemyDie();
+    } else {
+      playEnemyHit();
     }
     this.refreshHud();
   }
@@ -301,11 +329,13 @@ export class PlayScene extends Phaser.Scene {
     else if (pickup.type === 'shield') player.shieldUntil = this.time.now + 6000;
     else if (pickup.type === 'gem') this.score += 250;
     pickup.destroy();
+    playPickup();
     this.refreshHud();
   }
 
   touchEnemy(player, enemy) {
     if (player.takeDamage(15, this.time.now)) this.gameOver();
+    else playHurt();
     this.refreshHud();
   }
 
@@ -333,6 +363,8 @@ export class PlayScene extends Phaser.Scene {
   }
 
   gameOver() {
+    stopMusic();
+    playGameOver();
     this.scene.pause();
     const { width, height } = this.scale;
     this.add
@@ -346,6 +378,19 @@ export class PlayScene extends Phaser.Scene {
       .setScrollFactor(0)
       .setDepth(60);
     this.input.once('pointerdown', () => this.scene.restart());
+  }
+
+  toggleMute() {
+    this.soundOn = !this.soundOn;
+    if (this.soundOn) {
+      setSfxMuted(false);
+      startMusic('iyadel');
+      this.muteBtn.setText('🔊');
+    } else {
+      setSfxMuted(true);
+      stopMusic();
+      this.muteBtn.setText('🔇');
+    }
   }
 
   buildTouchControls() {

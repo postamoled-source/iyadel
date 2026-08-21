@@ -79,8 +79,9 @@ export class WeaponManager {
   }
 
   fire(player, bullets, time) {
-    if (!this.canFire(time)) return;
+    if (!this.canFire(time)) return false;
     WEAPONS[this.current].fire(this.scene, player, bullets);
     this.lastFire = time;
+    return true;
   }
 }

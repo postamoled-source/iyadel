@@ -54,6 +54,7 @@ const THEMES = {
   mathpuzzle:   { bpm: 92,  bassType: "triangle", leadType: "sine",     leadVol: 0.08, bass: ["D2","D2","A2","B2"],                lead: ["D4","F4","A4","D5","C5","A4","F4","D4"], pad: ["D3","F4","A4"] },
   wordscramble: { bpm: 110, bassType: "triangle", leadType: "triangle", leadVol: 0.07, bass: ["G2","D3","E3","C3"],                lead: ["G4","B4","D5","G5","D5","B4","A4","G4"], pad: ["G3","B4","D5"] },
   riddle:       { bpm: 76,  bassType: "sine",     leadType: "sine",     leadVol: 0.07, bass: ["D3","A2","F2","G2"],                lead: ["D4","F4","A4","D5","C5","A4","F4","D4"], pad: ["D3","F4","A4"] },
+  iyadel:       { bpm: 138, bassType: "sawtooth", leadType: "square",   leadVol: 0.055,bass: ["A2","A2","E2","G2","A2","A2","D2","E2"], lead: ["A4","E5","A4","C5","E5","A4","C5","E5"], pad: ["A3","E4","A4"] },
 };
 
 export function startMusic(theme) {
