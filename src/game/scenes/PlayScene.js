@@ -2,6 +2,7 @@
 // Phase 3: playable character with movement, jumping, shooting + a simple level.
 import Phaser from 'phaser';
 import { Player } from '../entities/Player';
+import { WeaponManager, WEAPONS } from '../weapons/Weapons';
 
 const LEVEL_WIDTH = 3200;
 
@@ -44,6 +45,42 @@ export class PlayScene extends Phaser.Scene {
     this.bullets = this.physics.add.group();
     this.bullets.runChildUpdate = false;
 
+    // Weapons system (Phase 4).
+    this.weapons = new WeaponManager(this);
+    this.input.keyboard.on('keydown-ONE', () => this.switchWeapon('pulse'));
+    this.input.keyboard.on('keydown-TWO', () => this.switchWeapon('spread'));
+    this.input.keyboard.on('keydown-THREE', () => this.switchWeapon('rapid'));
+
+    this.weaponHud = this.add
+      .text(20, 18, '', {
+        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontSize: '18px',
+        color: '#ffffff',
+        backgroundColor: '#00000066',
+        padding: { x: 8, y: 4 },
+      })
+      .setScrollFactor(0)
+      .setDepth(40);
+    this.refreshWeaponHud();
+
+    const { width } = this.scale;
+    const wb = this.add
+      .rectangle(width - 50, 38, 72, 40, 0x6c4dff, 0.3)
+      .setStrokeStyle(2, 0x6c4dff, 0.7)
+      .setDepth(40)
+      .setScrollFactor(0)
+      .setInteractive({ useHandCursor: true });
+    wb.on('pointerdown', () => this.cycleWeapon());
+    this.add
+      .text(width - 50, 38, 'SWAP', {
+        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontSize: '14px',
+        color: '#ffffff',
+      })
+      .setOrigin(0.5)
+      .setDepth(41)
+      .setScrollFactor(0);
+
     // Collisions.
     this.physics.add.collider(this.player, this.platforms);
     this.physics.add.collider(this.bullets, this.platforms, (bullet) => bullet.destroy());
@@ -75,21 +112,22 @@ export class PlayScene extends Phaser.Scene {
 
     if (jumpPressed) this.player.jump();
 
-    if (this.controls.fire) this.shoot();
+    if (this.controls.fire) this.weapons.fire(this.player, this.bullets, this.time.now);
   }
 
-  shoot() {
-    if (!this.player.canShoot) return;
-    const bx = this.player.x + this.player.facing * 20;
-    const by = this.player.y - 8;
-    const b = this.bullets.create(bx, by, 'bullet');
-    b.setVelocityX(this.player.facing * 620);
-    b.setGravityY(0);
-    b.setCollideWorldBounds(false);
-    b.body.setAllowGravity(false);
-    this.time.delayedCall(1100, () => b.destroy());
-    this.player.canShoot = false;
-    this.time.delayedCall(this.player.fireCooldown, () => (this.player.canShoot = true));
+  switchWeapon(key) {
+    this.weapons.switchTo(key);
+    this.refreshWeaponHud();
+  }
+
+  cycleWeapon() {
+    this.weapons.next();
+    this.refreshWeaponHud();
+  }
+
+  refreshWeaponHud() {
+    const w = WEAPONS[this.weapons.current];
+    this.weaponHud.setText(`⚔ ${w.name}`);
   }
 
   buildTouchControls() {
