@@ -1,7 +1,7 @@
 // Centralized tool definitions + detailed article content.
 // Edit tool names, descriptions, icons, or `content` here to update the app.
 
-export const LOGO_URL = "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0f0369c0e_generated_image.png";
+export const LOGO_URL = "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png";
 
 export const CATEGORIES = ["Finance", "Health", "Converters", "Math", "Games", "Image Tools"];
 
