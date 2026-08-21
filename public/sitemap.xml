@@ -2,25 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://testpriving.com/</loc>
+    <loc>https://iyadel.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://testpriving.com/" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://testpriving.com/?lang=ar" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://testpriving.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://iyadel.com/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://iyadel.com/?lang=ar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://iyadel.com/" />
   </url>
   <url>
-    <loc>https://testpriving.com/Blog</loc>
+    <loc>https://iyadel.com/Blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://testpriving.com/About</loc>
+    <loc>https://iyadel.com/About</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://testpriving.com/Privacy</loc>
+    <loc>https://iyadel.com/Privacy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>

@@ -1,4 +1,4 @@
-# robots.txt for iyadel — https://testpriving.com/
+# robots.txt for iyadel — https://iyadel.com/
 User-agent: *
 Allow: /
 Disallow: /Dashboard
@@ -8,4 +8,4 @@ Disallow: /forgot-password
 Disallow: /reset-password
 
 # Sitemap
-Sitemap: https://testpriving.com/sitemap.xml
+Sitemap: https://iyadel.com/sitemap.xml

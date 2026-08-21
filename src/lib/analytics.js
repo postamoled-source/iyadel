@@ -21,7 +21,7 @@ export function trackEvent(eventName, params = {}) {
 // Open Graph / Twitter tags per page. Pass `noindex: true` for private pages
 // (auth, admin) so search engines don't index them.
 const SITE_NAME = "iyadel";
-const SITE_URL = "https://testpriving.com";
+const SITE_URL = "https://iyadel.com";
 
 function upsertMeta(selector, attrs) {
   let tag = document.querySelector(selector);

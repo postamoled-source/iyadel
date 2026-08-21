@@ -1032,7 +1032,7 @@ function ToolWorkspace({ tool, onBack }) {
         const src = data ? `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(data)}` : null;
         return (
           <>
-            <TxtInput label={t("Text or URL")} value={inputs.text} onChange={set("text")} placeholder="https://testpriving.com" />
+            <TxtInput label={t("Text or URL")} value={inputs.text} onChange={set("text")} placeholder="https://iyadel.com" />
             {src && (
               <ResultCard title={t("Your QR Code")}>
                 <img src={src} alt="QR Code" className="w-48 h-48 mx-auto rounded-xl bg-white p-2" />
@@ -1054,7 +1054,7 @@ function ToolWorkspace({ tool, onBack }) {
         } : null;
         return (
           <>
-            <TxtInput label={t("Page URL")} value={inputs.url} onChange={set("url")} placeholder="https://testpriving.com" />
+            <TxtInput label={t("Page URL")} value={inputs.url} onChange={set("url")} placeholder="https://iyadel.com" />
             <TxtInput label={t("Message (optional)")} value={inputs.text} onChange={set("text")} placeholder="Check this out!" />
             {links && (
               <ResultCard title={t("Share Links")}>
@@ -1070,7 +1070,7 @@ function ToolWorkspace({ tool, onBack }) {
       }
       case "privacy-policy-generator": {
         const generate = () => {
-          const name = inputs.appName || "iyadel", site = inputs.siteUrl || "https://testpriving.com", email = inputs.email || "support@testpriving.com";
+          const name = inputs.appName || "iyadel", site = inputs.siteUrl || "https://iyadel.com", email = inputs.email || "support@iyadel.com";
           const text = `Privacy Policy for ${name}\n\nLast Updated: ${new Date().toLocaleDateString()}\n\n${name} ("we", "us", "our") operates ${site}. This policy explains what data we collect and how we use it.\n\n1. Information We Collect\nWe collect information you provide voluntarily and data collected automatically (IP address, browser type, cookies).\n\n2. How We Use Your Information\nWe use information to provide and improve our services, communicate with you, and analyze usage.\n\n3. Cookies\nWe use cookies to improve your experience. You can disable cookies in your browser settings.\n\n4. Third-Party Services\nWe may use third-party tools that collect data according to their own privacy policies.\n\n5. Your Rights\nYou may access, correct, or delete your personal data at any time. Contact us at ${email}.\n\n6. Security\nWe take reasonable measures to protect your data, though no system is 100% secure.\n\n7. Changes to This Policy\nWe may update this policy. Changes will be posted on this page.\n\nContact: ${email}`;
           setPolicyText(text);
         };
@@ -1079,8 +1079,8 @@ function ToolWorkspace({ tool, onBack }) {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <TxtInput label={t("App Name")} value={inputs.appName} onChange={set("appName")} placeholder="iyadel" />
-              <TxtInput label={t("Site URL")} value={inputs.siteUrl} onChange={set("siteUrl")} placeholder="https://testpriving.com" />
-              <TxtInput label={t("Contact Email")} value={inputs.email} onChange={set("email")} placeholder="support@testpriving.com" />
+              <TxtInput label={t("Site URL")} value={inputs.siteUrl} onChange={set("siteUrl")} placeholder="https://iyadel.com" />
+              <TxtInput label={t("Contact Email")} value={inputs.email} onChange={set("email")} placeholder="support@iyadel.com" />
             </div>
             <div className="flex justify-center mt-6"><CalcButton onClick={generate}>{t("Generate Policy")}</CalcButton></div>
             {policyText && (
