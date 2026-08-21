@@ -90,7 +90,10 @@ export class MainMenu extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
-    play.on('pointerdown', () => this.scene.start('Play'));
+    play.on('pointerdown', () => {
+      this.game.registry.set('level', 1);
+      this.scene.start('Play');
+    });
 
     this.add
       .text(width / 2, height - 40, 'TAP PLAY OR PRESS ENTER', {
@@ -99,7 +102,10 @@ export class MainMenu extends Phaser.Scene {
         color: '#6f6a8a',
       })
       .setOrigin(0.5);
-    this.input.keyboard.once('keydown-ENTER', () => this.scene.start('Play'));
+    this.input.keyboard.once('keydown-ENTER', () => {
+      this.game.registry.set('level', 1);
+      this.scene.start('Play');
+    });
 
     SaveManager.pullRemote().then((r) => {
       if (r != null) this.bestText.setText('BEST  ' + SaveManager.load().highScore);

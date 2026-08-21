@@ -31,7 +31,10 @@ export class PlayScene extends Phaser.Scene {
       normal: { dmg: 1, score: 1 },
       hard: { dmg: 1.5, score: 1.3 },
     };
-    this.diff = DIFF[this.game.registry.get('difficulty')] || DIFF.normal;
+    this.diff = { ...DIFF[this.game.registry.get('difficulty')] || DIFF.normal };
+    this.level = this.game.registry.get('level') || 1;
+    this.diff.dmg *= 1 + (this.level - 1) * 0.18;
+    this.diff.score *= 1 + (this.level - 1) * 0.12;
 
     // World bounds for the level.
     this.physics.world.setBounds(0, 0, LEVEL_WIDTH, 720);
@@ -109,6 +112,12 @@ export class PlayScene extends Phaser.Scene {
     this.enemyMgr.spawn('drone', 2000, 150);
     this.enemyMgr.spawn('turret', 1240, 330);
     this.enemyMgr.spawn('turret', 2720, 430);
+    // Extra enemies scale with level (Phase 14).
+    for (let i = 1; i < this.level; i++) {
+      this.enemyMgr.spawn('walker', 600 + i * 180, 400);
+      this.enemyMgr.spawn('drone', 900 + i * 220, 180);
+      if (i % 2 === 0) this.enemyMgr.spawn('turret', 1400 + i * 150, 330);
+    }
 
     // Pickups (Phase 6).
     this.pickups = new PickupManager(this);
@@ -182,6 +191,16 @@ export class PlayScene extends Phaser.Scene {
         fontFamily: 'Segoe UI, system-ui, sans-serif',
         fontSize: '14px',
         color: '#52d9a8',
+        backgroundColor: '#00000066',
+        padding: { x: 8, y: 4 },
+      })
+      .setScrollFactor(0)
+      .setDepth(40);
+    this.levelHud = this.add
+      .text(20, 130, 'LEVEL ' + this.level, {
+        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontSize: '14px',
+        color: '#a89ce0',
         backgroundColor: '#00000066',
         padding: { x: 8, y: 4 },
       })
@@ -336,16 +355,19 @@ export class PlayScene extends Phaser.Scene {
     this.scene.pause();
     const { width, height } = this.scale;
     this.add
-      .text(width / 2, height / 2, 'VICTORY!\nTAP TO RESTART', {
+      .text(width / 2, height / 2, 'LEVEL ' + this.level + ' COMPLETE\nTAP FOR NEXT', {
         fontFamily: 'Segoe UI, system-ui, sans-serif',
-        fontSize: '40px',
+        fontSize: '38px',
         color: '#52d9a8',
         align: 'center',
       })
       .setOrigin(0.5)
       .setScrollFactor(0)
       .setDepth(60);
-    this.input.once('pointerdown', () => this.scene.restart());
+    this.input.once('pointerdown', () => {
+      this.game.registry.set('level', this.level + 1);
+      this.scene.restart();
+    });
   }
 
   hitEnemy(bullet, enemy) {
@@ -433,7 +455,10 @@ export class PlayScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setScrollFactor(0)
       .setDepth(60);
-    this.input.once('pointerdown', () => this.scene.restart());
+    this.input.once('pointerdown', () => {
+      this.game.registry.set('level', 1);
+      this.scene.restart();
+    });
   }
 
   toggleMute() {
