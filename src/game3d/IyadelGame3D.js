@@ -87,7 +87,7 @@ export class IyadelGame3D {
     this._spawnLogic(dt);
 
     const ctx = {
-      enemies: enemies.enemies, boss: this.boss, player, level: this.level, vfx, audio,
+      enemies: enemies.enemies, boss: this.boss, player, projectiles, level: this.level, vfx, audio,
       onKill: (e) => this._onKill(e), onBossKill: () => this._onBossKill(),
       onPlayerHit: () => this._onPlayerHit(),
     };

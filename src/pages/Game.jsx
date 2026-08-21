@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { IyadelGame3D } from '@/game3d/IyadelGame3D';
 import { useSeo } from '@/lib/analytics';
 import { Link } from 'react-router-dom';
@@ -23,8 +24,10 @@ export default function Game() {
     };
   }, []);
 
-  return (
-    <div className="fixed inset-0 bg-black overflow-hidden" style={{ touchAction: 'none' }}>
+  // Portal to document.body so position:fixed resolves to the real viewport
+  // regardless of any transformed ancestor in the preview environment.
+  return createPortal(
+    <div className="fixed inset-0 bg-black overflow-hidden" style={{ touchAction: 'none', zIndex: 2147483000 }}>
       <div ref={containerRef} className="absolute inset-0" />
       <Link
         to="/"
@@ -33,6 +36,7 @@ export default function Game() {
         <ArrowLeft className="w-3.5 h-3.5" />
         Exit
       </Link>
-    </div>
+    </div>,
+    document.body
   );
 }
