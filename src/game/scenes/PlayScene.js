@@ -94,8 +94,8 @@ export class PlayScene extends Phaser.Scene {
 
     const { width } = this.scale;
     const wb = this.add
-      .rectangle(width - 50, 38, 72, 40, 0x6c4dff, 0.3)
-      .setStrokeStyle(2, 0x6c4dff, 0.7)
+      .rectangle(width - 50, 38, 76, 42, 0x6c4dff, 0.55)
+      .setStrokeStyle(3, 0xffffff, 0.95)
       .setDepth(40)
       .setScrollFactor(0)
       .setInteractive({ useHandCursor: true });
@@ -485,34 +485,34 @@ export class PlayScene extends Phaser.Scene {
 
   buildTouchControls() {
     const { width, height } = this.scale;
-    const pad = 28;
-    const size = 66;
+    const pad = 26;
+    const size = 84;
+    const gap = 16;
+    const y = height - pad - size / 2;
 
     // Left side: movement.
-    this.addCtrlButton(pad + size / 2, height - pad - size / 2, '◀', 'left', 0x6c4dff);
-    this.addCtrlButton(pad + size + 24 + size / 2, height - pad - size / 2, '▶', 'right', 0x6c4dff);
+    this.addCtrlButton(pad + size / 2, y, '◄', 'left', 0x6c4dff, size, true);
+    this.addCtrlButton(pad + size + gap + size / 2, y, '►', 'right', 0x6c4dff, size, true);
     // Right side: jump + fire.
-    this.addCtrlButton(width - pad - size / 2, height - pad - size / 2, '🔥', 'fire', 0xf5c451);
-    this.addCtrlButton(
-      width - pad - size - 24 - size / 2,
-      height - pad - size / 2,
-      '⤴',
-      'jump',
-      0x52d9a8
-    );
+    this.addCtrlButton(width - pad - size / 2, y, 'FIRE', 'fire', 0xf5a331, size, false);
+    this.addCtrlButton(width - pad - size - gap - size / 2, y, 'JUMP', 'jump', 0x3aa852, size, false);
   }
 
-  addCtrlButton(x, y, label, key, color) {
-    const size = 66;
+  addCtrlButton(x, y, label, key, color, size, isArrow) {
     const bg = this.add
-      .rectangle(x, y, size, size, color, 0.22)
-      .setStrokeStyle(2, color, 0.7)
-      .setDepth(30)
+      .rectangle(x, y, size, size, color, 0.55)
+      .setStrokeStyle(3, 0xffffff, 0.95)
+      .setDepth(35)
       .setScrollFactor(0);
     this.add
-      .text(x, y, label, { fontSize: '26px', color: '#ffffff' })
+      .text(x, y, label, {
+        fontFamily: 'Courier New, monospace',
+        fontStyle: 'bold',
+        fontSize: isArrow ? '34px' : '18px',
+        color: '#ffffff',
+      })
       .setOrigin(0.5)
-      .setDepth(31)
+      .setDepth(36)
       .setScrollFactor(0);
 
     bg.setInteractive({ useHandCursor: true });

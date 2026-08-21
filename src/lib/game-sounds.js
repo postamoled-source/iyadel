@@ -67,24 +67,24 @@ export const playGameOver = () => {
 };
 export const playStart = () => { tone(523, 0.08, "sine", 0.1); setTimeout(() => tone(784, 0.1, "sine", 0.1), 80); };
 
-// IYADEL (action platformer)
-export const playShoot = () => tone(660, 0.08, "square", 0.12, 1100);
-export const playJump = () => tone(320, 0.12, "sine", 0.12, 640);
-export const playEnemyHit = () => tone(540, 0.05, "square", 0.1);
-export const playEnemyDie = () => { tone(420, 0.08, "square", 0.12, 180); setTimeout(() => tone(220, 0.1, "sawtooth", 0.1, 90), 60); };
-export const playHurt = () => tone(200, 0.18, "sawtooth", 0.14, 90);
-export const playPickup = () => { tone(660, 0.06, "sine", 0.12); setTimeout(() => tone(990, 0.08, "sine", 0.12), 50); };
-export const playBossHit = () => tone(300, 0.06, "square", 0.12, 200);
+// IYADEL (action platformer) — softened/quieter to avoid harshness
+export const playShoot = () => tone(660, 0.07, "triangle", 0.05, 1100);
+export const playJump = () => tone(320, 0.1, "sine", 0.05, 640);
+export const playEnemyHit = () => tone(540, 0.04, "triangle", 0.04);
+export const playEnemyDie = () => { tone(420, 0.06, "triangle", 0.05, 180); setTimeout(() => tone(220, 0.08, "sine", 0.05, 90), 60); };
+export const playHurt = () => tone(200, 0.14, "sine", 0.06, 90);
+export const playPickup = () => { tone(660, 0.06, "sine", 0.06); setTimeout(() => tone(990, 0.08, "sine", 0.06), 50); };
+export const playBossHit = () => tone(300, 0.06, "triangle", 0.06, 200);
 export const playBossDie = () => {
-  tone(523, 0.1, "square", 0.12, 392);
-  setTimeout(() => tone(392, 0.12, "square", 0.12, 294), 110);
-  setTimeout(() => tone(294, 0.2, "sawtooth", 0.12, 130), 240);
+  tone(523, 0.1, "triangle", 0.06, 392);
+  setTimeout(() => tone(392, 0.12, "triangle", 0.06, 294), 110);
+  setTimeout(() => tone(294, 0.2, "sine", 0.06, 130), 240);
 };
 export const playVictory = () => {
-  tone(523, 0.12, "sine", 0.13);
-  setTimeout(() => tone(659, 0.12, "sine", 0.13), 120);
-  setTimeout(() => tone(784, 0.12, "sine", 0.13), 240);
-  setTimeout(() => tone(1047, 0.2, "sine", 0.13), 360);
+  tone(523, 0.12, "sine", 0.07);
+  setTimeout(() => tone(659, 0.12, "sine", 0.07), 120);
+  setTimeout(() => tone(784, 0.12, "sine", 0.07), 240);
+  setTimeout(() => tone(1047, 0.2, "sine", 0.07), 360);
 };
 
 export const resumeAudio = () => getCtx();
