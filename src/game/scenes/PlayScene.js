@@ -5,6 +5,7 @@ import { Player } from '../entities/Player';
 import { WeaponManager, WEAPONS } from '../weapons/Weapons';
 import { EnemyManager } from '../entities/Enemy';
 import { PickupManager } from '../entities/Pickup';
+import { Boss } from '../entities/Boss';
 
 const LEVEL_WIDTH = 3200;
 
@@ -110,6 +111,13 @@ export class PlayScene extends Phaser.Scene {
       this.collectPickup(p, pk)
     );
 
+    // Boss (Phase 7) — spawns when the player reaches the end of the level.
+    this.boss = null;
+    this.bossSpawned = false;
+    this.bossBar = null;
+    this.bossBarBg = null;
+    this.victoryShown = false;
+
     // HUD: score + health bar.
     this.score = 0;
     this.scoreHud = this.add
@@ -186,9 +194,87 @@ export class PlayScene extends Phaser.Scene {
     if (this.controls.fire) this.weapons.fire(this.player, this.bullets, this.time.now);
 
     this.enemyMgr.update(this.player, this.time.now);
+    if (!this.bossSpawned && this.player.x > 2800) this.spawnBoss();
+    if (this.boss && this.boss.alive) this.boss.update(this.player, this.time.now);
+    else if (this.boss && !this.boss.alive && !this.victoryShown) this.victory();
+    this.bossBarRefresh();
     this.shieldRing.setVisible(this.time.now < this.player.shieldUntil);
     this.shieldRing.setPosition(this.player.x, this.player.y);
     this.refreshHud();
+  }
+
+  spawnBoss() {
+    this.bossSpawned = true;
+    this.boss = new Boss(this, 3100, 220, this.enemyMgr.enemyBullets);
+    this.physics.add.collider(this.bullets, this.boss, (b, boss) => this.hitBoss(b, boss));
+    this.physics.add.overlap(this.player, this.boss, (p, boss) => this.touchEnemy(p, boss));
+    const { width } = this.scale;
+    this.bossBarBg = this.add
+      .rectangle(width / 2, 30, 528, 18, 0x000000, 0.5)
+      .setOrigin(0.5, 0.5)
+      .setScrollFactor(0)
+      .setDepth(42);
+    this.bossBar = this.add
+      .rectangle(width / 2 - 260, 30, 520, 12, 0xff5c6c)
+      .setOrigin(0, 0.5)
+      .setScrollFactor(0)
+      .setDepth(43);
+    const warn = this.add
+      .text(width / 2, 80, '⚠ WARNING ⚠', {
+        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontSize: '26px',
+        color: '#ff5c6c',
+      })
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(44)
+      .setAlpha(0);
+    this.tweens.add({
+      targets: warn,
+      alpha: 1,
+      duration: 300,
+      yoyo: true,
+      hold: 500,
+      onComplete: () => warn.destroy(),
+    });
+  }
+
+  hitBoss(bullet, boss) {
+    bullet.destroy();
+    if (boss.hit(2)) {
+      boss.kill();
+      this.score += 5000;
+    }
+    this.refreshHud();
+  }
+
+  bossBarRefresh() {
+    if (this.boss && this.boss.alive) {
+      const r = Math.max(0, this.boss.hp) / this.boss.maxHp;
+      this.bossBar.width = 520 * r;
+      this.bossBar.visible = true;
+      this.bossBarBg.visible = true;
+    } else if (this.bossBar) {
+      this.bossBar.visible = false;
+      this.bossBarBg.visible = false;
+    }
+  }
+
+  victory() {
+    this.victoryShown = true;
+    this.scene.pause();
+    const { width, height } = this.scale;
+    this.add
+      .text(width / 2, height / 2, 'VICTORY!\nTAP TO RESTART', {
+        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontSize: '40px',
+        color: '#52d9a8',
+        align: 'center',
+      })
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(60);
+    this.input.once('pointerdown', () => this.scene.restart());
   }
 
   hitEnemy(bullet, enemy) {
@@ -403,6 +489,21 @@ export class PlayScene extends Phaser.Scene {
       g.fillStyle(0xfff3c4, 1);
       g.fillTriangle(14, 5, 20, 13, 14, 13);
       g.generateTexture('gem', 28, 28);
+      g.destroy();
+    }
+    if (!this.textures.exists('boss')) {
+      const g = this.make.graphics({ add: false });
+      g.fillStyle(0x8a2be2, 1);
+      g.fillCircle(48, 48, 46);
+      g.fillStyle(0xff5c6c, 1);
+      g.fillCircle(34, 38, 9);
+      g.fillCircle(62, 38, 9);
+      g.fillStyle(0xffffff, 1);
+      g.fillCircle(34, 38, 4);
+      g.fillCircle(62, 38, 4);
+      g.fillStyle(0x4a1a7a, 1);
+      g.fillTriangle(48, 48, 30, 64, 66, 64);
+      g.generateTexture('boss', 96, 96);
       g.destroy();
     }
   }
