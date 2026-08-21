@@ -243,16 +243,23 @@ export class IyadelGame3D {
     root.appendChild(mute);
     this.muteEl = mute;
 
-    // Joystick (bottom-left).
-    const joy = document.createElement('div');
-    joy.style.cssText =
-      'position:absolute;left:18px;bottom:18px;width:128px;height:128px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.55);pointer-events:auto;touch-action:none;';
-    const knob = document.createElement('div');
-    knob.style.cssText =
-      'position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(108,77,255,.75);border:2px solid #fff;';
-    joy.appendChild(knob);
-    root.appendChild(joy);
-    this._joystick(joy, knob);
+    // D-Pad (bottom-left): directional movement buttons.
+    this.dir = { up: false, down: false, left: false, right: false };
+    const ds = 56, g = 4, ox = 14, oy = 14;
+    const dirBtn = (label, cx, cy, key) => {
+      const b = document.createElement('div');
+      b.style.cssText = `position:absolute;left:${cx}px;bottom:${cy}px;width:${ds}px;height:${ds}px;border-radius:14px;background:rgba(108,77,255,.55);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold;color:#fff;pointer-events:auto;touch-action:none;cursor:pointer;`;
+      b.textContent = label;
+      b.addEventListener('pointerdown', (e) => { e.preventDefault(); this.dir[key] = true; });
+      b.addEventListener('pointerup', () => (this.dir[key] = false));
+      b.addEventListener('pointercancel', () => (this.dir[key] = false));
+      b.addEventListener('pointerleave', () => (this.dir[key] = false));
+      root.appendChild(b);
+    };
+    dirBtn('▲', ox + ds + g, oy + 2 * (ds + g), 'up');
+    dirBtn('◄', ox, oy + ds + g, 'left');
+    dirBtn('►', ox + 2 * (ds + g), oy + ds + g, 'right');
+    dirBtn('▼', ox + ds + g, oy, 'down');
 
     // Action cluster (bottom-right): FIRE, JUMP, GRENADE, MISSILE.
     const fire = this._ctrlButton('FIRE', 84, 16, 16, '#f5a331', 16);
@@ -274,9 +281,9 @@ export class IyadelGame3D {
     missile.addEventListener('pointerdown', () => this._fireMissile());
     root.appendChild(missile);
 
-    // RUN toggle (left, above joystick).
+    // RUN toggle (left, above D-pad).
     const run = document.createElement('div');
-    run.style.cssText = 'position:absolute;left:30px;bottom:158px;width:62px;height:62px;border-radius:50%;background:rgba(245,195,81,.3);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;color:#fff;pointer-events:auto;touch-action:none;cursor:pointer;';
+    run.style.cssText = 'position:absolute;left:72px;bottom:202px;width:54px;height:54px;border-radius:50%;background:rgba(245,195,81,.3);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;color:#fff;pointer-events:auto;touch-action:none;cursor:pointer;';
     run.textContent = 'RUN';
     run.addEventListener('pointerdown', () => {
       this.sprint = !this.sprint;
@@ -512,9 +519,12 @@ export class IyadelGame3D {
   }
 
   update(dt) {
-    // Movement input (keyboard + joystick).
-    let ix = this.move.x;
-    let iz = this.move.y;
+    // Movement input (D-pad + keyboard).
+    let ix = 0, iz = 0;
+    if (this.dir.left) ix -= 1;
+    if (this.dir.right) ix += 1;
+    if (this.dir.up) iz += 1;
+    if (this.dir.down) iz -= 1;
     if (this.keys['KeyW'] || this.keys['ArrowUp']) iz += 1;
     if (this.keys['KeyS'] || this.keys['ArrowDown']) iz -= 1;
     if (this.keys['KeyA'] || this.keys['ArrowLeft']) ix -= 1;
