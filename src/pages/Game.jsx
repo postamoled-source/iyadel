@@ -24,7 +24,7 @@ export default function Game() {
   }, []);
 
   return (
-    <div className="min-h-[100dvh] bg-background flex flex-col">
+    <div className="h-[100dvh] bg-background flex flex-col overflow-hidden">
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
         <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="w-4 h-4" />
