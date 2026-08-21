@@ -36,6 +36,7 @@ export class Engine {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
   }
+  resize() { this._resize(); }
   _loop() {
     if (!this.running) return;
     requestAnimationFrame(this._loop);

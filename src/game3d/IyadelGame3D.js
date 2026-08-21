@@ -44,6 +44,7 @@ export class IyadelGame3D {
   }
 
   start() {
+    this._enterImmersive();
     this.player.reset();
     this.enemies.clear();
     this.projectiles.clear();
@@ -216,7 +217,26 @@ export class IyadelGame3D {
     const best = SaveManager.saveRun(Math.round(this.score), true);
     this.hud.showVictory(Math.round(this.score), best);
   }
+  resize() { this.engine.resize(); }
+  _enterImmersive() {
+    try {
+      const el = this.container.parentElement || this.container;
+      const fs = el.requestFullscreen || el.webkitRequestFullscreen;
+      if (fs) { const p = fs.call(el); if (p && p.catch) p.catch(() => {}); }
+      if (screen.orientation && screen.orientation.lock) {
+        const p = screen.orientation.lock('landscape');
+        if (p && p.catch) p.catch(() => {});
+      }
+    } catch (e) { /* fullscreen/orientation not available — CSS fallback handles landscape */ }
+  }
+  _exitImmersive() {
+    try {
+      if (document.fullscreenElement) { const p = document.exitFullscreen(); if (p && p.catch) p.catch(() => {}); }
+      if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+    } catch (e) {}
+  }
   destroy() {
+    this._exitImmersive();
     this.engine.dispose();
     this.input.dispose();
     this.hud.dispose();

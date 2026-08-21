@@ -75,12 +75,12 @@ export class HUD {
     return b;
   }
   _buildControls() {
-    this.ctrl = this._mk('', 'position:absolute;inset:0;', '');
+    this.ctrl = this._mk('', 'position:absolute;inset:0;');
     this.root.appendChild(this.ctrl);
 
     // D-Pad (bottom-left)
-    const ds = 56, g = 4, ox = 14, oy = 14;
-    const dpadStyle = `position:absolute;width:${ds}px;height:${ds}px;border-radius:14px;background:rgba(108,77,255,.55);font-size:22px;`;
+    const ds = 46, g = 4, ox = 14, oy = 16;
+    const dpadStyle = `position:absolute;width:${ds}px;height:${ds}px;border-radius:12px;background:rgba(108,77,255,.55);font-size:18px;`;
     const mk = (label, x, y, key) => {
       const b = this._btn(label, `left:${x}px;bottom:${y}px;${dpadStyle}`,
         () => this.input.setHeld(key, true),
@@ -93,23 +93,23 @@ export class HUD {
     mk('▼', ox + ds + g, oy, 'down');
 
     // RUN toggle above D-pad
-    this.runBtn = this._btn('RUN', `left:${ox + ds / 2}px;bottom:${oy + 3 * (ds + g)}px;width:54px;height:54px;border-radius:50%;background:rgba(245,195,81,.35);font-size:13px;`,
+    this.runBtn = this._btn('RUN', `left:${ox + ds / 2 - 2}px;bottom:${oy + 3 * (ds + g)}px;width:44px;height:44px;border-radius:50%;background:rgba(245,195,81,.35);font-size:12px;`,
       () => { this.input.setHeld('sprint', !this.input.held.sprint); this.runBtn.style.background = this.input.held.sprint ? 'rgba(245,195,81,.85)' : 'rgba(245,195,81,.35)'; });
     this.ctrl.appendChild(this.runBtn);
 
-    // Right cluster: FIRE, JUMP, GREN, MISS, DODGE, ABIL
+    // Right cluster: FIRE, JUMP, GREN, MISS, DODGE, ABILITY
     const r = (label, x, y, size, color, action, hold) => {
-      const b = this._btn(label, `right:${x}px;bottom:${y}px;width:${size}px;height:${size}px;border-radius:${size / 2}px;background:${color};font-size:${size < 60 ? 11 : 13}px;`,
+      const b = this._btn(label, `right:${x}px;bottom:${y}px;width:${size}px;height:${size}px;border-radius:${size / 2}px;background:${color};font-size:${size < 56 ? 10 : 12}px;`,
         () => { if (hold) this.input.setHeld(action, true); else this.input.press(action); },
         () => { if (hold) this.input.setHeld(action, false); });
       this.ctrl.appendChild(b);
     };
-    r('FIRE', 14, 14, 82, 'rgba(245,120,60,.7)', 'fire', true);
-    r('JUMP', 108, 16, 66, 'rgba(58,168,82,.65)', 'jump', true);
-    r('GREN', 14, 110, 58, 'rgba(108,77,255,.65)', 'grenade', false);
-    r('MISS', 92, 108, 58, 'rgba(200,70,90,.65)', 'missile', false);
-    r('DODGE', 14, 180, 50, 'rgba(90,168,255,.6)', 'dodge', false);
-    r('ABILITY', 74, 176, 50, 'rgba(245,195,81,.6)', 'ability', false);
+    r('FIRE', 14, 14, 64, 'rgba(245,120,60,.7)', 'fire', true);
+    r('JUMP', 86, 18, 52, 'rgba(58,168,82,.65)', 'jump', true);
+    r('GREN', 16, 88, 46, 'rgba(108,77,255,.65)', 'grenade', false);
+    r('MISS', 70, 84, 46, 'rgba(200,70,90,.65)', 'missile', false);
+    r('DODGE', 18, 142, 40, 'rgba(90,168,255,.6)', 'dodge', false);
+    r('ABILITY', 66, 140, 40, 'rgba(245,195,81,.6)', 'ability', false);
   }
   _buildScreens() {
     this.startScreen = this._mk('', 'position:absolute;inset:0;pointer-events:auto;background:linear-gradient(160deg,rgba(10,12,24,.92),rgba(30,16,48,.92));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:24px;');
