@@ -28,24 +28,29 @@ export class BootScene extends Phaser.Scene {
   create() {
     const { width, height } = this.scale;
 
+    const bg = this.add.graphics();
+    bg.fillGradientStyle(0xf2b97a, 0xf2b97a, 0xb5683c, 0x6a3a1a, 1);
+    bg.fillRect(0, 0, width, height);
+    this.add.circle(width - 120, 110, 90, 0xfff3c4, 0.9).setDepth(0);
+
     // Title — iyadel brand colors.
     const title = this.add.text(width / 2, height / 2 - 30, 'IYADEL', {
       fontFamily: 'Segoe UI, system-ui, sans-serif',
       fontSize: '64px',
       fontStyle: 'bold',
-      color: '#f5c451',
+      color: '#3a2a12',
     }).setOrigin(0.5);
 
     this.add.text(width / 2, height / 2 + 12, 'Action Run-and-Gun', {
       fontFamily: 'Segoe UI, system-ui, sans-serif',
       fontSize: '20px',
-      color: '#a89ce0',
+      color: '#6a4a2a',
     }).setOrigin(0.5);
 
     const status = this.add.text(width / 2, height / 2 + 90, 'PHASE 2 — ENGINE READY', {
       fontFamily: 'Segoe UI, system-ui, sans-serif',
       fontSize: '16px',
-      color: '#6f6a8a',
+      color: '#5a3a1a',
     }).setOrigin(0.5);
 
     // Subtle pulse on the title for "game feel" feedback.
@@ -71,7 +76,7 @@ export class BootScene extends Phaser.Scene {
       .text(width / 2, height - 80, 'TAP / PRESS ENTER TO START', {
         fontFamily: 'Segoe UI, system-ui, sans-serif',
         fontSize: '18px',
-        color: '#e6e1ff',
+        color: '#3a2a12',
       })
       .setOrigin(0.5);
     this.tweens.add({
@@ -88,7 +93,7 @@ export class BootScene extends Phaser.Scene {
       .text(width / 2, height / 2 + 120, 'BEST  ' + best, {
         fontFamily: 'Segoe UI, system-ui, sans-serif',
         fontSize: '16px',
-        color: '#52d9a8',
+        color: '#2a7a4a',
       })
       .setOrigin(0.5);
 

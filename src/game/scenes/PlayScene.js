@@ -40,11 +40,16 @@ export class PlayScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, LEVEL_WIDTH, 720);
     this.cameras.main.setBounds(0, 0, LEVEL_WIDTH, 720);
 
-    // Sky gradient background.
+    // Sunset sky gradient (warm Metal Soldier palette).
     const bg = this.add.graphics();
-    bg.fillGradientStyle(0x1a1430, 0x1a1430, 0x3a2a6a, 0x0b0a14, 1);
+    bg.fillGradientStyle(0xf2b97a, 0xf2b97a, 0xe6a868, 0xb5683c, 1);
     bg.fillRect(0, 0, LEVEL_WIDTH, 720);
     bg.setScrollFactor(0.2);
+    // Big low sun, fixed on screen with a soft glow.
+    const sunX = this.scale.width - 120;
+    const sunY = 130;
+    this.add.circle(sunX, sunY, 110, 0xfff3c4, 0.18).setScrollFactor(0).setDepth(1);
+    this.add.circle(sunX, sunY, 78, 0xfff3c4, 0.95).setScrollFactor(0).setDepth(1);
     buildParallax(this, LEVEL_WIDTH, 720);
 
     // Ground + platforms (static group).
@@ -76,10 +81,11 @@ export class PlayScene extends Phaser.Scene {
 
     this.weaponHud = this.add
       .text(20, 18, '', {
-        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontFamily: 'Courier New, monospace',
+        fontStyle: 'bold',
         fontSize: '18px',
         color: '#ffffff',
-        backgroundColor: '#00000066',
+        backgroundColor: '#00000099',
         padding: { x: 8, y: 4 },
       })
       .setScrollFactor(0)
@@ -177,10 +183,11 @@ export class PlayScene extends Phaser.Scene {
     this.score = 0;
     this.scoreHud = this.add
       .text(20, 70, 'SCORE 0', {
-        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontFamily: 'Courier New, monospace',
+        fontStyle: 'bold',
         fontSize: '16px',
         color: '#ffffff',
-        backgroundColor: '#00000066',
+        backgroundColor: '#00000099',
         padding: { x: 8, y: 4 },
       })
       .setScrollFactor(0)
@@ -188,20 +195,22 @@ export class PlayScene extends Phaser.Scene {
     this.bestScore = SaveManager.load().highScore;
     this.bestHud = this.add
       .text(20, 100, 'BEST ' + this.bestScore, {
-        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontFamily: 'Courier New, monospace',
+        fontStyle: 'bold',
         fontSize: '14px',
         color: '#52d9a8',
-        backgroundColor: '#00000066',
+        backgroundColor: '#00000099',
         padding: { x: 8, y: 4 },
       })
       .setScrollFactor(0)
       .setDepth(40);
     this.levelHud = this.add
       .text(20, 130, 'LEVEL ' + this.level, {
-        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontFamily: 'Courier New, monospace',
+        fontStyle: 'bold',
         fontSize: '14px',
         color: '#a89ce0',
-        backgroundColor: '#00000066',
+        backgroundColor: '#00000099',
         padding: { x: 8, y: 4 },
       })
       .setScrollFactor(0)
@@ -514,82 +523,191 @@ export class PlayScene extends Phaser.Scene {
   }
 
   generateTextures() {
+    const OUT = 0x2a1a12;
+
+    // --- Player: female soldier, green bandana, green outfit, thick outline.
     if (!this.textures.exists('player')) {
-      const g = this.make.graphics({ x: 0, y: 0, add: false });
-      g.fillStyle(0x7c4dff);
-      g.fillRect(2, 14, 32, 42); // body
-      g.fillStyle(0xf5c451);
-      g.fillRect(8, 0, 20, 18); // head
-      g.fillStyle(0xffffff);
-      g.fillRect(14, 5, 4, 4); // eye
-      g.generateTexture('player', 36, 56);
+      const g = this.make.graphics({ add: false });
+      g.fillStyle(0x5a3a22, 1); // boots
+      g.fillRoundedRect(10, 54, 11, 10, 2);
+      g.fillRoundedRect(27, 54, 11, 10, 2);
+      g.fillStyle(0x7a6a3a, 1); // legs (khaki)
+      g.fillRect(11, 38, 10, 18);
+      g.fillRect(27, 38, 10, 18);
+      g.fillStyle(0x4a8a3a, 1); // torso (green outfit)
+      g.fillRoundedRect(12, 22, 24, 20, 4);
+      g.fillStyle(0x3a2a1a, 1); // belt
+      g.fillRect(12, 38, 24, 4);
+      g.fillStyle(0x4a8a3a, 1); // arms
+      g.fillRect(4, 26, 8, 14);
+      g.fillRect(36, 23, 10, 13);
+      g.fillStyle(0xe8b890, 1); // hands
+      g.fillCircle(38, 36, 4);
+      g.fillCircle(8, 40, 4);
+      g.fillStyle(0xe8b890, 1); // head
+      g.fillRoundedRect(16, 6, 16, 18, 4);
+      g.fillStyle(0x1a1410, 1); // hair + pigtails
+      g.fillRect(15, 4, 18, 6);
+      g.fillRect(12, 8, 4, 14);
+      g.fillRect(34, 8, 4, 14);
+      g.fillStyle(0x3aa852, 1); // bandana
+      g.fillRect(15, 9, 18, 5);
+      g.fillRect(36, 10, 5, 3);
+      g.fillStyle(0x2a1a12, 1); // eye
+      g.fillRect(25, 16, 3, 3);
+      g.lineStyle(2, OUT, 1); // outlines
+      g.strokeRoundedRect(12, 22, 24, 20, 4);
+      g.strokeRoundedRect(16, 6, 16, 18, 4);
+      g.strokeRect(11, 38, 10, 18);
+      g.strokeRect(27, 38, 10, 18);
+      g.strokeRect(4, 26, 8, 14);
+      g.strokeRect(36, 23, 10, 13);
+      g.generateTexture('player', 48, 64);
       g.destroy();
     }
+
+    // --- Bullet: golden glowing capsule.
     if (!this.textures.exists('bullet')) {
       const g = this.make.graphics({ add: false });
-      g.fillStyle(0xf5c451, 1);
-      g.fillRoundedRect(0, 0, 14, 6, 3);
-      g.generateTexture('bullet', 14, 6);
+      g.fillStyle(0xf5a331, 1);
+      g.fillRoundedRect(0, 1, 16, 6, 3);
+      g.fillStyle(0xfff3c4, 1);
+      g.fillRoundedRect(4, 2, 10, 4, 2);
+      g.generateTexture('bullet', 16, 8);
       g.destroy();
     }
+
+    // --- Ground: sandy rubble with a wooden plank top.
     if (!this.textures.exists('ground')) {
       const g = this.make.graphics({ add: false });
-      g.fillStyle(0x2a2540, 1);
-      g.fillRect(0, 0, 64, 60);
-      g.fillStyle(0x6c4dff, 1);
-      g.fillRect(0, 0, 64, 6);
+      g.fillStyle(0x8c8578, 1);
+      g.fillRect(0, 10, 64, 50);
+      g.fillStyle(0xa69d91, 1);
+      for (let i = 0; i < 10; i++) g.fillRect(Phaser.Math.Between(2, 58), Phaser.Math.Between(14, 56), 6, 4);
+      g.fillStyle(0x6b4a2a, 1); // wooden plank cap
+      g.fillRect(0, 0, 64, 10);
+      g.fillStyle(0x8a5a32, 1);
+      g.fillRect(0, 0, 64, 3);
+      g.lineStyle(2, OUT, 1);
+      g.lineBetween(0, 10, 64, 10);
       g.generateTexture('ground', 64, 60);
       g.destroy();
     }
+
+    // --- Platform: wooden planks with bolts.
     if (!this.textures.exists('platform')) {
       const g = this.make.graphics({ add: false });
-      g.fillStyle(0x3a2a6a, 1);
-      g.fillRoundedRect(0, 0, 160, 20, 6);
-      g.fillStyle(0x8a6cff, 1);
-      g.fillRoundedRect(0, 0, 160, 6, 3);
+      g.fillStyle(0x8a5a32, 1);
+      g.fillRoundedRect(0, 0, 160, 20, 4);
+      g.fillStyle(0x6b4a2a, 1);
+      g.fillRect(0, 14, 160, 6);
+      g.fillStyle(0xa8784a, 0.8);
+      g.fillRect(0, 0, 160, 3);
+      g.lineStyle(1, 0x4a2a12, 0.6);
+      g.lineBetween(40, 2, 40, 18);
+      g.lineBetween(80, 2, 80, 18);
+      g.lineBetween(120, 2, 120, 18);
+      g.fillStyle(0x3a2a1a, 1);
+      g.fillCircle(10, 10, 2);
+      g.fillCircle(150, 10, 2);
       g.generateTexture('platform', 160, 20);
       g.destroy();
     }
+
+    // --- Drone: military recon drone with red lens + rotors.
     if (!this.textures.exists('drone')) {
       const g = this.make.graphics({ add: false });
+      g.fillStyle(0x222226, 0.6);
+      g.fillRect(0, 5, 32, 3);
+      g.fillRect(0, 25, 32, 3);
+      g.fillStyle(0x3a3a44, 1);
+      g.fillRoundedRect(6, 10, 20, 13, 3);
       g.fillStyle(0xff5c6c, 1);
-      g.fillCircle(14, 14, 14);
+      g.fillCircle(16, 17, 4);
       g.fillStyle(0xffffff, 1);
-      g.fillRect(8, 8, 4, 4);
-      g.generateTexture('drone', 28, 28);
+      g.fillCircle(15, 16, 1.5);
+      g.lineStyle(2, 0x1a1a22, 1);
+      g.strokeRoundedRect(6, 10, 20, 13, 3);
+      g.generateTexture('drone', 32, 32);
       g.destroy();
     }
+
+    // --- Walker: tan soldier with helmet.
     if (!this.textures.exists('walker')) {
       const g = this.make.graphics({ add: false });
-      g.fillStyle(0xff8a3c, 1);
-      g.fillRect(2, 6, 28, 26);
-      g.fillStyle(0xffc36b, 1);
-      g.fillRect(6, 0, 20, 10);
-      g.generateTexture('walker', 32, 32);
+      g.fillStyle(0x4a3a28, 1); // boots
+      g.fillRoundedRect(8, 41, 8, 7, 2);
+      g.fillRoundedRect(20, 41, 8, 7, 2);
+      g.fillStyle(0x8a7a4a, 1); // legs
+      g.fillRect(8, 28, 8, 15);
+      g.fillRect(20, 28, 8, 15);
+      g.fillStyle(0xa89070, 1); // vest
+      g.fillRoundedRect(7, 16, 22, 16, 3);
+      g.fillStyle(0x3a2a1a, 1); // belt
+      g.fillRect(7, 30, 22, 3);
+      g.fillStyle(0xa89070, 1); // arms
+      g.fillRect(2, 18, 6, 12);
+      g.fillRect(28, 18, 7, 10);
+      g.fillStyle(0xe8b890, 1); // hands
+      g.fillCircle(31, 28, 3);
+      g.fillCircle(5, 30, 3);
+      g.fillStyle(0xe8b890, 1); // head
+      g.fillRoundedRect(11, 4, 14, 14, 3);
+      g.fillStyle(0xa89070, 1); // helmet
+      g.fillRoundedRect(9, 0, 18, 9, 3);
+      g.fillRect(9, 6, 18, 3);
+      g.fillStyle(0x2a1a12, 1); // eye
+      g.fillRect(17, 11, 3, 3);
+      g.lineStyle(2, OUT, 1);
+      g.strokeRoundedRect(7, 16, 22, 16, 3);
+      g.strokeRoundedRect(11, 4, 14, 14, 3);
+      g.strokeRect(8, 28, 8, 15);
+      g.strokeRect(20, 28, 8, 15);
+      g.strokeRect(2, 18, 6, 12);
+      g.strokeRect(28, 18, 7, 10);
+      g.generateTexture('walker', 36, 48);
       g.destroy();
     }
+
+    // --- Turret: sandbag nest + mounted gun.
     if (!this.textures.exists('turret')) {
       const g = this.make.graphics({ add: false });
-      g.fillStyle(0x9a6cff, 1);
-      g.fillRoundedRect(2, 8, 28, 22, 4);
-      g.fillStyle(0x6c4dff, 1);
-      g.fillRect(12, 0, 8, 12);
-      g.generateTexture('turret', 32, 30);
+      g.fillStyle(0xb59a6a, 1);
+      g.fillRoundedRect(2, 20, 36, 14, 4);
+      g.fillCircle(10, 25, 6);
+      g.fillCircle(20, 23, 6);
+      g.fillCircle(30, 25, 6);
+      g.fillStyle(0x333333, 1);
+      g.fillRect(14, 17, 12, 7);
+      g.fillStyle(0x444444, 1);
+      g.fillRect(17, 2, 6, 18);
+      g.fillStyle(0x555555, 1);
+      g.fillRect(17, 2, 3, 18);
+      g.lineStyle(2, OUT, 1);
+      g.strokeRoundedRect(2, 20, 36, 14, 4);
+      g.strokeRect(17, 2, 6, 18);
+      g.generateTexture('turret', 40, 36);
       g.destroy();
     }
+
+    // --- Health: medkit (white cross on red).
     if (!this.textures.exists('health')) {
       const g = this.make.graphics({ add: false });
-      g.fillStyle(0x2bd47a, 1);
-      g.fillCircle(14, 14, 13);
+      g.fillStyle(0xe84a4a, 1);
+      g.fillRoundedRect(2, 2, 24, 24, 4);
       g.fillStyle(0xffffff, 1);
-      g.fillRect(11, 5, 6, 18);
-      g.fillRect(5, 11, 18, 6);
+      g.fillRect(11, 6, 6, 16);
+      g.fillRect(6, 11, 16, 6);
+      g.lineStyle(2, OUT, 1);
+      g.strokeRoundedRect(2, 2, 24, 24, 4);
       g.generateTexture('health', 28, 28);
       g.destroy();
     }
+
+    // --- Shield: blue emblem.
     if (!this.textures.exists('shield')) {
       const g = this.make.graphics({ add: false });
-      g.fillStyle(0x52d9ff, 1);
+      g.fillStyle(0x52a8ff, 1);
       g.beginPath();
       g.moveTo(14, 2);
       g.lineTo(25, 8);
@@ -599,9 +717,15 @@ export class PlayScene extends Phaser.Scene {
       g.lineTo(3, 8);
       g.closePath();
       g.fillPath();
+      g.fillStyle(0xbfe6ff, 1);
+      g.fillRect(11, 9, 6, 10);
+      g.lineStyle(2, OUT, 1);
+      g.strokePath();
       g.generateTexture('shield', 28, 28);
       g.destroy();
     }
+
+    // --- Gem: golden crystal.
     if (!this.textures.exists('gem')) {
       const g = this.make.graphics({ add: false });
       g.fillStyle(0xf5c451, 1);
@@ -614,22 +738,36 @@ export class PlayScene extends Phaser.Scene {
       g.fillPath();
       g.fillStyle(0xfff3c4, 1);
       g.fillTriangle(14, 5, 20, 13, 14, 13);
+      g.lineStyle(2, OUT, 1);
+      g.strokePath();
       g.generateTexture('gem', 28, 28);
       g.destroy();
     }
+
+    // --- Boss: armored war machine (hull + turret + barrel + red core).
     if (!this.textures.exists('boss')) {
       const g = this.make.graphics({ add: false });
-      g.fillStyle(0x8a2be2, 1);
-      g.fillCircle(48, 48, 46);
-      g.fillStyle(0xff5c6c, 1);
-      g.fillCircle(34, 38, 9);
-      g.fillCircle(62, 38, 9);
+      g.fillStyle(0x2a2a2a, 1); // tracks
+      g.fillRoundedRect(6, 74, 108, 22, 6);
+      g.fillStyle(0x444444, 1); // wheels
+      for (let i = 0; i < 6; i++) g.fillCircle(16 + i * 18, 85, 7);
+      g.fillStyle(0x5a4a3a, 1); // hull
+      g.fillRoundedRect(8, 40, 104, 44, 6);
+      g.fillStyle(0x6a5a4a, 1); // turret
+      g.fillRoundedRect(34, 14, 52, 32, 5);
+      g.fillStyle(0x333333, 1); // barrel
+      g.fillRect(78, 26, 44, 9);
+      g.fillStyle(0x555555, 1);
+      g.fillRect(78, 26, 4, 9);
+      g.fillStyle(0xff5c6c, 1); // red core / weak point
+      g.fillCircle(60, 30, 7);
       g.fillStyle(0xffffff, 1);
-      g.fillCircle(34, 38, 4);
-      g.fillCircle(62, 38, 4);
-      g.fillStyle(0x4a1a7a, 1);
-      g.fillTriangle(48, 48, 30, 64, 66, 64);
-      g.generateTexture('boss', 96, 96);
+      g.fillCircle(58, 28, 2);
+      g.lineStyle(3, 0x1a1410, 1);
+      g.strokeRoundedRect(8, 40, 104, 44, 6);
+      g.strokeRoundedRect(34, 14, 52, 32, 5);
+      g.strokeRect(78, 26, 44, 9);
+      g.generateTexture('boss', 120, 100);
       g.destroy();
     }
   }

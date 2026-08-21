@@ -12,22 +12,23 @@ export class MainMenu extends Phaser.Scene {
     const { width, height } = this.scale;
 
     const bg = this.add.graphics();
-    bg.fillGradientStyle(0x1a1430, 0x1a1430, 0x3a2a6a, 0x0b0a14, 1);
+    bg.fillGradientStyle(0xf2b97a, 0xf2b97a, 0xb5683c, 0x6a3a1a, 1);
     bg.fillRect(0, 0, width, height);
+    this.add.circle(width - 130, 120, 96, 0xfff3c4, 0.9).setDepth(0);
 
     this.add
       .text(width / 2, height * 0.2, 'IYADEL', {
         fontFamily: 'Segoe UI, system-ui, sans-serif',
         fontSize: '72px',
         fontStyle: 'bold',
-        color: '#f5c451',
+        color: '#3a2a12',
       })
       .setOrigin(0.5);
     this.add
       .text(width / 2, height * 0.2 + 60, 'Neo-Pulse', {
         fontFamily: 'Segoe UI, system-ui, sans-serif',
         fontSize: '22px',
-        color: '#a89ce0',
+        color: '#6a4a2a',
       })
       .setOrigin(0.5);
     this.bestText = this.add
@@ -42,7 +43,7 @@ export class MainMenu extends Phaser.Scene {
       .text(width / 2, height * 0.2 + 140, 'ACHIEVEMENTS  ' + unlocked.length + '/' + DEFS.length, {
         fontFamily: 'Segoe UI, system-ui, sans-serif',
         fontSize: '14px',
-        color: '#a89ce0',
+        color: '#6a4a2a',
       })
       .setOrigin(0.5);
 
@@ -51,7 +52,7 @@ export class MainMenu extends Phaser.Scene {
       .text(width / 2, height * 0.5 - 50, 'DIFFICULTY', {
         fontFamily: 'Segoe UI, system-ui, sans-serif',
         fontSize: '16px',
-        color: '#a89ce0',
+        color: '#6a4a2a',
       })
       .setOrigin(0.5);
     this.diff = this.game.registry.get('difficulty') || 'normal';
@@ -84,8 +85,8 @@ export class MainMenu extends Phaser.Scene {
       .text(width / 2, height * 0.72, '▶ PLAY', {
         fontFamily: 'Segoe UI, system-ui, sans-serif',
         fontSize: '34px',
-        color: '#ffffff',
-        backgroundColor: '#6c4dff',
+        color: '#fff3c4',
+        backgroundColor: '#3a2a12',
         padding: { x: 28, y: 12 },
       })
       .setOrigin(0.5)
@@ -99,7 +100,7 @@ export class MainMenu extends Phaser.Scene {
       .text(width / 2, height - 40, 'TAP PLAY OR PRESS ENTER', {
         fontFamily: 'Segoe UI, system-ui, sans-serif',
         fontSize: '14px',
-        color: '#6f6a8a',
+        color: '#5a3a1a',
       })
       .setOrigin(0.5);
     this.input.keyboard.once('keydown-ENTER', () => {
