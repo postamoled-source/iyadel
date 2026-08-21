@@ -46,17 +46,17 @@ export default function Game() {
   const stageStyle = portrait
     ? {
         position: 'absolute',
-        top: '50%',
-        left: '50%',
+        top: 0,
+        left: '100%',
         width: '100vh',
         height: '100vw',
-        transform: 'translate(-50%, -50%) rotate(90deg)',
-        transformOrigin: 'center center',
+        transform: 'rotate(90deg)',
+        transformOrigin: 'top left',
       }
     : { position: 'absolute', inset: 0 };
 
   return (
-    <div className="fixed inset-0 bg-black overflow-hidden">
+    <div className="fixed inset-0 bg-black overflow-hidden" style={{ touchAction: 'none' }}>
       <div ref={containerRef} style={stageStyle} />
       <Link
         to="/"

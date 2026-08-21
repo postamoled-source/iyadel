@@ -9,6 +9,7 @@ export class Engine {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer.domElement.style.cssText = 'display:block;position:absolute;top:0;left:0;width:100%;height:100%;';
     container.appendChild(this.renderer.domElement);
 
     this.scene = new THREE.Scene();
