@@ -17,9 +17,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.maxHp = 100;
     this.hp = 100;
     this.invulnUntil = 0;
+    this.shieldUntil = 0;
   }
 
   takeDamage(d, time) {
+    if (time < this.shieldUntil) return false;
     if (time < this.invulnUntil) return false;
     this.hp -= d;
     this.invulnUntil = time + 900;

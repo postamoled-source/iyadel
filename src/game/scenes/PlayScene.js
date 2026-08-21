@@ -4,6 +4,7 @@ import Phaser from 'phaser';
 import { Player } from '../entities/Player';
 import { WeaponManager, WEAPONS } from '../weapons/Weapons';
 import { EnemyManager } from '../entities/Enemy';
+import { PickupManager } from '../entities/Pickup';
 
 const LEVEL_WIDTH = 3200;
 
@@ -91,6 +92,24 @@ export class PlayScene extends Phaser.Scene {
     this.enemyMgr.spawn('turret', 1240, 330);
     this.enemyMgr.spawn('turret', 2720, 430);
 
+    // Pickups (Phase 6).
+    this.pickups = new PickupManager(this);
+    this.pickups.spawn('gem', 430, 480);
+    this.pickups.spawn('gem', 830, 390);
+    this.pickups.spawn('gem', 1210, 320);
+    this.pickups.spawn('health', 1710, 440);
+    this.pickups.spawn('shield', 2210, 340);
+    this.pickups.spawn('gem', 2710, 430);
+    this.pickups.spawn('health', 3050, 600);
+    this.shieldRing = this.add
+      .circle(0, 0, 42)
+      .setStrokeStyle(3, 0x52d9ff, 1)
+      .setDepth(5)
+      .setVisible(false);
+    this.physics.add.overlap(this.player, this.pickups.group, (p, pk) =>
+      this.collectPickup(p, pk)
+    );
+
     // HUD: score + health bar.
     this.score = 0;
     this.scoreHud = this.add
@@ -167,6 +186,8 @@ export class PlayScene extends Phaser.Scene {
     if (this.controls.fire) this.weapons.fire(this.player, this.bullets, this.time.now);
 
     this.enemyMgr.update(this.player, this.time.now);
+    this.shieldRing.setVisible(this.time.now < this.player.shieldUntil);
+    this.shieldRing.setPosition(this.player.x, this.player.y);
     this.refreshHud();
   }
 
@@ -174,8 +195,26 @@ export class PlayScene extends Phaser.Scene {
     bullet.destroy();
     if (enemy.hit(1)) {
       this.score += enemy.value;
+      const ex = enemy.x;
+      const ey = enemy.y;
       enemy.destroy();
+      this.maybeDropPickup(ex, ey);
     }
+    this.refreshHud();
+  }
+
+  maybeDropPickup(x, y) {
+    const r = Math.random();
+    if (r < 0.2) this.pickups.spawn('health', x, y);
+    else if (r < 0.45) this.pickups.spawn('gem', x, y);
+    else if (r < 0.55) this.pickups.spawn('shield', x, y);
+  }
+
+  collectPickup(player, pickup) {
+    if (pickup.type === 'health') player.hp = Math.min(player.maxHp, player.hp + 30);
+    else if (pickup.type === 'shield') player.shieldUntil = this.time.now + 6000;
+    else if (pickup.type === 'gem') this.score += 250;
+    pickup.destroy();
     this.refreshHud();
   }
 
@@ -324,6 +363,46 @@ export class PlayScene extends Phaser.Scene {
       g.fillStyle(0x6c4dff, 1);
       g.fillRect(12, 0, 8, 12);
       g.generateTexture('turret', 32, 30);
+      g.destroy();
+    }
+    if (!this.textures.exists('health')) {
+      const g = this.make.graphics({ add: false });
+      g.fillStyle(0x2bd47a, 1);
+      g.fillCircle(14, 14, 13);
+      g.fillStyle(0xffffff, 1);
+      g.fillRect(11, 5, 6, 18);
+      g.fillRect(5, 11, 18, 6);
+      g.generateTexture('health', 28, 28);
+      g.destroy();
+    }
+    if (!this.textures.exists('shield')) {
+      const g = this.make.graphics({ add: false });
+      g.fillStyle(0x52d9ff, 1);
+      g.beginPath();
+      g.moveTo(14, 2);
+      g.lineTo(25, 8);
+      g.lineTo(25, 20);
+      g.lineTo(14, 26);
+      g.lineTo(3, 20);
+      g.lineTo(3, 8);
+      g.closePath();
+      g.fillPath();
+      g.generateTexture('shield', 28, 28);
+      g.destroy();
+    }
+    if (!this.textures.exists('gem')) {
+      const g = this.make.graphics({ add: false });
+      g.fillStyle(0xf5c451, 1);
+      g.beginPath();
+      g.moveTo(14, 2);
+      g.lineTo(26, 14);
+      g.lineTo(14, 26);
+      g.lineTo(2, 14);
+      g.closePath();
+      g.fillPath();
+      g.fillStyle(0xfff3c4, 1);
+      g.fillTriangle(14, 5, 20, 13, 14, 13);
+      g.generateTexture('gem', 28, 28);
       g.destroy();
     }
   }
