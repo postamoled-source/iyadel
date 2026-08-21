@@ -20,6 +20,12 @@ export class IyadelGame3D {
     this.enemies = [];
     this.bullets = [];
     this.fx = [];
+    this.grenades = [];
+    this.missiles = [];
+    this.grenadeCd = 0;
+    this.missileCd = 0;
+    this.sprint = false;
+    this.walkPhase = 0;
     this.score = 0;
     this.best = Number(localStorage.getItem('iyadel3d_best') || 0);
     this.hp = 100;
@@ -47,10 +53,23 @@ export class IyadelGame3D {
     this._onResize();
   }
 
+  _skyTexture() {
+    const c = document.createElement('canvas');
+    c.width = 4; c.height = 256;
+    const ctx = c.getContext('2d');
+    const grd = ctx.createLinearGradient(0, 0, 0, 256);
+    grd.addColorStop(0, '#ffd98a');
+    grd.addColorStop(0.45, '#f2a868');
+    grd.addColorStop(1, '#7a3a1a');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, 4, 256);
+    return new THREE.CanvasTexture(c);
+  }
+
   _initScene() {
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xf2b97a);
-    this.scene.fog = new THREE.Fog(0xb5683c, 28, 80);
+    this.scene.background = this._skyTexture();
+    this.scene.fog = new THREE.Fog(0x8a3a1a, 22, 64);
     this.camera = new THREE.PerspectiveCamera(60, 1, 0.1, 200);
     this.camera.position.set(0, 12, -11);
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -85,13 +104,13 @@ export class IyadelGame3D {
   _initWorld() {
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(200, 200),
-      new THREE.MeshStandardMaterial({ color: 0x9a7a52, roughness: 1 })
+      new THREE.MeshStandardMaterial({ color: 0x6e4e2e, roughness: 1 })
     );
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     this.scene.add(ground);
     // Grid lines for depth perception.
-    const grid = new THREE.GridHelper(200, 50, 0x6a4a2a, 0x7a5a3a);
+    const grid = new THREE.GridHelper(200, 50, 0x3a2410, 0x4a2e18);
     grid.position.y = 0.01;
     this.scene.add(grid);
     // Scattered crates as cover / visual interest.
@@ -112,32 +131,76 @@ export class IyadelGame3D {
 
   _initPlayer() {
     const g = new THREE.Group();
-    const uniform = new THREE.MeshStandardMaterial({ color: 0x4a8a3a, roughness: 0.7 });
-    const skin = new THREE.MeshStandardMaterial({ color: 0xe8b890, roughness: 0.6 });
-    const metal = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.4, metalness: 0.6 });
-    const helmet = new THREE.MeshStandardMaterial({ color: 0x6a5a3a, roughness: 0.6 });
+    const jacket = new THREE.MeshStandardMaterial({ color: 0x3a7a3a, roughness: 0.65 });
+    const jacketDark = new THREE.MeshStandardMaterial({ color: 0x244a24, roughness: 0.7 });
+    const skin = new THREE.MeshStandardMaterial({ color: 0xf0c8a0, roughness: 0.6 });
+    const hair = new THREE.MeshStandardMaterial({ color: 0x1a1410, roughness: 0.8 });
+    const band = new THREE.MeshStandardMaterial({ color: 0xff5c6c, emissive: 0x551111, emissiveIntensity: 0.5, roughness: 0.5 });
+    const boot = new THREE.MeshStandardMaterial({ color: 0x1a1410, roughness: 0.6 });
+    const metal = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.35, metalness: 0.7 });
+    const gunMat = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.4, metalness: 0.6 });
+    const eyeMat = new THREE.MeshStandardMaterial({ color: 0x2a4a8a, emissive: 0x223366, emissiveIntensity: 0.6 });
 
-    const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.38, 0.7, 4, 10), uniform);
-    torso.position.y = 1.1; torso.castShadow = true; g.add(torso);
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.27, 16, 16), skin);
-    head.position.y = 1.78; head.castShadow = true; g.add(head);
-    const hel = new THREE.Mesh(
-      new THREE.SphereGeometry(0.31, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2),
-      helmet
-    );
-    hel.position.y = 1.84; g.add(hel);
-    const armL = new THREE.Mesh(new THREE.CapsuleGeometry(0.13, 0.5, 4, 8), uniform);
-    armL.position.set(-0.5, 1.15, 0); armL.castShadow = true; g.add(armL);
-    const armR = new THREE.Mesh(new THREE.CapsuleGeometry(0.13, 0.5, 4, 8), uniform);
-    armR.position.set(0.5, 1.15, 0.05); armR.castShadow = true; g.add(armR);
-    const gun = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.7), metal);
-    gun.position.set(0.5, 1.15, 0.55); gun.castShadow = true; g.add(gun);
-    const legL = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.6, 4, 8), new THREE.MeshStandardMaterial({ color: 0x7a6a3a }));
-    legL.position.set(-0.2, 0.45, 0); legL.castShadow = true; g.add(legL);
-    const legR = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.6, 4, 8), new THREE.MeshStandardMaterial({ color: 0x7a6a3a }));
-    legR.position.set(0.2, 0.45, 0); legR.castShadow = true; g.add(legR);
+    const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.4, 0.72, 6, 12), jacket);
+    torso.position.y = 1.12; torso.castShadow = true; g.add(torso);
+    const vest = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.5, 0.42), jacketDark);
+    vest.position.set(0, 1.12, 0.04); vest.castShadow = true; g.add(vest);
+    const belt = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.12, 0.4), boot);
+    belt.position.y = 0.8; g.add(belt);
+    const pack = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.5, 0.22), jacketDark);
+    pack.position.set(0, 1.15, -0.34); pack.castShadow = true; g.add(pack);
 
-    this.playerParts = [torso, head, hel, armL, armR, gun, legL, legR];
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 20, 20), skin);
+    head.position.y = 1.84; head.castShadow = true; g.add(head);
+    const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.18, 0.5), hair);
+    fringe.position.set(0, 1.98, 0.04); g.add(fringe);
+    const tailL = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.5, 8), hair);
+    tailL.position.set(-0.32, 1.96, -0.18); tailL.rotation.z = 0.5; g.add(tailL);
+    const tailR = tailL.clone(); tailR.position.x = 0.32; tailR.rotation.z = -0.5; g.add(tailR);
+    const headband = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.07, 8, 20), band);
+    headband.position.set(0, 1.9, 0.02); headband.rotation.x = Math.PI / 2; g.add(headband);
+    const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), eyeMat);
+    eyeL.position.set(-0.1, 1.84, 0.27); g.add(eyeL);
+    const eyeR = eyeL.clone(); eyeR.position.x = 0.1; g.add(eyeR);
+
+    const armGroupL = new THREE.Group(); armGroupL.position.set(-0.52, 1.4, 0);
+    const armL = new THREE.Mesh(new THREE.CapsuleGeometry(0.14, 0.5, 4, 8), jacket);
+    armL.position.y = -0.28; armL.castShadow = true; armGroupL.add(armL);
+    const gloveL = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 10), boot);
+    gloveL.position.y = -0.55; armGroupL.add(gloveL);
+    g.add(armGroupL);
+
+    const armGroupR = new THREE.Group(); armGroupR.position.set(0.52, 1.4, 0.2);
+    const armR = new THREE.Mesh(new THREE.CapsuleGeometry(0.14, 0.5, 4, 8), jacket);
+    armR.position.y = -0.28; armR.rotation.x = -1.0; armR.castShadow = true; armGroupR.add(armR);
+    const gloveR = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 10), boot);
+    gloveR.position.set(0, -0.5, 0.3); armGroupR.add(gloveR);
+    const rifle = new THREE.Group();
+    const rbody = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.16, 0.7), gunMat); rifle.add(rbody);
+    const rbarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.4, 8), metal);
+    rbarrel.rotation.x = Math.PI / 2; rbarrel.position.set(0, 0.02, 0.5); rifle.add(rbarrel);
+    const rmag = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.2, 0.12), gunMat);
+    rmag.position.set(0, -0.16, -0.1); rifle.add(rmag);
+    rifle.position.set(0, -0.45, 0.45); rifle.rotation.x = -0.2;
+    armGroupR.add(rifle);
+    g.add(armGroupR);
+
+    const legGroupL = new THREE.Group(); legGroupL.position.set(-0.2, 0.82, 0);
+    const legL = new THREE.Mesh(new THREE.CapsuleGeometry(0.17, 0.55, 4, 8), jacketDark);
+    legL.position.y = -0.35; legL.castShadow = true; legGroupL.add(legL);
+    const bootL = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.18, 0.4), boot);
+    bootL.position.set(0, -0.7, 0.06); legGroupL.add(bootL);
+    g.add(legGroupL);
+
+    const legGroupR = new THREE.Group(); legGroupR.position.set(0.2, 0.82, 0);
+    const legR = new THREE.Mesh(new THREE.CapsuleGeometry(0.17, 0.55, 4, 8), jacketDark);
+    legR.position.y = -0.35; legR.castShadow = true; legGroupR.add(legR);
+    const bootR = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.18, 0.4), boot);
+    bootR.position.set(0, -0.7, 0.06); legGroupR.add(bootR);
+    g.add(legGroupR);
+
+    this.parts = { torso, armL: armGroupL, armR: armGroupR, legL: legGroupL, legR: legGroupR };
+    this.playerParts = [torso, vest, belt, pack, head, fringe, tailL, tailR, headband, eyeL, eyeR, armL, gloveL, armR, gloveR, rbody, rbarrel, rmag, legL, bootL, legR, bootR];
     this.player = g;
     this.playerPos = new THREE.Vector3(0, 0, 0);
     this.facing = new THREE.Vector3(0, 0, 1);
@@ -190,16 +253,36 @@ export class IyadelGame3D {
     root.appendChild(joy);
     this._joystick(joy, knob);
 
-    // FIRE + JUMP buttons (bottom-right).
-    const fire = this._ctrlButton('FIRE', 'right', 18, '#f5a331');
+    // Action cluster (bottom-right): FIRE, JUMP, GRENADE, MISSILE.
+    const fire = this._ctrlButton('FIRE', 84, 16, 16, '#f5a331', 16);
     fire.addEventListener('pointerdown', () => (this.firing = true));
     fire.addEventListener('pointerup', () => (this.firing = false));
     fire.addEventListener('pointercancel', () => (this.firing = false));
     fire.addEventListener('pointerleave', () => (this.firing = false));
-    const jump = this._ctrlButton('JUMP', 'right', 100, '#3aa852');
-    jump.addEventListener('pointerdown', () => (this.jumpQueued = true));
     root.appendChild(fire);
+
+    const jump = this._ctrlButton('JUMP', 64, 28, 108, '#3aa852', 13);
+    jump.addEventListener('pointerdown', () => (this.jumpQueued = true));
     root.appendChild(jump);
+
+    const grenade = this._ctrlButton('GREN', 60, 104, 20, '#6c4dff', 12);
+    grenade.addEventListener('pointerdown', () => this._throwGrenade());
+    root.appendChild(grenade);
+
+    const missile = this._ctrlButton('MISS', 60, 104, 92, '#ff5c6c', 12);
+    missile.addEventListener('pointerdown', () => this._fireMissile());
+    root.appendChild(missile);
+
+    // RUN toggle (left, above joystick).
+    const run = document.createElement('div');
+    run.style.cssText = 'position:absolute;left:30px;bottom:158px;width:62px;height:62px;border-radius:50%;background:rgba(245,195,81,.3);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;color:#fff;pointer-events:auto;touch-action:none;cursor:pointer;';
+    run.textContent = 'RUN';
+    run.addEventListener('pointerdown', () => {
+      this.sprint = !this.sprint;
+      run.style.background = this.sprint ? 'rgba(245,195,81,.85)' : 'rgba(245,195,81,.3)';
+    });
+    root.appendChild(run);
+    this.runBtn = run;
 
     // Start overlay.
     const start = document.createElement('div');
@@ -208,7 +291,7 @@ export class IyadelGame3D {
     start.innerHTML = `<div style="font-size:40px;font-weight:bold;color:#fff3c4;letter-spacing:4px;text-shadow:0 4px 0 #6a3a1a;">IYADEL 3D</div>
       <div style="font-size:14px;color:#ffe0b0;">NEO-PULSE RUN &amp; GUN</div>
       <div style="margin-top:18px;font-size:16px;color:#fff;background:#3a2a12;padding:10px 22px;border-radius:999px;border:2px solid #fff3c4;">TAP TO START</div>
-      <div style="margin-top:14px;font-size:11px;color:#ffe0b0;opacity:.8;text-align:center;line-height:1.6;">WASD / joystick = move &nbsp;•&nbsp; SPACE = fire<br>F / JUMP = jump &nbsp;•&nbsp; survive &amp; score</div>`;
+      <div style="margin-top:14px;font-size:11px;color:#ffe0b0;opacity:.85;text-align:center;line-height:1.6;">Joystick / WASD = move &nbsp;•&nbsp; FIRE = shoot<br>GREN = grenade &nbsp;•&nbsp; MISS = missile &nbsp;•&nbsp; RUN = sprint<br>JUMP / F = jump &nbsp;•&nbsp; G = grenade &nbsp;•&nbsp; R = missile</div>`;
     start.addEventListener('pointerdown', () => {
       start.remove();
       this.started = true;
@@ -234,9 +317,9 @@ export class IyadelGame3D {
     this._refreshHud();
   }
 
-  _ctrlButton(label, side, bottom, color) {
+  _ctrlButton(label, size, bottom, right, color, fontSize) {
     const b = document.createElement('div');
-    b.style.cssText = `position:absolute;${side}:18px;bottom:${bottom}px;width:78px;height:78px;border-radius:50%;background:${color}cc;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:bold;color:#fff;pointer-events:auto;touch-action:none;cursor:pointer;`;
+    b.style.cssText = `position:absolute;right:${right}px;bottom:${bottom}px;width:${size}px;height:${size}px;border-radius:50%;background:${color}cc;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:${fontSize}px;font-weight:bold;color:#fff;pointer-events:auto;touch-action:none;cursor:pointer;text-align:center;`;
     b.textContent = label;
     return b;
   }
@@ -292,11 +375,15 @@ export class IyadelGame3D {
       this.keys[e.code] = true;
       if (e.code === 'Space') { this.firing = true; e.preventDefault(); }
       if (e.code === 'KeyF') this.jumpQueued = true;
+      if (e.code === 'KeyG') this._throwGrenade();
+      if (e.code === 'KeyR') this._fireMissile();
+      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') this.sprint = true;
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
     };
     this._ku = (e) => {
       this.keys[e.code] = false;
       if (e.code === 'Space') this.firing = false;
+      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') this.sprint = false;
     };
     window.addEventListener('keydown', this._kd);
     window.addEventListener('keyup', this._ku);
@@ -310,19 +397,46 @@ export class IyadelGame3D {
 
   _spawnEnemy() {
     const g = new THREE.Group();
-    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.6, metalness: 0.4 });
-    const body = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.5, 0.9), bodyMat);
-    body.castShadow = true; g.add(body);
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 12), new THREE.MeshStandardMaterial({ color: 0xff3b3b, emissive: 0xff0000, emissiveIntensity: 1.4 }));
-    eye.position.set(0, 0.05, 0.46); g.add(eye);
-    const rotor1 = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.04, 12), new THREE.MeshStandardMaterial({ color: 0x555555 }));
-    rotor1.position.set(0, 0.4, 0); g.add(rotor1);
-    const rotor2 = rotor1.clone(); rotor2.position.set(0, -0.4, 0); g.add(rotor2);
+    const armor = new THREE.MeshStandardMaterial({ color: 0x3a3036, roughness: 0.5, metalness: 0.5 });
+    const armorDark = new THREE.MeshStandardMaterial({ color: 0x241c22, roughness: 0.6, metalness: 0.4 });
+    const red = new THREE.MeshStandardMaterial({ color: 0xff3b3b, emissive: 0xff0000, emissiveIntensity: 1.3, roughness: 0.4 });
+    const metal = new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 0.3, metalness: 0.8 });
+
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.5), armor);
+    torso.position.y = 1.15; torso.castShadow = true; g.add(torso);
+    const chest = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.3, 0.56), armorDark);
+    chest.position.set(0, 1.25, 0.02); g.add(chest);
+    const core = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 10), red);
+    core.position.set(0, 1.25, 0.3); g.add(core);
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.32, 0.36), armor);
+    head.position.y = 1.66; head.castShadow = true; g.add(head);
+    const visor = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.1, 0.02), red);
+    visor.position.set(0, 1.66, 0.19); g.add(visor);
+    const shL = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12), armor);
+    shL.position.set(-0.5, 1.42, 0); g.add(shL);
+    const shR = shL.clone(); shR.position.x = 0.5; g.add(shR);
+    const armL = new THREE.Mesh(new THREE.CapsuleGeometry(0.13, 0.45, 4, 8), armorDark);
+    armL.position.set(-0.5, 1.0, 0.1); armL.castShadow = true; g.add(armL);
+    const armR = new THREE.Mesh(new THREE.CapsuleGeometry(0.13, 0.45, 4, 8), armorDark);
+    armR.position.set(0.5, 1.0, 0.1); armR.castShadow = true; g.add(armR);
+    const cannon = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 0.6, 8), metal);
+    cannon.rotation.x = Math.PI / 2; cannon.position.set(0.5, 1.0, 0.5); g.add(cannon);
+    const legL = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.5, 4, 8), armorDark);
+    legL.position.set(-0.2, 0.45, 0); legL.castShadow = true; g.add(legL);
+    const legR = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.5, 4, 8), armorDark);
+    legR.position.set(0.2, 0.45, 0); legR.castShadow = true; g.add(legR);
+    const bootL = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.2, 0.42), armor);
+    bootL.position.set(-0.2, 0.12, 0.06); g.add(bootL);
+    const bootR = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.2, 0.42), armor);
+    bootR.position.set(0.2, 0.12, 0.06); g.add(bootR);
+    const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.4, 6), metal);
+    ant.position.set(0.2, 1.95, 0); g.add(ant);
+
     const ang = Math.random() * Math.PI * 2;
     const r = 22;
-    g.position.set(Math.cos(ang) * r, 1.1, Math.sin(ang) * r);
+    g.position.set(Math.cos(ang) * r, 0, Math.sin(ang) * r);
     this.scene.add(g);
-    this.enemies.push({ obj: g, hp: 2, speed: 3.2 + Math.min(2, this.score * 0.0008), rotor: rotor1, body });
+    this.enemies.push({ obj: g, hp: 3, speed: 3.0 + Math.min(2.2, this.score * 0.0008), parts: { legL, legR, visor } });
   }
 
   _fire() {
@@ -347,6 +461,55 @@ export class IyadelGame3D {
     this.fx.push({ obj: m, t: 0 });
   }
 
+  _explode(x, y, z, radius, dmg, color) {
+    this._pop(x, y, z, color);
+    this._pop(x, y, z, 0xfff3c4);
+    for (let j = this.enemies.length - 1; j >= 0; j--) {
+      const e = this.enemies[j];
+      if (e.obj.position.distanceTo(new THREE.Vector3(x, y, z)) < radius) {
+        e.hp -= dmg;
+        if (e.hp <= 0) {
+          this._pop(e.obj.position.x, e.obj.position.y, e.obj.position.z, 0xff8a3c);
+          this.scene.remove(e.obj);
+          this.enemies.splice(j, 1);
+          this.score += 100;
+          playEnemyDie();
+        }
+      }
+    }
+  }
+
+  _throwGrenade() {
+    if (this.grenadeCd > 0 || this.over || !this.started) return;
+    const m = new THREE.Mesh(
+      new THREE.SphereGeometry(0.18, 12, 12),
+      new THREE.MeshStandardMaterial({ color: 0x3aa852, emissive: 0x115422, emissiveIntensity: 0.6 })
+    );
+    m.castShadow = true;
+    m.position.copy(this.playerPos).add(new THREE.Vector3(0, 1.2, 0)).add(this.facing.clone().multiplyScalar(0.7));
+    const vel = this.facing.clone().multiplyScalar(9);
+    vel.y = 6.5;
+    this.scene.add(m);
+    this.grenades.push({ obj: m, vel, life: 0 });
+    this.grenadeCd = 1.1;
+    playShoot();
+  }
+
+  _fireMissile() {
+    if (this.missileCd > 0 || this.over || !this.started) return;
+    const m = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.13, 0.7, 6, 10),
+      new THREE.MeshStandardMaterial({ color: 0xdddddd, emissive: 0xff5c6c, emissiveIntensity: 0.8 })
+    );
+    m.castShadow = true;
+    m.position.copy(this.playerPos).add(new THREE.Vector3(0, 1.3, 0)).add(this.facing.clone().multiplyScalar(0.8));
+    m.rotation.x = Math.PI / 2;
+    this.scene.add(m);
+    this.missiles.push({ obj: m, vel: this.facing.clone().multiplyScalar(30), life: 0 });
+    this.missileCd = 2.2;
+    playShoot();
+  }
+
   update(dt) {
     // Movement input (keyboard + joystick).
     let ix = this.move.x;
@@ -357,7 +520,7 @@ export class IyadelGame3D {
     if (this.keys['KeyD'] || this.keys['ArrowRight']) ix += 1;
     const len = Math.hypot(ix, iz);
     if (len > 1) { ix /= len; iz /= len; }
-    const speed = 7;
+    const speed = this.sprint ? 11 : 7;
     this.playerPos.x += ix * speed * dt;
     this.playerPos.z += iz * speed * dt;
     if (Math.hypot(ix, iz) > 0.1) {
@@ -372,6 +535,21 @@ export class IyadelGame3D {
     this.playerPos.y += this.vy * dt;
     if (this.playerPos.y <= 0) { this.playerPos.y = 0; this.vy = 0; this.onGround = true; }
     this.player.position.copy(this.playerPos);
+    // Procedural walk animation.
+    const moving = Math.hypot(ix, iz) > 0.1 && this.onGround;
+    if (moving) {
+      this.walkPhase += dt * (this.sprint ? 16 : 10);
+      const sw = Math.sin(this.walkPhase) * (this.sprint ? 0.7 : 0.45);
+      this.parts.legL.rotation.x = sw;
+      this.parts.legR.rotation.x = -sw;
+      this.parts.armL.rotation.x = -sw * 0.5;
+      this.player.position.y = this.playerPos.y + Math.abs(Math.sin(this.walkPhase)) * 0.05;
+    } else {
+      this.parts.legL.rotation.x *= 0.8;
+      this.parts.legR.rotation.x *= 0.8;
+      this.parts.armL.rotation.x *= 0.8;
+    }
+    this.parts.armR.rotation.x = this.firing ? -0.7 : 0;
 
     // Camera follow.
     const camTarget = this.playerPos.clone().add(new THREE.Vector3(0, 12, -11));
@@ -410,6 +588,44 @@ export class IyadelGame3D {
       }
     }
 
+    // Grenades (lobbed, area damage).
+    this.grenadeCd = Math.max(0, this.grenadeCd - dt);
+    for (let i = this.grenades.length - 1; i >= 0; i--) {
+      const gr = this.grenades[i];
+      gr.vel.y -= 20 * dt;
+      gr.obj.position.add(gr.vel.clone().multiplyScalar(dt));
+      gr.obj.rotation.x += dt * 8;
+      gr.life += dt;
+      if (gr.obj.position.y <= 0.25 || gr.life > 2.5) {
+        this._explode(gr.obj.position.x, 0.5, gr.obj.position.z, 3.4, 3, 0xff8a3c);
+        this.scene.remove(gr.obj);
+        this.grenades.splice(i, 1);
+      }
+    }
+
+    // Missiles (homing, large area damage).
+    this.missileCd = Math.max(0, this.missileCd - dt);
+    for (let i = this.missiles.length - 1; i >= 0; i--) {
+      const m = this.missiles[i];
+      let near = null, nd = 999;
+      for (const e of this.enemies) { const d = e.obj.position.distanceTo(m.obj.position); if (d < nd) { nd = d; near = e; } }
+      if (near && nd < 26) {
+        const dir = near.obj.position.clone().sub(m.obj.position).normalize().multiplyScalar(30);
+        m.vel.lerp(dir, 0.08);
+      }
+      m.obj.position.add(m.vel.clone().multiplyScalar(dt));
+      if (m.vel.lengthSq() > 0.01) m.obj.lookAt(m.obj.position.clone().add(m.vel));
+      m.life += dt;
+      let hit = false;
+      for (let j = this.enemies.length - 1; j >= 0; j--) {
+        if (m.obj.position.distanceTo(this.enemies[j].obj.position) < 1.2) {
+          this._explode(m.obj.position.x, m.obj.position.y, m.obj.position.z, 2.6, 5, 0xff5c6c);
+          this.scene.remove(m.obj); this.missiles.splice(i, 1); hit = true; break;
+        }
+      }
+      if (!hit && (m.life > 3 || m.obj.position.y < 0)) { this.scene.remove(m.obj); this.missiles.splice(i, 1); }
+    }
+
     // Spawn enemies.
     this.spawnTimer -= dt;
     if (this.spawnTimer <= 0 && this.enemies.length < 9) {
@@ -428,9 +644,13 @@ export class IyadelGame3D {
         e.obj.position.x -= d.x * e.speed * dt;
         e.obj.position.z -= d.z * e.speed * dt;
       }
-      e.obj.position.y = 1.1 + Math.sin(performance.now() * 0.005 + e.obj.position.x) * 0.18;
+      e.obj.position.y = 0;
       e.obj.rotation.y = Math.atan2(-d.x, -d.z);
-      e.rotor.rotation.y += dt * 14;
+      if (e.parts) {
+        const sw = Math.sin(performance.now() * 0.008) * 0.5;
+        e.parts.legL.rotation.x = sw;
+        e.parts.legR.rotation.x = -sw;
+      }
       if (dist < 1.25 && this.invuln <= 0) {
         this.hp -= 12;
         this.invuln = 1.0;
@@ -485,9 +705,15 @@ export class IyadelGame3D {
     this.enemies.forEach((e) => this.scene.remove(e.obj));
     this.bullets.forEach((b) => this.scene.remove(b.obj));
     this.fx.forEach((f) => this.scene.remove(f.obj));
+    this.grenades.forEach((g) => this.scene.remove(g.obj));
+    this.missiles.forEach((m) => this.scene.remove(m.obj));
     this.enemies = [];
     this.bullets = [];
     this.fx = [];
+    this.grenades = [];
+    this.missiles = [];
+    this.grenadeCd = 0;
+    this.missileCd = 0;
     this.hp = 100;
     this.score = 0;
     this.spawnTimer = 1.2;
@@ -497,6 +723,10 @@ export class IyadelGame3D {
     this.facing.set(0, 0, 1);
     this.player.position.copy(this.playerPos);
     this.player.rotation.y = 0;
+    this.parts.legL.rotation.x = 0;
+    this.parts.legR.rotation.x = 0;
+    this.parts.armL.rotation.x = 0;
+    this.parts.armR.rotation.x = 0;
     this.over = false;
     this.overEl.style.display = 'none';
     this._refreshHud();
