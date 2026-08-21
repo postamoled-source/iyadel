@@ -2,6 +2,7 @@
 // Phase 2: Project Setup. Scenes will be appended here as phases progress.
 import Phaser from 'phaser';
 import { BootScene } from './scenes/BootScene';
+import { MainMenu } from './scenes/MainMenu';
 import { PlayScene } from './scenes/PlayScene';
 
 export function createGame(parent) {
@@ -20,6 +21,6 @@ export function createGame(parent) {
       arcade: { gravity: { y: 0 }, debug: false },
     },
     render: { pixelArt: false, antialias: true },
-    scene: [BootScene, PlayScene],
+    scene: [BootScene, MainMenu, PlayScene],
   });
 }

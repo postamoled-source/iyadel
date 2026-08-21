@@ -25,6 +25,12 @@ export class PlayScene extends Phaser.Scene {
 
   create() {
     this.generateTextures();
+    const DIFF = {
+      easy: { dmg: 0.6, score: 0.8 },
+      normal: { dmg: 1, score: 1 },
+      hard: { dmg: 1.5, score: 1.3 },
+    };
+    this.diff = DIFF[this.game.registry.get('difficulty')] || DIFF.normal;
 
     // World bounds for the level.
     this.physics.world.setBounds(0, 0, LEVEL_WIDTH, 720);
@@ -208,7 +214,7 @@ export class PlayScene extends Phaser.Scene {
     );
     this.physics.add.overlap(this.player, this.enemyMgr.enemyBullets, (player, b) => {
       b.destroy();
-      if (player.takeDamage(10, this.time.now)) this.gameOver();
+      if (player.takeDamage(Math.round(10 * this.diff.dmg), this.time.now)) this.gameOver();
       else { playHurt(); this.effects.shake(0.01, 120); }
       this.refreshHud();
     });
@@ -293,7 +299,7 @@ export class PlayScene extends Phaser.Scene {
     bullet.destroy();
     if (boss.hit(2)) {
       boss.kill();
-      this.score += 5000;
+      this.score += Math.round(5000 * this.diff.score);
       this.effects.burst(boss.x, boss.y, 0xff5c6c, 40, 320);
       this.effects.shake(0.02, 350);
       this.effects.flash(0xff5c6c);
@@ -341,7 +347,7 @@ export class PlayScene extends Phaser.Scene {
     bullet.destroy();
     const dead = enemy.hit(1);
     if (dead) {
-      this.score += enemy.value;
+      this.score += Math.round(enemy.value * this.diff.score);
       const ex = enemy.x;
       const ey = enemy.y;
       enemy.destroy();
@@ -364,7 +370,7 @@ export class PlayScene extends Phaser.Scene {
   collectPickup(player, pickup) {
     if (pickup.type === 'health') player.hp = Math.min(player.maxHp, player.hp + 30);
     else if (pickup.type === 'shield') player.shieldUntil = this.time.now + 6000;
-    else if (pickup.type === 'gem') this.score += 250;
+    else if (pickup.type === 'gem') this.score += Math.round(250 * this.diff.score);
     pickup.destroy();
     this.effects.burst(player.x, player.y, 0xf5c451, 10, 150);
     playPickup();
@@ -372,7 +378,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   touchEnemy(player, enemy) {
-    if (player.takeDamage(15, this.time.now)) this.gameOver();
+    if (player.takeDamage(Math.round(15 * this.diff.dmg), this.time.now)) this.gameOver();
     else { playHurt(); this.effects.shake(0.012, 150); }
     this.refreshHud();
   }

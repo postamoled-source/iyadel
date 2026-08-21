@@ -97,7 +97,7 @@ export class BootScene extends Phaser.Scene {
       if (remoteHigh != null && remoteHigh !== best) bestText.setText('BEST  ' + remoteHigh);
     });
 
-    const start = () => this.scene.start('Play');
+    const start = () => this.scene.start('Menu');
     this.input.keyboard.once('keydown-ENTER', start);
     this.input.once('pointerdown', start);
   }
