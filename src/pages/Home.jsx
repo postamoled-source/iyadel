@@ -10,6 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { createPortal } from "react-dom";
 import { Image as Img } from "@/components/ui/image";
 import { generateLogo } from "@/functions/generateLogo";
+import { getExchangeRates } from "@/functions/getExchangeRates";
 import Logo from "@/components/Logo";
 import GameIcon from "@/components/game-icons";
 import Game2048 from "@/components/games/Game2048";
@@ -353,6 +354,9 @@ function ToolWorkspace({ tool, onBack }) {
   const [aiBusy, setAiBusy] = useState(false);
   const [aiSelected, setAiSelected] = useState(null);
   const [showToolbar, setShowToolbar] = useState(false);
+  const [fxRates, setFxRates] = useState(null);
+  const [fxUpdated, setFxUpdated] = useState("");
+  const [fxLoading, setFxLoading] = useState(false);
 
   useEffect(() => {
     setInputs({}); setResult(null); setRiddleAttempts(3); setRiddleMsg(""); setRiddleGuess("");
@@ -366,6 +370,33 @@ function ToolWorkspace({ tool, onBack }) {
     setShowToolbar(false);
     setShowGuide(false);
   }, [tool.slug]);
+
+  // Fetch live exchange rates when the currency converter is opened.
+  useEffect(() => {
+    if (tool.slug !== "currency-converter" || fxRates) return;
+    let active = true;
+    setFxLoading(true);
+    getExchangeRates()
+      .then((res) => {
+        if (!active) return;
+        const data = res?.data ?? res;
+        if (data && data.rates) { setFxRates(data.rates); setFxUpdated(data.updated || ""); }
+      })
+      .catch(() => {})
+      .finally(() => { if (active) setFxLoading(false); });
+    return () => { active = false; };
+  }, [tool.slug, fxRates]);
+
+  const refreshFx = () => {
+    setFxLoading(true);
+    getExchangeRates()
+      .then((res) => {
+        const data = res?.data ?? res;
+        if (data && data.rates) { setFxRates(data.rates); setFxUpdated(data.updated || ""); }
+      })
+      .catch(() => {})
+      .finally(() => setFxLoading(false));
+  };
 
   // Live image enhancement: recompute from the original on every slider change.
   useEffect(() => {
@@ -662,13 +693,14 @@ function ToolWorkspace({ tool, onBack }) {
         );
       }
       case "currency-converter": {
-        const currencies = Object.keys(CURRENCY_RATES);
+        const rates = (fxRates && Object.keys(fxRates).length > 0) ? fxRates : CURRENCY_RATES;
+        const currencies = Object.keys(rates);
         const calc = () => {
           const amt = parseFloat(inputs.amount);
           const from = inputs.from || "USD", to = inputs.to || "EUR";
-          if (!amt) return setResult(null);
-          const r = convertUnit(amt, CURRENCY_RATES, from, to);
-          setResult({ value: r ? r.toFixed(2) : "—", from, to });
+          if (!amt || !rates[from] || !rates[to]) return setResult(null);
+          const r = (amt * rates[to]) / rates[from];
+          setResult({ value: isFinite(r) ? r.toFixed(2) : "—", from, to });
         };
         const swap = () => setInputs((p) => ({ ...p, from: p.to || "EUR", to: p.from || "USD" }));
         return (
@@ -681,6 +713,11 @@ function ToolWorkspace({ tool, onBack }) {
             <div className="flex flex-wrap justify-center gap-4">
               <CalcButton onClick={calc}>{t("Convert Currency")}</CalcButton>
               <CalcButton onClick={swap} variant="secondary"><ArrowLeftRight className="w-5 h-5" />{t("Swap")}</CalcButton>
+            </div>
+            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+              <span className={`w-2 h-2 rounded-full ${fxRates ? "bg-emerald-500" : "bg-amber-500"} ${fxLoading ? "animate-pulse" : ""}`} />
+              {fxLoading ? t("Fetching live rates...") : (fxRates ? `${t("Live rates")}${fxUpdated ? ` · ${fxUpdated}` : ""}` : t("Using offline rates"))}
+              <button onClick={refreshFx} className="ml-1 text-primary font-semibold hover:underline">{t("Refresh")}</button>
             </div>
             {result && (
               <>
@@ -705,7 +742,7 @@ function ToolWorkspace({ tool, onBack }) {
                 </div>
               </>
             )}
-            <TipBox>{t("Rates provided for informational purposes. They are updated daily from reliable sources but may not reflect exact trading values.")}</TipBox>
+            <TipBox>{t("Live exchange rates are fetched from a reliable source for informational purposes only.")}</TipBox>
           </>
         );
       }

@@ -270,6 +270,11 @@ const AR = {
   "Mile": "ميل", "Kilometer": "كيلومتر", "Hectometer": "هكتومتر", "Yard": "ياردة", "Foot": "قدم", "Inch": "بوصة", "Centimeter": "سنتيمتر", "Millimeter": "مليمتر",
   "Ton": "طن", "Quintal": "قنطار", "Kilogram": "كيلوجرام", "Pound": "رطل", "Ounce": "أونصة", "Gram": "جرام",
   "Day": "يوم", "Hour": "ساعة", "Minute": "دقيقة", "Second": "ثانية", "Millisecond": "ميلي ثانية", "Hectare": "هكتار", "Acre": "فدان", "Knot": "عقدة",
+  "Live rates": "أسعار حية",
+  "Fetching live rates...": "جلب الأسعار الحية...",
+  "Using offline rates": "استخدام أسعار احتياطية",
+  "Refresh": "تحديث",
+  "Live exchange rates are fetched from a reliable source for informational purposes only.": "أسعار صرف حية من مصدر موثوق لأغراض معلوماتية فقط.",
 
   "Brightness": "السطوع",
   "Contrast": "التباين",
