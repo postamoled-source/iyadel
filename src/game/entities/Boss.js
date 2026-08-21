@@ -13,7 +13,7 @@ export class Boss extends Phaser.Physics.Arcade.Sprite {
     this.lastShot = 0;
     this.body.setAllowGravity(false);
     this.setCollideWorldBounds(true);
-    this.body.setImovable(true);
+    this.body.setImmovable(true);
     scene.tweens.add({
       targets: this,
       scale: 1.06,
