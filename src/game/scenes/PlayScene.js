@@ -14,6 +14,7 @@ import { startMusic, stopMusic } from '@/lib/game-music';
 import { SaveManager } from '../save/SaveManager';
 import { Effects } from '../effects/Effects';
 import { buildParallax } from '../effects/Parallax';
+import { PauseMenu } from '../ui/PauseMenu';
 
 const LEVEL_WIDTH = 3200;
 
@@ -141,6 +142,17 @@ export class PlayScene extends Phaser.Scene {
       .setDepth(50)
       .setInteractive({ useHandCursor: true });
     this.muteBtn.on('pointerdown', () => this.toggleMute());
+    const pb = this.add
+      .text(this.scale.width - 70, 24, '⏸', { fontSize: '24px' })
+      .setOrigin(1, 0)
+      .setScrollFactor(0)
+      .setDepth(50)
+      .setInteractive({ useHandCursor: true });
+    pb.on('pointerdown', () => this.pauseMenu.toggle());
+    this.paused = false;
+    this.pauseMenu = new PauseMenu(this);
+    this.input.keyboard.on('keydown-ESC', () => this.pauseMenu.toggle());
+    this.input.keyboard.on('keydown-P', () => this.pauseMenu.toggle());
     this.events.once('shutdown', () => stopMusic());
 
     // HUD: score + health bar.
@@ -214,6 +226,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   update() {
+    if (this.paused) return;
     if (!this.player || !this.player.active) return;
 
     // Keyboard reads.
