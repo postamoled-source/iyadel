@@ -1,0 +1,27 @@
+{
+  "name": "GameSave",
+  "type": "object",
+  "properties": {
+    "high_score": {
+      "type": "number",
+      "default": 0
+    },
+    "last_score": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [],
+  "rls": {
+    "create": true,
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

@@ -2,6 +2,7 @@
 // Phase 2 placeholder: no external assets yet, so we animate a progress bar
 // and then display a "READY" state. Real preloading starts in Phase 3+.
 import Phaser from 'phaser';
+import { SaveManager } from '../save/SaveManager';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -80,6 +81,20 @@ export class BootScene extends Phaser.Scene {
       yoyo: true,
       repeat: -1,
       ease: 'Sine.inOut',
+    });
+
+    const best = SaveManager.load().highScore;
+    const bestText = this.add
+      .text(width / 2, height / 2 + 120, 'BEST  ' + best, {
+        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontSize: '16px',
+        color: '#52d9a8',
+      })
+      .setOrigin(0.5);
+
+    // Sync the best score from the server when signed in.
+    SaveManager.pullRemote().then((remoteHigh) => {
+      if (remoteHigh != null && remoteHigh !== best) bestText.setText('BEST  ' + remoteHigh);
     });
 
     const start = () => this.scene.start('Play');

@@ -11,6 +11,7 @@ import {
   playPickup, playBossHit, playBossDie, playVictory, playGameOver, setSfxMuted,
 } from '@/lib/game-sounds';
 import { startMusic, stopMusic } from '@/lib/game-music';
+import { SaveManager } from '../save/SaveManager';
 
 const LEVEL_WIDTH = 3200;
 
@@ -143,6 +144,17 @@ export class PlayScene extends Phaser.Scene {
         fontFamily: 'Segoe UI, system-ui, sans-serif',
         fontSize: '16px',
         color: '#ffffff',
+        backgroundColor: '#00000066',
+        padding: { x: 8, y: 4 },
+      })
+      .setScrollFactor(0)
+      .setDepth(40);
+    this.bestScore = SaveManager.load().highScore;
+    this.bestHud = this.add
+      .text(20, 100, 'BEST ' + this.bestScore, {
+        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontSize: '14px',
+        color: '#52d9a8',
         backgroundColor: '#00000066',
         padding: { x: 8, y: 4 },
       })
@@ -283,6 +295,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   victory() {
+    this.bestScore = Math.max(this.bestScore, SaveManager.saveRun(this.score, true));
     this.victoryShown = true;
     stopMusic();
     playVictory();
@@ -360,9 +373,11 @@ export class PlayScene extends Phaser.Scene {
     this.hpBar.width = 160 * ratio;
     this.hpBar.fillColor = ratio > 0.5 ? 0x52d9a8 : ratio > 0.25 ? 0xf5c451 : 0xff5c6c;
     this.scoreHud.setText('SCORE ' + this.score);
+    this.bestHud.setText('BEST ' + Math.max(this.bestScore, this.score));
   }
 
   gameOver() {
+    this.bestScore = Math.max(this.bestScore, SaveManager.saveRun(this.score, false));
     stopMusic();
     playGameOver();
     this.scene.pause();
