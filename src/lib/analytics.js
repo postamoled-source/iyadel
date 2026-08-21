@@ -17,33 +17,54 @@ export function trackEvent(eventName, params = {}) {
   }
 }
 
-// SEO hook: updates document title, meta description, and canonical URL per page.
-export function useSeo({ title, description, image, path } = {}) {
+// SEO hook: updates document title, meta description, canonical URL, and
+// Open Graph / Twitter tags per page. Pass `noindex: true` for private pages
+// (auth, admin) so search engines don't index them.
+const SITE_NAME = "iyadel";
+const SITE_URL = "https://testpriving.com";
+
+function upsertMeta(selector, attrs) {
+  let tag = document.querySelector(selector);
+  if (!tag) {
+    tag = document.createElement("meta");
+    document.head.appendChild(tag);
+  }
+  for (const [k, v] of Object.entries(attrs)) tag.setAttribute(k, v);
+  return tag;
+}
+
+export function useSeo({ title, description, image, path, noindex } = {}) {
   useEffect(() => {
-    const base = "iyadel";
-    if (title) document.title = `${title} | ${base}`;
+    const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} — Free Online Calculators, Converters & Image Tools`;
+    document.title = fullTitle;
 
     if (description) {
-      let tag = document.querySelector('meta[name="description"]');
-      if (!tag) {
-        tag = document.createElement("meta");
-        tag.name = "description";
-        document.head.appendChild(tag);
-      }
-      tag.content = description;
+      upsertMeta('meta[name="description"]', { name: "description", content: description });
+      upsertMeta('meta[property="og:description"]', { property: "og:description", content: description });
+      upsertMeta('meta[name="twitter:description"]', { name: "twitter:description", content: description });
     }
 
+    upsertMeta('meta[property="og:title"]', { property: "og:title", content: fullTitle });
+    upsertMeta('meta[name="twitter:title"]', { name: "twitter:title", content: fullTitle });
+
     if (image) {
-      let og = document.querySelector('meta[property="og:image"]');
-      if (og) og.content = image;
+      upsertMeta('meta[property="og:image"]', { property: "og:image", content: image });
+      upsertMeta('meta[name="twitter:image"]', { name: "twitter:image", content: image });
     }
 
     if (path) {
-      const url = `https://testpriving.com${path}`;
+      const url = `${SITE_URL}${path}`;
       const canon = document.querySelector('link[rel="canonical"]');
       if (canon) canon.href = url;
-      const ogUrl = document.querySelector('meta[property="og:url"]');
-      if (ogUrl) ogUrl.content = url;
+      upsertMeta('meta[property="og:url"]', { property: "og:url", content: url });
+      upsertMeta('meta[name="twitter:url"]', { name: "twitter:url", content: url });
     }
-  }, [title, description, image, path]);
+
+    upsertMeta('meta[name="robots"]', {
+      name: "robots",
+      content: noindex
+        ? "noindex, nofollow"
+        : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+    });
+  }, [title, description, image, path, noindex]);
 }

@@ -1,0 +1,33 @@
+{
+  "name": "iyadel — Free Online Tools",
+  "short_name": "iyadel",
+  "description": "31+ free online calculators, converters, and image tools — fast, private, no signup.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f5f7",
+  "theme_color": "#5b21b6",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["utilities", "productivity", "finance"],
+  "icons": [
+    {
+      "src": "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

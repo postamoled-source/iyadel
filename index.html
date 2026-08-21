@@ -2,7 +2,8 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="format-detection" content="telephone=no" />
 
     <!-- Primary SEO Meta Tags -->
     <title>iyadel — Free Online Calculators, Converters &amp; Image Tools</title>
@@ -10,11 +11,27 @@
     <meta name="description" content="iyadel offers 31+ free online tools: loan & interest calculators, BMI & calorie trackers, unit converters, QR code generator, image cropper, compressor & background remover. Fast, private, no signup." />
     <meta name="keywords" content="online calculators, free tools, loan calculator, compound interest, BMI calculator, currency converter, unit converter, QR code generator, image compressor, background remover, image to PDF, math calculator, percentage calculator, productivity tools, iyadel" />
     <meta name="author" content="iyadel" />
+    <meta name="application-name" content="iyadel" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="theme-color" content="#5b21b6" />
+    <meta name="msapplication-TileColor" content="#5b21b6" />
+    <meta name="color-scheme" content="light dark" />
     <link rel="canonical" href="https://testpriving.com/" />
+
+    <!-- PWA / Mobile App -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="iyadel" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="apple-touch-icon" href="https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png" />
+
+    <!-- hreflang alternates -->
+    <link rel="alternate" hreflang="en" href="https://testpriving.com/" />
+    <link rel="alternate" hreflang="ar" href="https://testpriving.com/?lang=ar" />
+    <link rel="alternate" hreflang="x-default" href="https://testpriving.com/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -22,6 +39,7 @@
     <meta property="og:title" content="iyadel — Free Online Calculators, Converters & Image Tools" />
     <meta property="og:description" content="31+ free online tools: financial calculators, health trackers, unit converters, QR generator, image cropper, compressor & background remover. Fast, private, no signup." />
     <meta property="og:image" content="https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png" />
+    <meta property="og:image:alt" content="iyadel — free online tools platform logo" />
     <meta property="og:site_name" content="iyadel" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:locale:alternate" content="ar_AR" />
@@ -32,6 +50,7 @@
     <meta name="twitter:title" content="iyadel — Free Online Calculators, Converters & Image Tools" />
     <meta name="twitter:description" content="31+ free online tools: financial calculators, health trackers, unit converters, QR generator, image tools. Fast, private, no signup." />
     <meta name="twitter:image" content="https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png" />
+    <meta name="twitter:image:alt" content="iyadel — free online tools platform logo" />
 
     <link rel="icon" href="https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png" />
 
@@ -40,7 +59,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
 
-    <!-- Structured Data: WebSite + Organization -->
+    <!-- Structured Data: WebSite + Organization + WebApplication -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -51,6 +70,7 @@
           "url": "https://testpriving.com/",
           "name": "iyadel",
           "description": "Free online calculators, converters, and image tools.",
+          "inLanguage": ["en", "ar"],
           "publisher": { "@id": "https://testpriving.com/#organization" },
           "potentialAction": {
             "@type": "SearchAction",
@@ -72,20 +92,24 @@
           "applicationCategory": "UtilitiesApplication",
           "operatingSystem": "Web, iOS, Android",
           "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "inLanguage": ["en", "ar"],
           "description": "31+ free online tools including loan calculators, BMI trackers, unit converters, QR generator, and image processing tools.",
           "featureList": [
             "Loan Calculator", "Compound Interest Calculator", "Bond Yield Calculator",
             "BMI Calculator", "Calories Burned Calculator", "Currency Converter",
             "Distance/Weight/Area/Time/Speed Converters", "QR Code Generator",
-            "Image Cropper", "Background Remover", "Image Compressor", "Image to PDF"
-          ]
+            "Image Cropper", "Background Remover", "Image Compressor", "Image to PDF",
+            "Image Enhancer", "Logo Maker", "Math Function Calculator", "Percentage Calculator",
+            "Physics Calculators", "Chemistry Calculators", "Brain Games"
+          ],
+          "browserRequirements": "Requires JavaScript"
         }
       ]
     }
     </script>
 
   </head>
-  <body class="home blog wp-embed-responsive wp-theme-novexa">
+  <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

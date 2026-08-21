@@ -12,7 +12,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
-  useSeo({ title: "Reset password", description: "Reset your iyadel account password.", path: "/forgot-password" });
+  useSeo({ title: "Reset password", description: "Reset your iyadel account password.", path: "/forgot-password", noindex: true });
 
   const handleSubmit = async (e) => {
     e.preventDefault();

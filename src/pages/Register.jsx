@@ -22,7 +22,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
   const [otpCode, setOtpCode] = useState("");
-  useSeo({ title: "Create account", description: "Sign up for a free iyadel account.", path: "/register" });
+  useSeo({ title: "Create account", description: "Sign up for a free iyadel account.", path: "/register", noindex: true });
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -16,7 +16,7 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  useSeo({ title: "Set new password", description: "Set a new password for your iyadel account.", path: "/reset-password" });
+  useSeo({ title: "Set new password", description: "Set a new password for your iyadel account.", path: "/reset-password", noindex: true });
 
   const handleSubmit = async (e) => {
     e.preventDefault();

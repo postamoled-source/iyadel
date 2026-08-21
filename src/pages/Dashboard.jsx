@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell, Legend } from "recharts";
 import { ArrowLeft, TrendingUp, MousePointerClick, Layers, Calendar, Trophy, RefreshCw, BarChart3, FileText, ShieldCheck, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSeo } from "@/lib/analytics";
 import { CATEGORIES } from "@/data/tools";
 import BlogManager from "@/components/admin/BlogManager";
 
@@ -34,6 +35,8 @@ export default function Dashboard() {
   const [tab, setTab] = useState("analytics");
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  useSeo({ title: "Admin Dashboard", description: "iyadel admin dashboard.", path: "/Dashboard", noindex: true });
 
   const isAdmin = user && user.role === "admin";
 
