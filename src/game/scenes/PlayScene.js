@@ -15,6 +15,7 @@ import { SaveManager } from '../save/SaveManager';
 import { Effects } from '../effects/Effects';
 import { buildParallax } from '../effects/Parallax';
 import { PauseMenu } from '../ui/PauseMenu';
+import { Achievements } from '../systems/Achievements';
 
 const LEVEL_WIDTH = 3200;
 
@@ -136,6 +137,8 @@ export class PlayScene extends Phaser.Scene {
 
     // Visual polish (Phase 10).
     this.effects = new Effects(this);
+    // Achievements (Phase 13).
+    this.achievements = new Achievements(this);
 
     // Audio (Phase 8).
     this.soundOn = true;
@@ -304,6 +307,7 @@ export class PlayScene extends Phaser.Scene {
       this.effects.shake(0.02, 350);
       this.effects.flash(0xff5c6c);
       playBossDie();
+      this.achievements.onBossKill();
     } else {
       this.effects.burst(bullet.x, bullet.y, 0x9a6cff, 6, 120);
       playBossHit();
@@ -325,6 +329,7 @@ export class PlayScene extends Phaser.Scene {
 
   victory() {
     this.bestScore = Math.max(this.bestScore, SaveManager.saveRun(this.score, true));
+    this.achievements.onRunEnd(this.score, true);
     this.victoryShown = true;
     stopMusic();
     playVictory();
@@ -354,6 +359,7 @@ export class PlayScene extends Phaser.Scene {
       this.effects.burst(ex, ey, 0xff8a3c, 14);
       this.maybeDropPickup(ex, ey);
       playEnemyDie();
+      this.achievements.onEnemyKill();
     } else {
       playEnemyHit();
     }
@@ -370,7 +376,10 @@ export class PlayScene extends Phaser.Scene {
   collectPickup(player, pickup) {
     if (pickup.type === 'health') player.hp = Math.min(player.maxHp, player.hp + 30);
     else if (pickup.type === 'shield') player.shieldUntil = this.time.now + 6000;
-    else if (pickup.type === 'gem') this.score += Math.round(250 * this.diff.score);
+    else if (pickup.type === 'gem') {
+      this.score += Math.round(250 * this.diff.score);
+      this.achievements.onGem();
+    }
     pickup.destroy();
     this.effects.burst(player.x, player.y, 0xf5c451, 10, 150);
     playPickup();
@@ -409,6 +418,7 @@ export class PlayScene extends Phaser.Scene {
 
   gameOver() {
     this.bestScore = Math.max(this.bestScore, SaveManager.saveRun(this.score, false));
+    this.achievements.onRunEnd(this.score, false);
     stopMusic();
     playGameOver();
     this.scene.pause();

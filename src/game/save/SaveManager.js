@@ -27,6 +27,9 @@ export const SaveManager = {
       lastScore: d.lastScore || 0,
       runs: d.runs || 0,
       lastPlayed: d.lastPlayed || null,
+      kills: d.kills || 0,
+      gems: d.gems || 0,
+      unlocked: d.unlocked || [],
     };
   },
 
@@ -34,6 +37,7 @@ export const SaveManager = {
     const d = this.load();
     const newHigh = Math.max(d.highScore, score);
     writeLocal({
+      ...d,
       highScore: newHigh,
       lastScore: score,
       runs: d.runs + 1,
@@ -42,6 +46,29 @@ export const SaveManager = {
     });
     this.sync(newHigh, score);
     return newHigh;
+  },
+
+  addKill() {
+    const d = this.load();
+    const kills = (d.kills || 0) + 1;
+    writeLocal({ ...d, kills });
+    return kills;
+  },
+
+  addGem() {
+    const d = this.load();
+    const gems = (d.gems || 0) + 1;
+    writeLocal({ ...d, gems });
+    return gems;
+  },
+
+  unlock(id) {
+    const d = this.load();
+    const unlocked = d.unlocked || [];
+    if (!unlocked.includes(id)) {
+      unlocked.push(id);
+      writeLocal({ ...d, unlocked });
+    }
   },
 
   async sync(high, last) {

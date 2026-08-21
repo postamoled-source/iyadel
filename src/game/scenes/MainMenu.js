@@ -1,6 +1,7 @@
 // MainMenu — title screen with difficulty selection, best score and play.
 import Phaser from 'phaser';
 import { SaveManager } from '../save/SaveManager';
+import { DEFS } from '../systems/Achievements';
 
 export class MainMenu extends Phaser.Scene {
   constructor() {
@@ -34,6 +35,14 @@ export class MainMenu extends Phaser.Scene {
         fontFamily: 'Segoe UI, system-ui, sans-serif',
         fontSize: '20px',
         color: '#52d9a8',
+      })
+      .setOrigin(0.5);
+    const unlocked = SaveManager.load().unlocked || [];
+    this.add
+      .text(width / 2, height * 0.2 + 140, 'ACHIEVEMENTS  ' + unlocked.length + '/' + DEFS.length, {
+        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontSize: '14px',
+        color: '#a89ce0',
       })
       .setOrigin(0.5);
 
