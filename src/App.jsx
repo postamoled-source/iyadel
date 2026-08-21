@@ -18,7 +18,6 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Privacy from './pages/Privacy';
-import Game from './pages/Game';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -47,7 +46,6 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/Game" element={<Game />} />
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/About" element={<About />} />
