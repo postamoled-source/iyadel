@@ -84,7 +84,7 @@ function NumInput({ label, value, onChange, placeholder }) {
     <div className="text-left">
       <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
       <input type="number" inputMode="decimal" value={value ?? ""} onChange={onChange} placeholder={placeholder}
-        className="w-full rounded-2xl border border-border bg-background text-foreground text-base px-4 py-3.5 min-h-[52px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" />
+        className="w-full rounded-2xl border border-border bg-gradient-to-b from-card to-background text-foreground text-base px-4 py-3.5 min-h-[52px] transition-all duration-200 shadow-[inset_0_2px_4px_hsl(0_0%_0%/0.06),0_1px_0_0_hsl(0_0%_100%/0.04)] focus:outline-none focus:border-primary/60 focus:shadow-[0_0_0_4px_hsl(var(--primary)/0.15),0_10px_28px_-10px_hsl(var(--primary)/0.5)] focus:-translate-y-0.5" />
     </div>
   );
 }
@@ -93,7 +93,7 @@ function TxtInput({ label, value, onChange, placeholder, type = "text" }) {
     <div className="text-left">
       <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
       <input type={type} inputMode={type === "number" ? "decimal" : undefined} value={value ?? ""} onChange={onChange} placeholder={placeholder}
-        className="w-full rounded-2xl border border-border bg-background text-foreground text-base px-4 py-3.5 min-h-[52px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" />
+        className="w-full rounded-2xl border border-border bg-gradient-to-b from-card to-background text-foreground text-base px-4 py-3.5 min-h-[52px] transition-all duration-200 shadow-[inset_0_2px_4px_hsl(0_0%_0%/0.06),0_1px_0_0_hsl(0_0%_100%/0.04)] focus:outline-none focus:border-primary/60 focus:shadow-[0_0_0_4px_hsl(var(--primary)/0.15),0_10px_28px_-10px_hsl(var(--primary)/0.5)] focus:-translate-y-0.5" />
     </div>
   );
 }
@@ -102,7 +102,7 @@ function FnInput({ label, value, onChange, placeholder }) {
     <div className="text-left">
       <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
       <textarea value={value ?? ""} onChange={onChange} placeholder={placeholder} rows={3}
-        className="w-full rounded-2xl border border-border bg-background text-foreground text-base px-4 py-3 min-h-[52px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm resize-y font-mono" />
+        className="w-full rounded-2xl border border-border bg-gradient-to-b from-card to-background text-foreground text-base px-4 py-3 min-h-[52px] transition-all duration-200 shadow-[inset_0_2px_4px_hsl(0_0%_0%/0.06),0_1px_0_0_hsl(0_0%_100%/0.04)] focus:outline-none focus:border-primary/60 focus:shadow-[0_0_0_4px_hsl(var(--primary)/0.15),0_10px_28px_-10px_hsl(var(--primary)/0.5)] focus:-translate-y-0.5 resize-y font-mono" />
     </div>
   );
 }
@@ -115,7 +115,7 @@ function SelectField({ label, value, onChange, options }) {
         onChange={(v) => onChange({ target: { value: v } })}
         options={options}
         placeholder={options[0]}
-        triggerClassName="w-full flex items-center gap-2 rounded-2xl border border-border bg-background text-foreground text-base px-4 py-3.5 h-auto min-h-[52px] shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+        triggerClassName="w-full flex items-center gap-2 rounded-2xl border border-border bg-gradient-to-b from-card to-background text-foreground text-base px-4 py-3.5 h-auto min-h-[52px] shadow-[inset_0_2px_4px_hsl(0_0%_0%/0.06),0_1px_0_0_hsl(0_0%_100%/0.04)] focus:outline-none focus:border-primary/60 focus:shadow-[0_0_0_4px_hsl(var(--primary)/0.15),0_10px_28px_-10px_hsl(var(--primary)/0.5)]"
       />
     </div>
   );
@@ -136,7 +136,7 @@ function ColorField({ label, value, onChange }) {
   return (
     <div className="text-left">
       <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
-      <div className="flex items-center gap-3 rounded-2xl border border-border bg-background px-4 py-2.5 min-h-[52px] shadow-sm">
+      <div className="flex items-center gap-3 rounded-2xl border border-border bg-gradient-to-b from-card to-background px-4 py-2.5 min-h-[52px] shadow-[inset_0_2px_4px_hsl(0_0%_0%/0.06),0_1px_0_0_hsl(0_0%_100%/0.04)]">
         <input type="color" value={value} onChange={onChange} className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent p-0" />
         <span className="text-sm font-mono text-muted-foreground">{value}</span>
       </div>
@@ -145,19 +145,19 @@ function ColorField({ label, value, onChange }) {
 }
 function ResultCard({ title, children }) {
   return (
-    <div className="mt-8 rounded-[2rem] bg-gradient-to-b from-primary/10 to-transparent border border-primary/20 p-8 shadow-inner shadow-primary/5 animate-[fadeIn_0.5s_ease-out]">
+    <div className="mt-8 rounded-[2rem] p-8 animate-[fadeIn_0.5s_ease-out] bg-gradient-to-br from-primary/10 to-accent/5 border border-primary/25 shadow-[0_28px_70px_-24px_hsl(var(--primary)/0.45),inset_0_1px_0_0_hsl(0_0%_100%/0.08)]">
       <h4 className="text-lg font-bold text-foreground mb-4 text-center">{title}</h4>
       <div className="text-center">{children}</div>
     </div>
   );
 }
 function TipBox({ children }) {
-  return <div className="mt-6 rounded-2xl bg-secondary border border-border p-5 text-sm text-secondary-foreground text-center shadow-sm">{children}</div>;
+  return <div className="mt-6 rounded-2xl bg-secondary border border-border p-5 text-sm text-secondary-foreground text-center shadow-[inset_0_2px_6px_hsl(0_0%_0%/0.05)]">{children}</div>;
 }
 function CalcButton({ children, onClick, variant = "primary" }) {
   return (
     <Button onClick={onClick}
-      className={`relative overflow-hidden mt-6 w-full sm:w-auto rounded-2xl px-8 py-6 font-bold text-base transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_20px_-5px_hsl(var(--primary)/0.5)] ${variant === "primary" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>
+      className={`relative overflow-hidden mt-6 w-full sm:w-auto rounded-2xl px-8 py-6 font-bold text-base transition-all duration-200 ${variant === "primary" ? "bg-primary text-primary-foreground shadow-[0_6px_0_0_hsl(268_77%_30%),0_12px_24px_-8px_hsl(var(--primary)/0.6)] hover:shadow-[0_8px_0_0_hsl(268_77%_30%),0_18px_30px_-10px_hsl(var(--primary)/0.7)] active:translate-y-[3px] active:shadow-[0_2px_0_0_hsl(268_77%_30%),0_6px_14px_-6px_hsl(var(--primary)/0.6)]" : "bg-secondary text-secondary-foreground shadow-[0_6px_0_0_hsl(0_0%_45%),0_12px_24px_-8px_hsl(0_0%_0%/0.3)] hover:shadow-[0_8px_0_0_hsl(0_0%_45%),0_18px_30px_-10px_hsl(0_0%_0%/0.35)] active:translate-y-[3px] active:shadow-[0_2px_0_0_hsl(0_0%_45%),0_6px_14px_-6px_hsl(0_0%_0%/0.3)]"}`}>
       {variant === "primary" && <span className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-foreground/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />}
       <span className="relative z-10">{children}</span>
     </Button>
@@ -541,7 +541,7 @@ function ToolWorkspace({ tool, onBack }) {
                   </div>
                 </ResultCard>
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="rounded-2xl bg-background border border-border p-5 shadow-sm">
+                  <div className="rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
                     <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">Principal vs Interest</h4>
                     <div className="h-56">
                       <ResponsiveContainer width="100%" height="100%">
@@ -556,7 +556,7 @@ function ToolWorkspace({ tool, onBack }) {
                       </ResponsiveContainer>
                     </div>
                   </div>
-                  <div className="rounded-2xl bg-background border border-border p-5 shadow-sm">
+                  <div className="rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
                     <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">Balance Over Time</h4>
                     <div className="h-56">
                       <ResponsiveContainer width="100%" height="100%">
@@ -622,7 +622,7 @@ function ToolWorkspace({ tool, onBack }) {
                     </div>
                   </div>
                 </ResultCard>
-                <div className="mt-6 rounded-2xl bg-background border border-border p-5 shadow-sm">
+                <div className="mt-6 rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
                   <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">Growth Over Time</h4>
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
@@ -685,7 +685,7 @@ function ToolWorkspace({ tool, onBack }) {
                   <div className="text-xl text-card-foreground mb-2">{inputs.amount} {result.from} =</div>
                   <div className="text-5xl font-extrabold text-accent">{result.value} <span className="text-2xl text-card-foreground/70 ml-1">{result.to}</span></div>
                 </ResultCard>
-                <div className="mt-6 rounded-2xl bg-background border border-border p-5 shadow-sm">
+                <div className="mt-6 rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
                   <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">Value Comparison</h4>
                   <div className="flex items-end justify-center gap-4 h-40">
                     <div className="flex flex-col items-center gap-1 w-24">
@@ -822,7 +822,7 @@ function ToolWorkspace({ tool, onBack }) {
                   <div className="text-sm text-muted-foreground mb-1">Yield to Maturity (YTM)</div>
                   <div className="text-3xl font-bold text-accent">{bondResult.ytm}%</div>
                 </ResultCard>
-                <div className="mt-6 rounded-2xl bg-background border border-border p-5 shadow-sm">
+                <div className="mt-6 rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
                   <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">Yield Comparison (%)</h4>
                   <div className="h-56">
                     <ResponsiveContainer width="100%" height="100%">
@@ -1134,7 +1134,7 @@ function ToolWorkspace({ tool, onBack }) {
                   <div className="text-4xl font-extrabold text-accent">{out.toFixed(2)}{mode !== "of" ? "%" : ""}</div>
                 </ResultCard>
                 {mode === "of" ? (
-                  <div className="mt-6 rounded-2xl bg-background border border-border p-5 shadow-sm">
+                  <div className="mt-6 rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
                     <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">{a}% of {b}</h4>
                     <div className="h-6 w-full rounded-full bg-secondary overflow-hidden">
                       <div className="h-full bg-primary rounded-full transition-all duration-700" style={{ width: `${Math.min(a, 100)}%` }} />
@@ -1142,7 +1142,7 @@ function ToolWorkspace({ tool, onBack }) {
                     <div className="mt-3 text-center text-sm text-muted-foreground">Result <strong className="text-primary">{out.toFixed(2)}</strong> of {b}</div>
                   </div>
                 ) : (
-                  <div className="mt-6 rounded-2xl bg-background border border-border p-5 shadow-sm">
+                  <div className="mt-6 rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
                     <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">{mode === "isWhat" ? `${a} as % of ${b}` : `Change from ${a} to ${b}`}</h4>
                     <div className="flex items-end justify-center gap-2 h-40">
                       <div className="flex flex-col items-center gap-1">
@@ -1754,7 +1754,7 @@ function ToolsHub({ searchQuery = "" }) {
             return (
               <AnimatedElement key={tool.slug || index} delay={index * 80}>
                 <div onClick={() => selectTool(tool)}
-                  className="relative w-full h-full text-center rounded-[2rem] bg-card border border-border p-8 transition-all duration-400 hover:-translate-y-2 hover:shadow-[0_20px_50px_-15px_hsl(var(--primary)/0.2)] hover:border-primary/40 group flex flex-col items-center justify-center cursor-pointer">
+                  className="relative w-full h-full text-center rounded-[2rem] bg-gradient-to-b from-card to-background border border-border p-8 transition-all duration-400 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.18),inset_0_1px_0_0_hsl(0_0%_100%/0.05)] hover:-translate-y-2 hover:shadow-[0_28px_60px_-18px_hsl(var(--primary)/0.4)] hover:border-primary/40 group flex flex-col items-center justify-center cursor-pointer">
                   
                   <button
                     onClick={(e) => { e.stopPropagation(); toggleFavorite(tool.slug); trackEvent("tool_favorite", { tool_slug: tool.slug, action: fav ? "remove" : "add" }); }}
@@ -1763,7 +1763,7 @@ function ToolsHub({ searchQuery = "" }) {
                     <Star className={`w-5 h-5 ${fav ? "fill-accent" : ""}`} />
                   </button>
                   
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-5 shadow-lg shadow-primary/30 group-hover:scale-110 group-hover:shadow-primary/40 transition-all duration-500 overflow-hidden">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-5 shadow-[0_12px_26px_-6px_hsl(var(--primary)/0.55),inset_0_1px_0_0_hsl(0_0%_100%/0.3),inset_0_-3px_6px_0_hsl(0_0%_0%/0.15)] group-hover:scale-110 group-hover:shadow-[0_16px_32px_-6px_hsl(var(--primary)/0.65)] transition-all duration-500 overflow-hidden">
                     {tool.logo ? (
                       <img src={tool.logo} alt={t(tool.name)} className="w-full h-full object-cover" />
                     ) : (
