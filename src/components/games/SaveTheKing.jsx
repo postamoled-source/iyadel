@@ -305,7 +305,7 @@ export default function SaveTheKing() {
   // measure viewport → fit a 6-wide board with no overflow
   useEffect(() => {
     const measure = () => {
-      const avail = Math.min(window.innerWidth - 40, 312);
+      const avail = Math.min(window.innerWidth - 48, 300);
       setTs(Math.max(26, Math.floor(avail / COLS)));
     };
     measure();
@@ -587,7 +587,7 @@ export default function SaveTheKing() {
 
       {/* Unified game unit: danger scene on top, control board directly under it (one frame) */}
       <div className="mx-auto" style={{ width: bw }}>
-        <div className="rounded-3xl overflow-hidden border-2 border-stone-700/60 shadow-[0_18px_40px_-18px_rgba(255,80,0,0.55)] bg-stone-900">
+        <div className="rounded-3xl overflow-hidden border-2 border-stone-700/60 box-border shadow-[0_18px_40px_-18px_rgba(255,80,0,0.55)] bg-stone-900">
           {/* screen */}
           <div className="relative">
             <canvas ref={canvasRef} width={CW} height={CH}
@@ -633,8 +633,8 @@ export default function SaveTheKing() {
           </div>
 
           {/* control board — the buttons, fused under the screen as one unit, responsive */}
-          <div className="bg-gradient-to-b from-stone-800 to-stone-900 border-t-2 border-stone-700/60 px-2 py-2 touch-none select-none overflow-hidden" style={{ touchAction: "none" }}>
-            <div className="relative mx-auto" style={{ width: bw, height: bh }}>
+          <div className="bg-gradient-to-b from-stone-800 to-stone-900 border-t-2 border-stone-700/60 py-2 touch-none select-none overflow-hidden" style={{ touchAction: "none" }}>
+            <div className="relative" style={{ width: "100%", height: bh }}>
               <AnimatePresence>
                 {tiles.map((tile) => (
                   <motion.div
@@ -647,7 +647,7 @@ export default function SaveTheKing() {
                     onPointerMove={(e) => onTileMove(tile, e)}
                     onPointerUp={() => onTileUp(tile)}
                     className={`absolute flex items-center justify-center rounded-xl cursor-pointer touch-none select-none ${selected === tile.id ? "ring-2 ring-white z-10" : ""}`}
-                    style={{ width: ts - 4, height: ts - 4, margin: 2, touchAction: "none", background: `radial-gradient(circle at 35% 30%, ${TILE_META[tile.type].color}, ${TILE_META[tile.type].edge})`, boxShadow: "inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.25)" }}
+                    style={{ width: ts - 4, height: ts - 4, touchAction: "none", background: `radial-gradient(circle at 35% 30%, ${TILE_META[tile.type].color}, ${TILE_META[tile.type].edge})`, boxShadow: "inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.25)" }}
                   >
                     {(() => { const I = TILE_META[tile.type].Icon; return <I className="w-5 h-5 text-white/90 drop-shadow" strokeWidth={2.2} />; })()}
                   </motion.div>
