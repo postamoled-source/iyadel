@@ -2,20 +2,24 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
-import { Crown, Leaf, Heart, Gem, Play, RotateCcw, Trophy, AlertTriangle } from "lucide-react";
+import { Crown, Leaf, Heart, Gem, Play, RotateCcw, Trophy, AlertTriangle, ArrowUp } from "lucide-react";
 import { playStart, playWin, playGameOver, playBubblePop, resumeAudio } from "@/lib/game-sounds";
 
 // Danger scene canvas size.
-const CW = 320, CH = 240;
+const CW = 320, CH = 300;
 // Match-3 board.
-const COLS = 7, ROWS = 7;
+const COLS = 6, ROWS = 6;
 const TILE_TYPES = 4;
-// Level-1 tuning.
-const GOAL = 6;
-const LAVA_START = 0.12;
-const LAVA_MAX = 0.6;      // lava reaches the platform → king falls
-const LAVA_RISE = 0.018;  // per second
-const LAVA_DRAIN = 0.09;   // per matched tile group
+
+// Platform base + lift (level 2 escape).
+const PLAT_BASE_Y = 0.78;   // platform Y at lift=0 (fraction of CH)
+const PLAT_LIFT_PX = 150;   // how far the platform rises at full lift
+
+// Per-level tuning.
+const LVL = {
+  1: { goal: 6, lavaStart: 0.12, lavaRise: 0.020, lavaDrain: 0.10, lift: false },
+  2: { goal: 10, lavaStart: 0.14, lavaRise: 0.026, lavaDrain: 0.07, lift: true, liftPerMatch: 0.10 },
+};
 
 const TILE_META = [
   { Icon: Crown, color: "#ffd740", edge: "#b8860b" },
@@ -61,7 +65,7 @@ function makeBoard() {
   for (let r = 0; r < ROWS; r++)
     for (let c = 0; c < COLS; c++) b.push({ id: uid(), type: Math.floor(Math.random() * TILE_TYPES), col: c, row: r });
   let m = findMatches(b), guard = 0;
-  while (m.size && guard++ < 30) {
+  while (m.size && guard++ < 40) {
     for (const id of m) { const t = b.find((x) => x.id === id); if (t) t.type = (t.type + 1) % TILE_TYPES; }
     m = findMatches(b);
   }
@@ -272,19 +276,22 @@ function drawKing(ctx, cx, groundY, t, urgency) {
 export default function SaveTheKing() {
   const { t } = useI18n();
   const canvasRef = useRef(null);
-  const boardWrapRef = useRef(null);
 
   const [tiles, setTiles] = useState(() => makeBoard());
   const [selected, setSelected] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [phase, setPhase] = useState("idle"); // idle | playing | won | lost
+  const [phase, setPhase] = useState("idle"); // idle | playing | levelComplete | won | lost
+  const [level, setLevel] = useState(1);
   const [progress, setProgress] = useState(0);
   const [score, setScore] = useState(0);
-  const [lavaLevel, setLavaLevel] = useState(LAVA_START);
-  const [ts, setTs] = useState(34); // tile size, measured to fit container
+  const [lavaLevel, setLavaLevel] = useState(LVL[1].lavaStart);
+  const [lift, setLift] = useState(0);
+  const [ts, setTs] = useState(50); // tile size, measured to fit viewport
 
   const phaseRef = useRef("idle");
-  const lavaRef = useRef(LAVA_START);
+  const levelRef = useRef(1);
+  const lavaRef = useRef(LVL[1].lavaStart);
+  const liftRef = useRef(0);
   const progressRef = useRef(0);
   const scoreRef = useRef(0);
   const rafRef = useRef(null);
@@ -295,15 +302,15 @@ export default function SaveTheKing() {
 
   const stopLoop = () => { if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; } };
 
-  // measure board wrapper → fit tile size so the grid never overflows
+  // measure viewport → fit a 6-wide board with no overflow
   useEffect(() => {
-    const el = boardWrapRef.current;
-    if (!el) return;
-    const measure = () => setTs(Math.max(22, Math.floor((el.clientWidth - 16) / COLS)));
+    const measure = () => {
+      const avail = Math.min(window.innerWidth - 28, 348);
+      setTs(Math.max(26, Math.floor(avail / COLS)));
+    };
     measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
   }, []);
 
   // ---- danger scene render loop (always running so the king breathes) ----
@@ -312,16 +319,25 @@ export default function SaveTheKing() {
     if (!cv || !mountedRef.current) return;
     const ctx = cv.getContext("2d");
     const now = performance.now();
-    const dt = lastRef.current ? (now - lastRef.current) / 1000 : 0;
+    const dt = lastRef.current ? Math.min(0.05, (now - lastRef.current) / 1000) : 0;
     lastRef.current = now;
 
+    const cfg = LVL[levelRef.current] || LVL[1];
     if (phaseRef.current === "playing") {
-      lavaRef.current = Math.min(LAVA_MAX + 0.0001, lavaRef.current + LAVA_RISE * dt);
+      lavaRef.current = Math.min(1, lavaRef.current + cfg.lavaRise * dt);
       setLavaLevel(lavaRef.current);
-      if (lavaRef.current >= LAVA_MAX) finish("lost");
     }
-    const urgency = lavaRef.current / LAVA_MAX;
 
+    const liftNow = liftRef.current;
+    const platY = CH * PLAT_BASE_Y - liftNow * PLAT_LIFT_PX;
+    const groundY = platY - 14;
+    const lavaTopY = CH - lavaRef.current * CH;
+    const loseLava = (CH - (groundY - 4)) / CH;
+    const urgency = Math.min(1, lavaRef.current / Math.max(0.01, loseLava));
+
+    if (phaseRef.current === "playing" && lavaTopY >= groundY - 4) finish("lost");
+
+    // background (cave wall)
     const bg = ctx.createLinearGradient(0, 0, 0, CH);
     bg.addColorStop(0, "#2c3e50"); bg.addColorStop(1, "#14110f");
     ctx.fillStyle = bg; ctx.fillRect(0, 0, CW, CH);
@@ -332,20 +348,29 @@ export default function SaveTheKing() {
       for (let x = off; x < CW; x += 44) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + 22); ctx.stroke(); }
     }
 
-    const pourY = 18;
-    const lavaTopY = CH - lavaRef.current * CH;
+    // volcano rim / escape opening at the top
+    ctx.fillStyle = "#0b1326"; ctx.fillRect(0, 0, CW, 20);
+    ctx.fillStyle = "#2a2118";
+    ctx.beginPath();
+    ctx.moveTo(0, 0); ctx.lineTo(0, 30);
+    ctx.quadraticCurveTo(CW * 0.22, 12, CW * 0.5, 26);
+    ctx.quadraticCurveTo(CW * 0.78, 12, CW, 30);
+    ctx.lineTo(CW, 0); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#3a2d1f"; ctx.fillRect(0, 0, CW, 8);
+
+    const pourY = 22;
     const drawPipe = (px, dir) => {
-      ctx.fillStyle = "#7a3b3b"; ctx.fillRect(px - 12, 0, 24, 26);
-      ctx.fillStyle = "#5a2a2a"; ctx.fillRect(px - 12, 22, 24, 6);
+      ctx.fillStyle = "#7a3b3b"; ctx.fillRect(px - 11, 0, 22, 28);
+      ctx.fillStyle = "#5a2a2a"; ctx.fillRect(px - 11, 24, 22, 6);
       const sg = ctx.createLinearGradient(0, pourY, 0, lavaTopY);
       sg.addColorStop(0, "#ff8c00"); sg.addColorStop(1, "#ff4500");
       ctx.fillStyle = sg;
       ctx.beginPath();
-      ctx.moveTo(px - 5, pourY); ctx.lineTo(px + 5, pourY);
-      ctx.lineTo(px + 3 + dir * 4, lavaTopY); ctx.lineTo(px - 3 + dir * 4, lavaTopY);
+      ctx.moveTo(px - 4, pourY); ctx.lineTo(px + 4, pourY);
+      ctx.lineTo(px + 3 + dir * 3, lavaTopY); ctx.lineTo(px - 3 + dir * 3, lavaTopY);
       ctx.closePath(); ctx.fill();
     };
-    drawPipe(34, 1); drawPipe(CW - 34, -1);
+    if (lavaRef.current > 0.02) { drawPipe(34, 1); drawPipe(CW - 34, -1); }
 
     const lh = CH - lavaTopY;
     if (lh > 1) {
@@ -369,7 +394,7 @@ export default function SaveTheKing() {
       ctx.fillStyle = gg; ctx.fillRect(0, lavaTopY - 40, CW, 40);
     }
 
-    if (phaseRef.current === "playing" && Math.random() < 0.5) {
+    if (phaseRef.current === "playing" && lavaRef.current > 0.05 && Math.random() < 0.5) {
       embersRef.current.push({ x: Math.random() * CW, y: CH - Math.random() * 20, vy: -rand(20, 45), life: 1, r: rand(1, 2.4) });
     }
     const em = embersRef.current;
@@ -383,8 +408,7 @@ export default function SaveTheKing() {
     }
     ctx.globalAlpha = 1;
 
-    // stone platform (ground)
-    const platY = CH * 0.62;
+    // stone platform (ground) — rises with lift in level 2
     ctx.fillStyle = "rgba(0,0,0,0.4)";
     ctx.beginPath(); ctx.ellipse(CW / 2, platY + 16, 52, 10, 0, 0, Math.PI * 2); ctx.fill();
     const pg = ctx.createLinearGradient(0, platY - 16, 0, platY + 16);
@@ -395,7 +419,6 @@ export default function SaveTheKing() {
     ctx.beginPath(); ctx.ellipse(CW / 2, platY - 4, 38, 6, 0, 0, Math.PI * 2); ctx.fill();
 
     // king — feet planted on platform top
-    const groundY = platY - 14;
     drawKing(ctx, CW / 2, groundY, now, urgency);
 
     if (mountedRef.current) rafRef.current = requestAnimationFrame(drawScene);
@@ -403,16 +426,22 @@ export default function SaveTheKing() {
 
   const finish = useCallback((res) => {
     if (phaseRef.current !== "playing") return;
-    phaseRef.current = res; setPhase(res);
-    if (res === "won") playWin(); else playGameOver();
+    if (res === "won") {
+      if (levelRef.current === 1) { phaseRef.current = "levelComplete"; setPhase("levelComplete"); playWin(); return; }
+      phaseRef.current = "won"; setPhase("won"); playWin(); return;
+    }
+    phaseRef.current = "lost"; setPhase("lost"); playGameOver();
   }, []);
 
-  const start = useCallback(() => {
+  const start = useCallback((lvl = 1) => {
     resumeAudio();
+    const cfg = LVL[lvl];
     setTiles(makeBoard()); setSelected(null); setBusy(false);
+    levelRef.current = lvl; setLevel(lvl);
     progressRef.current = 0; setProgress(0);
     scoreRef.current = 0; setScore(0);
-    lavaRef.current = LAVA_START; setLavaLevel(LAVA_START);
+    lavaRef.current = cfg.lavaStart; setLavaLevel(cfg.lavaStart);
+    liftRef.current = 0; setLift(0);
     embersRef.current = [];
     phaseRef.current = "playing"; setPhase("playing");
     playStart();
@@ -427,6 +456,7 @@ export default function SaveTheKing() {
 
   // ---- match-3 resolution ----
   const resolve = useCallback(async (board) => {
+    const cfg = LVL[levelRef.current] || LVL[1];
     let m = findMatches(board);
     while (m.size) {
       const removeIds = new Set(m);
@@ -436,11 +466,14 @@ export default function SaveTheKing() {
       board = applyGravity(board);
       setTiles([...board]);
       await sleep(170);
-      lavaRef.current = Math.max(0, lavaRef.current - LAVA_DRAIN);
+      // each successful match pushes the lava back
+      lavaRef.current = Math.max(0, lavaRef.current - cfg.lavaDrain);
       setLavaLevel(lavaRef.current);
       scoreRef.current += m.size * 10; setScore(scoreRef.current);
-      progressRef.current = Math.min(GOAL, progressRef.current + 1); setProgress(progressRef.current);
-      if (progressRef.current >= GOAL) { finish("won"); return; }
+      progressRef.current = Math.min(cfg.goal, progressRef.current + 1); setProgress(progressRef.current);
+      // level 2: matches raise the platform toward the escape rim
+      if (cfg.lift) { liftRef.current = Math.min(1, liftRef.current + cfg.liftPerMatch); setLift(liftRef.current); }
+      if (progressRef.current >= cfg.goal) { finish("won"); return; }
       m = findMatches(board);
     }
     setTiles([...board]);
@@ -501,9 +534,11 @@ export default function SaveTheKing() {
     if (d && d.id === tile.id && !d.moved) handleSelect(tile);
   }, [handleSelect]);
 
+  const cfg = LVL[level] || LVL[1];
   const playing = phase === "playing";
-  const pct = Math.round((progress / GOAL) * 100);
-  const lavaPct = Math.round((lavaLevel / LAVA_MAX) * 100);
+  const pct = Math.round((progress / cfg.goal) * 100);
+  const lavaPct = Math.round((lavaLevel / Math.max(0.01, (CH - (CH * PLAT_BASE_Y - lift * PLAT_LIFT_PX - 14 - 4)) / CH)) * 100);
+  const liftPct = Math.round(lift * 100);
   const bw = ts * COLS, bh = ts * ROWS;
 
   return (
@@ -512,7 +547,10 @@ export default function SaveTheKing() {
       <div className="flex items-center justify-between gap-3 mb-3">
         <div className="flex-1">
           <div className="flex items-center justify-between text-[11px] font-bold mb-1">
-            <span className="text-primary">{t("Rescue")} {progress}/{GOAL}</span>
+            <span className="text-primary flex items-center gap-1">
+              {cfg.lift ? <ArrowUp className="w-3 h-3" /> : <Crown className="w-3 h-3" />}
+              {cfg.lift ? t("Escape") : t("Rescue")} {progress}/{cfg.goal}
+            </span>
             <span className="text-muted-foreground">{pct}%</span>
           </div>
           <div className="h-2.5 rounded-full bg-secondary overflow-hidden">
@@ -522,20 +560,33 @@ export default function SaveTheKing() {
         <div className="flex-1">
           <div className="flex items-center justify-between text-[11px] font-bold mb-1">
             <span className="text-orange-500 flex items-center gap-1"><AlertTriangle className="w-3 h-3" />{t("Lava")}</span>
-            <span className="text-muted-foreground">{lavaPct}%</span>
+            <span className="text-muted-foreground">{Math.min(100, lavaPct)}%</span>
           </div>
           <div className="h-2.5 rounded-full bg-secondary overflow-hidden">
             <div className="h-full bg-gradient-to-r from-yellow-400 to-red-600 transition-all duration-300" style={{ width: `${Math.min(100, lavaPct)}%` }} />
           </div>
         </div>
         <div className="text-center shrink-0">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("Score")}</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("Level")} {level}</div>
           <div className="text-lg font-extrabold tabular-nums text-accent">{score}</div>
         </div>
       </div>
 
+      {/* level 2 escape (lift) bar */}
+      {cfg.lift && (
+        <div className="mb-3">
+          <div className="flex items-center justify-between text-[11px] font-bold mb-1">
+            <span className="text-sky-400 flex items-center gap-1"><ArrowUp className="w-3 h-3" />{t("Platform")}</span>
+            <span className="text-muted-foreground">{liftPct}%</span>
+          </div>
+          <div className="h-2.5 rounded-full bg-secondary overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-sky-400 to-emerald-400 transition-all duration-500" style={{ width: `${liftPct}%` }} />
+          </div>
+        </div>
+      )}
+
       {/* Unified game unit: danger scene on top, control board directly under it (one frame) */}
-      <div className="mx-auto" style={{ width: "min(92vw, 320px)" }}>
+      <div className="mx-auto" style={{ width: bw }}>
         <div className="rounded-3xl overflow-hidden border-2 border-stone-700/60 shadow-[0_18px_40px_-18px_rgba(255,80,0,0.55)] bg-stone-900">
           {/* screen */}
           <div className="relative">
@@ -543,27 +594,36 @@ export default function SaveTheKing() {
               className="block w-full touch-none"
               style={{ aspectRatio: `${CW}/${CH}` }} />
             {!playing && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/55 backdrop-blur-sm text-center p-5 animate-[fadeIn_0.3s_ease-out]">
-                {phase === "won" ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 backdrop-blur-sm text-center p-5 animate-[fadeIn_0.3s_ease-out]">
+                {phase === "levelComplete" ? (
                   <>
                     <Trophy className="w-10 h-10 text-accent" />
-                    <div className="text-xl font-extrabold text-white">{t("King Saved!")}</div>
+                    <div className="text-xl font-extrabold text-white">{t("Level 1 Complete!")}</div>
+                    <div className="text-sm text-white/80">{t("The lava is drained. Now climb out of the volcano!")}</div>
+                    <Button onClick={() => start(2)} className="bg-primary text-primary-foreground rounded-2xl px-6 py-5 font-bold">
+                      <ArrowUp className="w-4 h-4 mr-2" />{t("Level 2")}
+                    </Button>
+                  </>
+                ) : phase === "won" ? (
+                  <>
+                    <Trophy className="w-10 h-10 text-accent" />
+                    <div className="text-xl font-extrabold text-white">{t("The King Escaped!")}</div>
                     <div className="text-sm text-white/80">{t("Score")}: <span className="font-bold text-accent">{score}</span></div>
-                    <Button onClick={start} className="bg-primary text-primary-foreground rounded-2xl px-6 py-5"><RotateCcw className="w-4 h-4 mr-2" />{t("Play again")}</Button>
+                    <Button onClick={() => start(1)} className="bg-primary text-primary-foreground rounded-2xl px-6 py-5"><RotateCcw className="w-4 h-4 mr-2" />{t("Play again")}</Button>
                   </>
                 ) : phase === "lost" ? (
                   <>
                     <AlertTriangle className="w-10 h-10 text-red-400" />
                     <div className="text-xl font-extrabold text-white">{t("The King Fell!")}</div>
                     <div className="text-sm text-white/80">{t("The lava reached the king.")}</div>
-                    <Button onClick={start} className="bg-primary text-primary-foreground rounded-2xl px-6 py-5"><RotateCcw className="w-4 h-4 mr-2" />{t("Try again")}</Button>
+                    <Button onClick={() => start(level)} className="bg-primary text-primary-foreground rounded-2xl px-6 py-5"><RotateCcw className="w-4 h-4 mr-2" />{t("Try again")}</Button>
                   </>
                 ) : (
                   <>
                     <Crown className="w-9 h-9 text-accent" />
                     <div className="text-lg font-extrabold text-white">{t("Save the King")}</div>
-                    <p className="text-xs text-white/80 max-w-[230px]">{t("Match 3+ blocks to drain the lava and save the anime king before it reaches him!")}</p>
-                    <Button onClick={start} className="bg-primary text-primary-foreground rounded-2xl px-8 py-5 text-base font-bold">
+                    <p className="text-xs text-white/80 max-w-[230px]">{t("Drag a block up/down/left/right to match 3+ and push back the lava. Save the anime king!")}</p>
+                    <Button onClick={() => start(1)} className="bg-primary text-primary-foreground rounded-2xl px-8 py-5 text-base font-bold">
                       <Play className="w-4 h-4 mr-2" />{t("Start")}
                     </Button>
                   </>
@@ -573,7 +633,7 @@ export default function SaveTheKing() {
           </div>
 
           {/* control board — the buttons, fused under the screen as one unit, responsive */}
-          <div ref={boardWrapRef} className="bg-gradient-to-b from-stone-800 to-stone-900 border-t-2 border-stone-700/60 px-2 py-2 touch-none select-none" style={{ touchAction: "none" }}>
+          <div className="bg-gradient-to-b from-stone-800 to-stone-900 border-t-2 border-stone-700/60 px-2 py-2 touch-none select-none overflow-hidden" style={{ touchAction: "none" }}>
             <div className="relative mx-auto" style={{ width: bw, height: bh }}>
               <AnimatePresence>
                 {tiles.map((tile) => (
@@ -599,7 +659,7 @@ export default function SaveTheKing() {
       </div>
 
       <p className="mt-3 text-center text-xs text-muted-foreground">
-        {t("Tap two adjacent blocks to swap and match 3 or more.")}
+        {t("Drag any block up, down, left or right to swap and match 3 or more.")}
       </p>
     </div>
   );
