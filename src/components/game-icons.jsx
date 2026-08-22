@@ -5,14 +5,34 @@ function Snake({ className, style }) {
   return (
     <svg viewBox="0 0 64 64" className={className} style={style} fill="none">
       <defs>
-        <linearGradient id="gmsnk" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#34d399" /><stop offset="100%" stopColor="#0f766e" />
+        <radialGradient id="gmsnkBody" cx="35%" cy="25%" r="80%" fx="30%" fy="20%">
+          <stop offset="0%" stopColor="#a7f3d0" />
+          <stop offset="45%" stopColor="#34d399" />
+          <stop offset="100%" stopColor="#065f46" />
+        </radialGradient>
+        <radialGradient id="gmsnkHead" cx="40%" cy="30%" r="75%">
+          <stop offset="0%" stopColor="#d1fae5" />
+          <stop offset="55%" stopColor="#10b981" />
+          <stop offset="100%" stopColor="#047857" />
+        </radialGradient>
+        <linearGradient id="gmsnkBelly" x1="0" y1="40" x2="0" y2="64" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#fbbf24" />
+          <stop offset="100%" stopColor="#b45309" />
         </linearGradient>
       </defs>
-      <path d="M16 52 C16 40 30 42 30 30 C30 18 44 18 44 30" stroke="url(#gmsnk)" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="44" cy="22" r="10" fill="url(#gmsnk)" />
-      <circle cx="47" cy="19" r="2.4" fill="#fff" />
-      <path d="M50 22 q5 1 6 -3" stroke="#f5a623" strokeWidth="2.4" strokeLinecap="round" />
+      {/* belly highlight under the body */}
+      <path d="M14 54 C14 41 29 43 29 29 C29 18 43 17 45 30" stroke="url(#gmsnkBelly)" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
+      {/* main 3D coiled body */}
+      <path d="M16 52 C16 40 30 42 30 30 C30 18 44 18 44 30" stroke="url(#gmsnkBody)" strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" />
+      {/* scale ridge highlight */}
+      <path d="M17 49 C18 39 30 40 30 31 C30 20 43 20 43 30" stroke="#fff" strokeOpacity="0.35" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* head */}
+      <circle cx="44" cy="23" r="11" fill="url(#gmsnkHead)" />
+      <circle cx="48" cy="19" r="2.6" fill="#0f172a" />
+      <circle cx="49" cy="18" r="0.9" fill="#fff" />
+      {/* forked tongue */}
+      <path d="M50 23 q5 1 7 -3" stroke="#ef4444" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+      <path d="M55 21 l2 1 M57 20 l1 2" stroke="#ef4444" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
@@ -67,14 +87,38 @@ function Whack({ className, style }) {
   return (
     <svg viewBox="0 0 64 64" className={className} style={style}>
       <defs>
-        <linearGradient id="gmwhk" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#fb7185" /><stop offset="100%" stopColor="#be123c" />
+        <radialGradient id="gmwhkHead" cx="38%" cy="28%" r="78%" fx="32%" fy="22%">
+          <stop offset="0%" stopColor="#fecdd3" />
+          <stop offset="50%" stopColor="#fb7185" />
+          <stop offset="100%" stopColor="#9f1239" />
+        </radialGradient>
+        <linearGradient id="gmwhkHammer" x1="0" y1="0" x2="0" y2="56" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#fbbf24" />
+          <stop offset="55%" stopColor="#b45309" />
+          <stop offset="100%" stopColor="#451a03" />
+        </linearGradient>
+        <linearGradient id="gmwhkHandle" x1="0" y1="0" x2="0" y2="60" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#fbbf24" />
+          <stop offset="100%" stopColor="#78350f" />
         </linearGradient>
       </defs>
+      {/* hammer shaft with wood grain */}
+      <g transform="rotate(40 26 20)">
+        <rect x="22" y="22" width="8" height="34" rx="4" fill="url(#gmwhkHandle)" />
+        <path d="M24 24 h4 M24 30 h4 M24 36 h4 M24 42 h4" stroke="#451a03" strokeOpacity="0.35" strokeWidth="0.8" />
+        <rect x="22" y="22" width="8" height="34" rx="4" fill="#fff" opacity="0.12" />
+      </g>
+      {/* 3D hammer head */}
       <g transform="rotate(40 26 18)">
-        <rect x="8" y="6" width="36" height="20" rx="5" fill="url(#gmwhk)" />
-        <rect x="8" y="6" width="36" height="6" rx="3" fill="#fff" opacity="0.25" />
-        <rect x="22" y="22" width="8" height="34" rx="4" fill="#92400e" />
+        <rect x="7" y="5" width="38" height="22" rx="6" fill="url(#gmwhkHead)" />
+        {/* top highlight bevel */}
+        <rect x="8" y="6" width="36" height="6" rx="3" fill="#fff" opacity="0.45" />
+        {/* bottom shadow bevel */}
+        <rect x="8" y="21" width="36" height="5" rx="2.5" fill="#000" opacity="0.2" />
+        {/* strike ring */}
+        <circle cx="10" cy="16" r="2.4" fill="#fff" opacity="0.7" />
+        {/* impact sparks */}
+        <path d="M3 14 l-3 -2 M3 18 l-3 2 M2 16 h-3" stroke="#fde68a" strokeWidth="1.8" strokeLinecap="round" />
       </g>
     </svg>
   );
@@ -84,17 +128,44 @@ function Launcher({ className, style }) {
   return (
     <svg viewBox="0 0 64 64" className={className} style={style}>
       <defs>
-        <linearGradient id="gmlnch" x1="0" y1="64" x2="64" y2="0" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#a78bfa" /><stop offset="100%" stopColor="#3b2a8c" />
+        <radialGradient id="gmlnchBall" cx="38%" cy="32%" r="75%" fx="32%" fy="24%">
+          <stop offset="0%" stopColor="#fde68a" />
+          <stop offset="50%" stopColor="#f5a623" />
+          <stop offset="100%" stopColor="#7c2d12" />
+        </radialGradient>
+        <linearGradient id="gmlnchCannon" x1="0" y1="30" x2="0" y2="48" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#c4b5fd" />
+          <stop offset="50%" stopColor="#7c3aed" />
+          <stop offset="100%" stopColor="#2e1065" />
         </linearGradient>
+        <linearGradient id="gmlnchBarrel" x1="0" y1="30" x2="0" y2="48" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#ede9fe" />
+          <stop offset="60%" stopColor="#a78bfa" />
+          <stop offset="100%" stopColor="#4c1d95" />
+        </linearGradient>
+        <radialGradient id="gmlnchMuzzle" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#1e1b4b" />
+          <stop offset="100%" stopColor="#000" />
+        </radialGradient>
       </defs>
-      <g transform="rotate(-38 30 38)">
-        <rect x="8" y="30" width="44" height="18" rx="9" fill="url(#gmlnch)" />
-        <rect x="8" y="30" width="44" height="6" rx="3" fill="#fff" opacity="0.25" />
+      {/* 3D cannon base */}
+      <g transform="rotate(-38 30 40)">
+        <rect x="6" y="29" width="48" height="20" rx="10" fill="url(#gmlnchCannon)" />
+        <rect x="6" y="29" width="48" height="6" rx="3" fill="#fff" opacity="0.45" />
+        <rect x="6" y="43" width="48" height="6" rx="3" fill="#000" opacity="0.25" />
+        {/* barrel rim / muzzle */}
+        <rect x="48" y="26" width="8" height="26" rx="4" fill="url(#gmlnchBarrel)" />
+        <ellipse cx="52" cy="39" rx="3" ry="11" fill="url(#gmlnchMuzzle)" />
+        {/* bolt detail */}
         <circle cx="14" cy="39" r="3" fill="#fff" opacity="0.6" />
+        <circle cx="14" cy="39" r="1.4" fill="#3b2a8c" opacity="0.5" />
       </g>
-      <circle cx="48" cy="18" r="10" fill="#f5a623" />
-      <circle cx="45" cy="15" r="3" fill="#fff" opacity="0.7" />
+      {/* glowing 3D projectile */}
+      <circle cx="48" cy="18" r="11" fill="url(#gmlnchBall)" />
+      <circle cx="44" cy="14" r="3.2" fill="#fff" opacity="0.8" />
+      {/* launch streak */}
+      <path d="M58 8 q4 1 4 5" stroke="#fde68a" strokeWidth="2.4" strokeLinecap="round" fill="none" opacity="0.85" />
+      <path d="M61 6 l2 2 M61 13 l2 -1" stroke="#f5a623" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
