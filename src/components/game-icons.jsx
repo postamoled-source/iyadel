@@ -267,44 +267,6 @@ function SaveKing({ className, style }) {
   );
 }
 
-function RoyalMatch({ className, style }) {
-  return (
-    <svg viewBox="0 0 64 64" className={className} style={style}>
-      <defs>
-        <radialGradient id="gmrmGem" cx="40%" cy="32%" r="75%" fx="34%" fy="26%">
-          <stop offset="0%" stopColor="#a5f3fc" />
-          <stop offset="55%" stopColor="#22d3ee" />
-          <stop offset="100%" stopColor="#0e7490" />
-        </radialGradient>
-        <linearGradient id="gmrmChest" x1="0" y1="22" x2="0" y2="58" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#b45309" /><stop offset="100%" stopColor="#78350f" />
-        </linearGradient>
-        <linearGradient id="gmrmWater" x1="0" y1="40" x2="0" y2="64" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#38bdf8" /><stop offset="100%" stopColor="#075985" />
-        </linearGradient>
-      </defs>
-      {/* rising water */}
-      <path d="M2 46 q6 -4 12 0 t12 0 t12 0 t12 0 t12 0 V62 H2 Z" fill="url(#gmrmWater)" />
-      {/* chest body */}
-      <rect x="16" y="30" width="32" height="22" rx="3" fill="url(#gmrmChest)" />
-      <rect x="16" y="34" width="32" height="3" fill="#fcd34d" />
-      <rect x="16" y="44" width="32" height="3" fill="#fcd34d" />
-      {/* lid */}
-      <path d="M16 30 q16 -16 32 0 Z" fill="#8b5a2b" />
-      <path d="M16 30 q16 -13 32 0 Z" fill="#fcd34d" />
-      <path d="M18 29.5 q14 -10 28 0 Z" fill="#b45309" />
-      {/* lock */}
-      <rect x="29" y="32" width="6" height="7" rx="1" fill="#fcd34d" />
-      {/* gem on top */}
-      <path d="M32 6 l8 9 l-8 11 l-8 -11 Z" fill="url(#gmrmGem)" />
-      <path d="M32 6 l8 9 l-8 3 Z" fill="#fff" opacity="0.35" />
-      {/* sparkles */}
-      <circle cx="22" cy="20" r="1.3" fill="#fde68a" />
-      <circle cx="44" cy="24" r="1.3" fill="#fde68a" />
-    </svg>
-  );
-}
-
 const MAP = {
   "snake-game": Snake,
   "game-2048": Game2048,
@@ -315,7 +277,6 @@ const MAP = {
   "math-puzzle": MathPuzzle,
   "word-scramble": WordScramble,
   "save-the-king": SaveKing,
-  "royal-match": RoyalMatch,
 };
 
 export default function GameIcon({ slug, className = "w-16 h-16" }) {
