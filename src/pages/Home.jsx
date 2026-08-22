@@ -267,7 +267,7 @@ function sharpenImage(src, w, h, amount) {
 function drawLogo(ctx, p) {
   const W = 600, H = 600;
   ctx.clearRect(0, 0, W, H);
-  const ff = { Sans: "sans-serif", Serif: "serif", Mono: "monospace" }[p.font] || "sans-serif";
+  const ff = { Sans: "sans-serif", Serif: "serif", Mono: "monospace", Poppins: "Poppins, sans-serif", Playfair: "'Playfair Display', serif", Pacifico: "Pacifico, cursive", Bebas: "'Bebas Neue', sans-serif", Lobster: "Lobster, cursive", Oswald: "Oswald, sans-serif", Anton: "Anton, sans-serif", Montserrat: "Montserrat, sans-serif", Dancing: "'Dancing Script', cursive" }[p.font] || "sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   const cx = W / 2;
@@ -315,6 +315,55 @@ function drawLogo(ctx, p) {
     drawBrand(290, 92, 500);
     ctx.fillStyle = accent; ctx.fillRect(cx - 100, 345, 200, 8);
     drawTag(400, 30, 460);
+  } else if (p.template === "Gradient") {
+    const grad = ctx.createLinearGradient(cx - 240, 0, cx + 240, 0);
+    grad.addColorStop(0, primary); grad.addColorStop(1, accent);
+    const size = fitSize(brand, 86 * sc, 520, "bold ");
+    ctx.font = "bold " + size + "px " + ff; ctx.fillStyle = grad; ctx.fillText(brand, cx, 300);
+    ctx.fillStyle = accent; ctx.fillRect(cx - 80, 345, 160, 5);
+    drawTag(400, 28, 460);
+  } else if (p.template === "Lettermark") {
+    const letter = (brand || "A").trim().charAt(0).toUpperCase() || "A";
+    const grad = ctx.createLinearGradient(0, 120, 0, 480);
+    grad.addColorStop(0, primary); grad.addColorStop(1, accent);
+    ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(cx, 300, 200, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.font = "bold " + (220 * sc) + "px " + ff; ctx.fillText(letter, cx, 310);
+    drawTag(540, 28, 400);
+  } else if (p.template === "Mascot") {
+    ctx.font = (150 * sc) + "px serif"; ctx.fillStyle = primary; ctx.fillText(icon, cx, 240);
+    drawBrand(360, 60, 460); drawTag(425, 26, 440);
+  } else if (p.template === "Monogram") {
+    const words = (brand || "AB").trim().split(/\s+/);
+    const mono = (words.length >= 2 ? words[0][0] + words[1][0] : (brand || "A")).toUpperCase().slice(0, 2) || "A";
+    ctx.strokeStyle = primary; ctx.lineWidth = 8; ctx.strokeRect(150, 180, 300, 240);
+    ctx.fillStyle = primary; ctx.font = "bold " + (130 * sc) + "px " + ff; ctx.fillText(mono, cx, 330);
+    drawTag(450, 28, 380);
+  } else if (p.template === "Circle") {
+    const grad = ctx.createLinearGradient(0, 100, 0, 500);
+    grad.addColorStop(0, primary); grad.addColorStop(1, accent);
+    ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(cx, 300, 230, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff";
+    const size = fitSize(brand, 52 * sc, 360, "bold ");
+    ctx.font = "bold " + size + "px " + ff; ctx.fillText(brand, cx, 295);
+    if (tag) { ctx.font = (24 * sc) + "px " + ff; ctx.fillStyle = "rgba(255,255,255,0.85)"; ctx.fillText(tag, cx, 350); }
+  } else if (p.template === "Hexagon") {
+    const grad = ctx.createLinearGradient(0, 100, 0, 500);
+    grad.addColorStop(0, primary); grad.addColorStop(1, accent);
+    ctx.fillStyle = grad; ctx.beginPath();
+    const rad = 235, cy = 300;
+    for (let k = 0; k < 6; k++) { const a = Math.PI / 6 + (k * Math.PI) / 3; const px = cx + rad * Math.cos(a); const py = cy + rad * Math.sin(a); if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py); }
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#fff";
+    const size = fitSize(brand, 48 * sc, 320, "bold ");
+    ctx.font = "bold " + size + "px " + ff; ctx.fillText(brand, cx, 295);
+    if (tag) { ctx.font = (22 * sc) + "px " + ff; ctx.fillStyle = "rgba(255,255,255,0.85)"; ctx.fillText(tag, cx, 345); }
+  } else if (p.template === "Stripe") {
+    ctx.fillStyle = primary; ctx.fillRect(0, 230, 600, 140);
+    ctx.fillStyle = accent; ctx.fillRect(0, 230, 600, 8); ctx.fillRect(0, 362, 600, 8);
+    ctx.fillStyle = "#fff";
+    const size = fitSize(brand, 56 * sc, 520, "bold ");
+    ctx.font = "bold " + size + "px " + ff; ctx.fillText(brand, cx, 305);
+    drawTag(420, 28, 440);
   } else {
     drawIcon(215, 110); drawBrand(335, 62, 500); drawTag(395, 28, 460);
   }
@@ -348,6 +397,7 @@ function ToolWorkspace({ tool, onBack }) {
   const [enhSrc, setEnhSrc] = useState(null);
   const [enhResult, setEnhResult] = useState(null);
   const [enhVersion, setEnhVersion] = useState(0);
+  const [fontReady, setFontReady] = useState(0);
   const enhOrigRef = useRef(null);
   const logoCanvasRef = useRef(null);
   const [aiLogos, setAiLogos] = useState([]);
@@ -407,18 +457,40 @@ function ToolWorkspace({ tool, onBack }) {
     const s = parseFloat(inputs.saturation || "0");
     const sh = parseFloat(inputs.sharpen || "0");
     const dh = parseFloat(inputs.dehaze || "0");
+    const temp = parseFloat(inputs.temperature || "0");
+    const eff = inputs.effect || "none";
     const { width, height, data } = orig;
     const cf = (259 * (c + 255)) / (255 * (259 - c));
     const dcf = (259 * (dh * 1.2 + 255)) / (255 * (259 - dh * 1.2));
     const sat = 1 + (s + dh * 0.4) / 100;
     const out = new ImageData(width, height);
     const d = out.data;
+    const cw = width, ch = height;
     for (let i = 0; i < data.length; i += 4) {
       let r = data[i] + b, g = data[i + 1] + b, bl = data[i + 2] + b;
       r = cf * (r - 128) + 128; g = cf * (g - 128) + 128; bl = cf * (bl - 128) + 128;
       r = dcf * (r - 128) + 128; g = dcf * (g - 128) + 128; bl = dcf * (bl - 128) + 128;
       const gray = 0.299 * r + 0.587 * g + 0.114 * bl;
       r = gray + (r - gray) * sat; g = gray + (g - gray) * sat; bl = gray + (bl - gray) * sat;
+      r += temp * 0.6; bl -= temp * 0.6;
+      if (eff === "sepia") {
+        const nr = r * 0.393 + g * 0.769 + bl * 0.189;
+        const ng = r * 0.349 + g * 0.686 + bl * 0.168;
+        const nb = r * 0.272 + g * 0.534 + bl * 0.131;
+        r = nr; g = ng; bl = nb;
+      } else if (eff === "vintage") {
+        const nr = r * 0.393 + g * 0.769 + bl * 0.189;
+        const ng = r * 0.349 + g * 0.686 + bl * 0.168;
+        const nb = r * 0.272 + g * 0.534 + bl * 0.131;
+        r = nr * 0.88 + 28; g = ng * 0.88 + 22; bl = nb * 0.88 + 14;
+      } else if (eff === "invert") {
+        r = 255 - r; g = 255 - g; bl = 255 - bl;
+      } else if (eff === "vignette") {
+        const px = (i / 4) % cw, py = Math.floor((i / 4) / cw);
+        const dx = (px - cw / 2) / (cw / 2), dy = (py - ch / 2) / (ch / 2);
+        const v = Math.max(0, 1 - Math.sqrt(dx * dx + dy * dy) * 0.65);
+        r *= v; g *= v; bl *= v;
+      }
       d[i] = r < 0 ? 0 : r > 255 ? 255 : r;
       d[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
       d[i + 2] = bl < 0 ? 0 : bl > 255 ? 255 : bl;
@@ -430,7 +502,7 @@ function ToolWorkspace({ tool, onBack }) {
     canvas.width = width; canvas.height = height;
     canvas.getContext("2d").putImageData(new ImageData(final, width, height), 0, 0);
     setEnhResult(canvas.toDataURL("image/png"));
-  }, [enhVersion, inputs.brightness, inputs.contrast, inputs.saturation, inputs.sharpen, inputs.dehaze]);
+  }, [enhVersion, inputs.brightness, inputs.contrast, inputs.saturation, inputs.sharpen, inputs.dehaze, inputs.temperature, inputs.effect]);
 
   // Live logo canvas: redraw on any input change (2× buffer for a crisp 1200px download).
   useEffect(() => {
@@ -449,7 +521,18 @@ function ToolWorkspace({ tool, onBack }) {
       accent: inputs.accent || "#f5a623",
       scale: parseFloat(inputs.size || "100") / 100,
     });
-  }, [tool.slug, inputs.template, inputs.brandName, inputs.tagline, inputs.icon, inputs.font, inputs.primary, inputs.accent, inputs.size]);
+  }, [tool.slug, inputs.template, inputs.brandName, inputs.tagline, inputs.icon, inputs.font, inputs.primary, inputs.accent, inputs.size, fontReady]);
+
+  // Load web fonts on demand so canvas text renders the chosen typeface.
+  useEffect(() => {
+    if (tool.slug !== "logo-maker") return;
+    const f = inputs.font || "Sans";
+    if (["Sans", "Serif", "Mono"].includes(f)) return;
+    const family = { Poppins: "Poppins", Playfair: "Playfair Display", Pacifico: "Pacifico", Bebas: "Bebas Neue", Lobster: "Lobster", Oswald: "Oswald", Anton: "Anton", Montserrat: "Montserrat", Dancing: "Dancing Script" }[f];
+    if (!family) return;
+    document.fonts.load(`700 40px "${family}"`).then(() => setFontReady((v) => v + 1)).catch(() => {});
+    document.fonts.load(`400 40px "${family}"`).then(() => setFontReady((v) => v + 1)).catch(() => {});
+  }, [tool.slug, inputs.font]);
 
   const set = (k) => (e) => setInputs((p) => ({ ...p, [k]: e.target.value }));
 
@@ -1384,14 +1467,56 @@ function ToolWorkspace({ tool, onBack }) {
       }
       case "image-enhancer": {
         const presets = [
-          { name: "Auto", vals: { brightness: "10", contrast: "15", saturation: "10", sharpen: "20", dehaze: "20" } },
-          { name: "Vivid", vals: { brightness: "0", contrast: "20", saturation: "40", sharpen: "15", dehaze: "10" } },
-          { name: "B&W", vals: { brightness: "0", contrast: "10", saturation: "-100", sharpen: "10", dehaze: "0" } },
-          { name: "Warm", vals: { brightness: "8", contrast: "10", saturation: "25", sharpen: "10", dehaze: "15" } },
-          { name: "Soft", vals: { brightness: "12", contrast: "-10", saturation: "-5", sharpen: "0", dehaze: "0" } },
+          { name: "Auto", vals: { brightness: "10", contrast: "15", saturation: "10", sharpen: "20", dehaze: "20", temperature: "0", effect: "none" } },
+          { name: "Vivid", vals: { brightness: "0", contrast: "20", saturation: "40", sharpen: "15", dehaze: "10", temperature: "0", effect: "none" } },
+          { name: "B&W", vals: { brightness: "0", contrast: "15", saturation: "-100", sharpen: "10", dehaze: "0", temperature: "0", effect: "none" } },
+          { name: "Warm", vals: { brightness: "8", contrast: "10", saturation: "25", sharpen: "10", dehaze: "15", temperature: "20", effect: "none" } },
+          { name: "Soft", vals: { brightness: "12", contrast: "-10", saturation: "-5", sharpen: "0", dehaze: "0", temperature: "0", effect: "none" } },
+          { name: "Vintage", vals: { brightness: "5", contrast: "10", saturation: "-15", sharpen: "5", dehaze: "10", temperature: "15", effect: "vintage" } },
+          { name: "Sepia", vals: { brightness: "5", contrast: "10", saturation: "-10", sharpen: "5", dehaze: "0", temperature: "10", effect: "sepia" } },
+          { name: "HDR", vals: { brightness: "5", contrast: "30", saturation: "20", sharpen: "35", dehaze: "40", temperature: "0", effect: "none" } },
+          { name: "Cool", vals: { brightness: "0", contrast: "15", saturation: "10", sharpen: "10", dehaze: "15", temperature: "-25", effect: "none" } },
+          { name: "Sunset", vals: { brightness: "8", contrast: "12", saturation: "30", sharpen: "10", dehaze: "20", temperature: "35", effect: "none" } },
+          { name: "Noir", vals: { brightness: "-5", contrast: "30", saturation: "-100", sharpen: "20", dehaze: "10", temperature: "0", effect: "none" } },
+          { name: "Dramatic", vals: { brightness: "-5", contrast: "40", saturation: "15", sharpen: "25", dehaze: "30", temperature: "0", effect: "none" } },
+          { name: "Invert", vals: { brightness: "0", contrast: "0", saturation: "0", sharpen: "0", dehaze: "0", temperature: "0", effect: "invert" } },
+          { name: "Vignette", vals: { brightness: "0", contrast: "15", saturation: "10", sharpen: "10", dehaze: "0", temperature: "0", effect: "vignette" } },
         ];
         const applyPreset = (vals) => setInputs((p) => ({ ...p, ...vals }));
-        const resetEnhance = () => setInputs((p) => ({ ...p, brightness: "0", contrast: "0", saturation: "0", sharpen: "0", dehaze: "0" }));
+        const resetEnhance = () => setInputs((p) => ({ ...p, brightness: "0", contrast: "0", saturation: "0", sharpen: "0", dehaze: "0", temperature: "0", effect: "none" }));
+        const rotateBase = (deg) => {
+          const orig = enhOrigRef.current;
+          if (!orig) return;
+          const { width: w, height: h } = orig;
+          const c = document.createElement("canvas");
+          c.width = (deg === 90 || deg === 270) ? h : w;
+          c.height = (deg === 90 || deg === 270) ? w : h;
+          const cx = c.getContext("2d");
+          cx.translate(c.width / 2, c.height / 2);
+          cx.rotate((deg * Math.PI) / 180);
+          const src = document.createElement("canvas");
+          src.width = w; src.height = h;
+          src.getContext("2d").putImageData(orig, 0, 0);
+          cx.drawImage(src, -w / 2, -h / 2);
+          enhOrigRef.current = cx.getImageData(0, 0, c.width, c.height);
+          setEnhVersion((v) => v + 1);
+        };
+        const flipBase = (axis) => {
+          const orig = enhOrigRef.current;
+          if (!orig) return;
+          const { width: w, height: h } = orig;
+          const c = document.createElement("canvas");
+          c.width = w; c.height = h;
+          const cx = c.getContext("2d");
+          cx.translate(axis === "h" ? w : 0, axis === "v" ? h : 0);
+          cx.scale(axis === "h" ? -1 : 1, axis === "v" ? -1 : 1);
+          const src = document.createElement("canvas");
+          src.width = w; src.height = h;
+          src.getContext("2d").putImageData(orig, 0, 0);
+          cx.drawImage(src, 0, 0);
+          enhOrigRef.current = cx.getImageData(0, 0, w, h);
+          setEnhVersion((v) => v + 1);
+        };
         const downloadEnhanced = () => {
           if (!enhResult) return;
           const a = document.createElement("a");
@@ -1402,16 +1527,27 @@ function ToolWorkspace({ tool, onBack }) {
           <>
             <input type="file" accept="image/*" onChange={(e) => { if (e.target.files[0]) { readFile(e.target.files[0], (url) => { setEnhSrc(url); setEnhResult(null); const img = new Image(); img.onload = () => { let { width: w, height: h } = img; if (Math.max(w, h) > 1000) { const s = 1000 / Math.max(w, h); w = Math.round(w * s); h = Math.round(h * s); } const c = document.createElement("canvas"); c.width = w; c.height = h; const cx = c.getContext("2d"); cx.drawImage(img, 0, 0, w, h); enhOrigRef.current = cx.getImageData(0, 0, w, h); setEnhVersion((v) => v + 1); }; img.src = url; }); } }} className="block mx-auto text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:text-primary-foreground file:px-4 file:py-2" />
             {enhSrc && <div className="mt-6"><img src={enhResult || enhSrc} alt="preview" className="max-h-64 mx-auto rounded-xl" /></div>}
+            {enhSrc && (
+              <div className="mt-6 flex flex-wrap justify-center gap-2">
+                <button onClick={() => rotateBase(90)} className="px-3 py-2 rounded-xl bg-card border border-border text-sm font-semibold text-card-foreground hover:bg-muted transition-all">{t("Rotate 90°")}</button>
+                <button onClick={() => rotateBase(270)} className="px-3 py-2 rounded-xl bg-card border border-border text-sm font-semibold text-card-foreground hover:bg-muted transition-all">{t("Rotate -90°")}</button>
+                <button onClick={() => rotateBase(180)} className="px-3 py-2 rounded-xl bg-card border border-border text-sm font-semibold text-card-foreground hover:bg-muted transition-all">{t("Rotate 180°")}</button>
+                <button onClick={() => flipBase("h")} className="px-3 py-2 rounded-xl bg-card border border-border text-sm font-semibold text-card-foreground hover:bg-muted transition-all">{t("Flip H")}</button>
+                <button onClick={() => flipBase("v")} className="px-3 py-2 rounded-xl bg-card border border-border text-sm font-semibold text-card-foreground hover:bg-muted transition-all">{t("Flip V")}</button>
+              </div>
+            )}
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               {presets.map((p) => (
                 <button key={p.name} onClick={() => applyPreset(p.vals)} className="px-4 py-2 rounded-full bg-card border border-border text-sm font-semibold text-card-foreground hover:bg-muted hover:border-primary/30 transition-all">{t(p.name)}</button>
               ))}
               <button onClick={resetEnhance} className="px-4 py-2 rounded-full bg-secondary border border-border text-sm font-semibold text-secondary-foreground hover:bg-muted transition-all">{t("Reset")}</button>
             </div>
+            <div className="mt-6"><SelectField label={t("Effect")} value={inputs.effect || "none"} onChange={set("effect")} options={[{ value: "none", label: t("None") }, { value: "sepia", label: t("Sepia") }, { value: "vintage", label: t("Vintage") }, { value: "invert", label: t("Invert") }, { value: "vignette", label: t("Vignette") }]} /></div>
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
               <RangeField label={t("Brightness")} value={inputs.brightness || "0"} onChange={set("brightness")} min={-100} max={100} />
               <RangeField label={t("Contrast")} value={inputs.contrast || "0"} onChange={set("contrast")} min={-100} max={100} />
               <RangeField label={t("Saturation")} value={inputs.saturation || "0"} onChange={set("saturation")} min={-100} max={100} />
+              <RangeField label={t("Temperature")} value={inputs.temperature || "0"} onChange={set("temperature")} min={-100} max={100} />
               <RangeField label={t("Sharpness")} value={inputs.sharpen || "0"} onChange={set("sharpen")} min={0} max={100} />
               <RangeField label={t("Dehaze")} value={inputs.dehaze || "0"} onChange={set("dehaze")} min={0} max={100} />
             </div>
@@ -1426,9 +1562,9 @@ function ToolWorkspace({ tool, onBack }) {
         );
       }
       case "logo-maker": {
-        const templates = ["Minimalist", "Badge", "Modern", "Emblem", "Bold"];
-        const icons = ["★", "🚀", "⚡", "🛡", "◆", "✦", "🎯", "🔥", "💎", "🌿", "🌟", "⬢", "◎", "✺", "🍃"];
-        const fonts = ["Sans", "Serif", "Mono"];
+        const templates = ["Minimalist", "Badge", "Modern", "Emblem", "Bold", "Gradient", "Lettermark", "Mascot", "Monogram", "Circle", "Hexagon", "Stripe"];
+        const icons = ["★","✦","◆","●","■","▲","♥","⬢","◎","✺","✥","❖","⚜","☀","☘","♛","♜","⚙","☰","🚀","⚡","🛡","🎯","🔥","💎","🌿","🌟","🍃","🌱","🌍","🌙","☀️","⭐","🍀","🌷","🌹","🦋","🐾","🐉","🦅","🦁","🐺","🦊","🐱","🐶","🐋","🐬","🐝","🐞","⚽","🏀","🏈","🎮","🎵","🎸","🎧","📷","✏️","📖","💡","🔬","🧪","⚙️","🔧","🔨","🛠","💻","🖥","📱","📡","🔔","✉️","📦","🛒","💰","💳","🏷","🎁","🏆","👑","⚖️","🔑","🗝","📌","📍","✅","❤️","💜","💚","💙","🧡","💛","🤍"];
+        const fonts = ["Sans", "Serif", "Mono", "Poppins", "Playfair", "Pacifico", "Bebas", "Lobster", "Oswald", "Anton", "Montserrat", "Dancing"];
         const palette = ["#3b2a8c", "#1e3a8a", "#0f766e", "#b45309", "#be123c", "#4338ca", "#0891b2", "#9333ea", "#ea580c", "#16a34a"];
         const aiStyles = ["Minimalist", "Vintage emblem", "Modern geometric", "Bold typographic"];
         const downloadLogo = () => {
