@@ -305,7 +305,7 @@ export default function SaveTheKing() {
   // measure viewport → fit a 6-wide board with no overflow
   useEffect(() => {
     const measure = () => {
-      const avail = Math.min(window.innerWidth - 40, 312);
+      const avail = Math.min(window.innerWidth - 52, 300);
       setTs(Math.max(26, Math.floor(avail / COLS)));
     };
     measure();
