@@ -54,3 +54,22 @@ export const playLaunch = () => tone(220, 0.18, 'sawtooth', 0.8, 660);
 export const playBounce = () => tone(440, 0.09, 'sine', 0.7, 320);
 export const playPop = () => tone(660, 0.08, 'triangle', 0.8, 880);
 export const playWhack = () => tone(520, 0.1, 'square', 0.9, 220);
+// Balloon-style "pop": a short papery noise burst + a quick pitch-down thud.
+export const playBubblePop = () => {
+  const c = ensure();
+  if (!c) return;
+  const t = c.currentTime;
+  const dur = 0.13;
+  const n = Math.floor(c.sampleRate * dur);
+  const buffer = c.createBuffer(1, n, c.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < n; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3);
+  const noise = c.createBufferSource(); noise.buffer = buffer;
+  const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 900; bp.Q.value = 0.7;
+  const ng = c.createGain(); ng.gain.setValueAtTime(0.7, t); ng.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  noise.connect(bp); bp.connect(ng); ng.connect(master); noise.start(t); noise.stop(t + dur);
+  const osc = c.createOscillator(); const og = c.createGain();
+  osc.type = 'sine'; osc.frequency.setValueAtTime(440, t); osc.frequency.exponentialRampToValueAtTime(110, t + 0.11);
+  og.gain.setValueAtTime(0.5, t); og.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+  osc.connect(og); og.connect(master); osc.start(t); osc.stop(t + 0.14);
+};

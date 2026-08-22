@@ -2,23 +2,30 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Play, Crosshair } from "lucide-react";
-import { playLaunch, playBounce, playPop, playGameOver, playStart, resumeAudio } from "@/lib/game-sounds";
+import { playLaunch, playBounce, playGameOver, playStart, resumeAudio, playBubblePop } from "@/lib/game-sounds";
 import GameMusicButton from "@/components/games/GameMusicButton";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a7e76e3396b41955b675542/307ba8fe6_generated_image.png";
 const W = 320, H = 440;
 const GAME_SECONDS = 30;
-const GRAVITY = 0.15;
-const DRAG = 0.998;
-const BALL_R = 7;
-const MIN_SPEED = 6;
-const MAX_SPEED = 13;
-const CHARGE_MS = 700;
-const TARGET_COUNT = 12;
-const COLORS = ["#5b3aa8", "#f5a623", "#e0533a", "#2a9d8f", "#3a6ea5"];
+const GRAVITY = 0.17;
+const DRAG = 0.997;
+const BALL_R = 8;
+const MIN_SPEED = 7;
+const MAX_SPEED = 16;
+const CHARGE_MS = 620;
+const TARGET_COUNT = 16;
+const MAX_BALLS = 14;
+// Glossy balloon palette: [base, light, dark] for 3D radial shading.
+const BALLOONS = [
+  ["#fca5a5", "#fecaca", "#b91c1c"], // red
+  ["#fcd34d", "#fef3c7", "#b45309"], // amber
+  ["#93c5fd", "#dbeafe", "#1d4ed8"], // blue
+  ["#86efac", "#bbf7d0", "#15803d"], // green
+  ["#d8b4fe", "#ede9fe", "#6d28d9"], // violet
+  ["#f9a8d4", "#fce7f3", "#be185d"], // pink
+];
 const rand = (a, b) => a + Math.random() * (b - a);
-// Canvas APIs can't parse CSS variables like "hsl(var(--card))", so resolve
-// the token to its computed HSL channels at draw time.
 const cssVar = (name) => window.getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const hsl = (name) => `hsl(${cssVar(name)})`;
 const hslA = (name, a) => `hsl(${cssVar(name)} / ${a})`;
@@ -46,6 +53,7 @@ export default function BallLauncher() {
   const timeRef = useRef(GAME_SECONDS);
   const ballsRef = useRef([]);
   const targetsRef = useRef([]);
+  const particlesRef = useRef([]);
   const aimRef = useRef(-Math.PI / 2);
   const chargingRef = useRef(false);
   const chargeStartRef = useRef(0);
@@ -54,11 +62,14 @@ export default function BallLauncher() {
   const countdownRef = useRef(null);
 
   const spawnTarget = useCallback(() => {
-    const r = rand(14, 20);
+    const r = rand(15, 22);
+    const pal = BALLOONS[Math.floor(Math.random() * BALLOONS.length)];
     targetsRef.current.push({
-      x: rand(r + 8, W - r - 8), y: rand(42, 170), r,
-      vx: rand(-1.1, 1.1) || 0.6,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      x: rand(r + 8, W - r - 8), y: rand(46, 176), r,
+      vx: rand(-1.4, 1.4) || 0.7,
+      vy: rand(-0.25, 0.25),
+      bob: rand(0, Math.PI * 2),
+      pal, tilt: 0,
     });
   }, []);
 
@@ -74,94 +85,174 @@ export default function BallLauncher() {
 
   const finish = useCallback(() => {
     phaseRef.current = "over"; setPhase("over");
-    stopLoop(); ballsRef.current = []; chargingRef.current = false;
+    stopLoop(); ballsRef.current = []; particlesRef.current = []; chargingRef.current = false;
     playGameOver();
     setBest((b) => { const nb = Math.max(b, scoreRef.current); try { localStorage.setItem("ballLauncherBest", String(nb)); } catch {} return nb; });
   }, []);
 
+  // ---- Background with depth: sky gradient, sun glow, layered hills, vignette ----
   const drawBg = (ctx) => {
-    // sky
     const sky = ctx.createLinearGradient(0, 0, 0, H);
-    sky.addColorStop(0, "#bfe3ff");
-    sky.addColorStop(0.6, "#e8f4ff");
+    sky.addColorStop(0, "#a8d8ff");
+    sky.addColorStop(0.55, "#e8f4ff");
     sky.addColorStop(1, "#f3ead3");
     ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
-    // sun
-    const sun = ctx.createRadialGradient(W - 56, 58, 5, W - 56, 58, 42);
-    sun.addColorStop(0, "rgba(255,236,170,0.95)");
+    const sun = ctx.createRadialGradient(W - 56, 58, 5, W - 56, 58, 50);
+    sun.addColorStop(0, "rgba(255,240,180,0.95)");
+    sun.addColorStop(0.6, "rgba(255,236,170,0.35)");
     sun.addColorStop(1, "rgba(255,236,170,0)");
-    ctx.fillStyle = sun; ctx.beginPath(); ctx.arc(W - 56, 58, 42, 0, Math.PI * 2); ctx.fill();
-    // clouds
-    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.fillStyle = sun; ctx.beginPath(); ctx.arc(W - 56, 58, 50, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
     cloud(ctx, 64, 78, 22); cloud(ctx, 200, 46, 18); cloud(ctx, 250, 120, 14);
-    // far hills
-    ctx.fillStyle = "#a8d48a";
+    // far hills (soft, light)
+    ctx.fillStyle = "rgba(168,212,138,0.85)";
     ctx.beginPath(); ctx.moveTo(0, H - 26);
     ctx.quadraticCurveTo(W * 0.25, H - 130, W * 0.5, H - 64);
     ctx.quadraticCurveTo(W * 0.78, H - 8, W, H - 72); ctx.lineTo(W, H - 26); ctx.closePath(); ctx.fill();
-    // near hills
-    ctx.fillStyle = "#8cc46f";
+    // near hills (darker, with gradient)
+    const hg = ctx.createLinearGradient(0, H - 90, 0, H - 26);
+    hg.addColorStop(0, "#9bd07a"); hg.addColorStop(1, "#6fae50");
+    ctx.fillStyle = hg;
     ctx.beginPath(); ctx.moveTo(0, H - 26);
     ctx.quadraticCurveTo(W * 0.35, H - 78, W * 0.7, H - 44);
     ctx.quadraticCurveTo(W * 0.88, H - 26, W, H - 34); ctx.lineTo(W, H - 26); ctx.closePath(); ctx.fill();
-    // grass ground
-    ctx.fillStyle = "#5fa04a"; ctx.fillRect(0, H - 26, W, 26);
-    ctx.strokeStyle = "rgba(255,255,255,0.18)"; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(0, H - 26); ctx.lineTo(W, H - 26); ctx.stroke();
-    // grass blades
+    // grass ground with top highlight
+    const gg = ctx.createLinearGradient(0, H - 26, 0, H);
+    gg.addColorStop(0, "#6cb24a"); gg.addColorStop(1, "#3e7a2e");
+    ctx.fillStyle = gg; ctx.fillRect(0, H - 26, W, 26);
     ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.lineWidth = 1;
-    for (let i = 0; i < 14; i++) {
-      const gx = i * (W / 14) + 6;
-      ctx.beginPath(); ctx.moveTo(gx, H - 26); ctx.lineTo(gx + 1, H - 31); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, H - 26); ctx.lineTo(W, H - 26); ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,0.28)"; ctx.lineWidth = 1;
+    for (let i = 0; i < 16; i++) {
+      const gx = i * (W / 16) + 6;
+      ctx.beginPath(); ctx.moveTo(gx, H - 26); ctx.lineTo(gx + 1, H - 32); ctx.stroke();
     }
+    // soft vignette for depth
+    const vg = ctx.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 0.72);
+    vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,0.18)");
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
   };
 
-  const drawBubble = (ctx, tg) => {
-    ctx.beginPath(); ctx.arc(tg.x, tg.y, tg.r, 0, Math.PI * 2);
-    ctx.fillStyle = tg.color; ctx.globalAlpha = 0.85; ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.beginPath(); ctx.arc(tg.x - tg.r * 0.3, tg.y - tg.r * 0.3, tg.r * 0.28, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(255,255,255,0.55)"; ctx.fill();
-    ctx.lineWidth = 2; ctx.strokeStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.arc(tg.x, tg.y, tg.r, 0, Math.PI * 2); ctx.stroke();
+  // ---- 3D glossy balloon ----
+  const drawBalloon = (ctx, tg) => {
+    const { x, y, r, pal, tilt } = tg;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(tilt);
+    // drop shadow on the "sky" behind
+    ctx.save();
+    ctx.translate(r * 0.12, r * 0.18);
+    ctx.beginPath(); ctx.ellipse(0, 0, r * 0.96, r, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fill();
+    ctx.restore();
+    // body — radial gradient gives the 3D sphere illusion
+    const g = ctx.createRadialGradient(-r * 0.35, -r * 0.4, r * 0.1, 0, 0, r);
+    g.addColorStop(0, pal[1]);   // light
+    g.addColorStop(0.45, pal[0]); // base
+    g.addColorStop(1, pal[2]);    // dark
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fillStyle = g; ctx.fill();
+    // rim light on the lower-right edge
+    ctx.beginPath(); ctx.arc(0, 0, r - 1, Math.PI * 0.1, Math.PI * 0.6);
+    ctx.strokeStyle = "rgba(255,255,255,0.35)"; ctx.lineWidth = 1.6; ctx.stroke();
+    // specular highlight (glossy)
+    ctx.beginPath(); ctx.ellipse(-r * 0.34, -r * 0.38, r * 0.26, r * 0.16, -0.6, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,255,255,0.7)"; ctx.fill();
+    // balloon knot
+    ctx.beginPath();
+    ctx.moveTo(-3, r - 1); ctx.lineTo(3, r - 1); ctx.lineTo(0, r + 4); ctx.closePath();
+    ctx.fillStyle = pal[2]; ctx.fill();
+    ctx.restore();
   };
 
+  // ---- 3D ball (cannonball) with metal-ish shading ----
   const drawBall = (ctx, b) => {
-    const g = ctx.createRadialGradient(b.x - 2, b.y - 2, 1, b.x, b.y, BALL_R);
-    g.addColorStop(0, "#fde68a"); g.addColorStop(1, "#f5a623");
+    const g = ctx.createRadialGradient(b.x - 3, b.y - 3, 1, b.x + 1, b.y + 1, BALL_R);
+    g.addColorStop(0, "#fff7d6");
+    g.addColorStop(0.4, "#fbbf24");
+    g.addColorStop(1, "#9a3412");
     ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R, 0, Math.PI * 2);
     ctx.fillStyle = g; ctx.fill();
-    ctx.strokeStyle = "rgba(0,0,0,0.2)"; ctx.lineWidth = 1; ctx.stroke();
+    // rim
+    ctx.strokeStyle = "rgba(120,53,15,0.5)"; ctx.lineWidth = 1; ctx.stroke();
+    // specular dot
+    ctx.beginPath(); ctx.arc(b.x - 2.6, b.y - 2.6, BALL_R * 0.28, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,255,255,0.85)"; ctx.fill();
   };
 
+  // ---- 3D cannon: domed base + shaded barrel ----
   const drawCannon = (ctx) => {
     const bx = W / 2, by = H - 40;
     const ang = aimRef.current;
-    // barrel
+    // ground shadow under the base
+    ctx.beginPath(); ctx.ellipse(bx, by + 14, 22, 6, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(0,0,0,0.2)"; ctx.fill();
+    // barrel — shaded cylinder
     ctx.save(); ctx.translate(bx, by); ctx.rotate(ang);
-    ctx.fillStyle = hsl("--primary");
-    ctx.fillRect(0, -7, 26, 14);
-    ctx.fillStyle = hsl("--accent"); ctx.fillRect(22, -9, 5, 18);
+    const bg = ctx.createLinearGradient(0, -9, 0, 9);
+    bg.addColorStop(0, hslA("--primary", 0.85));
+    bg.addColorStop(0.5, hsl("--primary"));
+    bg.addColorStop(1, hslA("--primary", 0.7));
+    ctx.fillStyle = bg; ctx.fillRect(0, -9, 30, 18);
+    // barrel top highlight
+    ctx.fillStyle = "rgba(255,255,255,0.3)"; ctx.fillRect(0, -9, 30, 4);
+    // muzzle ring
+    ctx.fillStyle = hsl("--accent"); ctx.fillRect(26, -10, 5, 20);
+    ctx.fillStyle = "rgba(0,0,0,0.35)";
+    ctx.beginPath(); ctx.ellipse(30, 0, 2.4, 9, 0, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
-    // base
+    // domed base — 3D sphere
+    const cg = ctx.createRadialGradient(bx - 5, by - 5, 2, bx, by, 17);
+    cg.addColorStop(0, hslA("--primary", 0.9));
+    cg.addColorStop(0.7, hsl("--primary"));
+    cg.addColorStop(1, hslA("--primary", 0.6));
     ctx.beginPath(); ctx.arc(bx, by, 16, 0, Math.PI * 2);
-    ctx.fillStyle = hsl("--primary"); ctx.fill();
+    ctx.fillStyle = cg; ctx.fill();
     ctx.strokeStyle = hsl("--accent"); ctx.lineWidth = 3; ctx.stroke();
-    ctx.beginPath(); ctx.arc(bx, by, 6, 0, Math.PI * 2); ctx.fillStyle = hsl("--accent"); ctx.fill();
+    // hub
+    const hg = ctx.createRadialGradient(bx - 1, by - 1, 1, bx, by, 6);
+    hg.addColorStop(0, hsl("--accent")); hg.addColorStop(1, "#92400e");
+    ctx.beginPath(); ctx.arc(bx, by, 6, 0, Math.PI * 2); ctx.fillStyle = hg; ctx.fill();
+    ctx.beginPath(); ctx.arc(bx - 1.5, by - 1.5, 1.8, 0, Math.PI * 2); ctx.fillStyle = "rgba(255,255,255,0.6)"; ctx.fill();
   };
 
   const drawAim = (ctx) => {
     if (!chargingRef.current || phaseRef.current !== "running") return;
     const bx = W / 2, by = H - 40; const ang = aimRef.current;
     const p = powerRef.current;
-    // aim line length and color scale with charge power
-    const len = 60 + p * 120;
-    ctx.save(); ctx.strokeStyle = hslA(p > 0.7 ? "--accent" : "--primary", 0.35 + p * 0.5); ctx.lineWidth = 2 + p * 4;
+    const len = 60 + p * 130;
+    ctx.save();
+    ctx.strokeStyle = hslA(p > 0.7 ? "--accent" : "--primary", 0.35 + p * 0.5); ctx.lineWidth = 2 + p * 4;
     ctx.setLineDash([4, 6]); ctx.beginPath(); ctx.moveTo(bx, by);
     ctx.lineTo(bx + Math.cos(ang) * len, by + Math.sin(ang) * len); ctx.stroke(); ctx.restore();
-    // power bar above the cannon base
     const bw = 54, bh = 6; const bx0 = bx - bw / 2, by0 = by + 20;
     ctx.fillStyle = hslA("--border", 0.6); ctx.fillRect(bx0, by0, bw, bh);
     ctx.fillStyle = p > 0.7 ? hsl("--accent") : hsl("--primary"); ctx.fillRect(bx0, by0, bw * p, bh);
+  };
+
+  // ---- particle burst on pop ----
+  const spawnParticles = (x, y, pal) => {
+    const n = 12;
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + rand(-0.2, 0.2);
+      const sp = rand(1.5, 4);
+      particlesRef.current.push({
+        x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 1,
+        r: rand(2, 4.5), life: 1, pal,
+      });
+    }
+  };
+  const drawParticles = (ctx) => {
+    const ps = particlesRef.current;
+    for (let i = ps.length - 1; i >= 0; i--) {
+      const p = ps[i];
+      p.vy += 0.12; p.vx *= 0.98; p.x += p.vx; p.y += p.vy; p.life -= 0.04;
+      if (p.life <= 0) { ps.splice(i, 1); continue; }
+      ctx.globalAlpha = Math.max(0, p.life);
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.pal[0]; ctx.fill();
+    }
+    ctx.globalAlpha = 1;
   };
 
   const loop = useCallback(() => {
@@ -173,30 +264,37 @@ export default function BallLauncher() {
     const targets = targetsRef.current;
     for (const tg of targets) {
       tg.x += tg.vx;
+      tg.bob += 0.05;
+      tg.y += tg.vy + Math.sin(tg.bob) * 0.12;
+      tg.tilt = Math.sin(tg.bob) * 0.08;
       if (tg.x < tg.r + 6) { tg.x = tg.r + 6; tg.vx *= -1; }
       if (tg.x > W - tg.r - 6) { tg.x = W - tg.r - 6; tg.vx *= -1; }
-      drawBubble(ctx, tg);
+      if (tg.y < 40) { tg.y = 40; tg.vy = Math.abs(tg.vy); }
+      if (tg.y > 188) { tg.y = 188; tg.vy = -Math.abs(tg.vy); }
+      drawBalloon(ctx, tg);
     }
     const balls = ballsRef.current;
     for (let i = balls.length - 1; i >= 0; i--) {
       const b = balls[i];
       b.vy += GRAVITY; b.vx *= DRAG; b.vy *= DRAG; b.x += b.vx; b.y += b.vy;
-      if (b.x < BALL_R) { b.x = BALL_R; b.vx = Math.abs(b.vx) * 0.8; playBounce(); }
-      if (b.x > W - BALL_R) { b.x = W - BALL_R; b.vx = -Math.abs(b.vx) * 0.8; playBounce(); }
-      if (b.y < BALL_R) { b.y = BALL_R; b.vy = Math.abs(b.vy) * 0.8; playBounce(); }
+      if (b.x < BALL_R) { b.x = BALL_R; b.vx = Math.abs(b.vx) * 0.82; playBounce(); }
+      if (b.x > W - BALL_R) { b.x = W - BALL_R; b.vx = -Math.abs(b.vx) * 0.82; playBounce(); }
+      if (b.y < BALL_R) { b.y = BALL_R; b.vy = Math.abs(b.vy) * 0.82; playBounce(); }
       if (b.y > H + 30) { balls.splice(i, 1); continue; }
       let popped = false;
       for (let j = targets.length - 1; j >= 0; j--) {
         const tg = targets[j]; const dx = b.x - tg.x, dy = b.y - tg.y; const rr = BALL_R + tg.r;
         if (dx * dx + dy * dy < rr * rr) {
+          spawnParticles(tg.x, tg.y, tg.pal);
           targets.splice(j, 1); popped = true;
           scoreRef.current += 10; setScore(scoreRef.current);
-          playPop(); spawnTarget(); break;
+          playBubblePop(); spawnTarget(); break;
         }
       }
       if (popped) { balls.splice(i, 1); continue; }
       drawBall(ctx, b);
     }
+    drawParticles(ctx);
     if (chargingRef.current) {
       powerRef.current = Math.min(1, (performance.now() - chargeStartRef.current) / CHARGE_MS);
     }
@@ -208,7 +306,7 @@ export default function BallLauncher() {
     resumeAudio(); stopLoop();
     scoreRef.current = 0; timeRef.current = GAME_SECONDS;
     setScore(0); setTimeLeft(GAME_SECONDS);
-    ballsRef.current = []; resetTargets();
+    ballsRef.current = []; particlesRef.current = []; resetTargets();
     phaseRef.current = "running"; setPhase("running");
     playStart();
     countdownRef.current = setInterval(() => {
@@ -246,13 +344,20 @@ export default function BallLauncher() {
     chargingRef.current = false;
     fire();
   };
+  // Fire a spread of 1–3 balls depending on charge power — more balls, more action.
   const fire = () => {
+    if (ballsRef.current.length >= MAX_BALLS) { powerRef.current = 0; return; }
     const ang = aimRef.current; const bx = W / 2, by = H - 40;
     const speed = MIN_SPEED + powerRef.current * (MAX_SPEED - MIN_SPEED);
-    ballsRef.current.push({
-      x: bx + Math.cos(ang) * 24, y: by + Math.sin(ang) * 24,
-      vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed,
-    });
+    const count = powerRef.current > 0.8 ? 3 : powerRef.current > 0.45 ? 2 : 1;
+    for (let i = 0; i < count; i++) {
+      const spread = count > 1 ? (i - (count - 1) / 2) * 0.16 : 0;
+      const a = ang + spread;
+      ballsRef.current.push({
+        x: bx + Math.cos(a) * 24, y: by + Math.sin(a) * 24,
+        vx: Math.cos(a) * speed, vy: Math.sin(a) * speed,
+      });
+    }
     powerRef.current = 0;
     playLaunch();
   };
@@ -290,7 +395,7 @@ export default function BallLauncher() {
           onPointerMove={onMove}
           onPointerUp={onUp}
           onPointerLeave={onUp}
-          className="rounded-3xl border border-border touch-none"
+          className="rounded-3xl border border-border touch-none shadow-[0_18px_40px_-18px_hsl(var(--primary)/0.5)]"
           style={{ width: "min(86vw, 340px)", height: "auto", aspectRatio: `${W} / ${H}` }}
         />
 
