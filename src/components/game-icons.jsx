@@ -227,6 +227,46 @@ function WordScramble({ className, style }) {
   );
 }
 
+function SaveKing({ className, style }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} style={style}>
+      <defs>
+        <linearGradient id="gmskCape" x1="0" y1="20" x2="0" y2="60" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#ef4444" /><stop offset="100%" stopColor="#7f1d1d" />
+        </linearGradient>
+        <radialGradient id="gmskFace" cx="40%" cy="35%" r="70%" fx="35%" fy="28%">
+          <stop offset="0%" stopColor="#fff7e6" /><stop offset="60%" stopColor="#fcd9a8" /><stop offset="100%" stopColor="#c98a4a" />
+        </radialGradient>
+        <linearGradient id="gmskCrown" x1="0" y1="6" x2="0" y2="20" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#fde68a" /><stop offset="100%" stopColor="#b45309" />
+        </linearGradient>
+        <linearGradient id="gmskTunic" x1="0" y1="26" x2="0" y2="52" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#60a5fa" /><stop offset="100%" stopColor="#1e3a8a" />
+        </linearGradient>
+      </defs>
+      {/* cape */}
+      <path d="M20 38 C14 50 14 58 16 62 L48 62 C50 58 50 50 44 38 Z" fill="url(#gmskCape)" />
+      {/* tunic */}
+      <path d="M22 28 h20 v18 a10 10 0 0 1 -20 0 Z" fill="url(#gmskTunic)" />
+      <path d="M22 28 h20 v5 h-20 Z" fill="#fbbf24" opacity="0.9" />
+      {/* head */}
+      <circle cx="32" cy="24" r="9" fill="url(#gmskFace)" />
+      {/* anime eyes */}
+      <ellipse cx="28.5" cy="25" rx="1.8" ry="2.6" fill="#1e293b" />
+      <ellipse cx="35.5" cy="25" rx="1.8" ry="2.6" fill="#1e293b" />
+      <circle cx="29" cy="24" r="0.7" fill="#fff" />
+      <circle cx="36" cy="24" r="0.7" fill="#fff" />
+      {/* worried brows */}
+      <path d="M26.5 21 l3 -0.8 M37.5 21 l-3 -0.8" stroke="#7c2d12" strokeWidth="1.4" strokeLinecap="round" />
+      {/* crown */}
+      <path d="M22 13 l4 -6 6 4 6 -4 4 6 v3 h-20 z" fill="url(#gmskCrown)" />
+      <circle cx="32" cy="13" r="1.8" fill="#dc2626" />
+      <circle cx="24" cy="14" r="1.2" fill="#dc2626" />
+      <circle cx="40" cy="14" r="1.2" fill="#dc2626" />
+    </svg>
+  );
+}
+
 const MAP = {
   "snake-game": Snake,
   "game-2048": Game2048,
@@ -236,6 +276,7 @@ const MAP = {
   "riddle-game": Riddle,
   "math-puzzle": MathPuzzle,
   "word-scramble": WordScramble,
+  "save-the-king": SaveKing,
 };
 
 export default function GameIcon({ slug, className = "w-16 h-16" }) {
