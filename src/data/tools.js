@@ -267,6 +267,14 @@ export const STATIC_TOOLS = [
     content: "Save the King is a rescue puzzle with a 3D anime-style hero. The king is trapped on a stone platform above a rising lava pit. Match 3 or more blocks in the grid below to drain the lava and buy him time — reach the rescue goal before the lava reaches the platform. The anime king reacts in real time: he balances and bobs calmly at first, then shakes with fear as the lava climbs. Everything runs in your browser; no data is stored.",
   },
   {
+    name: "Royal Match",
+    slug: "royal-match",
+    category: "Games",
+    description: "Match royal gems to drain the flood and save the treasure chest before the water swallows it.",
+    icon: "Gem",
+    content: "Royal Match is a suspense-filled match-3 puzzle. A royal treasure chest sits on a stone platform above a dungeon that is slowly flooding. Drag any gem up, down, left, or right to swap and match 3 or more — every match drains the flood and fills the treasury. Reach the goal before the rising water reaches the chest, or it is lost beneath the waves. Three levels of climbing difficulty keep the tension rising, with the chest shaking and glowing as the water gets closer. Everything runs in your browser; no data is stored.",
+  },
+  {
     name: "Image Cropper",
     slug: "image-cropper",
     category: "Image Tools",

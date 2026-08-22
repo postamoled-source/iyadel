@@ -19,6 +19,7 @@ import WhackAMole from "@/components/games/WhackAMole";
 import BallLauncher from "@/components/games/BallLauncher";
 import SnakeGame from "@/components/games/SnakeGame";
 import SaveTheKing from "@/components/games/SaveTheKing";
+import RoyalMatch from "@/components/games/RoyalMatch";
 import MathPuzzleGame from "@/components/games/MathPuzzleGame";
 import WordScrambleGame from "@/components/games/WordScrambleGame";
 import GameMusicButton from "@/components/games/GameMusicButton";
@@ -1606,6 +1607,8 @@ function ToolWorkspace({ tool, onBack }) {
         return <SnakeGame />;
       case "save-the-king":
         return <SaveTheKing />;
+      case "royal-match":
+        return <RoyalMatch />;
       default:
         return (
           <div className="text-center py-10">
