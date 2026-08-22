@@ -21,6 +21,7 @@ const levelConfig = (lvl) => ({
   time: Math.max(16, 30 - (lvl - 1) * 2),
   speed: 1 + (lvl - 1) * 0.16,
   count: Math.min(10 + (lvl - 1), 18),
+  target: (lvl - 1) % BALLOONS.length,
 });
 // Glossy balloon palette: [base, light, dark] for 3D radial shading.
 const BALLOONS = [
@@ -55,6 +56,7 @@ export default function BallLauncher() {
   const [best, setBest] = useState(() => {
     try { return parseInt(localStorage.getItem("ballLauncherBest") || "0", 10) || 0; } catch { return 0; }
   });
+  const [loseReason, setLoseReason] = useState("time"); // "time" | "color"
 
   const phaseRef = useRef("idle");
   const levelRef = useRef(1);
@@ -73,9 +75,9 @@ export default function BallLauncher() {
 
   const cfg = levelConfig(level);
 
-  const spawnTarget = useCallback(() => {
+  const spawnTarget = useCallback((forcePal) => {
     const r = rand(15, 22);
-    const pal = BALLOONS[Math.floor(Math.random() * BALLOONS.length)];
+    const pal = forcePal || BALLOONS[Math.floor(Math.random() * BALLOONS.length)];
     const sp = levelConfig(levelRef.current).speed;
     targetsRef.current.push({
       x: rand(r + 8, W - r - 8), y: rand(46, 176), r,
@@ -86,10 +88,20 @@ export default function BallLauncher() {
     });
   }, []);
 
+  const targetPalOf = useCallback(() => BALLOONS[levelConfig(levelRef.current).target], []);
+
   const resetTargets = useCallback(() => {
-    const count = levelConfig(levelRef.current).count;
+    const c = levelConfig(levelRef.current);
     targetsRef.current = [];
-    for (let i = 0; i < count; i++) spawnTarget();
+    for (let i = 0; i < c.count; i++) spawnTarget();
+    // guarantee at least 4 target-color balloons so the level is always solvable
+    const tPal = BALLOONS[c.target];
+    let have = targetsRef.current.filter((tg) => tg.pal === tPal).length;
+    let idx = 0;
+    while (have < 4 && idx < targetsRef.current.length) {
+      if (targetsRef.current[idx].pal !== tPal) { targetsRef.current[idx].pal = tPal; have++; }
+      idx++;
+    }
   }, [spawnTarget]);
 
   const stopLoop = () => {
@@ -261,14 +273,25 @@ export default function BallLauncher() {
         const tg = targets[j]; const dx = b.x - tg.x, dy = b.y - tg.y; const rr = BALL_R + tg.r;
         if (dx * dx + dy * dy < rr * rr) {
           spawnParticles(tg.x, tg.y, tg.pal);
+          // hitting a balloon whose color is NOT this level's target = you lose
+          if (tg.pal !== targetPalOf()) {
+            targets.splice(j, 1);
+            playBubblePop();
+            balls.splice(i, 1);
+            finishGame("color");
+            return;
+          }
           targets.splice(j, 1); popped = true;
           scoreRef.current += 10; setScore(scoreRef.current);
           popsRef.current += 1; setPops(popsRef.current);
           playBubblePop();
-          // keep balloon count stable within the level
-          if (targets.length < levelConfig(levelRef.current).count) spawnTarget();
+          // keep balloon count stable within the level; bias refills toward the target color
+          if (targets.length < levelConfig(levelRef.current).count) {
+            spawnTarget(Math.random() < 0.6 ? targetPalOf() : null);
+          }
           if (popsRef.current >= levelConfig(levelRef.current).required) {
             levelComplete();
+            return;
           }
           break;
         }
@@ -291,7 +314,8 @@ export default function BallLauncher() {
     setBest((b) => { const nb = Math.max(b, scoreRef.current); try { localStorage.setItem("ballLauncherBest", String(nb)); } catch {} return nb; });
   }, []);
 
-  const finishGame = useCallback(() => {
+  const finishGame = useCallback((reason = "time") => {
+    setLoseReason(reason);
     phaseRef.current = "over"; setPhase("over");
     stopLoop(); ballsRef.current = []; particlesRef.current = []; chargingRef.current = false;
     playGameOver();
@@ -310,7 +334,7 @@ export default function BallLauncher() {
     playStart();
     countdownRef.current = setInterval(() => {
       timeRef.current -= 1; setTimeLeft(timeRef.current);
-      if (timeRef.current <= 0) finishGame();
+      if (timeRef.current <= 0) finishGame("time");
     }, 1000);
     rafRef.current = requestAnimationFrame(loop);
   }, [loop, resetTargets]);
@@ -373,11 +397,15 @@ export default function BallLauncher() {
         <img src={LOGO_URL} alt={t("Ball Launcher")} className="w-16 h-16 rounded-2xl object-contain drop-shadow-md" />
       </div>
       <div className="flex items-center justify-between mb-4 gap-3">
-        <div className="flex gap-2.5 flex-wrap">
+        <div className="flex gap-2.5 flex-wrap items-center">
           <Stat label={t("Level")} value={level} className="text-accent" />
           <Stat label={t("Balloons")} value={`${pops}/${req}`} className="text-primary" />
           <Stat label={t("Time")} value={`${timeLeft}s`} className="text-foreground" />
           <Stat label={t("Score")} value={score} className="text-primary" />
+          <div className="rounded-2xl bg-card border border-border px-3 py-2 text-center flex flex-col items-center gap-1">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("Target")}</span>
+            <span className="w-7 h-7 rounded-full border-2 border-foreground/20 shadow-inner" style={{ background: BALLOONS[cfg.target][0] }} />
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {!running && !done && (
@@ -418,8 +446,11 @@ export default function BallLauncher() {
             ) : over ? (
               <>
                 <Crosshair className="w-9 h-9 text-destructive" />
-                <div className="text-xl font-extrabold text-foreground">{t("Time's up!")}</div>
+                <div className="text-xl font-extrabold text-foreground">
+                  {loseReason === "color" ? t("Wrong color!") : t("Time's up!")}
+                </div>
                 <div className="text-sm text-muted-foreground">
+                  {loseReason === "color" && <span className="block mb-1 text-destructive">{t("You popped the wrong balloon color.")}</span>}
                   {t("Reached Level")} <span className="font-bold text-accent">{level}</span> · {t("Score")}:{" "}
                   <span className="font-bold text-primary">{score}</span> · {t("Best")}:{" "}
                   <span className="font-bold text-accent">{best}</span>
@@ -432,7 +463,7 @@ export default function BallLauncher() {
               <>
                 <Crosshair className="w-10 h-10 text-primary" />
                 <p className="text-sm text-muted-foreground max-w-[220px]">
-                  {t("Pop the required balloons before time runs out to advance!")}
+                  {t("Pop only balloons matching the target color before time runs out to advance!")}
                 </p>
                 <Button onClick={start} className="bg-primary text-primary-foreground rounded-2xl px-8 py-5 text-base font-bold">
                   <Play className="w-4 h-4 mr-2" />{t("Start Game")}
@@ -445,7 +476,7 @@ export default function BallLauncher() {
 
       {running && (
         <p className="mt-5 text-center text-xs text-muted-foreground">
-          {t("Pop")} {req} {t("balloons to pass the level")} · {t("Time left")}: {timeLeft}s
+          {t("Pop only the target color")} · {t("Pop")} {req} {t("balloons to pass the level")} · {t("Time left")}: {timeLeft}s
         </p>
       )}
     </div>
