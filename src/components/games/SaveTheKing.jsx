@@ -8,8 +8,7 @@ import { playStart, playWin, playGameOver, playBubblePop, resumeAudio } from "@/
 // Danger scene canvas size.
 const CW = 320, CH = 240;
 // Match-3 board.
-const COLS = 7, ROWS = 7, TS = 40;
-const BW = COLS * TS, BH = ROWS * TS;
+const COLS = 7, ROWS = 7;
 const TILE_TYPES = 4;
 // Level-1 tuning.
 const GOAL = 6;
@@ -81,7 +80,7 @@ function applyGravity(board) {
   return out;
 }
 
-// ---- capsule (rounded limb) ----
+// rounded limb
 function capsule(ctx, x1, y1, x2, y2, w) {
   const a = Math.atan2(y2 - y1, x2 - x1);
   const nx = Math.cos(a + Math.PI / 2) * w, ny = Math.sin(a + Math.PI / 2) * w;
@@ -95,147 +94,185 @@ function capsule(ctx, x1, y1, x2, y2, w) {
   ctx.fill();
 }
 
-// ---- procedural anime king: full articulated body, feet planted on ground ----
+// procedural anime king — articulated body, feet planted, reacts to lava urgency
 function drawKing(ctx, cx, groundY, t, urgency) {
   const panic = urgency;
-  const breath = 1 + Math.sin(t * 0.003) * 0.04;
-  const sway = Math.sin(t * 0.002) * (1 + panic * 2.5);
-  const tremble = panic > 0.55 ? (Math.random() - 0.5) * panic * 2.4 : 0;
+  const breath = 1 + Math.sin(t * 0.003) * 0.05;
+  const sway = Math.sin(t * 0.0025) * (0.8 + panic * 3);
+  const tremble = panic > 0.55 ? (Math.random() - 0.5) * panic * 3 : 0;
+  const blink = (t % 4200) < 110 ? 1 : 0;
+  const raise = Math.max(0, Math.min(1, (panic - 0.2) / 0.5)); // 0 calm → 1 panic
+  const squat = panic > 0.6 ? (panic - 0.6) * 8 : 0;
+  const lean = panic * 0.06;
   const x = cx + sway + tremble;
-  const hipY = groundY - 26;
-  const shoulderY = hipY - 28;
-  const headY = shoulderY - 12;
 
-  const skin = "#f6c89a", skinSh = "#e0a877";
-  const tunic = "#3b82f6", tunicSh = "#1e40af";
+  const hipY = groundY - 30 + squat;
+  const shoulderY = hipY - 26;
+  const headR = 13;
+  const headY = shoulderY - headR - 1;
+
+  const skin = "#f7c9a3", skinSh = "#e3a877";
+  const tunic = "#3b82f6", tunicSh = "#1e3a8a";
   const cape = "#dc2626", capeSh = "#7f1d1d";
-  const boot = "#3b2a1a";
-  const hair = "#2b1810";
-  const gold = "#fbbf24", goldSh = "#b45309";
+  const boot = "#2a1a0e";
+  const hair = "#1f1108", hairHi = "#4a2d18";
+  const gold = "#fcd34d", goldSh = "#b45309";
+  const iris = "#2563eb";
 
-  // cape (behind body)
+  // contact shadow on platform
+  ctx.fillStyle = "rgba(0,0,0,0.38)";
+  ctx.beginPath(); ctx.ellipse(x, groundY + 2, 22, 5, 0, 0, Math.PI * 2); ctx.fill();
+
+  // cape behind
+  ctx.save();
+  ctx.translate(x, shoulderY);
+  ctx.rotate(lean * 0.5);
   ctx.fillStyle = cape;
   ctx.beginPath();
-  ctx.moveTo(x - 10, shoulderY + 2);
-  ctx.quadraticCurveTo(x - 22 + sway * 0.4, hipY + 8, x - 16, groundY - 4);
-  ctx.lineTo(x + 16, groundY - 4);
-  ctx.quadraticCurveTo(x + 22 - sway * 0.4, hipY + 8, x + 10, shoulderY + 2);
+  ctx.moveTo(-10, 0);
+  ctx.quadraticCurveTo(-24 + sway * 0.4, hipY - shoulderY + 10, -18, groundY - shoulderY - 2);
+  ctx.lineTo(18, groundY - shoulderY - 2);
+  ctx.quadraticCurveTo(24 - sway * 0.4, hipY - shoulderY + 10, 10, 0);
   ctx.closePath(); ctx.fill();
   ctx.fillStyle = capeSh;
   ctx.beginPath();
-  ctx.moveTo(x - 9, shoulderY + 3);
-  ctx.quadraticCurveTo(x - 17, hipY + 12, x - 13, groundY - 4);
-  ctx.lineTo(x - 6, groundY - 4);
-  ctx.quadraticCurveTo(x - 10, hipY + 8, x - 5, shoulderY + 3);
+  ctx.moveTo(-9, 2);
+  ctx.quadraticCurveTo(-19, hipY - shoulderY + 12, -14, groundY - shoulderY - 2);
+  ctx.lineTo(-6, groundY - shoulderY - 2);
+  ctx.quadraticCurveTo(-10, hipY - shoulderY + 8, -5, 2);
   ctx.fill();
+  ctx.restore();
 
-  // legs (feet planted)
-  const spread = L(3, 6, panic);
-  const lb = panic > 0.6 ? tremble * 0.4 : 0;
+  // legs — feet planted at groundY
+  const spread = 4 + raise * 2;
   ctx.fillStyle = boot;
-  capsule(ctx, x - spread, hipY, x - spread - 1 + lb, groundY - 5, 5);
-  capsule(ctx, x - spread - 1 + lb, groundY - 5, x - spread + 3 + lb, groundY, 6);
-  capsule(ctx, x + spread, hipY, x + spread + 1 - lb, groundY - 5, 5);
-  capsule(ctx, x + spread + 1 - lb, groundY - 5, x + spread + 5 - lb, groundY, 6);
-  // thigh pants
+  capsule(ctx, x - spread, hipY, x - spread - 1, groundY - 6, 5.5);
+  capsule(ctx, x - spread - 1, groundY - 6, x - spread + 4, groundY, 6.5);
+  capsule(ctx, x + spread, hipY, x + spread + 1, groundY - 6, 5.5);
+  capsule(ctx, x + spread + 1, groundY - 6, x + spread + 6, groundY, 6.5);
   ctx.fillStyle = "#1e3a8a";
-  capsule(ctx, x - spread, hipY - 2, x - spread - 1, hipY + 12, 7);
-  capsule(ctx, x + spread, hipY - 2, x + spread + 1, hipY + 12, 7);
+  capsule(ctx, x - spread, hipY - 2, x - spread - 1, hipY + 13, 7.5);
+  capsule(ctx, x + spread, hipY - 2, x + spread + 1, hipY + 13, 7.5);
 
-  // torso (breathing)
+  // torso (breathing + lean)
   ctx.save();
-  ctx.translate(x, shoulderY + 14);
+  ctx.translate(x, shoulderY + 13);
+  ctx.rotate(lean);
   ctx.scale(breath, 1);
-  const tg = ctx.createLinearGradient(0, -14, 0, 16);
+  const tg = ctx.createLinearGradient(0, -13, 0, 16);
   tg.addColorStop(0, tunic); tg.addColorStop(1, tunicSh);
   ctx.fillStyle = tg;
   ctx.beginPath();
-  ctx.moveTo(-11, -14);
-  ctx.quadraticCurveTo(-13, 0, -10, 16);
-  ctx.lineTo(10, 16);
-  ctx.quadraticCurveTo(13, 0, 11, -14);
+  ctx.moveTo(-12, -13);
+  ctx.quadraticCurveTo(-14, 0, -11, 16);
+  ctx.lineTo(11, 16);
+  ctx.quadraticCurveTo(14, 0, 12, -13);
   ctx.closePath(); ctx.fill();
-  ctx.fillStyle = gold;
-  ctx.fillRect(-11, -14, 22, 3);
-  ctx.fillRect(-10, 12, 20, 4);
-  ctx.fillStyle = "#ef4444";
-  ctx.beginPath(); ctx.arc(0, 13, 2.5, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = gold; ctx.fillRect(-12, -13, 24, 3); ctx.fillRect(-11, 12, 22, 4);
+  ctx.fillStyle = "#ef4444"; ctx.beginPath(); ctx.arc(0, 13, 2.6, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#fbbf24"; ctx.beginPath(); ctx.moveTo(-6, -13); ctx.lineTo(0, -6); ctx.lineTo(6, -13); ctx.fill();
   ctx.restore();
 
-  // right arm
-  const rSh = { x: x + 10, y: shoulderY - 2 };
-  const rElb = { x: L(x + 12, x + 15, panic) + tremble * 0.3, y: L(shoulderY + 13, shoulderY - 4, panic) };
-  const rHand = { x: L(x + 10, x + 19, panic) + tremble * 0.4, y: L(shoulderY + 26, shoulderY - 18, panic) };
-  ctx.fillStyle = tunicSh; capsule(ctx, rSh.x, rSh.y, rElb.x, rElb.y, 5);
-  ctx.fillStyle = tunicSh; capsule(ctx, rElb.x, rElb.y, rHand.x, rHand.y, 4.5);
-  ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(rHand.x, rHand.y, 3.6, 0, Math.PI * 2); ctx.fill();
-  // left arm
-  const lSh = { x: x - 10, y: shoulderY - 2 };
-  const lElb = { x: L(x - 12, x - 15, panic) - tremble * 0.3, y: L(shoulderY + 13, shoulderY - 4, panic) };
-  const lHand = { x: L(x - 10, x - 19, panic) - tremble * 0.4, y: L(shoulderY + 26, shoulderY - 18, panic) };
-  ctx.fillStyle = tunicSh; capsule(ctx, lSh.x, lSh.y, lElb.x, lElb.y, 5);
-  ctx.fillStyle = tunicSh; capsule(ctx, lElb.x, lElb.y, lHand.x, lHand.y, 4.5);
-  ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(lHand.x, lHand.y, 3.6, 0, Math.PI * 2); ctx.fill();
+  // arms — raise with panic, tremble
+  const arm = (sx, dir) => {
+    const sh = { x: x + sx, y: shoulderY - 1 };
+    const elb = { x: x + sx + dir * (2 + raise * 4) + tremble * 0.3, y: shoulderY + 12 - raise * 16 };
+    const hand = { x: x + sx + dir * (1 + raise * 12) + tremble * 0.4, y: shoulderY + 22 - raise * 40 };
+    ctx.fillStyle = tunicSh; capsule(ctx, sh.x, sh.y, elb.x, elb.y, 5.5);
+    ctx.fillStyle = tunicSh; capsule(ctx, elb.x, elb.y, hand.x, hand.y, 5);
+    ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(hand.x, hand.y, 3.8, 0, Math.PI * 2); ctx.fill();
+  };
+  arm(10, 1); arm(-10, -1);
 
   // head
   ctx.save();
   ctx.translate(x, headY);
-  ctx.rotate(sway * 0.01 + tremble * 0.006);
-  ctx.fillStyle = skinSh; ctx.fillRect(-3, 8, 6, 6); // neck
-  ctx.fillStyle = hair; ctx.beginPath(); ctx.ellipse(0, -2, 13, 14, 0, 0, Math.PI * 2); ctx.fill(); // hair back
-  ctx.fillStyle = skin; ctx.beginPath(); ctx.ellipse(0, 2, 10.5, 12, 0, 0, Math.PI * 2); ctx.fill(); // face
-  // hair spikes
+  ctx.rotate(lean * 1.2 + sway * 0.008 + tremble * 0.006);
+  ctx.fillStyle = skinSh; ctx.fillRect(-3.5, headR - 2, 7, 7); // neck
+  ctx.fillStyle = hair; ctx.beginPath(); ctx.ellipse(0, -1, headR + 2, headR + 3, 0, 0, Math.PI * 2); ctx.fill(); // hair back
+  ctx.fillStyle = skin; ctx.beginPath(); ctx.ellipse(0, 2, headR - 2, headR, 0, 0, Math.PI * 2); ctx.fill(); // face
+  // spiky fringe
   ctx.fillStyle = hair;
   ctx.beginPath();
-  ctx.moveTo(-12, -4);
-  ctx.lineTo(-14, -14); ctx.lineTo(-8, -8);
-  ctx.lineTo(-6, -16); ctx.lineTo(-2, -9);
-  ctx.lineTo(2, -16); ctx.lineTo(6, -9);
-  ctx.lineTo(8, -15); ctx.lineTo(12, -7);
-  ctx.lineTo(12, -2);
-  ctx.quadraticCurveTo(0, -6, -12, -4);
+  ctx.moveTo(-headR - 1, -3);
+  ctx.lineTo(-headR - 2, -headR + 2); ctx.lineTo(-headR + 4, -headR + 6);
+  ctx.lineTo(-headR + 7, -headR - 2); ctx.lineTo(-headR + 12, -headR + 4);
+  ctx.lineTo(-2, -headR - 3); ctx.lineTo(3, -headR + 3);
+  ctx.lineTo(headR - 6, -headR - 1); ctx.lineTo(headR - 3, -headR + 5);
+  ctx.lineTo(headR + 1, -headR + 1); ctx.lineTo(headR + 2, -3);
+  ctx.quadraticCurveTo(0, -6, -headR - 1, -3);
   ctx.closePath(); ctx.fill();
+  ctx.fillStyle = hairHi;
+  ctx.beginPath(); ctx.moveTo(-headR + 2, -headR + 4); ctx.lineTo(-4, -headR + 2); ctx.lineTo(-2, -headR + 8); ctx.closePath(); ctx.fill();
   // eyes
-  const eo = L(1, 1.4, panic);
-  ctx.fillStyle = "#1e293b";
-  ctx.beginPath(); ctx.ellipse(-4, 2, 1.8 * eo, 3.2, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(4, 2, 1.8 * eo, 3.2, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = "#fff";
-  ctx.beginPath(); ctx.arc(-3.4, 1, 0.7, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(4.6, 1, 0.7, 0, Math.PI * 2); ctx.fill();
-  // brows (worry with panic)
-  ctx.strokeStyle = "#3a2410"; ctx.lineWidth = 1.6; ctx.lineCap = "round";
-  const browA = L(-0.4, -2.4, panic);
-  ctx.beginPath(); ctx.moveTo(-7, -2); ctx.lineTo(-1.5, -2 + browA); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(7, -2); ctx.lineTo(1.5, -2 + browA); ctx.stroke();
+  const ex = 4.5, ey = 1;
+  if (blink) {
+    ctx.strokeStyle = "#3a2410"; ctx.lineWidth = 1.6; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-ex - 3, ey); ctx.quadraticCurveTo(-ex, ey + 2, -ex + 3, ey); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ex - 3, ey); ctx.quadraticCurveTo(ex, ey + 2, ex + 3, ey); ctx.stroke();
+  } else {
+    const eo = 1 + raise * 0.5;
+    ctx.fillStyle = "#fff";
+    ctx.beginPath(); ctx.ellipse(-ex, ey, 3.4 * eo, 4.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(ex, ey, 3.4 * eo, 4.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = iris;
+    ctx.beginPath(); ctx.arc(-ex, ey + 0.6, 2.4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(ex, ey + 0.6, 2.4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#0b1e3f";
+    ctx.beginPath(); ctx.arc(-ex, ey + 0.6, 1.1, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(ex, ey + 0.6, 1.1, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.beginPath(); ctx.arc(-ex + 0.8, ey - 0.4, 1, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(ex + 0.8, ey - 0.4, 1, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#1a1208"; ctx.lineWidth = 1.8; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-ex - 3.4, ey - 3); ctx.lineTo(-ex + 2, ey - 4.2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ex - 2, ey - 4.2); ctx.lineTo(ex + 3.4, ey - 3); ctx.stroke();
+  }
+  // brows
+  ctx.strokeStyle = "#3a2410"; ctx.lineWidth = 1.8; ctx.lineCap = "round";
+  const bw = L(-0.3, -2.6, raise);
+  ctx.beginPath(); ctx.moveTo(-ex - 3, ey - 4.5); ctx.lineTo(-ex + 2, ey - 4.5 + bw); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ex - 2, ey - 4.5 + bw); ctx.lineTo(ex + 3, ey - 4.5); ctx.stroke();
   // mouth
-  if (panic > 0.6) { ctx.fillStyle = "#7f1d1d"; ctx.beginPath(); ctx.ellipse(0, 8, 2.5, 3, 0, 0, Math.PI * 2); ctx.fill(); }
-  else { ctx.strokeStyle = "#7f1d1d"; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(-2, 7); ctx.quadraticCurveTo(0, 9, 2, 7); ctx.stroke(); }
-  // sweat drop when panic
-  if (panic > 0.5) {
+  if (raise > 0.5) {
+    ctx.fillStyle = "#7f1d1d"; ctx.beginPath(); ctx.ellipse(0, 7, 2.8, 3.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.ellipse(0, 8.6, 2, 1, 0, 0, Math.PI * 2); ctx.fill();
+  } else {
+    ctx.strokeStyle = "#7f1d1d"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(-2.5, 6.5); ctx.quadraticCurveTo(0, 8.5, 2.5, 6.5); ctx.stroke();
+  }
+  // blush when calm
+  if (raise < 0.3) {
+    ctx.fillStyle = "rgba(255,150,150,0.4)";
+    ctx.beginPath(); ctx.arc(-7, 4, 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(7, 4, 1.8, 0, Math.PI * 2); ctx.fill();
+  }
+  // sweat when worried
+  if (raise > 0.4) {
     ctx.fillStyle = "#7dd3fc";
-    const sy = -2 + Math.abs(Math.sin(t * 0.01)) * 3;
+    const sy = -3 + Math.abs(Math.sin(t * 0.008)) * 4;
     ctx.beginPath(); ctx.moveTo(10, sy);
-    ctx.quadraticCurveTo(12, sy + 4, 10, sy + 5);
-    ctx.quadraticCurveTo(8, sy + 4, 10, sy); ctx.fill();
+    ctx.quadraticCurveTo(12.5, sy + 4, 10, sy + 5.5);
+    ctx.quadraticCurveTo(7.5, sy + 4, 10, sy); ctx.fill();
   }
   // crown
   ctx.fillStyle = gold;
   ctx.beginPath();
-  ctx.moveTo(-11, -10); ctx.lineTo(-8, -18); ctx.lineTo(-4, -12);
-  ctx.lineTo(0, -20); ctx.lineTo(4, -12); ctx.lineTo(8, -18); ctx.lineTo(11, -10);
-  ctx.lineTo(11, -7); ctx.lineTo(-11, -7); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = goldSh; ctx.fillRect(-11, -9, 22, 2);
+  ctx.moveTo(-headR, -headR + 4); ctx.lineTo(-headR + 3, -headR - 5); ctx.lineTo(-headR + 7, -headR + 1);
+  ctx.lineTo(0, -headR - 7); ctx.lineTo(headR - 7, -headR + 1); ctx.lineTo(headR - 3, -headR - 5);
+  ctx.lineTo(headR, -headR + 4); ctx.lineTo(headR, -headR + 8); ctx.lineTo(-headR, -headR + 8); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = goldSh; ctx.fillRect(-headR, -headR + 6, headR * 2, 2);
   ctx.fillStyle = "#ef4444";
-  ctx.beginPath(); ctx.arc(0, -13, 1.8, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(-7, -13, 1.2, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(7, -13, 1.2, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(0, -headR - 1, 2, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(-headR + 5, -headR + 1, 1.4, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(headR - 5, -headR + 1, 1.4, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
 }
 
 export default function SaveTheKing() {
   const { t } = useI18n();
   const canvasRef = useRef(null);
+  const boardWrapRef = useRef(null);
 
   const [tiles, setTiles] = useState(() => makeBoard());
   const [selected, setSelected] = useState(null);
@@ -244,6 +281,7 @@ export default function SaveTheKing() {
   const [progress, setProgress] = useState(0);
   const [score, setScore] = useState(0);
   const [lavaLevel, setLavaLevel] = useState(LAVA_START);
+  const [ts, setTs] = useState(34); // tile size, measured to fit container
 
   const phaseRef = useRef("idle");
   const lavaRef = useRef(LAVA_START);
@@ -256,6 +294,17 @@ export default function SaveTheKing() {
 
   const stopLoop = () => { if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; } };
 
+  // measure board wrapper → fit tile size so the grid never overflows
+  useEffect(() => {
+    const el = boardWrapRef.current;
+    if (!el) return;
+    const measure = () => setTs(Math.max(22, Math.floor((el.clientWidth - 16) / COLS)));
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   // ---- danger scene render loop (always running so the king breathes) ----
   const drawScene = useCallback(() => {
     const cv = canvasRef.current;
@@ -265,7 +314,6 @@ export default function SaveTheKing() {
     const dt = lastRef.current ? (now - lastRef.current) / 1000 : 0;
     lastRef.current = now;
 
-    // advance lava only while playing
     if (phaseRef.current === "playing") {
       lavaRef.current = Math.min(LAVA_MAX + 0.0001, lavaRef.current + LAVA_RISE * dt);
       setLavaLevel(lavaRef.current);
@@ -273,7 +321,6 @@ export default function SaveTheKing() {
     }
     const urgency = lavaRef.current / LAVA_MAX;
 
-    // stone pit background
     const bg = ctx.createLinearGradient(0, 0, 0, CH);
     bg.addColorStop(0, "#2c3e50"); bg.addColorStop(1, "#14110f");
     ctx.fillStyle = bg; ctx.fillRect(0, 0, CW, CH);
@@ -284,7 +331,6 @@ export default function SaveTheKing() {
       for (let x = off; x < CW; x += 44) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + 22); ctx.stroke(); }
     }
 
-    // pipes pouring lava
     const pourY = 18;
     const lavaTopY = CH - lavaRef.current * CH;
     const drawPipe = (px, dir) => {
@@ -300,7 +346,6 @@ export default function SaveTheKing() {
     };
     drawPipe(34, 1); drawPipe(CW - 34, -1);
 
-    // lava pool
     const lh = CH - lavaTopY;
     if (lh > 1) {
       const lg = ctx.createLinearGradient(0, lavaTopY, 0, CH);
@@ -323,7 +368,6 @@ export default function SaveTheKing() {
       ctx.fillStyle = gg; ctx.fillRect(0, lavaTopY - 40, CW, 40);
     }
 
-    // embers
     if (phaseRef.current === "playing" && Math.random() < 0.5) {
       embersRef.current.push({ x: Math.random() * CW, y: CH - Math.random() * 20, vy: -rand(20, 45), life: 1, r: rand(1, 2.4) });
     }
@@ -341,16 +385,16 @@ export default function SaveTheKing() {
     // stone platform (ground)
     const platY = CH * 0.62;
     ctx.fillStyle = "rgba(0,0,0,0.4)";
-    ctx.beginPath(); ctx.ellipse(CW / 2, platY + 16, 50, 10, 0, 0, Math.PI * 2); ctx.fill();
-    const pg = ctx.createLinearGradient(0, platY - 14, 0, platY + 14);
+    ctx.beginPath(); ctx.ellipse(CW / 2, platY + 16, 52, 10, 0, 0, Math.PI * 2); ctx.fill();
+    const pg = ctx.createLinearGradient(0, platY - 16, 0, platY + 16);
     pg.addColorStop(0, "#9a8b7a"); pg.addColorStop(1, "#5b4d40");
     ctx.fillStyle = pg;
-    ctx.beginPath(); ctx.ellipse(CW / 2, platY, 48, 15, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(CW / 2, platY, 50, 16, 0, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = "rgba(255,255,255,0.18)";
-    ctx.beginPath(); ctx.ellipse(CW / 2, platY - 4, 36, 6, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(CW / 2, platY - 4, 38, 6, 0, 0, Math.PI * 2); ctx.fill();
 
     // king — feet planted on platform top
-    const groundY = platY - 6;
+    const groundY = platY - 14;
     drawKing(ctx, CW / 2, groundY, now, urgency);
 
     if (mountedRef.current) rafRef.current = requestAnimationFrame(drawScene);
@@ -426,6 +470,7 @@ export default function SaveTheKing() {
   const playing = phase === "playing";
   const pct = Math.round((progress / GOAL) * 100);
   const lavaPct = Math.round((lavaLevel / LAVA_MAX) * 100);
+  const bw = ts * COLS, bh = ts * ROWS;
 
   return (
     <div className="select-none">
@@ -456,7 +501,7 @@ export default function SaveTheKing() {
       </div>
 
       {/* Unified game unit: danger scene on top, control board directly under it (one frame) */}
-      <div className="mx-auto" style={{ width: "min(86vw, 320px)" }}>
+      <div className="mx-auto" style={{ width: "min(92vw, 320px)" }}>
         <div className="rounded-3xl overflow-hidden border-2 border-stone-700/60 shadow-[0_18px_40px_-18px_rgba(255,80,0,0.55)] bg-stone-900">
           {/* screen */}
           <div className="relative">
@@ -493,20 +538,20 @@ export default function SaveTheKing() {
             )}
           </div>
 
-          {/* control board — the buttons, fused under the screen as one unit */}
-          <div className="bg-gradient-to-b from-stone-800 to-stone-900 border-t-2 border-stone-700/60 px-2 py-2">
-            <div className="relative mx-auto" style={{ width: BW, height: BH }}>
+          {/* control board — the buttons, fused under the screen as one unit, responsive */}
+          <div ref={boardWrapRef} className="bg-gradient-to-b from-stone-800 to-stone-900 border-t-2 border-stone-700/60 px-2 py-2">
+            <div className="relative mx-auto" style={{ width: bw, height: bh }}>
               <AnimatePresence>
                 {tiles.map((tile) => (
                   <motion.div
                     key={tile.id}
-                    initial={tile.fresh ? { y: -TS * 2, opacity: 0, scale: 0.6 } : { opacity: 0, scale: 0.6 }}
-                    animate={{ x: tile.col * TS, y: tile.row * TS, opacity: tile.removing ? 0 : 1, scale: tile.removing ? 0.2 : (selected === tile.id ? 1.12 : 1) }}
+                    initial={tile.fresh ? { y: -ts * 2, opacity: 0, scale: 0.6 } : { opacity: 0, scale: 0.6 }}
+                    animate={{ x: tile.col * ts, y: tile.row * ts, opacity: tile.removing ? 0 : 1, scale: tile.removing ? 0.2 : (selected === tile.id ? 1.12 : 1) }}
                     exit={{ opacity: 0, scale: 0.2 }}
                     transition={{ type: "spring", stiffness: 520, damping: 32 }}
                     onClick={() => onTile(tile)}
                     className={`absolute flex items-center justify-center rounded-xl cursor-pointer ${selected === tile.id ? "ring-2 ring-white z-10" : ""}`}
-                    style={{ width: TS - 4, height: TS - 4, margin: 2, background: `radial-gradient(circle at 35% 30%, ${TILE_META[tile.type].color}, ${TILE_META[tile.type].edge})`, boxShadow: "inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.25)" }}
+                    style={{ width: ts - 4, height: ts - 4, margin: 2, background: `radial-gradient(circle at 35% 30%, ${TILE_META[tile.type].color}, ${TILE_META[tile.type].edge})`, boxShadow: "inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.25)" }}
                   >
                     {(() => { const I = TILE_META[tile.type].Icon; return <I className="w-5 h-5 text-white/90 drop-shadow" strokeWidth={2.2} />; })()}
                   </motion.div>
