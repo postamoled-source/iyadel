@@ -305,7 +305,7 @@ export default function SaveTheKing() {
   // measure viewport → fit a 6-wide board with no overflow
   useEffect(() => {
     const measure = () => {
-      const avail = Math.min(window.innerWidth - 52, 300);
+      const avail = Math.min(window.innerWidth - 64, 288);
       setTs(Math.max(26, Math.floor(avail / COLS)));
     };
     measure();
@@ -592,7 +592,7 @@ export default function SaveTheKing() {
           <div className="relative">
             <canvas ref={canvasRef} width={CW} height={CH}
               className="block w-full touch-none"
-              style={{ aspectRatio: `${CW}/${CH}` }} />
+              style={{ aspectRatio: `${CW}/${CH}`, background: "#14110f" }} />
             {!playing && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 backdrop-blur-sm text-center p-5 animate-[fadeIn_0.3s_ease-out]">
                 {phase === "levelComplete" ? (
