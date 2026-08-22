@@ -291,6 +291,7 @@ export default function SaveTheKing() {
   const lastRef = useRef(0);
   const embersRef = useRef([]);
   const mountedRef = useRef(true);
+  const dragRef = useRef(null);
 
   const stopLoop = () => { if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; } };
 
@@ -445,27 +446,60 @@ export default function SaveTheKing() {
     setTiles([...board]);
   }, [finish]);
 
-  const onTile = useCallback(async (tile) => {
-    if (phaseRef.current !== "playing" || busy) return;
-    if (!selected) { setSelected(tile.id); return; }
-    if (selected === tile.id) { setSelected(null); return; }
-    const a = tiles.find((x) => x.id === selected);
-    const b = tile;
-    if (!a) { setSelected(tile.id); return; }
-    const adj = Math.abs(a.col - b.col) + Math.abs(a.row - b.row) === 1;
-    if (!adj) { setSelected(b.id); return; }
+  const attemptSwap = useCallback(async (a, b) => {
     setBusy(true); setSelected(null);
     const board = tiles.map((x) => x.id === a.id ? { ...x, col: b.col, row: b.row } : x.id === b.id ? { ...x, col: a.col, row: a.row } : x);
     setTiles([...board]);
     await sleep(160);
-    if (findMatches(board).size) {
-      await resolve(board);
-    } else {
+    if (findMatches(board).size) await resolve(board);
+    else {
       const reverted = board.map((x) => x.id === a.id ? { ...x, col: a.col, row: a.row } : x.id === b.id ? { ...x, col: b.col, row: b.row } : x);
       setTiles(reverted);
     }
     setBusy(false);
-  }, [selected, busy, tiles, resolve]);
+  }, [tiles, resolve]);
+
+  const handleSelect = useCallback((tile) => {
+    setSelected((prev) => {
+      if (!prev) return tile.id;
+      if (prev === tile.id) return null;
+      const a = tiles.find((x) => x.id === prev);
+      if (!a) return tile.id;
+      const adj = Math.abs(a.col - tile.col) + Math.abs(a.row - tile.row) === 1;
+      if (!adj) return tile.id;
+      attemptSwap(a, tile);
+      return null;
+    });
+  }, [tiles, attemptSwap]);
+
+  // drag a tile in any direction (up/down/left/right) to swap with that neighbor
+  const onTileDown = useCallback((tile, e) => {
+    if (phaseRef.current !== "playing" || busy) return;
+    e.preventDefault();
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch {}
+    dragRef.current = { id: tile.id, x: e.clientX, y: e.clientY, moved: false };
+  }, [busy]);
+
+  const onTileMove = useCallback((tile, e) => {
+    const d = dragRef.current;
+    if (!d || d.id !== tile.id) return;
+    const dx = e.clientX - d.x, dy = e.clientY - d.y;
+    const th = ts * 0.35;
+    if (Math.abs(dx) < th && Math.abs(dy) < th) return;
+    d.moved = true;
+    let nc = tile.col, nr = tile.row;
+    if (Math.abs(dx) > Math.abs(dy)) nc += dx > 0 ? 1 : -1;
+    else nr += dy > 0 ? 1 : -1;
+    const nb = tiles.find((x) => x.col === nc && x.row === nr);
+    dragRef.current = null;
+    if (nb) attemptSwap(tile, nb);
+  }, [ts, tiles, attemptSwap]);
+
+  const onTileUp = useCallback((tile) => {
+    const d = dragRef.current;
+    dragRef.current = null;
+    if (d && d.id === tile.id && !d.moved) handleSelect(tile);
+  }, [handleSelect]);
 
   const playing = phase === "playing";
   const pct = Math.round((progress / GOAL) * 100);
@@ -539,7 +573,7 @@ export default function SaveTheKing() {
           </div>
 
           {/* control board — the buttons, fused under the screen as one unit, responsive */}
-          <div ref={boardWrapRef} className="bg-gradient-to-b from-stone-800 to-stone-900 border-t-2 border-stone-700/60 px-2 py-2">
+          <div ref={boardWrapRef} className="bg-gradient-to-b from-stone-800 to-stone-900 border-t-2 border-stone-700/60 px-2 py-2 touch-none select-none" style={{ touchAction: "none" }}>
             <div className="relative mx-auto" style={{ width: bw, height: bh }}>
               <AnimatePresence>
                 {tiles.map((tile) => (
@@ -549,9 +583,11 @@ export default function SaveTheKing() {
                     animate={{ x: tile.col * ts, y: tile.row * ts, opacity: tile.removing ? 0 : 1, scale: tile.removing ? 0.2 : (selected === tile.id ? 1.12 : 1) }}
                     exit={{ opacity: 0, scale: 0.2 }}
                     transition={{ type: "spring", stiffness: 520, damping: 32 }}
-                    onClick={() => onTile(tile)}
-                    className={`absolute flex items-center justify-center rounded-xl cursor-pointer ${selected === tile.id ? "ring-2 ring-white z-10" : ""}`}
-                    style={{ width: ts - 4, height: ts - 4, margin: 2, background: `radial-gradient(circle at 35% 30%, ${TILE_META[tile.type].color}, ${TILE_META[tile.type].edge})`, boxShadow: "inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.25)" }}
+                    onPointerDown={(e) => onTileDown(tile, e)}
+                    onPointerMove={(e) => onTileMove(tile, e)}
+                    onPointerUp={() => onTileUp(tile)}
+                    className={`absolute flex items-center justify-center rounded-xl cursor-pointer touch-none select-none ${selected === tile.id ? "ring-2 ring-white z-10" : ""}`}
+                    style={{ width: ts - 4, height: ts - 4, margin: 2, touchAction: "none", background: `radial-gradient(circle at 35% 30%, ${TILE_META[tile.type].color}, ${TILE_META[tile.type].edge})`, boxShadow: "inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.25)" }}
                   >
                     {(() => { const I = TILE_META[tile.type].Icon; return <I className="w-5 h-5 text-white/90 drop-shadow" strokeWidth={2.2} />; })()}
                   </motion.div>
