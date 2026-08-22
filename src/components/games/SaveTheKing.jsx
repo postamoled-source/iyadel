@@ -299,6 +299,7 @@ export default function SaveTheKing() {
   const embersRef = useRef([]);
   const mountedRef = useRef(true);
   const dragRef = useRef(null);
+  const lavaPctRef = useRef(-1);
 
   const stopLoop = () => { if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; } };
 
@@ -325,7 +326,8 @@ export default function SaveTheKing() {
     const cfg = LVL[levelRef.current] || LVL[1];
     if (phaseRef.current === "playing") {
       lavaRef.current = Math.min(1, lavaRef.current + cfg.lavaRise * dt);
-      setLavaLevel(lavaRef.current);
+      const lp = Math.round(lavaRef.current * 100);
+      if (lp !== lavaPctRef.current) { lavaPctRef.current = lp; setLavaLevel(lavaRef.current); }
     }
 
     const liftNow = liftRef.current;
@@ -335,7 +337,7 @@ export default function SaveTheKing() {
     const loseLava = (CH - (groundY - 4)) / CH;
     const urgency = Math.min(1, lavaRef.current / Math.max(0.01, loseLava));
 
-    if (phaseRef.current === "playing" && lavaTopY >= groundY - 4) finish("lost");
+    if (phaseRef.current === "playing" && lavaTopY <= groundY - 4) finish("lost");
 
     // background (cave wall)
     const bg = ctx.createLinearGradient(0, 0, 0, CH);
@@ -440,7 +442,7 @@ export default function SaveTheKing() {
     levelRef.current = lvl; setLevel(lvl);
     progressRef.current = 0; setProgress(0);
     scoreRef.current = 0; setScore(0);
-    lavaRef.current = cfg.lavaStart; setLavaLevel(cfg.lavaStart);
+    lavaRef.current = cfg.lavaStart; setLavaLevel(cfg.lavaStart); lavaPctRef.current = Math.round(cfg.lavaStart * 100);
     liftRef.current = 0; setLift(0);
     embersRef.current = [];
     phaseRef.current = "playing"; setPhase("playing");
@@ -587,7 +589,7 @@ export default function SaveTheKing() {
 
       {/* Unified game unit: danger scene on top, control board directly under it (one frame) */}
       <div className="mx-auto" style={{ width: bw }}>
-        <div className="rounded-3xl overflow-hidden border-2 border-stone-700/60 shadow-[0_18px_40px_-18px_rgba(255,80,0,0.55)] bg-stone-900">
+        <div className="rounded-3xl overflow-hidden ring-2 ring-stone-700/60 shadow-[0_18px_40px_-18px_rgba(255,80,0,0.55)] bg-stone-900">
           {/* screen */}
           <div className="relative">
             <canvas ref={canvasRef} width={CW} height={CH}
