@@ -11,14 +11,15 @@ export default function MobileSelect({ value, onChange, options, triggerClassNam
   const [open, setOpen] = useState(false);
   const opts = options.map((o) => (typeof o === "string" ? { value: o, label: o } : o));
   const selected = opts.find((o) => String(o.value) === String(value));
-  const label = selected ? selected.label : placeholder ?? opts[0]?.label ?? "";
+  const placeholderLabel = typeof placeholder === "string" ? placeholder : (placeholder?.label ?? opts[0]?.label ?? "Select");
+  const label = selected ? selected.label : placeholderLabel;
 
   if (!isMobile) {
     return (
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger className={triggerClassName}>
           {leading}
-          <SelectValue placeholder={placeholder ?? opts[0]?.label} />
+          <SelectValue placeholder={placeholderLabel} />
         </SelectTrigger>
         <SelectContent className="max-h-72">
           {opts.map((o) => (
@@ -40,7 +41,7 @@ export default function MobileSelect({ value, onChange, options, triggerClassNam
       </DrawerTrigger>
       <DrawerContent className="max-h-[75vh]">
         <DrawerHeader className="pb-2 text-center">
-          <DrawerTitle className="text-base font-semibold">{placeholder ?? "Select"}</DrawerTitle>
+          <DrawerTitle className="text-base font-semibold">{placeholderLabel}</DrawerTitle>
         </DrawerHeader>
         <div className="overflow-y-auto px-3 pb-6 max-h-[60vh] space-y-1">
           {opts.map((o) => {
