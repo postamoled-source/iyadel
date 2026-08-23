@@ -706,12 +706,12 @@ function ToolWorkspace({ tool, onBack }) {
       }
       case "simple-compound-interest": {
         const compounds = { Yearly: 1, "Semi-annual": 2, Quarterly: 4, Monthly: 12, Daily: 365 };
-        const P = parseFloat(inputs.principal), rate = parseFloat(inputs.rate), t = parseFloat(inputs.years);
+        const P = parseFloat(inputs.principal), rate = parseFloat(inputs.rate), yrs = parseFloat(inputs.years);
         const n = compounds[inputs.compound || "Yearly"];
-        const interestResult = (!isNaN(P) && !isNaN(rate) && !isNaN(t) && P >= 0 && t >= 0) ? (() => {
-          const simple = (P * rate * t) / 100;
-          const compound = P * Math.pow(1 + rate / 100 / n, n * t) - P;
-          return { simple: simple.toFixed(2), compound: compound.toFixed(2), finalSimple: (P + simple).toFixed(2), finalCompound: (P + compound).toFixed(2), P, rate, t, n };
+        const interestResult = (!isNaN(P) && !isNaN(rate) && !isNaN(yrs) && P >= 0 && yrs >= 0) ? (() => {
+          const simple = (P * rate * yrs) / 100;
+          const compound = P * Math.pow(1 + rate / 100 / n, n * yrs) - P;
+          return { simple: simple.toFixed(2), compound: compound.toFixed(2), finalSimple: (P + simple).toFixed(2), finalCompound: (P + compound).toFixed(2), P, rate, yrs, n };
         })() : null;
         const calc = () => setResult(interestResult);
         return (
@@ -743,7 +743,7 @@ function ToolWorkspace({ tool, onBack }) {
                   <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">{t("Growth Over Time")}</h4>
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={Array.from({ length: Math.min(Math.round(result.t) + 1, 100) }, (_, yr) => {
+                      <AreaChart data={Array.from({ length: Math.min(Math.round(result.yrs) + 1, 100) }, (_, yr) => {
                         const simpleBal = result.P + (result.P * result.rate * yr) / 100;
                         const compBal = result.P * Math.pow(1 + result.rate / 100 / result.n, result.n * yr);
                         return { year: yr, Simple: +simpleBal.toFixed(2), Compound: +compBal.toFixed(2) };
