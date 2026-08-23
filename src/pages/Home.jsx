@@ -705,6 +705,7 @@ function ToolWorkspace({ tool, onBack }) {
         );
       }
       case "simple-compound-interest": {
+        // Compare simple vs compound interest. yrs = duration in years.
         const compounds = { Yearly: 1, "Semi-annual": 2, Quarterly: 4, Monthly: 12, Daily: 365 };
         const P = parseFloat(inputs.principal), rate = parseFloat(inputs.rate), yrs = parseFloat(inputs.years);
         const n = compounds[inputs.compound || "Yearly"];
