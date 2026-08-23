@@ -2204,10 +2204,6 @@ export default function Home() {
   });
   return (
     <div className="min-h-screen bg-background selection:bg-primary/30 selection:text-primary">
-      <div className="flex flex-col items-center justify-center py-10 px-6 bg-secondary/40 border-b border-border">
-        <img src="https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png" alt="iyadel favicon" className="w-24 h-24 rounded-2xl shadow-lg" />
-        <p className="text-xs text-muted-foreground mt-3">أيقونة الموقع الحالية (favicon)</p>
-      </div>
       <HeroSection toolCount={31} catCount={7} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <ToolsHub searchQuery={searchQuery} />
       <AppStoreSection />
