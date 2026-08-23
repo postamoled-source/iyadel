@@ -708,10 +708,10 @@ function ToolWorkspace({ tool, onBack }) {
         const compounds = { Yearly: 1, "Semi-annual": 2, Quarterly: 4, Monthly: 12, Daily: 365 };
         const P = parseFloat(inputs.principal), rate = parseFloat(inputs.rate), t = parseFloat(inputs.years);
         const n = compounds[inputs.compound || "Yearly"];
-        const interestResult = (P && rate && t) ? (() => {
+        const interestResult = (!isNaN(P) && !isNaN(rate) && !isNaN(t) && P >= 0 && t >= 0) ? (() => {
           const simple = (P * rate * t) / 100;
           const compound = P * Math.pow(1 + rate / 100 / n, n * t) - P;
-          return { simple: simple.toFixed(2), compound: compound.toFixed(2), finalSimple: (P + simple).toFixed(2), finalCompound: (P + compound).toFixed(2) };
+          return { simple: simple.toFixed(2), compound: compound.toFixed(2), finalSimple: (P + simple).toFixed(2), finalCompound: (P + compound).toFixed(2), P, rate, t, n };
         })() : null;
         const calc = () => setResult(interestResult);
         return (
@@ -723,19 +723,19 @@ function ToolWorkspace({ tool, onBack }) {
               <SelectField label={t("Compound Frequency")} value={inputs.compound || "Yearly"} onChange={set("compound")} options={Object.keys(compounds).map((k) => ({ value: k, label: t(k) }))} />
             </div>
             <div className="flex justify-center mt-6"><CalcButton onClick={calc}>{t("Calculate Interest")}</CalcButton></div>
-            {interestResult && (
+            {result && (
               <>
                 <ResultCard title={t("Comparison")}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
                     <div className="bg-background rounded-2xl p-6 border border-border shadow-sm">
                       <div className="text-sm text-muted-foreground mb-1">{t("Simple Interest Earned")}</div>
-                      <div className="text-2xl font-bold text-primary">${interestResult.simple}</div>
-                      <div className="text-sm text-muted-foreground mt-2">{t("Final Amount:")} <strong className="text-foreground">${interestResult.finalSimple}</strong></div>
+                      <div className="text-2xl font-bold text-primary">${result.simple}</div>
+                      <div className="text-sm text-muted-foreground mt-2">{t("Final Amount:")} <strong className="text-foreground">${result.finalSimple}</strong></div>
                     </div>
                     <div className="bg-background rounded-2xl p-6 border border-border shadow-sm">
                       <div className="text-sm text-muted-foreground mb-1">{t("Compound Interest Earned")}</div>
-                      <div className="text-2xl font-bold text-accent">${interestResult.compound}</div>
-                      <div className="text-sm text-muted-foreground mt-2">{t("Final Amount:")} <strong className="text-foreground">${interestResult.finalCompound}</strong></div>
+                      <div className="text-2xl font-bold text-accent">${result.compound}</div>
+                      <div className="text-sm text-muted-foreground mt-2">{t("Final Amount:")} <strong className="text-foreground">${result.finalCompound}</strong></div>
                     </div>
                   </div>
                 </ResultCard>
@@ -743,9 +743,9 @@ function ToolWorkspace({ tool, onBack }) {
                   <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">{t("Growth Over Time")}</h4>
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={Array.from({ length: Math.round(t) + 1 }, (_, yr) => {
-                        const simpleBal = P + (P * rate * yr) / 100;
-                        const compBal = P * Math.pow(1 + rate / 100 / n, n * yr);
+                      <AreaChart data={Array.from({ length: Math.min(Math.round(result.t) + 1, 100) }, (_, yr) => {
+                        const simpleBal = result.P + (result.P * result.rate * yr) / 100;
+                        const compBal = result.P * Math.pow(1 + result.rate / 100 / result.n, result.n * yr);
                         return { year: yr, Simple: +simpleBal.toFixed(2), Compound: +compBal.toFixed(2) };
                       })}>
                         <defs>
@@ -771,7 +771,7 @@ function ToolWorkspace({ tool, onBack }) {
                 </div>
               </>
             )}
-            <TipBox><strong>Indicator:</strong> Compound interest is the "miracle" of investing — the more frequent the compounding, the higher the return.</TipBox>
+            <TipBox>{t("Compound interest is the miracle of investing — the more frequent the compounding, the higher the return.")}</TipBox>
           </>
         );
       }
