@@ -11,19 +11,19 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "https://media.base44.com/images/public/6a7e76e3396b41955b675542/300181054_generated_image.png",
+      "src": "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://media.base44.com/images/public/6a7e76e3396b41955b675542/300181054_generated_image.png",
+      "src": "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://media.base44.com/images/public/6a7e76e3396b41955b675542/300181054_generated_image.png",
+      "src": "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
