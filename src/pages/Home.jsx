@@ -86,40 +86,40 @@ function AnimatedElement({ children, className, delay = 0 }) {
 function NumInput({ label, value, onChange, placeholder }) {
   return (
     <div className="text-left">
-      <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
+      <label className="block text-sm font-medium text-[#92400E] dark:text-[#FBBF24] mb-1.5 ml-1">{label}</label>
       <input type="number" inputMode="decimal" value={value ?? ""} onChange={onChange} placeholder={placeholder}
-        className="w-full rounded-[16px] border-2 border-[#FDE68A] bg-[#FFFBEB] text-foreground text-base px-4 py-3.5 h-[52px] transition-all duration-200 focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
+        className="w-full rounded-[16px] border-2 border-[#FDE68A] dark:border-[#4B3F8A] bg-[#FFFBEB] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] placeholder:text-gray-400 dark:placeholder:text-[#6B6B8A] text-base px-4 py-3.5 h-[52px] transition-all duration-200 focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
     </div>
   );
 }
 function TxtInput({ label, value, onChange, placeholder, type = "text" }) {
   return (
     <div className="text-left">
-      <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
+      <label className="block text-sm font-medium text-[#92400E] dark:text-[#FBBF24] mb-1.5 ml-1">{label}</label>
       <input type={type} inputMode={type === "number" ? "decimal" : undefined} value={value ?? ""} onChange={onChange} placeholder={placeholder}
-        className="w-full rounded-[16px] border-2 border-[#FDE68A] bg-[#FFFBEB] text-foreground text-base px-4 py-3.5 h-[52px] transition-all duration-200 focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
+        className="w-full rounded-[16px] border-2 border-[#FDE68A] dark:border-[#4B3F8A] bg-[#FFFBEB] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] placeholder:text-gray-400 dark:placeholder:text-[#6B6B8A] text-base px-4 py-3.5 h-[52px] transition-all duration-200 focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
     </div>
   );
 }
 function FnInput({ label, value, onChange, placeholder }) {
   return (
     <div className="text-left">
-      <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
+      <label className="block text-sm font-medium text-[#92400E] dark:text-[#FBBF24] mb-1.5 ml-1">{label}</label>
       <textarea value={value ?? ""} onChange={onChange} placeholder={placeholder} rows={3}
-        className="w-full rounded-[16px] border-2 border-[#FDE68A] bg-[#FFFBEB] text-foreground text-base px-4 py-3 h-[52px] transition-all duration-200 resize-y font-mono focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
+        className="w-full rounded-[16px] border-2 border-[#FDE68A] dark:border-[#4B3F8A] bg-[#FFFBEB] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] placeholder:text-gray-400 dark:placeholder:text-[#6B6B8A] text-base px-4 py-3 h-[52px] transition-all duration-200 resize-y font-mono focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
     </div>
   );
 }
 function SelectField({ label, value, onChange, options }) {
   return (
     <div className="text-left">
-      <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
+      <label className="block text-sm font-medium text-[#92400E] dark:text-[#FBBF24] mb-1.5 ml-1">{label}</label>
       <MobileSelect
         value={value}
         onChange={(v) => onChange({ target: { value: v } })}
         options={options}
         placeholder={options[0]}
-        triggerClassName="w-full flex items-center gap-2 rounded-[16px] border-2 border-[#FDE68A] bg-[#FFFBEB] text-foreground text-base px-4 py-3.5 h-[52px] focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]"
+        triggerClassName="w-full flex items-center gap-2 rounded-[16px] border-2 border-[#FDE68A] dark:border-[#4B3F8A] bg-[#FFFBEB] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] text-base px-4 py-3.5 h-[52px] focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]"
       />
     </div>
   );
@@ -128,7 +128,7 @@ function RangeField({ label, value, onChange, min, max, step = 1 }) {
   return (
     <div className="text-left">
       <div className="flex items-center justify-between mb-1.5 ml-1">
-        <label className="block text-sm font-medium text-muted-foreground">{label}</label>
+        <label className="block text-sm font-medium text-[#92400E] dark:text-[#FBBF24]">{label}</label>
         <span className="text-xs font-bold text-primary tabular-nums">{value ?? min}</span>
       </div>
       <input type="range" min={min} max={max} step={step} value={value ?? min} onChange={onChange}
@@ -139,7 +139,7 @@ function RangeField({ label, value, onChange, min, max, step = 1 }) {
 function ColorField({ label, value, onChange }) {
   return (
     <div className="text-left">
-      <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
+      <label className="block text-sm font-medium text-[#92400E] dark:text-[#FBBF24] mb-1.5 ml-1">{label}</label>
       <div className="flex items-center gap-3 rounded-2xl border border-border bg-gradient-to-b from-card to-background px-4 py-2.5 min-h-[52px] shadow-[inset_0_2px_4px_hsl(0_0%_0%/0.06),0_1px_0_0_hsl(0_0%_100%/0.04)]">
         <input type="color" value={value} onChange={onChange} className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent p-0" />
         <span className="text-sm font-mono text-muted-foreground">{value}</span>
@@ -149,8 +149,8 @@ function ColorField({ label, value, onChange }) {
 }
 function ResultCard({ title, children }) {
   return (
-    <div data-tool-result="true" className="mt-8 rounded-[16px] p-6 animate-[fadeIn_0.5s_ease-out] bg-[#FFFBEB] border-2 border-[#FDE68A]/70 shadow-sm" style={{ backgroundImage: "radial-gradient(hsl(45 96% 50% / 0.18) 1.5px, transparent 1.5px)", backgroundSize: "14px 14px" }}>
-      <h4 className="text-lg font-bold text-[#1E1B4B] mb-4 text-center">{title}</h4>
+    <div data-tool-result="true" className="mt-8 rounded-[16px] p-6 animate-[fadeIn_0.5s_ease-out] bg-[#FFFBEB] dark:bg-[#2D2A5A] border-2 border-[#FDE68A] dark:border-[#4B3F8A] shadow-sm transition-colors duration-300" style={{ backgroundImage: "radial-gradient(hsl(45 96% 50% / 0.18) 1.5px, transparent 1.5px)", backgroundSize: "14px 14px" }}>
+      <h4 className="text-lg font-bold text-[#1E1B4B] dark:text-[#FEF3C7] mb-4 text-center">{title}</h4>
       <div className="text-center">{children}</div>
     </div>
   );
@@ -159,8 +159,8 @@ function ResultCircle({ value, unit, sub }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <div className="w-32 h-32 rounded-full border-4 border-[#F59E0B] bg-gradient-to-br from-[#6D28D9]/20 to-[#F59E0B]/20 flex items-center justify-center relative">
-        <div className="absolute inset-2 rounded-full bg-white"></div>
-        <span className="relative text-4xl font-black text-[#1E1B4B] leading-none">{value}</span>
+        <div className="absolute inset-2 rounded-full bg-white dark:bg-[#1E1B4B]"></div>
+        <span className="relative text-4xl font-black text-[#1E1B4B] dark:text-[#FEF3C7] leading-none">{value}</span>
       </div>
       {unit && <div className="text-sm font-semibold text-[#6D28D9] -mt-1">{unit}</div>}
       {sub && <div className="text-xs text-muted-foreground">{sub}</div>}
@@ -169,14 +169,14 @@ function ResultCircle({ value, unit, sub }) {
 }
 function InsightBox({ children, icon: Icon = ShieldCheck }) {
   return (
-    <div className="mt-5 flex items-start gap-3 rounded-2xl bg-white/70 border border-[#FDE68A] p-4 text-left">
+    <div className="mt-5 flex items-start gap-3 rounded-2xl bg-white/70 dark:bg-[#1E1B4B]/70 border border-[#FDE68A] dark:border-[#4B3F8A] p-4 text-left transition-colors duration-300">
       <span className="shrink-0 text-[#F59E0B] mt-0.5"><Icon className="w-5 h-5" /></span>
-      <span className="text-sm text-[#1E1B4B] leading-relaxed">{children}</span>
+      <span className="text-sm text-[#1E1B4B] dark:text-[#FEF3C7] leading-relaxed">{children}</span>
     </div>
   );
 }
 function TipBox({ children }) {
-  return <div className="mt-6 rounded-2xl bg-secondary border border-border p-5 text-sm text-secondary-foreground text-center shadow-[inset_0_2px_6px_hsl(0_0%_0%/0.05)]">{children}</div>;
+  return <div className="mt-6 rounded-2xl bg-[#FFFBEB] dark:bg-[#2D2A5A] border-2 border-[#FDE68A] dark:border-[#4B3F8A] p-5 text-sm text-[#1E1B4B] dark:text-[#FEF3C7] text-center shadow-[inset_0_2px_6px_hsl(0_0%_0%/0.05)] transition-colors duration-300">{children}</div>;
 }
 function CalcButton({ children, onClick, busy = false, busyLabel, variant = "primary" }) {
   return (
@@ -695,7 +695,7 @@ function ToolWorkspace({ tool, onBack }) {
               <>
                 <ResultCard title={t("Your Results")}>
                   <ResultCircle value={`$${lr.payment}`} unit={t("Monthly Payment")} />
-                  <div className="mt-5 text-sm text-[#1E1B4B]">{t("Breakdown")}: {t("Total Interest")} <strong className="text-[#F59E0B]">${lr.interest}</strong> · {t("Total Amount")} <strong className="text-[#6D28D9]">${lr.total}</strong></div>
+                  <div className="mt-5 text-sm text-[#1E1B4B] dark:text-[#FEF3C7]">{t("Breakdown")}: {t("Total Interest")} <strong className="text-[#F59E0B]">${lr.interest}</strong> · {t("Total Amount")} <strong className="text-[#6D28D9]">${lr.total}</strong></div>
                   <InsightBox icon={DollarSign}>{t("Paying biweekly or adding extra to each payment can cut years off your loan and save thousands in interest.")}</InsightBox>
                 </ResultCard>
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -769,7 +769,7 @@ function ToolWorkspace({ tool, onBack }) {
               <>
                 <ResultCard title={t("Comparison")}>
                   <ResultCircle value={`$${result.compound}`} unit={t("Compound Interest")} />
-                  <div className="mt-5 text-sm text-[#1E1B4B]">{t("Breakdown")}: {t("Simple")} <strong className="text-[#6D28D9]">${result.simple}</strong> · {t("Compound")} <strong className="text-[#F59E0B]">${result.compound}</strong></div>
+                  <div className="mt-5 text-sm text-[#1E1B4B] dark:text-[#FEF3C7]">{t("Breakdown")}: {t("Simple")} <strong className="text-[#6D28D9]">${result.simple}</strong> · {t("Compound")} <strong className="text-[#F59E0B]">${result.compound}</strong></div>
                   <InsightBox icon={TrendingUp}>{t("Compound interest accelerates growth by earning interest on your interest — the more frequent the compounding, the higher the return.")}</InsightBox>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
                     <div className="bg-background rounded-2xl p-6 border border-border shadow-sm">
@@ -987,7 +987,7 @@ function ToolWorkspace({ tool, onBack }) {
               <>
                 <ResultCard title={t("Bond Yield")}>
                   <ResultCircle value={`${br.currentYield}%`} unit={t("Current Yield")} />
-                  <div className="mt-5 text-sm text-[#1E1B4B]">{t("Breakdown")}: {t("Yield to Maturity (YTM)")} <strong className="text-[#F59E0B]">{br.ytm}%</strong></div>
+                  <div className="mt-5 text-sm text-[#1E1B4B] dark:text-[#FEF3C7]">{t("Breakdown")}: {t("Yield to Maturity (YTM)")} <strong className="text-[#F59E0B]">{br.ytm}%</strong></div>
                   <InsightBox icon={TrendingUp}>{t("Current Yield = Annual Coupon ÷ Price. YTM approximates total return if the bond is held to maturity.")}</InsightBox>
                 </ResultCard>
                 <div className="mt-6 rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
@@ -1099,7 +1099,7 @@ function ToolWorkspace({ tool, onBack }) {
             {r && (
               <ResultCard title={t("Result")}>
                 <ResultCircle value={r.out.toLocaleString(undefined, { maximumFractionDigits: 4 })} unit={t(r.to)} sub={`${r.value} ${t(r.from)}`} />
-                <div className="mt-4 text-sm text-[#1E1B4B]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
+                <div className="mt-4 text-sm text-[#1E1B4B] dark:text-[#FEF3C7]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
                 <InsightBox icon={Ruler}>{t("Unit conversions use precise factors — 1 mile = 1.60934 km. Results round for display but stay accurate.")}</InsightBox>
               </ResultCard>
             )}
@@ -1125,7 +1125,7 @@ function ToolWorkspace({ tool, onBack }) {
             {r && (
               <ResultCard title={t("Result")}>
                 <ResultCircle value={r.out.toLocaleString(undefined, { maximumFractionDigits: 4 })} unit={t(r.to)} sub={`${r.value} ${t(r.from)}`} />
-                <div className="mt-4 text-sm text-[#1E1B4B]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
+                <div className="mt-4 text-sm text-[#1E1B4B] dark:text-[#FEF3C7]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
                 <InsightBox icon={Weight}>{t("Weight conversions use exact factors — 1 kg = 2.20462 lb. Results round for display but stay accurate.")}</InsightBox>
               </ResultCard>
             )}
@@ -1151,7 +1151,7 @@ function ToolWorkspace({ tool, onBack }) {
             {r && (
               <ResultCard title={t("Result")}>
                 <ResultCircle value={r.out.toLocaleString(undefined, { maximumFractionDigits: 4 })} unit={t(r.to)} sub={`${r.value} ${t(r.from)}`} />
-                <div className="mt-4 text-sm text-[#1E1B4B]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
+                <div className="mt-4 text-sm text-[#1E1B4B] dark:text-[#FEF3C7]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
                 <InsightBox icon={Square}>{t("Area conversions use exact factors — 1 m² = 10.7639 ft². Results round for display but stay accurate.")}</InsightBox>
               </ResultCard>
             )}
@@ -1177,7 +1177,7 @@ function ToolWorkspace({ tool, onBack }) {
             {r && (
               <ResultCard title={t("Result")}>
                 <ResultCircle value={r.out.toLocaleString(undefined, { maximumFractionDigits: 4 })} unit={t(r.to)} sub={`${r.value} ${t(r.from)}`} />
-                <div className="mt-4 text-sm text-[#1E1B4B]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
+                <div className="mt-4 text-sm text-[#1E1B4B] dark:text-[#FEF3C7]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
                 <InsightBox icon={Clock}>{t("Time conversions use exact factors — 1 hour = 60 minutes = 3600 seconds. Results round for display but stay accurate.")}</InsightBox>
               </ResultCard>
             )}
@@ -1203,7 +1203,7 @@ function ToolWorkspace({ tool, onBack }) {
             {r && (
               <ResultCard title={t("Result")}>
                 <ResultCircle value={r.out.toLocaleString(undefined, { maximumFractionDigits: 4 })} unit={t(r.to)} sub={`${r.value} ${t(r.from)}`} />
-                <div className="mt-4 text-sm text-[#1E1B4B]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
+                <div className="mt-4 text-sm text-[#1E1B4B] dark:text-[#FEF3C7]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
                 <InsightBox icon={Gauge}>{t("Speed conversions use exact factors — 1 km/h = 0.621371 mph. Results round for display but stay accurate.")}</InsightBox>
               </ResultCard>
             )}
@@ -1893,7 +1893,7 @@ function ToolWorkspace({ tool, onBack }) {
   };
 
   return (
-    <div className="tool-light max-w-[480px] mx-auto bg-white rounded-[20px] p-6 shadow-xl border-0 relative overflow-hidden">
+    <div className="max-w-[480px] mx-auto bg-white dark:bg-[#1E1B4B] transition-colors duration-300 rounded-[20px] p-6 shadow-xl border-0 relative overflow-hidden">
       <button onClick={onBack} className="absolute top-8 left-8 sm:top-10 sm:left-10 flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border text-sm font-medium text-foreground hover:bg-secondary hover:text-secondary-foreground transition-all duration-300 shadow-sm z-20">
         <ArrowLeft className="w-4 h-4" /> {t("Back")}
       </button>
