@@ -149,21 +149,45 @@ function ColorField({ label, value, onChange }) {
 }
 function ResultCard({ title, children }) {
   return (
-    <div className="mt-8 rounded-[16px] p-6 animate-[fadeIn_0.5s_ease-out] bg-[#FFFBEB] border-2 border-[#FDE68A]/70 shadow-sm">
+    <div data-tool-result="true" className="mt-8 rounded-[16px] p-6 animate-[fadeIn_0.5s_ease-out] bg-[#FFFBEB] border-2 border-[#FDE68A]/70 shadow-sm" style={{ backgroundImage: "radial-gradient(hsl(45 96% 50% / 0.18) 1.5px, transparent 1.5px)", backgroundSize: "14px 14px" }}>
       <h4 className="text-lg font-bold text-[#1E1B4B] mb-4 text-center">{title}</h4>
       <div className="text-center">{children}</div>
+    </div>
+  );
+}
+function ResultCircle({ value, unit, sub }) {
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-32 h-32 rounded-full border-4 border-[#F59E0B] bg-gradient-to-br from-[#6D28D9]/20 to-[#F59E0B]/20 flex items-center justify-center relative">
+        <div className="absolute inset-2 rounded-full bg-white"></div>
+        <span className="relative text-4xl font-black text-[#1E1B4B] leading-none">{value}</span>
+      </div>
+      {unit && <div className="text-sm font-semibold text-[#6D28D9] -mt-1">{unit}</div>}
+      {sub && <div className="text-xs text-muted-foreground">{sub}</div>}
+    </div>
+  );
+}
+function InsightBox({ children, icon: Icon = ShieldCheck }) {
+  return (
+    <div className="mt-5 flex items-start gap-3 rounded-2xl bg-white/70 border border-[#FDE68A] p-4 text-left">
+      <span className="shrink-0 text-[#F59E0B] mt-0.5"><Icon className="w-5 h-5" /></span>
+      <span className="text-sm text-[#1E1B4B] leading-relaxed">{children}</span>
     </div>
   );
 }
 function TipBox({ children }) {
   return <div className="mt-6 rounded-2xl bg-secondary border border-border p-5 text-sm text-secondary-foreground text-center shadow-[inset_0_2px_6px_hsl(0_0%_0%/0.05)]">{children}</div>;
 }
-function CalcButton({ children, onClick, variant = "primary" }) {
+function CalcButton({ children, onClick, busy = false, busyLabel, variant = "primary" }) {
   return (
-    <Button onClick={onClick}
-      className={`relative overflow-hidden mt-6 w-full sm:w-auto rounded-full px-8 h-14 font-bold text-base transition-all duration-200 ${variant === "primary" ? "bg-gradient-to-r from-[#6D28D9] to-[#8B5CF6] border-2 border-[#F59E0B] text-white shadow-[0_12px_24px_-6px_rgba(109,40,217,0.4)] hover:-translate-y-0.5 hover:shadow-[0_16px_30px_-6px_rgba(109,40,217,0.55)] active:translate-y-0" : "bg-[#FFFBEB] border-2 border-[#FDE68A] text-[#1E1B4B] hover:border-[#F59E0B]"}`}>
-      {variant === "primary" && <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />}
-      <span className="relative z-10">{children}</span>
+    <Button onClick={onClick} disabled={busy}
+      className={`relative overflow-hidden mt-6 w-full sm:w-auto rounded-full px-8 h-14 font-bold text-base transition-all duration-200 disabled:opacity-90 disabled:cursor-wait ${variant === "primary" ? "bg-gradient-to-r from-[#6D28D9] to-[#8B5CF6] border-2 border-[#F59E0B] text-white shadow-[0_12px_24px_-6px_rgba(109,40,217,0.4)] hover:-translate-y-0.5 hover:shadow-[0_16px_30px_-6px_rgba(109,40,217,0.55)] active:translate-y-0" : "bg-[#FFFBEB] border-2 border-[#FDE68A] text-[#1E1B4B] hover:border-[#F59E0B]"}`}>
+      {variant === "primary" && !busy && <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />}
+      {busy ? (
+        <span className="relative z-10 flex items-center gap-2"><RefreshCw className="w-5 h-5 animate-spin" /> {busyLabel || children}</span>
+      ) : (
+        <span className="relative z-10">{children}</span>
+      )}
     </Button>
   );
 }
@@ -375,6 +399,21 @@ function ToolWorkspace({ tool, onBack }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const [inputs, setInputs] = useState({});
   const [result, setResult] = useState(null);
+  const [busy, setBusy] = useState(false);
+  // Gate results behind an explicit button click: show a spinner for ~800ms,
+  // then reveal the computed result with a fade/slide animation and scroll to it.
+  const runCalc = (compute) => {
+    setBusy(true);
+    setTimeout(() => {
+      const r = compute();
+      setResult(r);
+      setBusy(false);
+      setTimeout(() => {
+        const el = document.querySelector('[data-tool-result="true"]');
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 60);
+    }, 800);
+  };
   const [riddleAttempts, setRiddleAttempts] = useState(3);
   const [riddleMsg, setRiddleMsg] = useState("");
   const [riddleGuess, setRiddleGuess] = useState("");
@@ -410,7 +449,7 @@ function ToolWorkspace({ tool, onBack }) {
   const [fxLoading, setFxLoading] = useState(false);
 
   useEffect(() => {
-    setInputs({}); setResult(null); setRiddleAttempts(3); setRiddleMsg(""); setRiddleGuess("");
+    setInputs({}); setResult(null); setBusy(false); setRiddleAttempts(3); setRiddleMsg(""); setRiddleGuess("");
     setSpeedTest({ running: false, ping: null, download: null, upload: null });
     setQrUrl(null); setShareLinks(null); setPolicyText("");
     setCropSrc(null); setCropResult(null); setBgSrc(null); setBgDone(false);
@@ -535,7 +574,8 @@ function ToolWorkspace({ tool, onBack }) {
     document.fonts.load(`400 40px "${family}"`).then(() => setFontReady((v) => v + 1)).catch(() => {});
   }, [tool.slug, inputs.font]);
 
-  const set = (k) => (e) => setInputs((p) => ({ ...p, [k]: e.target.value }));
+  // Changing any input hides the previous result so it only re-appears after the next Calculate click.
+  const set = (k) => (e) => { setInputs((p) => ({ ...p, [k]: e.target.value })); setResult(null); setPolicyText(""); setPlotData(null); };
 
   const runSpeedTest = () => {
     setSpeedTest({ running: true, ping: null, download: null, upload: null });
@@ -635,11 +675,14 @@ function ToolWorkspace({ tool, onBack }) {
   const renderCalculator = () => {
     switch (tool.slug) {
       case "loan-calculator": {
-        const P = parseFloat(inputs.amount), annualRate = parseFloat(inputs.rate), n = parseFloat(inputs.term);
-        const r = annualRate / 100 / 12;
-        const payment = (P && n && !isNaN(annualRate)) ? (r === 0 ? P / n : (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)) : null;
-        const loanResult = payment != null ? { payment: payment.toFixed(2), interest: (payment * n - P).toFixed(2), total: (payment * n).toFixed(2) } : null;
-        const calc = () => setResult(loanResult);
+        const calc = () => {
+          const P = parseFloat(inputs.amount), annualRate = parseFloat(inputs.rate), n = parseFloat(inputs.term);
+          if (!P || !n || isNaN(annualRate)) return null;
+          const r = annualRate / 100 / 12;
+          const payment = r === 0 ? P / n : (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+          return { P, r, n, payment: payment.toFixed(2), interest: (payment * n - P).toFixed(2), total: (payment * n).toFixed(2) };
+        };
+        const lr = result;
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -647,16 +690,13 @@ function ToolWorkspace({ tool, onBack }) {
               <NumInput label={t("Annual Rate (%)")} value={inputs.rate} onChange={set("rate")} placeholder="6.5" />
               <NumInput label={t("Term (Months)")} value={inputs.term} onChange={set("term")} placeholder="36" />
             </div>
-            <div className="flex justify-center mt-6"><CalcButton onClick={calc}>{t("Calculate Loan")}</CalcButton></div>
-            {loanResult && (
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Calculate Loan")}</CalcButton></div>
+            {lr && (
               <>
                 <ResultCard title={t("Your Results")}>
-                  <div className="text-card-foreground text-lg mb-2">{t("Monthly Payment")}</div>
-                  <div className="text-4xl font-extrabold text-primary mb-6">${loanResult.payment}</div>
-                  <div className="flex flex-wrap justify-center gap-6 text-card-foreground">
-                    <div>{t("Total Interest:")} <strong className="text-accent ml-1">${loanResult.interest}</strong></div>
-                    <div>{t("Total Amount:")} <strong className="text-accent ml-1">${loanResult.total}</strong></div>
-                  </div>
+                  <ResultCircle value={`$${lr.payment}`} unit={t("Monthly Payment")} />
+                  <div className="mt-5 text-sm text-[#1E1B4B]">{t("Breakdown")}: {t("Total Interest")} <strong className="text-[#F59E0B]">${lr.interest}</strong> · {t("Total Amount")} <strong className="text-[#6D28D9]">${lr.total}</strong></div>
+                  <InsightBox icon={DollarSign}>{t("Paying biweekly or adding extra to each payment can cut years off your loan and save thousands in interest.")}</InsightBox>
                 </ResultCard>
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
@@ -664,7 +704,7 @@ function ToolWorkspace({ tool, onBack }) {
                     <div className="h-56">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
-                          <Pie data={[{ name: t("Principal"), value: P }, { name: t("Interest"), value: parseFloat(loanResult.interest) }]} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3} isAnimationActive animationDuration={900} animationEasing="ease-out">
+                          <Pie data={[{ name: t("Principal"), value: lr.P }, { name: t("Interest"), value: parseFloat(lr.interest) }]} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3} isAnimationActive animationDuration={900} animationEasing="ease-out">
                             <Cell fill="hsl(var(--primary))" />
                             <Cell fill="hsl(var(--accent))" />
                           </Pie>
@@ -678,10 +718,10 @@ function ToolWorkspace({ tool, onBack }) {
                     <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">{t("Balance Over Time")}</h4>
                     <div className="h-56">
                       <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={Array.from({ length: Math.min(Math.round(n) + 1, 60) }, (_, i) => {
+                        <AreaChart data={Array.from({ length: Math.min(Math.round(lr.n) + 1, 60) }, (_, i) => {
                           const m = i;
-                          let bal = P;
-                          for (let k = 0; k < m; k++) { bal = bal * (1 + r) - parseFloat(loanResult.payment); }
+                          let bal = lr.P;
+                          for (let k = 0; k < m; k++) { bal = bal * (1 + lr.r) - parseFloat(lr.payment); }
                           return { month: m, balance: Math.max(bal, 0) };
                         })}>
                           <defs>
@@ -715,7 +755,7 @@ function ToolWorkspace({ tool, onBack }) {
           const compound = P * Math.pow(1 + rate / 100 / n, n * yrs) - P;
           return { simple: simple.toFixed(2), compound: compound.toFixed(2), finalSimple: (P + simple).toFixed(2), finalCompound: (P + compound).toFixed(2), P, rate, yrs, n };
         })() : null;
-        const calc = () => setResult(interestResult);
+        const calc = () => interestResult;
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -724,10 +764,13 @@ function ToolWorkspace({ tool, onBack }) {
               <NumInput label={t("Duration (Years)")} value={inputs.years} onChange={set("years")} placeholder="10" />
               <SelectField label={t("Compound Frequency")} value={inputs.compound || "Yearly"} onChange={set("compound")} options={Object.keys(compounds).map((k) => ({ value: k, label: t(k) }))} />
             </div>
-            <div className="flex justify-center mt-6"><CalcButton onClick={calc}>{t("Calculate Interest")}</CalcButton></div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Calculate Interest")}</CalcButton></div>
             {result && (
               <>
                 <ResultCard title={t("Comparison")}>
+                  <ResultCircle value={`$${result.compound}`} unit={t("Compound Interest")} />
+                  <div className="mt-5 text-sm text-[#1E1B4B]">{t("Breakdown")}: {t("Simple")} <strong className="text-[#6D28D9]">${result.simple}</strong> · {t("Compound")} <strong className="text-[#F59E0B]">${result.compound}</strong></div>
+                  <InsightBox icon={TrendingUp}>{t("Compound interest accelerates growth by earning interest on your interest — the more frequent the compounding, the higher the return.")}</InsightBox>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
                     <div className="bg-background rounded-2xl p-6 border border-border shadow-sm">
                       <div className="text-sm text-muted-foreground mb-1">{t("Simple Interest Earned")}</div>
@@ -783,11 +826,11 @@ function ToolWorkspace({ tool, onBack }) {
         const calc = () => {
           const amt = parseFloat(inputs.amount);
           const from = inputs.from || "USD", to = inputs.to || "EUR";
-          if (!amt || !rates[from] || !rates[to]) return setResult(null);
+          if (!amt || !rates[from] || !rates[to]) return null;
           const r = (amt * rates[to]) / rates[from];
-          setResult({ value: isFinite(r) ? r.toFixed(2) : "—", from, to });
+          return { value: isFinite(r) ? r.toFixed(2) : "—", from, to, amount: inputs.amount };
         };
-        const swap = () => setInputs((p) => ({ ...p, from: p.to || "EUR", to: p.from || "USD" }));
+        const swap = () => { setInputs((p) => ({ ...p, from: p.to || "EUR", to: p.from || "USD" })); setResult(null); };
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -796,7 +839,7 @@ function ToolWorkspace({ tool, onBack }) {
               <SelectField label={t("To Currency")} value={inputs.to || "EUR"} onChange={set("to")} options={currencies} />
             </div>
             <div className="flex flex-wrap justify-center gap-4">
-              <CalcButton onClick={calc}>{t("Convert Currency")}</CalcButton>
+              <CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Convert Currency")}</CalcButton>
               <CalcButton onClick={swap} variant="secondary"><ArrowLeftRight className="w-5 h-5" />{t("Swap")}</CalcButton>
             </div>
             <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
@@ -807,8 +850,8 @@ function ToolWorkspace({ tool, onBack }) {
             {result && (
               <>
                 <ResultCard title={t("Conversion Result")}>
-                  <div className="text-xl text-card-foreground mb-2">{inputs.amount} {result.from} =</div>
-                  <div className="text-5xl font-extrabold text-accent">{result.value} <span className="text-2xl text-card-foreground/70 ml-1">{result.to}</span></div>
+                  <ResultCircle value={result.value} unit={result.to} sub={`${result.amount} ${result.from}`} />
+                  <InsightBox icon={Coins}>{t("Live exchange rates fluctuate constantly — for large transfers, compare a few providers to get the best rate.")}</InsightBox>
                 </ResultCard>
                 <div className="mt-6 rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
                   <h4 className="text-sm font-semibold text-muted-foreground mb-3 text-center">{t("Value Comparison")}</h4>
@@ -923,13 +966,14 @@ function ToolWorkspace({ tool, onBack }) {
         );
       }
       case "bond-yield": {
-        const face = parseFloat(inputs.face), price = parseFloat(inputs.price), coupon = parseFloat(inputs.coupon), years = parseFloat(inputs.years);
-        const bondResult = (face && price && !isNaN(coupon) && years) ? (() => {
+        const calc = () => {
+          const face = parseFloat(inputs.face), price = parseFloat(inputs.price), coupon = parseFloat(inputs.coupon), years = parseFloat(inputs.years);
+          if (!face || !price || isNaN(coupon) || !years) return null;
           const currentYield = (coupon / price) * 100;
           const ytm = ((coupon + (face - price) / years) / ((face + price) / 2)) * 100;
           return { currentYield: currentYield.toFixed(2), ytm: ytm.toFixed(2) };
-        })() : null;
-        const calc = () => setResult(bondResult);
+        };
+        const br = result;
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -938,20 +982,19 @@ function ToolWorkspace({ tool, onBack }) {
               <NumInput label={t("Annual Coupon ($)")} value={inputs.coupon} onChange={set("coupon")} placeholder="50" />
               <NumInput label={t("Years to Maturity")} value={inputs.years} onChange={set("years")} placeholder="5" />
             </div>
-            <div className="flex justify-center mt-6"><CalcButton onClick={calc}>{t("Calculate Yield")}</CalcButton></div>
-            {bondResult && (
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Calculate Yield")}</CalcButton></div>
+            {br && (
               <>
                 <ResultCard title={t("Bond Yield")}>
-                  <div className="text-sm text-muted-foreground mb-1">{t("Current Yield")}</div>
-                  <div className="text-3xl font-bold text-primary mb-4">{bondResult.currentYield}%</div>
-                  <div className="text-sm text-muted-foreground mb-1">{t("Yield to Maturity (YTM)")}</div>
-                  <div className="text-3xl font-bold text-accent">{bondResult.ytm}%</div>
+                  <ResultCircle value={`${br.currentYield}%`} unit={t("Current Yield")} />
+                  <div className="mt-5 text-sm text-[#1E1B4B]">{t("Breakdown")}: {t("Yield to Maturity (YTM)")} <strong className="text-[#F59E0B]">{br.ytm}%</strong></div>
+                  <InsightBox icon={TrendingUp}>{t("Current Yield = Annual Coupon ÷ Price. YTM approximates total return if the bond is held to maturity.")}</InsightBox>
                 </ResultCard>
                 <div className="mt-6 rounded-2xl bg-gradient-to-b from-card to-background border border-border p-5 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.25),inset_0_1px_0_0_hsl(0_0%_100%/0.05)]">
                   <h4 className="text-sm font-semibold text-muted-foreground mb-2 text-center">{t("Yield Comparison (%)")}</h4>
                   <div className="h-56">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={[{ name: "Current Yield", value: parseFloat(bondResult.currentYield) }, { name: "YTM", value: parseFloat(bondResult.ytm) }]}>
+                      <BarChart data={[{ name: "Current Yield", value: parseFloat(br.currentYield) }, { name: "YTM", value: parseFloat(br.ytm) }]}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                         <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12 }} />
                         <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 11 }} unit="%" />
@@ -971,19 +1014,40 @@ function ToolWorkspace({ tool, onBack }) {
         );
       }
       case "bmi-calculator": {
-        const w = parseFloat(inputs.weight), h = parseFloat(inputs.height) / 100;
-        const bmi = w && h ? w / (h * h) : null;
-        const cat = bmi ? (bmi < 18.5 ? t("Underweight") : bmi < 25 ? t("Normal weight") : bmi < 30 ? t("Overweight") : t("Obese")) : null;
+        const calc = () => {
+          const w = parseFloat(inputs.weight), h = parseFloat(inputs.height) / 100;
+          if (!w || !h) return null;
+          const bmi = w / (h * h);
+          const cat = bmi < 18.5 ? t("Underweight") : bmi < 25 ? t("Normal weight") : bmi < 30 ? t("Overweight") : t("Obese");
+          const pos = Math.max(0, Math.min(100, ((bmi - 15) / 20) * 100));
+          return { bmi: bmi.toFixed(1), cat, pos };
+        };
+        const r = result;
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <NumInput label={t("Weight (kg)")} value={inputs.weight} onChange={set("weight")} placeholder="70" />
               <NumInput label={t("Height (cm)")} value={inputs.height} onChange={set("height")} placeholder="175" />
             </div>
-            {bmi && (
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Calculate BMI")}</CalcButton></div>
+            {r && (
               <ResultCard title={t("Your BMI")}>
-                <div className="text-5xl font-extrabold text-primary mb-3">{bmi.toFixed(1)}</div>
-                <div className="text-lg font-semibold text-accent">{cat}</div>
+                <ResultCircle value={r.bmi} unit={r.cat} />
+                <div className="mt-6">
+                  <div className="flex h-3 rounded-full overflow-hidden">
+                    <div className="flex-1 bg-blue-400" /><div className="flex-1 bg-emerald-400" /><div className="flex-1 bg-amber-400" /><div className="flex-1 bg-rose-400" />
+                  </div>
+                  <div className="relative mt-1">
+                    <div className="absolute -top-3 w-4 h-4 rounded-full bg-white border-2 border-[#1E1B4B] shadow" style={{ left: `calc(${r.pos}% - 8px)` }} />
+                  </div>
+                  <div className="flex text-[10px] text-muted-foreground mt-2">
+                    <span className="flex-1 text-center">{t("Underweight")}</span>
+                    <span className="flex-1 text-center">{t("Normal")}</span>
+                    <span className="flex-1 text-center">{t("Overweight")}</span>
+                    <span className="flex-1 text-center">{t("Obese")}</span>
+                  </div>
+                </div>
+                <InsightBox icon={Activity}>{t("BMI is a general indicator. For a complete health assessment, consult a doctor.")}</InsightBox>
               </ResultCard>
             )}
             <TipBox>{t("BMI is a general indicator. Consult a doctor for a complete health assessment.")}</TipBox>
@@ -992,9 +1056,12 @@ function ToolWorkspace({ tool, onBack }) {
       }
       case "calories-burned": {
         const metMap = { Walking: 3.5, Running: 9.8, Cycling: 7.5, Swimming: 8.0, "Weight Lifting": 6.0, Yoga: 2.5 };
-        const w = parseFloat(inputs.weight), m = parseFloat(inputs.minutes);
-        const met = metMap[inputs.activity || "Walking"];
-        const cal = w && m && met ? (met * 3.5 * w) / 200 * m : null;
+        const calc = () => {
+          const w = parseFloat(inputs.weight), m = parseFloat(inputs.minutes), met = metMap[inputs.activity || "Walking"];
+          if (!w || !m || !met) return null;
+          return { cal: Math.round((met * 3.5 * w) / 200 * m), activity: inputs.activity || "Walking" };
+        };
+        const r = result;
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -1002,10 +1069,11 @@ function ToolWorkspace({ tool, onBack }) {
               <NumInput label={t("Duration (min)")} value={inputs.minutes} onChange={set("minutes")} placeholder="30" />
             </div>
             <SelectField label={t("Activity")} value={inputs.activity || "Walking"} onChange={set("activity")} options={Object.keys(metMap).map((k) => ({ value: k, label: t(k) }))} />
-            {cal != null && (
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Check Calories")}</CalcButton></div>
+            {r && (
               <ResultCard title={t("Calories Burned")}>
-                <div className="text-5xl font-extrabold text-primary mb-2">{Math.round(cal)}</div>
-                <div className="text-muted-foreground">{t("kcal")}</div>
+                <ResultCircle value={r.cal} unit={t("kcal")} sub={r.activity} />
+                <InsightBox icon={Flame}>{t("Estimates use MET values. Actual burn varies with intensity and metabolism — higher intensity activities burn more per minute.")}</InsightBox>
               </ResultCard>
             )}
             <TipBox>{t("Estimates based on MET values. Actual burn varies by intensity and metabolism.")}</TipBox>
@@ -1013,115 +1081,151 @@ function ToolWorkspace({ tool, onBack }) {
         );
       }
       case "distance-converter": {
-        const v = parseFloat(inputs.value);
-        const from = inputs.from || "Mile", to = inputs.to || "Kilometer";
-        const out = !isNaN(v) ? convertUnit(v, DISTANCE_UNITS, from, to) : null;
+        const calc = () => {
+          const v = parseFloat(inputs.value);
+          const from = inputs.from || "Mile", to = inputs.to || "Kilometer";
+          if (isNaN(v)) return null;
+          return { out: convertUnit(v, DISTANCE_UNITS, from, to), to, from, value: inputs.value };
+        };
+        const r = result;
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <NumInput label={t("Value")} value={inputs.value} onChange={set("value")} placeholder="1" />
-              <SelectField label={t("From")} value={from} onChange={set("from")} options={Object.keys(DISTANCE_UNITS).map((k) => ({ value: k, label: t(k) }))} />
-              <SelectField label={t("To")} value={to} onChange={set("to")} options={Object.keys(DISTANCE_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("From")} value={inputs.from || "Mile"} onChange={set("from")} options={Object.keys(DISTANCE_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("To")} value={inputs.to || "Kilometer"} onChange={set("to")} options={Object.keys(DISTANCE_UNITS).map((k) => ({ value: k, label: t(k) }))} />
             </div>
-            {out != null && (
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Convert")}</CalcButton></div>
+            {r && (
               <ResultCard title={t("Result")}>
-                <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
-                <div className="text-muted-foreground mt-2">{t(to)}</div>
+                <ResultCircle value={r.out.toLocaleString(undefined, { maximumFractionDigits: 4 })} unit={t(r.to)} sub={`${r.value} ${t(r.from)}`} />
+                <div className="mt-4 text-sm text-[#1E1B4B]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
+                <InsightBox icon={Ruler}>{t("Unit conversions use precise factors — 1 mile = 1.60934 km. Results round for display but stay accurate.")}</InsightBox>
               </ResultCard>
             )}
           </>
         );
       }
       case "weight-converter": {
-        const v = parseFloat(inputs.value);
-        const from = inputs.from || "Kilogram", to = inputs.to || "Pound";
-        const out = !isNaN(v) ? convertUnit(v, WEIGHT_UNITS, from, to) : null;
+        const calc = () => {
+          const v = parseFloat(inputs.value);
+          const from = inputs.from || "Kilogram", to = inputs.to || "Pound";
+          if (isNaN(v)) return null;
+          return { out: convertUnit(v, WEIGHT_UNITS, from, to), to, from, value: inputs.value };
+        };
+        const r = result;
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <NumInput label={t("Value")} value={inputs.value} onChange={set("value")} placeholder="1" />
-              <SelectField label={t("From")} value={from} onChange={set("from")} options={Object.keys(WEIGHT_UNITS).map((k) => ({ value: k, label: t(k) }))} />
-              <SelectField label={t("To")} value={to} onChange={set("to")} options={Object.keys(WEIGHT_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("From")} value={inputs.from || "Kilogram"} onChange={set("from")} options={Object.keys(WEIGHT_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("To")} value={inputs.to || "Pound"} onChange={set("to")} options={Object.keys(WEIGHT_UNITS).map((k) => ({ value: k, label: t(k) }))} />
             </div>
-            {out != null && (
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Convert")}</CalcButton></div>
+            {r && (
               <ResultCard title={t("Result")}>
-                <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
-                <div className="text-muted-foreground mt-2">{t(to)}</div>
+                <ResultCircle value={r.out.toLocaleString(undefined, { maximumFractionDigits: 4 })} unit={t(r.to)} sub={`${r.value} ${t(r.from)}`} />
+                <div className="mt-4 text-sm text-[#1E1B4B]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
+                <InsightBox icon={Weight}>{t("Weight conversions use exact factors — 1 kg = 2.20462 lb. Results round for display but stay accurate.")}</InsightBox>
               </ResultCard>
             )}
           </>
         );
       }
       case "area-converter": {
-        const v = parseFloat(inputs.value);
-        const from = inputs.from || "m²", to = inputs.to || "ft²";
-        const out = !isNaN(v) ? convertUnit(v, AREA_UNITS, from, to) : null;
+        const calc = () => {
+          const v = parseFloat(inputs.value);
+          const from = inputs.from || "m²", to = inputs.to || "ft²";
+          if (isNaN(v)) return null;
+          return { out: convertUnit(v, AREA_UNITS, from, to), to, from, value: inputs.value };
+        };
+        const r = result;
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <NumInput label={t("Value")} value={inputs.value} onChange={set("value")} placeholder="1" />
-              <SelectField label={t("From")} value={from} onChange={set("from")} options={Object.keys(AREA_UNITS).map((k) => ({ value: k, label: t(k) }))} />
-              <SelectField label={t("To")} value={to} onChange={set("to")} options={Object.keys(AREA_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("From")} value={inputs.from || "m²"} onChange={set("from")} options={Object.keys(AREA_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("To")} value={inputs.to || "ft²"} onChange={set("to")} options={Object.keys(AREA_UNITS).map((k) => ({ value: k, label: t(k) }))} />
             </div>
-            {out != null && (
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Convert")}</CalcButton></div>
+            {r && (
               <ResultCard title={t("Result")}>
-                <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
-                <div className="text-muted-foreground mt-2">{t(to)}</div>
+                <ResultCircle value={r.out.toLocaleString(undefined, { maximumFractionDigits: 4 })} unit={t(r.to)} sub={`${r.value} ${t(r.from)}`} />
+                <div className="mt-4 text-sm text-[#1E1B4B]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
+                <InsightBox icon={Square}>{t("Area conversions use exact factors — 1 m² = 10.7639 ft². Results round for display but stay accurate.")}</InsightBox>
               </ResultCard>
             )}
           </>
         );
       }
       case "time-converter": {
-        const v = parseFloat(inputs.value);
-        const from = inputs.from || "Hour", to = inputs.to || "Minute";
-        const out = !isNaN(v) ? convertUnit(v, TIME_UNITS, from, to) : null;
+        const calc = () => {
+          const v = parseFloat(inputs.value);
+          const from = inputs.from || "Hour", to = inputs.to || "Minute";
+          if (isNaN(v)) return null;
+          return { out: convertUnit(v, TIME_UNITS, from, to), to, from, value: inputs.value };
+        };
+        const r = result;
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <NumInput label={t("Value")} value={inputs.value} onChange={set("value")} placeholder="1" />
-              <SelectField label={t("From")} value={from} onChange={set("from")} options={Object.keys(TIME_UNITS).map((k) => ({ value: k, label: t(k) }))} />
-              <SelectField label={t("To")} value={to} onChange={set("to")} options={Object.keys(TIME_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("From")} value={inputs.from || "Hour"} onChange={set("from")} options={Object.keys(TIME_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("To")} value={inputs.to || "Minute"} onChange={set("to")} options={Object.keys(TIME_UNITS).map((k) => ({ value: k, label: t(k) }))} />
             </div>
-            {out != null && (
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Convert")}</CalcButton></div>
+            {r && (
               <ResultCard title={t("Result")}>
-                <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
-                <div className="text-muted-foreground mt-2">{t(to)}</div>
+                <ResultCircle value={r.out.toLocaleString(undefined, { maximumFractionDigits: 4 })} unit={t(r.to)} sub={`${r.value} ${t(r.from)}`} />
+                <div className="mt-4 text-sm text-[#1E1B4B]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
+                <InsightBox icon={Clock}>{t("Time conversions use exact factors — 1 hour = 60 minutes = 3600 seconds. Results round for display but stay accurate.")}</InsightBox>
               </ResultCard>
             )}
           </>
         );
       }
       case "speed-converter": {
-        const v = parseFloat(inputs.value);
-        const from = inputs.from || "km/h", to = inputs.to || "mph";
-        const out = !isNaN(v) ? convertUnit(v, SPEED_UNITS, from, to) : null;
+        const calc = () => {
+          const v = parseFloat(inputs.value);
+          const from = inputs.from || "km/h", to = inputs.to || "mph";
+          if (isNaN(v)) return null;
+          return { out: convertUnit(v, SPEED_UNITS, from, to), to, from, value: inputs.value };
+        };
+        const r = result;
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <NumInput label="Value" value={inputs.value} onChange={set("value")} placeholder="100" />
-              <SelectField label={t("From")} value={from} onChange={set("from")} options={Object.keys(SPEED_UNITS).map((k) => ({ value: k, label: t(k) }))} />
-              <SelectField label={t("To")} value={to} onChange={set("to")} options={Object.keys(SPEED_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("From")} value={inputs.from || "km/h"} onChange={set("from")} options={Object.keys(SPEED_UNITS).map((k) => ({ value: k, label: t(k) }))} />
+              <SelectField label={t("To")} value={inputs.to || "mph"} onChange={set("to")} options={Object.keys(SPEED_UNITS).map((k) => ({ value: k, label: t(k) }))} />
             </div>
-            {out != null && (
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Convert")}</CalcButton></div>
+            {r && (
               <ResultCard title={t("Result")}>
-                <div className="text-4xl font-extrabold text-accent">{out.toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
-                <div className="text-muted-foreground mt-2">{t(to)}</div>
+                <ResultCircle value={r.out.toLocaleString(undefined, { maximumFractionDigits: 4 })} unit={t(r.to)} sub={`${r.value} ${t(r.from)}`} />
+                <div className="mt-4 text-sm text-[#1E1B4B]">{t("Breakdown")}: {r.value} {t(r.from)} = {r.out.toLocaleString(undefined, { maximumFractionDigits: 6 })} {t(r.to)}</div>
+                <InsightBox icon={Gauge}>{t("Speed conversions use exact factors — 1 km/h = 0.621371 mph. Results round for display but stay accurate.")}</InsightBox>
               </ResultCard>
             )}
           </>
         );
       }
       case "qr-code-generator": {
-        const data = inputs.text || "";
-        const src = data ? `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(data)}` : null;
+        const calc = () => {
+          const data = inputs.text || "";
+          if (!data) return null;
+          return `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(data)}`;
+        };
+        const src = result;
         return (
           <>
             <TxtInput label={t("Text or URL")} value={inputs.text} onChange={set("text")} placeholder="https://iyadel.com" />
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Generating...")}>{t("Generate QR")}</CalcButton></div>
             {src && (
               <ResultCard title={t("Your QR Code")}>
                 <img src={src} alt="QR Code" className="w-48 h-48 mx-auto rounded-xl bg-white p-2" />
                 <a href={src} download="qr-code.png" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 mt-4 text-primary font-semibold hover:underline">{t("Download")} <ImageDown className="w-4 h-4" /></a>
+                <InsightBox icon={QrCode}>{t("Your QR code is generated on demand and not stored anywhere — share or download it freely.")}</InsightBox>
               </ResultCard>
             )}
             <TipBox>{t("Your QR code is generated on demand and not stored anywhere.")}</TipBox>
@@ -1129,18 +1233,23 @@ function ToolWorkspace({ tool, onBack }) {
         );
       }
       case "share-link-generator": {
-        const url = encodeURIComponent(inputs.url || "");
-        const text = encodeURIComponent(inputs.text || "");
-        const links = inputs.url ? {
-          Facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-          Twitter: `https://twitter.com/intent/tweet?url=${url}&text=${text}`,
-          LinkedIn: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
-          WhatsApp: `https://wa.me/?text=${text}%20${url}`,
-        } : null;
+        const calc = () => {
+          if (!inputs.url) return null;
+          const url = encodeURIComponent(inputs.url);
+          const text = encodeURIComponent(inputs.text || "");
+          return {
+            Facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
+            Twitter: `https://twitter.com/intent/tweet?url=${url}&text=${text}`,
+            LinkedIn: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+            WhatsApp: `https://wa.me/?text=${text}%20${url}`,
+          };
+        };
+        const links = result;
         return (
           <>
             <TxtInput label={t("Page URL")} value={inputs.url} onChange={set("url")} placeholder="https://iyadel.com" />
             <TxtInput label={t("Message (optional)")} value={inputs.text} onChange={set("text")} placeholder="Check this out!" />
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Generate Links")}</CalcButton></div>
             {links && (
               <ResultCard title={t("Share Links")}>
                 <div className="grid grid-cols-2 gap-3">
@@ -1148,6 +1257,7 @@ function ToolWorkspace({ tool, onBack }) {
                     <a key={k} href={v} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl bg-background border border-border px-4 py-3 text-sm font-semibold text-foreground hover:border-primary/50 hover:text-primary transition-all"><Send className="w-4 h-4" /> {k}</a>
                   ))}
                 </div>
+                <InsightBox icon={Link2}>{t("Share links open each platform's native sharing dialog with your URL and message pre-filled.")}</InsightBox>
               </ResultCard>
             )}
           </>
@@ -1155,9 +1265,14 @@ function ToolWorkspace({ tool, onBack }) {
       }
       case "privacy-policy-generator": {
         const generate = () => {
-          const name = inputs.appName || "iyadel", site = inputs.siteUrl || "https://iyadel.com", email = inputs.email || "support@iyadel.com";
-          const text = `Privacy Policy for ${name}\n\nLast Updated: ${new Date().toLocaleDateString()}\n\n${name} ("we", "us", "our") operates ${site}. This policy explains what data we collect and how we use it.\n\n1. Information We Collect\nWe collect information you provide voluntarily and data collected automatically (IP address, browser type, cookies).\n\n2. How We Use Your Information\nWe use information to provide and improve our services, communicate with you, and analyze usage.\n\n3. Cookies\nWe use cookies to improve your experience. You can disable cookies in your browser settings.\n\n4. Third-Party Services\nWe may use third-party tools that collect data according to their own privacy policies.\n\n5. Your Rights\nYou may access, correct, or delete your personal data at any time. Contact us at ${email}.\n\n6. Security\nWe take reasonable measures to protect your data, though no system is 100% secure.\n\n7. Changes to This Policy\nWe may update this policy. Changes will be posted on this page.\n\nContact: ${email}`;
-          setPolicyText(text);
+          setBusy(true);
+          setTimeout(() => {
+            const name = inputs.appName || "iyadel", site = inputs.siteUrl || "https://iyadel.com", email = inputs.email || "support@iyadel.com";
+            const text = `Privacy Policy for ${name}\n\nLast Updated: ${new Date().toLocaleDateString()}\n\n${name} ("we", "us", "our") operates ${site}. This policy explains what data we collect and how we use it.\n\n1. Information We Collect\nWe collect information you provide voluntarily and data collected automatically (IP address, browser type, cookies).\n\n2. How We Use Your Information\nWe use information to provide and improve our services, communicate with you, and analyze usage.\n\n3. Cookies\nWe use cookies to improve your experience. You can disable cookies in your browser settings.\n\n4. Third-Party Services\nWe may use third-party tools that collect data according to their own privacy policies.\n\n5. Your Rights\nYou may access, correct, or delete your personal data at any time. Contact us at ${email}.\n\n6. Security\nWe take reasonable measures to protect your data, though no system is 100% secure.\n\n7. Changes to This Policy\nWe may update this policy. Changes will be posted on this page.\n\nContact: ${email}`;
+            setPolicyText(text);
+            setBusy(false);
+            setTimeout(() => document.querySelector('[data-tool-result="true"]')?.scrollIntoView({ behavior: "smooth", block: "center" }), 60);
+          }, 800);
         };
         const copy = () => navigator.clipboard?.writeText(policyText);
         return (
@@ -1167,11 +1282,12 @@ function ToolWorkspace({ tool, onBack }) {
               <TxtInput label={t("Site URL")} value={inputs.siteUrl} onChange={set("siteUrl")} placeholder="https://iyadel.com" />
               <TxtInput label={t("Contact Email")} value={inputs.email} onChange={set("email")} placeholder="support@iyadel.com" />
             </div>
-            <div className="flex justify-center mt-6"><CalcButton onClick={generate}>{t("Generate Policy")}</CalcButton></div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={generate} busy={busy} busyLabel={t("Analyzing...")}>{t("Generate Policy")}</CalcButton></div>
             {policyText && (
               <ResultCard title={t("Generated Privacy Policy")}>
                 <pre className="text-left text-sm whitespace-pre-wrap text-muted-foreground max-h-72 overflow-y-auto bg-background rounded-xl p-4 border border-border">{policyText}</pre>
                 <button onClick={copy} className="inline-flex items-center gap-2 mt-4 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-secondary"><Copy className="w-4 h-4" /> {t("Copy")}</button>
+                <InsightBox icon={ShieldCheck}>{t("This generated policy is a starting point — review it with a legal professional before publishing.")}</InsightBox>
               </ResultCard>
             )}
           </>
@@ -1179,32 +1295,37 @@ function ToolWorkspace({ tool, onBack }) {
       }
       case "math-function-calculator": {
         const plot = () => {
-          const lines = (inputs.expr || "sin(x)").split("\n").map((l) => l.trim()).filter(Boolean);
-          const fns = lines.map((raw, idx) => {
-            let compiled = null, error = null;
-            try { compiled = compileExpr(raw); } catch (err) { error = err.message; }
-            return { raw, label: `f${idx + 1}: ${raw}`, key: `f${idx}`, color: FN_COLORS[idx % FN_COLORS.length], compiled, error };
-          });
-          const grid = [];
-          for (let x = -10; x <= 10.001; x += 0.2) grid.push(+x.toFixed(2));
-          const data = grid.map((x) => {
-            const row = { x };
-            fns.forEach((f) => {
-              if (!f.compiled) return;
-              try {
-                const y = f.compiled(x);
-                if (typeof y === "number" && isFinite(y)) row[f.key] = +y.toFixed(4);
-              } catch {}
+          setBusy(true);
+          setTimeout(() => {
+            const lines = (inputs.expr || "sin(x)").split("\n").map((l) => l.trim()).filter(Boolean);
+            const fns = lines.map((raw, idx) => {
+              let compiled = null, error = null;
+              try { compiled = compileExpr(raw); } catch (err) { error = err.message; }
+              return { raw, label: `f${idx + 1}: ${raw}`, key: `f${idx}`, color: FN_COLORS[idx % FN_COLORS.length], compiled, error };
             });
-            return row;
-          });
-          setPlotData({ data, fns });
+            const grid = [];
+            for (let x = -10; x <= 10.001; x += 0.2) grid.push(+x.toFixed(2));
+            const data = grid.map((x) => {
+              const row = { x };
+              fns.forEach((f) => {
+                if (!f.compiled) return;
+                try {
+                  const y = f.compiled(x);
+                  if (typeof y === "number" && isFinite(y)) row[f.key] = +y.toFixed(4);
+                } catch {}
+              });
+              return row;
+            });
+            setPlotData({ data, fns });
+            setBusy(false);
+            setTimeout(() => document.querySelector('[data-tool-result="true"]')?.scrollIntoView({ behavior: "smooth", block: "center" }), 60);
+          }, 800);
         };
         return (
           <>
             <FnInput label="f(x) =" value={inputs.expr} onChange={set("expr")} placeholder={"sin(x)\ncos(x)\nx^2"} />
             <p className="text-xs text-muted-foreground mt-2 text-left ml-1">{t("One function per line. Supports:")} sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, sqrt, cbrt, ln, log, log2, exp, abs, floor, ceil, round, sign, pi, e, tau, ^, !</p>
-            <div className="flex justify-center mt-6"><CalcButton onClick={plot}>{t("Plot Function")}</CalcButton></div>
+            <div className="flex justify-center mt-6"><CalcButton onClick={plot} busy={busy} busyLabel={t("Analyzing...")}>{t("Plot Function")}</CalcButton></div>
             {plotData && plotData.fns && plotData.fns.length > 0 && (
               <>
                 {plotData.fns.some((f) => f.error) && (
@@ -1293,12 +1414,17 @@ function ToolWorkspace({ tool, onBack }) {
       }
       case "physics-calculators": {
         const mode = inputs.mode || "speed";
-        const a = parseFloat(inputs.a), b = parseFloat(inputs.b);
         let la = t("Distance (m)"), lb = t("Time (s)"), unit = "m/s";
         if (mode === "distance") { la = t("Speed (m/s)"); lb = t("Time (s)"); unit = "m"; }
         else if (mode === "time") { la = t("Distance (m)"); lb = t("Speed (m/s)"); unit = "s"; }
         else if (mode === "ohm") { la = t("Voltage (V)"); lb = t("Resistance (Ω)"); unit = "A"; }
-        const res = (mode === "ohm") ? (a && b ? a / b : null) : (mode === "distance") ? (a && b ? a * b : null) : (a && b ? a / b : null);
+        const calc = () => {
+          const a = parseFloat(inputs.a), b = parseFloat(inputs.b);
+          if (!a || !b) return null;
+          const value = (mode === "ohm") ? a / b : (mode === "distance") ? a * b : a / b;
+          return { value: value.toFixed(3), unit, mode };
+        };
+        const r = result;
         return (
           <>
             <SelectField label={t("Calculation")} value={mode} onChange={set("mode")} options={[{ value: "speed", label: t("speed") }, { value: "distance", label: t("distance") }, { value: "time", label: t("time") }, { value: "ohm", label: t("ohm") }]} />
@@ -1306,10 +1432,11 @@ function ToolWorkspace({ tool, onBack }) {
               <NumInput label={la} value={inputs.a} onChange={set("a")} placeholder="100" />
               <NumInput label={lb} value={inputs.b} onChange={set("b")} placeholder="10" />
             </div>
-            {res != null && (
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Calculate")}</CalcButton></div>
+            {r && (
               <ResultCard title={t("Result")}>
-                <div className="text-4xl font-extrabold text-accent">{res.toFixed(3)}</div>
-                <div className="text-muted-foreground mt-2">{unit}</div>
+                <ResultCircle value={r.value} unit={r.unit} />
+                <InsightBox icon={Zap}>{t("Speed = Distance ÷ Time • Ohm's Law: I = V ÷ R. Keep units consistent for correct results.")}</InsightBox>
               </ResultCard>
             )}
             <TipBox>{t("Speed = Distance ÷ Time • Ohm's Law: I = V ÷ R.")}</TipBox>
@@ -1317,18 +1444,26 @@ function ToolWorkspace({ tool, onBack }) {
         );
       }
       case "chemistry-calculators": {
-        const mass = calcMolarMass(inputs.formula || "");
+        const calc = () => {
+          const mass = calcMolarMass(inputs.formula || "");
+          if (mass == null) return { error: true };
+          return { mass: mass.toFixed(3) };
+        };
+        const r = result;
         return (
           <>
             <TxtInput label={t("Chemical Formula")} value={inputs.formula} onChange={set("formula")} placeholder="H2O" />
-            {mass != null ? (
+            <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Analyzing...")}>{t("Calculate")}</CalcButton></div>
+            {r && (r.error ? (
               <ResultCard title={t("Molar Mass")}>
-                <div className="text-4xl font-extrabold text-accent">{mass.toFixed(3)}</div>
-                <div className="text-muted-foreground mt-2">g/mol</div>
+                <div className="text-sm text-destructive">{t("Could not parse the formula. Use element symbols like H2O, NaCl, or C6H12O6.")}</div>
               </ResultCard>
-            ) : inputs.formula ? (
-              <TipBox>{t("Could not parse the formula. Use element symbols like H2O, NaCl, or C6H12O6.")}</TipBox>
-            ) : null}
+            ) : (
+              <ResultCard title={t("Molar Mass")}>
+                <ResultCircle value={r.mass} unit="g/mol" sub={inputs.formula} />
+                <InsightBox icon={Atom}>{t("Molar mass sums the atomic weights of every atom in the formula — essential for converting between grams and moles.")}</InsightBox>
+              </ResultCard>
+            ))}
             <TipBox>{t("Enter a formula like H2O, NaCl, or C6H12O6. Supports common elements.")}</TipBox>
           </>
         );
