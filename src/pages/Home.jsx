@@ -2057,7 +2057,13 @@ function AppStoreSection() {
                 </div>
               </div>
             </div>
-            
+
+            <div className="flex justify-center md:justify-start mt-8 relative z-10">
+              <a href="https://fazier.com/launches/iyadel.com" target="_blank" rel="noopener noreferrer">
+                <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" width={120} alt="Fazier badge" className="inline-block" />
+              </a>
+            </div>
+
           </div>
         </AnimatedElement>
       </div>
