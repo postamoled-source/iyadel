@@ -27,6 +27,9 @@ export default function Footer() {
             <a href="https://fazier.com/launches/iyadel.com" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block">
               <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" width={120} alt="Fazier badge" className="h-10 w-auto" />
             </a>
+            <a href="https://submitaitools.org" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block">
+              <img src="https://submitaitools.org/static_submitaitools/images/submitaitools.png" alt="Submit AI Tools" style={{ borderRadius: "10px", width: "200px", height: "60px" }} />
+            </a>
           </div>
         </div>
 
