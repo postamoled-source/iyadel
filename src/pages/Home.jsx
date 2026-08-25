@@ -1038,7 +1038,7 @@ function ToolWorkspace({ tool, onBack }) {
                     <div className="flex-1 bg-blue-400" /><div className="flex-1 bg-emerald-400" /><div className="flex-1 bg-amber-400" /><div className="flex-1 bg-rose-400" />
                   </div>
                   <div className="relative mt-1">
-                    <div className="absolute -top-3 w-4 h-4 rounded-full bg-white border-2 border-[#1E1B4B] shadow" style={{ left: `calc(${r.pos}% - 8px)` }} />
+                    <div className="absolute -top-3 w-4 h-4 rounded-full bg-white dark:bg-[#FEF3C7] border-2 border-[#1E1B4B] dark:border-[#FEF3C7] shadow" style={{ left: `calc(${r.pos}% - 8px)` }} />
                   </div>
                   <div className="flex text-[10px] text-muted-foreground mt-2">
                     <span className="flex-1 text-center">{t("Underweight")}</span>
