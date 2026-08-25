@@ -24,6 +24,9 @@ export default function Footer() {
             <a href="https://apps.apple.com/app/iyadel/id123456789" target="_blank" rel="noopener noreferrer" aria-label="Download on the App Store">
               <img src="https://media.base44.com/images/public/6a7e76e3396b41955b675542/3b49c5788_upload_wikimedia_org_Download_on_the_App_Store_Badge_136769b5.svg" alt="App Store" className="h-10 w-auto" />
             </a>
+            <a href="https://fazier.com/launches/iyadel.com" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block">
+              <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" width={120} alt="Fazier badge" className="h-10 w-auto" />
+            </a>
           </div>
         </div>
 
