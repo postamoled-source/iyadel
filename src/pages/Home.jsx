@@ -88,7 +88,7 @@ function NumInput({ label, value, onChange, placeholder }) {
     <div className="text-left">
       <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
       <input type="number" inputMode="decimal" value={value ?? ""} onChange={onChange} placeholder={placeholder}
-        className="w-full rounded-2xl border border-border bg-gradient-to-b from-card to-background text-foreground text-base px-4 py-3.5 min-h-[52px] transition-all duration-200 shadow-[inset_0_2px_4px_hsl(0_0%_0%/0.06),0_1px_0_0_hsl(0_0%_100%/0.04)] focus:outline-none focus:border-primary/60 focus:shadow-[0_0_0_4px_hsl(var(--primary)/0.15),0_10px_28px_-10px_hsl(var(--primary)/0.5)] focus:-translate-y-0.5" />
+        className="w-full rounded-[16px] border-2 border-[#FDE68A] bg-[#FFFBEB] text-foreground text-base px-4 py-3.5 h-[52px] transition-all duration-200 focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
     </div>
   );
 }
@@ -97,7 +97,7 @@ function TxtInput({ label, value, onChange, placeholder, type = "text" }) {
     <div className="text-left">
       <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
       <input type={type} inputMode={type === "number" ? "decimal" : undefined} value={value ?? ""} onChange={onChange} placeholder={placeholder}
-        className="w-full rounded-2xl border border-border bg-gradient-to-b from-card to-background text-foreground text-base px-4 py-3.5 min-h-[52px] transition-all duration-200 shadow-[inset_0_2px_4px_hsl(0_0%_0%/0.06),0_1px_0_0_hsl(0_0%_100%/0.04)] focus:outline-none focus:border-primary/60 focus:shadow-[0_0_0_4px_hsl(var(--primary)/0.15),0_10px_28px_-10px_hsl(var(--primary)/0.5)] focus:-translate-y-0.5" />
+        className="w-full rounded-[16px] border-2 border-[#FDE68A] bg-[#FFFBEB] text-foreground text-base px-4 py-3.5 h-[52px] transition-all duration-200 focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
     </div>
   );
 }
@@ -106,7 +106,7 @@ function FnInput({ label, value, onChange, placeholder }) {
     <div className="text-left">
       <label className="block text-sm font-medium text-muted-foreground mb-1.5 ml-1">{label}</label>
       <textarea value={value ?? ""} onChange={onChange} placeholder={placeholder} rows={3}
-        className="w-full rounded-2xl border border-border bg-gradient-to-b from-card to-background text-foreground text-base px-4 py-3 min-h-[52px] transition-all duration-200 shadow-[inset_0_2px_4px_hsl(0_0%_0%/0.06),0_1px_0_0_hsl(0_0%_100%/0.04)] focus:outline-none focus:border-primary/60 focus:shadow-[0_0_0_4px_hsl(var(--primary)/0.15),0_10px_28px_-10px_hsl(var(--primary)/0.5)] focus:-translate-y-0.5 resize-y font-mono" />
+        className="w-full rounded-[16px] border-2 border-[#FDE68A] bg-[#FFFBEB] text-foreground text-base px-4 py-3 h-[52px] transition-all duration-200 resize-y font-mono focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
     </div>
   );
 }
@@ -119,7 +119,7 @@ function SelectField({ label, value, onChange, options }) {
         onChange={(v) => onChange({ target: { value: v } })}
         options={options}
         placeholder={options[0]}
-        triggerClassName="w-full flex items-center gap-2 rounded-2xl border border-border bg-gradient-to-b from-card to-background text-foreground text-base px-4 py-3.5 h-auto min-h-[52px] shadow-[inset_0_2px_4px_hsl(0_0%_0%/0.06),0_1px_0_0_hsl(0_0%_100%/0.04)] focus:outline-none focus:border-primary/60 focus:shadow-[0_0_0_4px_hsl(var(--primary)/0.15),0_10px_28px_-10px_hsl(var(--primary)/0.5)]"
+        triggerClassName="w-full flex items-center gap-2 rounded-[16px] border-2 border-[#FDE68A] bg-[#FFFBEB] text-foreground text-base px-4 py-3.5 h-[52px] focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]"
       />
     </div>
   );
@@ -132,7 +132,7 @@ function RangeField({ label, value, onChange, min, max, step = 1 }) {
         <span className="text-xs font-bold text-primary tabular-nums">{value ?? min}</span>
       </div>
       <input type="range" min={min} max={max} step={step} value={value ?? min} onChange={onChange}
-        className="w-full h-10 accent-primary cursor-pointer" />
+        className="w-full h-10 accent-[#F59E0B] cursor-pointer" />
     </div>
   );
 }
@@ -149,8 +149,8 @@ function ColorField({ label, value, onChange }) {
 }
 function ResultCard({ title, children }) {
   return (
-    <div className="mt-8 rounded-[2rem] p-8 animate-[fadeIn_0.5s_ease-out] bg-gradient-to-br from-primary/10 to-accent/5 border border-primary/25 shadow-[0_28px_70px_-24px_hsl(var(--primary)/0.45),inset_0_1px_0_0_hsl(0_0%_100%/0.08)]">
-      <h4 className="text-lg font-bold text-foreground mb-4 text-center">{title}</h4>
+    <div className="mt-8 rounded-[16px] p-6 animate-[fadeIn_0.5s_ease-out] bg-[#FFFBEB] border-2 border-[#FDE68A]/70 shadow-sm">
+      <h4 className="text-lg font-bold text-[#1E1B4B] mb-4 text-center">{title}</h4>
       <div className="text-center">{children}</div>
     </div>
   );
@@ -161,8 +161,8 @@ function TipBox({ children }) {
 function CalcButton({ children, onClick, variant = "primary" }) {
   return (
     <Button onClick={onClick}
-      className={`relative overflow-hidden mt-6 w-full sm:w-auto rounded-2xl px-8 py-6 font-bold text-base transition-all duration-200 ${variant === "primary" ? "bg-primary text-primary-foreground shadow-[0_6px_0_0_hsl(268_77%_30%),0_12px_24px_-8px_hsl(var(--primary)/0.6)] hover:shadow-[0_8px_0_0_hsl(268_77%_30%),0_18px_30px_-10px_hsl(var(--primary)/0.7)] active:translate-y-[3px] active:shadow-[0_2px_0_0_hsl(268_77%_30%),0_6px_14px_-6px_hsl(var(--primary)/0.6)]" : "bg-secondary text-secondary-foreground shadow-[0_6px_0_0_hsl(0_0%_45%),0_12px_24px_-8px_hsl(0_0%_0%/0.3)] hover:shadow-[0_8px_0_0_hsl(0_0%_45%),0_18px_30px_-10px_hsl(0_0%_0%/0.35)] active:translate-y-[3px] active:shadow-[0_2px_0_0_hsl(0_0%_45%),0_6px_14px_-6px_hsl(0_0%_0%/0.3)]"}`}>
-      {variant === "primary" && <span className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-foreground/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />}
+      className={`relative overflow-hidden mt-6 w-full sm:w-auto rounded-full px-8 h-14 font-bold text-base transition-all duration-200 ${variant === "primary" ? "bg-gradient-to-r from-[#6D28D9] to-[#8B5CF6] border-2 border-[#F59E0B] text-white shadow-[0_12px_24px_-6px_rgba(109,40,217,0.4)] hover:-translate-y-0.5 hover:shadow-[0_16px_30px_-6px_rgba(109,40,217,0.55)] active:translate-y-0" : "bg-[#FFFBEB] border-2 border-[#FDE68A] text-[#1E1B4B] hover:border-[#F59E0B]"}`}>
+      {variant === "primary" && <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />}
       <span className="relative z-10">{children}</span>
     </Button>
   );
@@ -1758,7 +1758,7 @@ function ToolWorkspace({ tool, onBack }) {
   };
 
   return (
-    <div className="rounded-none sm:rounded-[3rem] bg-transparent sm:bg-card border-0 sm:border border-border shadow-none sm:shadow-2xl p-6 sm:p-14 relative overflow-hidden">
+    <div className="tool-light max-w-[480px] mx-auto bg-white rounded-[20px] p-6 shadow-xl border-0 relative overflow-hidden">
       <button onClick={onBack} className="absolute top-8 left-8 sm:top-10 sm:left-10 flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border text-sm font-medium text-foreground hover:bg-secondary hover:text-secondary-foreground transition-all duration-300 shadow-sm z-20">
         <ArrowLeft className="w-4 h-4" /> {t("Back")}
       </button>

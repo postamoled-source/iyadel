@@ -70,6 +70,29 @@
   }
 }
 
+/* Forced light surface for tool cards (keeps text readable on cream/white) */
+.tool-light {
+  --background: 0 0% 98%;
+  --foreground: 240 10% 8%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 8%;
+  --primary: 268.6 77.9% 44.3%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 5% 95%;
+  --secondary-foreground: 240 10% 8%;
+  --muted: 240 5% 95%;
+  --muted-foreground: 240 4% 42%;
+  --accent: 43.3 96.4% 50%;
+  --accent-foreground: 240 10% 8%;
+  --destructive: 0 72% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 240 6% 88%;
+  --input: 240 6% 88%;
+  --ring: 268.6 77.9% 44.3%;
+}
+
 @layer base {
   * {
     @apply border-border;
