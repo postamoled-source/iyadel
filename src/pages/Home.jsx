@@ -2058,9 +2058,9 @@ function AppStoreSection() {
               </div>
             </div>
 
-            <div className="flex justify-center md:justify-start mt-8 relative z-10">
+            <div className="sr-only" aria-hidden="true">
               <a href="https://fazier.com/launches/iyadel.com" target="_blank" rel="noopener noreferrer">
-                <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" width={120} alt="Fazier badge" className="inline-block" />
+                <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" width={120} alt="Fazier badge" />
               </a>
             </div>
 
