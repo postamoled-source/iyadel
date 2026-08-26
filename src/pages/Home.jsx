@@ -203,14 +203,14 @@ function HeroSection({ toolCount, catCount, searchQuery, onSearchChange }) {
     catch { window.scrollTo(0, y); }
   };
   return (
-    <section className="relative overflow-hidden bg-background pt-10 pb-16">
+    <section className="relative overflow-hidden bg-[#FFFBEB] dark:bg-[#1E1B4B] transition-colors duration-300 pt-10 pb-16">
       <style>{styles}</style>
-      <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-primary/20 rounded-full blur-[120px] pointer-events-none" style={{ animation: "floatA 9s ease-in-out infinite" }} />
-      <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-accent/15 rounded-full blur-[150px] pointer-events-none" style={{ animation: "floatB 7s ease-in-out 2s infinite" }} />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/20 rounded-full blur-[120px] pointer-events-none" style={{ animation: "floatA 9s ease-in-out infinite" }} />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/15 rounded-full blur-[150px] pointer-events-none" style={{ animation: "floatB 7s ease-in-out 2s infinite" }} />
       
       <div className="max-w-5xl mx-auto px-6 relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}
-          className="rounded-[3rem] bg-card border border-border shadow-2xl p-10 md:p-20 text-center relative overflow-hidden group">
+          className="rounded-[3rem] bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] shadow-2xl p-10 md:p-20 text-center relative overflow-hidden group transition-colors duration-300">
           
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
 
@@ -221,22 +221,22 @@ function HeroSection({ toolCount, catCount, searchQuery, onSearchChange }) {
             </h1>
           </div>
           
-          <p className="text-lg md:text-xl text-card-foreground/80 max-w-2xl mx-auto mb-10 font-medium">
+          <p className="text-lg md:text-xl text-[#1E1B4B]/80 dark:text-[#FEF3C7]/80 max-w-2xl mx-auto mb-10 font-medium">
             {t("Your all-in-one platform")} — {toolCount}+ {t("tools in Finance, Health, Converters, Math, Brain Games, and Image Tools")}
           </p>
           
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-            <button onClick={() => scrollTo("tools")} className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-primary/50 transition-colors shadow-sm cursor-pointer">
+          <div className="flex flex-wrap justify-center gap-2">
+            <button onClick={() => scrollTo("tools")} className="flex items-center gap-3 rounded-full bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] px-5 py-2.5 shadow-sm hover:border-primary/50 transition-colors shadow-sm cursor-pointer">
               <Box className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-foreground"><span className="text-primary">{toolCount}</span> {t("Tools")}</span>
+              <span className="text-sm font-semibold text-[#1E1B4B] dark:text-[#FEF3C7]"><span className="text-primary">{toolCount}</span> {t("Tools")}</span>
             </button>
-            <button onClick={() => scrollTo("categories", "tools")} className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-accent/50 transition-colors shadow-sm cursor-pointer">
+            <button onClick={() => scrollTo("categories", "tools")} className="flex items-center gap-3 rounded-full bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] px-5 py-2.5 shadow-sm hover:border-accent/50 transition-colors shadow-sm cursor-pointer">
               <Layers className="w-4 h-4 text-accent" />
-              <span className="text-sm font-semibold text-foreground"><span className="text-accent">{catCount}</span> {t("Categories")}</span>
+              <span className="text-sm font-semibold text-[#1E1B4B] dark:text-[#FEF3C7]"><span className="text-accent">{catCount}</span> {t("Categories")}</span>
             </button>
-            <button onClick={() => scrollTo("why")} className="flex items-center gap-3 rounded-full bg-background border border-border px-5 py-2.5 hover:border-primary/50 transition-colors shadow-sm cursor-pointer">
+            <button onClick={() => scrollTo("why")} className="flex items-center gap-3 rounded-full bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] px-5 py-2.5 shadow-sm hover:border-primary/50 transition-colors shadow-sm cursor-pointer">
               <Gift className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-foreground"><span className="text-primary">{t("Free")}</span> {t("for Everyone")}</span>
+              <span className="text-sm font-semibold text-[#1E1B4B] dark:text-[#FEF3C7]"><span className="text-primary">{t("Free")}</span> {t("for Everyone")}</span>
             </button>
           </div>
 
@@ -249,7 +249,7 @@ function HeroSection({ toolCount, catCount, searchQuery, onSearchChange }) {
                 onChange={(e) => { onSearchChange(e.target.value); scrollTo("tools"); }}
                 onFocus={() => scrollTo("tools")}
                 placeholder={t("Search for a tool by name...")}
-                className="w-full rounded-2xl border border-border bg-background text-foreground pl-12 pr-12 py-4 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm text-base"
+                className="w-full h-14 rounded-2xl border-2 border-[#E9D5FF] dark:border-[#4B3F8A] bg-white dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] pl-12 pr-12 focus:outline-none focus:border-[#F59E0B] transition-all shadow-[0_4px_12px_rgba(109,40,217,0.08)] text-base"
               />
               {searchQuery && (
                 <button onClick={() => onSearchChange("")} aria-label={t("Clear")} className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
@@ -1254,7 +1254,7 @@ function ToolWorkspace({ tool, onBack }) {
               <ResultCard title={t("Share Links")}>
                 <div className="grid grid-cols-2 gap-3">
                   {Object.entries(links).map(([k, v]) => (
-                    <a key={k} href={v} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl bg-background border border-border px-4 py-3 text-sm font-semibold text-foreground hover:border-primary/50 hover:text-primary transition-all"><Send className="w-4 h-4" /> {k}</a>
+                    <a key={k} href={v} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl bg-background border border-border px-4 py-3 text-sm font-semibold text-[#1E1B4B] dark:text-[#FEF3C7] hover:border-primary/50 hover:text-primary transition-all"><Send className="w-4 h-4" /> {k}</a>
                   ))}
                 </div>
                 <InsightBox icon={Link2}>{t("Share links open each platform's native sharing dialog with your URL and message pre-filled.")}</InsightBox>
@@ -2016,7 +2016,7 @@ function ToolsHub({ searchQuery = "" }) {
   const showList = isSearching || !selectedTool || isMobile;
 
   return (
-    <section className="bg-background py-16" id="tools">
+    <section className="bg-[#FFFBEB] dark:bg-[#1E1B4B] transition-colors duration-300 py-16" id="tools">
       <PullToRefresh onRefresh={load}>
       <div className="max-w-5xl mx-auto px-6">
         
@@ -2063,6 +2063,8 @@ function ToolsHub({ searchQuery = "" }) {
           </div>
         )}
         {showList && filtered.length > 0 && (
+        <>
+        <h2 className="mt-5 mb-5 text-center text-[18px] font-bold text-[#1E1B4B] dark:text-[#FEF3C7]">{activeCategory === "Favorites" ? t("Favorites") : t(activeCategory)}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((tool, index) => {
             const Icon = ICONS[tool.icon] || Calculator;
@@ -2070,7 +2072,7 @@ function ToolsHub({ searchQuery = "" }) {
             return (
               <AnimatedElement key={tool.slug || index} delay={index * 80}>
                 <div onClick={() => selectTool(tool)}
-                  className="relative w-full h-full text-center rounded-[2rem] bg-gradient-to-b from-card to-background border border-border p-8 transition-all duration-400 shadow-[0_12px_30px_-14px_hsl(var(--primary)/0.18),inset_0_1px_0_0_hsl(0_0%_100%/0.05)] hover:-translate-y-2 hover:shadow-[0_28px_60px_-18px_hsl(var(--primary)/0.4)] hover:border-primary/40 group flex flex-col items-center justify-center cursor-pointer">
+                  className="relative w-full h-full text-center rounded-3xl bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] p-8 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(109,40,217,0.15)] hover:border-primary/40 group flex flex-col items-center justify-center cursor-pointer">
                   
                   <button
                     onClick={(e) => { e.stopPropagation(); toggleFavorite(tool.slug); trackEvent("tool_favorite", { tool_slug: tool.slug, action: fav ? "remove" : "add" }); }}
@@ -2093,7 +2095,7 @@ function ToolsHub({ searchQuery = "" }) {
                     </div>
                   )}
                   
-                  <h3 className="text-xl font-bold text-card-foreground mb-1">{t(tool.name)}</h3>
+                  <h3 className="text-xl font-bold text-[#1E1B4B] dark:text-[#FEF3C7] mb-1">{t(tool.name)}</h3>
                   <span className="text-sm font-medium text-muted-foreground">{t(tool.category)}</span>
                   
                 </div>
@@ -2101,6 +2103,7 @@ function ToolsHub({ searchQuery = "" }) {
             );
           })}
         </div>
+        </>
         )}
 
         {/* Desktop: inline workspace with a subtle slide-up */}
@@ -2348,7 +2351,7 @@ export default function Home() {
     path: "/",
   });
   return (
-    <div className="min-h-screen bg-background selection:bg-primary/30 selection:text-primary">
+    <div className="min-h-screen bg-[#FFFBEB] dark:bg-[#1E1B4B] transition-colors duration-300 selection:bg-primary/30 selection:text-primary">
       <HeroSection toolCount={31} catCount={7} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <ToolsHub searchQuery={searchQuery} />
       <AppStoreSection />
