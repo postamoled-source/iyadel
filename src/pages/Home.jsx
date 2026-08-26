@@ -26,7 +26,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, RIDDLES, RIDDLES_AR, convertUnit, calcMolarMass, compileExpr, FN_COLORS } from "@/lib/tool-utils";
-import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, SlidersHorizontal, Swords, Spline, Instagram, Facebook } from "lucide-react";
+import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, SlidersHorizontal, Swords, Spline, Instagram, Facebook, Image as ImageIcon, Pencil } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { trackEvent, useSeo } from "@/lib/analytics";
 import { TOOL_CONTENT_AR, TOOL_GUIDES_AR } from "@/data/translations-ar";
@@ -41,13 +41,24 @@ const ICONS = {
   HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket, Wand2, Palette, Hammer, Crosshair, Swords, Spline
 };
 
+function ImageEditIcon() {
+  return (
+    <span className="relative inline-flex items-center justify-center w-[22px] h-[22px]">
+      <ImageIcon className="w-[22px] h-[22px] text-white" strokeWidth={2} />
+      <span className="absolute -right-1.5 -bottom-1.5 w-4 h-4 rounded-full bg-white flex items-center justify-center shadow">
+        <Pencil className="w-2 h-2 text-[#6D28D9]" strokeWidth={2.5} />
+      </span>
+    </span>
+  );
+}
+
 const CATEGORY_CARDS = [
   { label: "Finance", cat: "Finance", Icon: DollarSign },
   { label: "Health", cat: "Health", Icon: Activity },
   { label: "Converters", cat: "Converters", Icon: ArrowLeftRight },
   { label: "Math", cat: "Math", Icon: Calculator },
   { label: "Brain Games", cat: "Games", Icon: Puzzle },
-  { label: "Image Tools", cat: "Image Tools", Icon: FileImage },
+  { label: "Image Tools", cat: "Image Tools", Icon: ImageEditIcon },
   { label: "Daily Tools", cat: "All", Icon: Layers },
   { label: "All Tools", cat: "All", Icon: Box },
 ];
@@ -2039,11 +2050,13 @@ function ToolsHub({ searchQuery = "" }) {
             <div className="grid grid-cols-4 gap-2">
               {CATEGORY_CARDS.map(({ label, cat, Icon }) => (
                 <button key={label} onClick={() => { setActiveCategory(cat); trackEvent("category_select", { category: cat }); }}
-                  className={`flex flex-row items-center px-2.5 py-2 h-12 rounded-xl bg-white dark:bg-[#2D2A5A] border transition-all duration-300 ${activeCategory === cat ? "border-[#6D28D9] shadow-[0_2px_8px_rgba(109,40,217,0.15)]" : "border-[#F3F4F6] dark:border-[#4B3F8A]"}`}>
-                  <div className="w-7 h-7 min-w-7 shrink-0 rounded-lg bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center">
-                    <Icon className="w-4 h-4 text-white" strokeWidth={2.2} />
+                  className={`flex flex-col items-center justify-center px-1 py-2 h-[84px] rounded-[14px] bg-white dark:bg-[#2D2A5A] border shadow-[0_2px_6px_rgba(109,40,217,0.06)] transition-all duration-300 ${activeCategory === cat ? "border-[#6D28D9]" : "border-[#F3F4F6] dark:border-[#4B3F8A]"}`}>
+                  <div className="w-[42px] h-[42px] rounded-full bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center">
+                    <Icon className="w-[22px] h-[22px] text-white" strokeWidth={2} />
                   </div>
-                  <span className="text-[11px] font-bold ml-2 text-[#111827] dark:text-[#FEF3C7] leading-tight">{t(label)}</span>
+                  <span className="text-[11px] font-bold text-[#111827] dark:text-[#FEF3C7] mt-1.5 text-center leading-[1.1] break-words">
+                    {t(label).split(" ").map((w, i) => <span key={i} className="block">{w}</span>)}
+                  </span>
                 </button>
               ))}
             </div>
