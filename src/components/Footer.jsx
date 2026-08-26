@@ -38,7 +38,7 @@ export default function Footer() {
           <ul className="space-y-3 text-sm">
             <li><Link to="/About" className="text-background/70 hover:text-accent transition-colors">{t("About Us")}</Link></li>
             <li><Link to="/About" className="text-background/70 hover:text-accent transition-colors">{t("Privacy Policy")}</Link></li>
-            <li><a href="mailto:support@iyadel.net" className="text-background/70 hover:text-accent transition-colors">{t("Contact Us")}</a></li>
+            <li><a href="mailto:support@iyadel.com" className="text-background/70 hover:text-accent transition-colors">{t("Contact Us")}</a></li>
             <li><Link to="/Blog" className="text-background/70 hover:text-accent transition-colors">{t("Blog")}</Link></li>
             <li><Link to="/Dashboard" className="text-background/70 hover:text-accent transition-colors">{t("Usage Dashboard")}</Link></li>
           </ul>
@@ -61,8 +61,8 @@ export default function Footer() {
             <a href="#" aria-label="Twitter" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Twitter className="w-4 h-4 text-background" /></a>
             <a href="#" aria-label="Instagram" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Instagram className="w-4 h-4 text-background" /></a>
           </div>
-          <a href="mailto:support@iyadel.net" className="flex items-center gap-2 text-sm text-background/70 hover:text-accent transition-colors">
-            <Mail className="w-4 h-4" /> support@iyadel.net
+          <a href="mailto:support@iyadel.com" className="flex items-center gap-2 text-sm text-background/70 hover:text-accent transition-colors">
+            <Mail className="w-4 h-4" /> support@iyadel.com
           </a>
         </div>
       </div>

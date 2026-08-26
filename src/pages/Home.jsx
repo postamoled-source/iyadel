@@ -41,6 +41,17 @@ const ICONS = {
   HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket, Wand2, Palette, Hammer, Crosshair, Swords, Spline
 };
 
+const CATEGORY_CARDS = [
+  { label: "Finance", cat: "Finance", Icon: DollarSign },
+  { label: "Health", cat: "Health", Icon: Activity },
+  { label: "Converters", cat: "Converters", Icon: ArrowLeftRight },
+  { label: "Math", cat: "Math", Icon: Calculator },
+  { label: "Brain Games", cat: "Games", Icon: Puzzle },
+  { label: "Image Tools", cat: "Image Tools", Icon: FileImage },
+  { label: "Daily Tools", cat: "All", Icon: Layers },
+  { label: "All Tools", cat: "All", Icon: Box },
+];
+
 
 
 const STATIC_BLOG = [
@@ -1998,7 +2009,9 @@ function ToolsHub({ searchQuery = "" }) {
     ? items.filter((t) => (`${t.name} ${t.category} ${t.description || ""}`).toLowerCase().includes(query))
     : activeCategory === "Favorites"
       ? items.filter((t) => isFavorite(t.slug))
-      : items.filter((t) => t.category === activeCategory);
+      : activeCategory === "All"
+        ? items
+        : items.filter((t) => t.category === activeCategory);
 
   const selectTool = (tool) => {
     setActiveCategory(tool.category);
@@ -2021,23 +2034,19 @@ function ToolsHub({ searchQuery = "" }) {
       <div className="max-w-5xl mx-auto px-6">
         
         {showList && !isSearching && (
-          <div id="categories">
-          <AnimatedElement className="flex flex-wrap justify-center gap-3 md:gap-4 mb-16">
-            {CATEGORIES.map((cat) => (
-              <button key={cat} onClick={() => setActiveCategory(cat)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 ${activeCategory === cat ? "bg-primary text-primary-foreground shadow-[0_0_20px_-5px_hsl(var(--primary)/0.5)]" : "bg-card text-card-foreground border border-border hover:bg-muted hover:border-primary/30"}`}>
-                {t(cat)}
-              </button>
-            ))}
-            <button onClick={() => setActiveCategory("Favorites")}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 ${activeCategory === "Favorites" ? "bg-accent text-accent-foreground shadow-[0_0_20px_-5px_hsl(var(--accent)/0.5)]" : "bg-card text-card-foreground border border-border hover:bg-muted hover:border-accent/40"}`}>
-              <Star className={`w-4 h-4 ${favorites.length > 0 ? "fill-accent text-accent" : ""}`} />
-              {t("Favorites")} {favorites.length > 0 && <span className="ml-1 text-xs font-bold">{favorites.length}</span>}
-            </button>
-            <Link to="/Blog" className="flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm bg-card text-card-foreground border border-border hover:bg-muted transition-all duration-300">
-              {t("Blog")}
-            </Link>
-          </AnimatedElement>
+          <div id="categories" className="mb-10">
+            <h2 className="text-left text-[20px] font-bold text-[#111827] dark:text-[#FEF3C7] mb-4">{t("Browse by Category")}</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {CATEGORY_CARDS.map(({ label, cat, Icon }) => (
+                <button key={label} onClick={() => { setActiveCategory(cat); trackEvent("category_select", { category: cat }); }}
+                  className={`flex flex-col items-center justify-center gap-2 h-[90px] rounded-2xl bg-white dark:bg-[#2D2A5A] border transition-all duration-300 hover:scale-[1.02] ${activeCategory === cat ? "border-[#6D28D9] shadow-[0_4px_12px_rgba(109,40,217,0.18)]" : "border-[#F3F4F6] dark:border-[#4B3F8A] shadow-[0_2px_8px_rgba(109,40,217,0.08)]"}`}>
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center shadow-[0_4px_10px_rgba(109,40,217,0.25)]">
+                    <Icon className="w-5 h-5 text-white" strokeWidth={2.2} />
+                  </div>
+                  <span className="text-[14px] font-bold text-[#111827] dark:text-[#FEF3C7]">{t(label)}</span>
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
@@ -2064,7 +2073,7 @@ function ToolsHub({ searchQuery = "" }) {
         )}
         {showList && filtered.length > 0 && (
         <>
-        <h2 className="mt-6 mb-4 text-left text-[20px] font-bold text-[#111827] dark:text-[#FEF3C7]">{activeCategory === "Favorites" ? t("Favorites") : `${t("Popular")} ${t(activeCategory)}`}</h2>
+        <h2 className="mt-6 mb-4 text-left text-[20px] font-bold text-[#111827] dark:text-[#FEF3C7]">{activeCategory === "Favorites" ? t("Favorites") : activeCategory === "All" ? t("All Tools") : `${t("Popular")} ${t(activeCategory)}`}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((tool, index) => {
             const Icon = ICONS[tool.icon] || Calculator;
