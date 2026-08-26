@@ -1,0 +1,231 @@
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useI18n } from "@/lib/i18n";
+import { useSeo } from "@/lib/analytics";
+import { STATIC_TOOLS } from "@/data/tools";
+import { TOOL_GUIDES } from "@/data/tool-guides";
+import {
+  ArrowLeft, ChevronRight, Play,
+  Calculator as CalcIcon, TrendingUp, LineChart, Activity, Flame, DollarSign, Ruler,
+  Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent,
+  Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown,
+  Ticket, Wand2, Palette, Hammer, Crosshair, Spline,
+} from "lucide-react";
+import Game2048 from "@/components/games/Game2048";
+import MemoryMatch from "@/components/games/MemoryMatch";
+import WhackAMole from "@/components/games/WhackAMole";
+import BallLauncher from "@/components/games/BallLauncher";
+import SnakeGame from "@/components/games/SnakeGame";
+import MathPuzzleGame from "@/components/games/MathPuzzleGame";
+import WordScrambleGame from "@/components/games/WordScrambleGame";
+import PercentageCalculator from "@/components/tools/PercentageCalculator";
+import PageNotFound from "@/lib/PageNotFound";
+
+const ICONS = {
+  Calculator: CalcIcon, TrendingUp, LineChart, Activity, Flame, DollarSign, Ruler, Weight,
+  Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom,
+  FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket,
+  Wand2, Palette, Hammer, Crosshair, Spline,
+};
+
+// Tools whose interactive calculator is an importable component → embedded directly.
+const EMBED = {
+  "game-2048": Game2048,
+  "memory-match": MemoryMatch,
+  "whack-a-mole": WhackAMole,
+  "ball-launcher": BallLauncher,
+  "snake-game": SnakeGame,
+  "math-puzzle": MathPuzzleGame,
+  "word-scramble": WordScrambleGame,
+  "percentage-calculator": PercentageCalculator,
+};
+
+const FORMULAS = {
+  "loan-calculator": "M = P × r(1+r)^n / ((1+r)^n − 1)",
+  "simple-compound-interest": "Simple: I = P×r×t   |   Compound: A = P(1 + r/n)^(n·t)",
+  "bond-yield": "Current Yield = Annual Coupon ÷ Price",
+  "bmi-calculator": "BMI = weight(kg) ÷ height(m)²",
+  "calories-burned": "Calories = MET × weight(kg) × duration(h)",
+  "percentage-calculator": "Part = (Percent ÷ 100) × Whole",
+  "physics-calculators": "speed = distance ÷ time   |   I = V ÷ R",
+  "chemistry-calculators": "Molar Mass = Σ (atomic weight × atom count)",
+  "math-function-calculator": "y = f(x), evaluated across the chosen x range",
+  "currency-converter": "Target = Amount × exchange_rate",
+  "distance-converter": "result = value × (fromFactor ÷ toFactor)   [base: meters]",
+  "weight-converter": "result = value × (fromFactor ÷ toFactor)   [base: grams]",
+  "area-converter": "result = value × (fromFactor ÷ toFactor)   [base: m²]",
+  "time-converter": "result = value × (fromFactor ÷ toFactor)   [base: seconds]",
+  "speed-converter": "result = value × (fromFactor ÷ toFactor)   [base: m/s]",
+};
+
+const EXAMPLES = {
+  "loan-calculator": "A $10,000 loan at 6.5% for 36 months → monthly payment ≈ $306.50.",
+  "simple-compound-interest": "$1,000 at 5% for 10 years, compounded monthly → ≈ $1,647.",
+  "bond-yield": "$80 coupon on a $950 bond → current yield ≈ 8.42%.",
+  "bmi-calculator": "70 kg ÷ (1.75 m)² → BMI ≈ 22.9 (Normal).",
+  "calories-burned": "70 kg person running (MET 9.8) for 30 min → ≈ 343 kcal.",
+  "percentage-calculator": "20% of 250 → 50.",
+  "physics-calculators": "100 km in 2 hours → speed = 50 km/h.",
+  "chemistry-calculators": "H2O → 2×1.008 + 16.00 ≈ 18.02 g/mol.",
+  "currency-converter": "100 USD at rate 0.92 → 92 EUR.",
+  "distance-converter": "1 mile → 1.609 km.",
+  "weight-converter": "1 kg → 2.205 lb.",
+  "area-converter": "1 acre → 0.4047 ha.",
+  "time-converter": "1 hour → 3600 s.",
+  "speed-converter": "100 km/h → 27.78 m/s.",
+};
+
+function Section({ title, children }) {
+  return (
+    <div className="mb-6">
+      <h2 className="text-[18px] font-bold text-[#111827] dark:text-[#FEF3C7] mb-3">{title}</h2>
+      {children}
+    </div>
+  );
+}
+
+function Faq({ q, a }) {
+  return (
+    <details className="group bg-white dark:bg-[#2D2A5A] border border-[#F3F4F6] dark:border-[#4B3F8A] rounded-xl">
+      <summary className="cursor-pointer list-none flex items-center justify-between p-4 text-sm font-semibold text-[#111827] dark:text-[#FEF3C7]">
+        {q}
+        <ChevronRight className="w-4 h-4 shrink-0 transition-transform group-open:rotate-90" />
+      </summary>
+      <p className="px-4 pb-4 text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed">{a}</p>
+    </details>
+  );
+}
+
+export default function ToolPage() {
+  const { slug } = useParams();
+  const { t } = useI18n();
+  const navigate = useNavigate();
+  const tool = STATIC_TOOLS.find((x) => x.slug === slug);
+
+  useSeo({
+    title: tool ? `${tool.name} — Free Online Tool | iyadel` : "Tool not found | iyadel",
+    description: tool ? (tool.description || (tool.content || "").slice(0, 150)) : "Tool not found",
+    path: `/tools/${slug}`,
+  });
+
+  if (!tool) return <PageNotFound />;
+
+  const guide = TOOL_GUIDES[slug] || {};
+  const steps = guide.steps || [
+    `Open the ${tool.name} calculator above.`,
+    "Enter your values into the input fields.",
+    "Read the result shown instantly.",
+  ];
+  const intro = guide.intro || tool.content || tool.description;
+  const formula = FORMULAS[slug] || `// ${tool.name} — interactive tool, see How to use above.`;
+  const example = EXAMPLES[slug] || `Open the ${tool.name} calculator above to try a live example.`;
+
+  const faqs = [
+    { q: `What is ${tool.name}?`, a: tool.description || intro },
+    { q: `Is ${tool.name} free to use?`, a: `Yes — ${tool.name} is 100% free, runs entirely in your browser, and needs no sign-up.` },
+    { q: `Does ${tool.name} work on mobile?`, a: `Yes, ${tool.name} is fully responsive and works on phones, tablets, and desktops.` },
+  ];
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+  };
+
+  const sameCat = STATIC_TOOLS.filter((x) => x.category === tool.category && x.slug !== tool.slug);
+  const others = STATIC_TOOLS.filter((x) => x.category !== tool.category);
+  const related = [...sameCat, ...others].slice(0, 4);
+
+  const Icon = ICONS[tool.icon] || CalcIcon;
+  const Calc = EMBED[slug];
+
+  return (
+    <section className="bg-[#FFFBEB] dark:bg-[#1E1B4B] min-h-screen py-6">
+      <div className="max-w-3xl mx-auto px-4">
+        <nav className="flex items-center gap-1 text-xs text-[#6B7280] mb-4 flex-wrap">
+          <Link to="/" className="hover:text-[#6D28D9]">{t("Home")}</Link>
+          <ChevronRight className="w-3 h-3" />
+          <Link to="/" className="hover:text-[#6D28D9]">{t(tool.category)}</Link>
+          <ChevronRight className="w-3 h-3" />
+          <span className="text-[#111827] dark:text-[#FEF3C7] font-medium truncate">{t(tool.name)}</span>
+        </nav>
+
+        <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-sm text-[#6D28D9] font-semibold mb-4 hover:opacity-80">
+          <ArrowLeft className="w-4 h-4" /> {t("Back")}
+        </button>
+
+        <div className="flex items-start gap-4 mb-6">
+          <div className="w-[72px] h-[72px] shrink-0 rounded-2xl bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center shadow-[0_8px_20px_rgba(109,40,217,0.25)] overflow-hidden">
+            {tool.logo || tool.image ? (
+              <img src={tool.logo || tool.image} alt={tool.name} className="w-full h-full object-cover" />
+            ) : (
+              <Icon className="w-8 h-8 text-white" strokeWidth={2.2} />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-[24px] font-bold text-[#111827] dark:text-[#FEF3C7] leading-tight">{t(tool.name)}</h1>
+            <span className="inline-block mt-1 text-xs font-medium text-[#6B7280] bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] rounded-full px-2.5 py-0.5">{t(tool.category)}</span>
+            <p className="text-sm text-[#6B7280] mt-2">{tool.description}</p>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-[#2D2A5A] rounded-[20px] p-5 shadow-[0_4px_12px_rgba(109,40,217,0.08)] mb-6">
+          {Calc ? (
+            <Calc />
+          ) : (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <Icon className="w-10 h-10 text-[#6D28D9] mb-3" />
+              <p className="text-sm text-[#6B7280] mb-4 max-w-xs">{tool.description}</p>
+              <Link to={`/?tool=${tool.slug}`} className="inline-flex items-center gap-2 bg-gradient-to-r from-[#6D28D9] to-[#F59E0B] text-white font-semibold px-6 py-3 rounded-xl shadow-[0_4px_12px_rgba(109,40,217,0.25)] hover:opacity-90 transition-opacity">
+                <Play className="w-4 h-4" /> {t("Open")} {tool.name}
+              </Link>
+            </div>
+          )}
+        </div>
+
+        <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed mb-6">{intro}</p>
+
+        <Section title={`${t("How to use")} ${tool.name}`}>
+          <ol className="space-y-3">
+            {steps.slice(0, 3).map((s, i) => (
+              <li key={i} className="flex gap-3">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-[#6D28D9] text-white text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                <span className="text-sm text-[#374151] dark:text-[#D6D2EE] pt-0.5">{s}</span>
+              </li>
+            ))}
+          </ol>
+        </Section>
+
+        <Section title={t("Formula")}>
+          <pre className="bg-[#F9FAFB] dark:bg-[#1E1B4B] border border-[#F3F4F6] dark:border-[#4B3F8A] rounded-xl p-4 text-sm text-[#111827] dark:text-[#FEF3C7] overflow-x-auto font-mono whitespace-pre-wrap">{formula}</pre>
+        </Section>
+
+        <Section title={t("Example")}>
+          <p className="text-sm text-[#374151] dark:text-[#D6D2EE] bg-[#FFFBEB] dark:bg-[#2D2A5A] border border-[#FDE68A] rounded-xl p-4">{example}</p>
+        </Section>
+
+        <Section title={t("FAQs")}>
+          <div className="space-y-2">
+            {faqs.map((f, i) => <Faq key={i} q={f.q} a={f.a} />)}
+          </div>
+        </Section>
+
+        <Section title={t("Related Tools")}>
+          <div className="grid grid-cols-2 gap-3">
+            {related.map((r) => {
+              const RIcon = ICONS[r.icon] || CalcIcon;
+              return (
+                <Link key={r.slug} to={`/tools/${r.slug}`} className="flex items-center gap-2 bg-white dark:bg-[#2D2A5A] border border-[#F3F4F6] dark:border-[#4B3F8A] rounded-xl p-3 hover:-translate-y-0.5 hover:shadow-md transition-all">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center overflow-hidden shrink-0">
+                    {r.logo ? <img src={r.logo} alt={r.name} className="w-full h-full object-cover" /> : <RIcon className="w-5 h-5 text-white" />}
+                  </div>
+                  <span className="text-sm font-semibold text-[#111827] dark:text-[#FEF3C7] truncate">{t(r.name)}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </Section>
+
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      </div>
+    </section>
+  );
+}

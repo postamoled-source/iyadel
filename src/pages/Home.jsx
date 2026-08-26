@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { base44 } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
@@ -2000,6 +2000,7 @@ function ToolsHub({ searchQuery = "" }) {
   const [tools, setTools] = useState([]);
   const [activeCategory, setActiveCategory] = useState("Finance");
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const isMobile = useIsMobile();
 
@@ -2093,7 +2094,7 @@ function ToolsHub({ searchQuery = "" }) {
             const fav = isFavorite(tool.slug);
             return (
               <AnimatedElement key={tool.slug || index} delay={index * 80}>
-                <div onClick={() => selectTool(tool)}
+                <div onClick={() => { navigate(`/tools/${tool.slug}`); trackEvent("tool_open_page", { tool_slug: tool.slug, tool_name: tool.name }); }}
                   className="relative w-full h-full text-center rounded-[20px] bg-white dark:bg-[#2D2A5A] border border-[#F3F4F6] dark:border-[#4B3F8A] p-4 transition-all duration-300 shadow-[0_4px_12px_rgba(109,40,217,0.08)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(109,40,217,0.15)] group flex flex-col items-center justify-center cursor-pointer">
                   
                   <button
