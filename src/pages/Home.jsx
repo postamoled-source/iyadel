@@ -2034,16 +2034,16 @@ function ToolsHub({ searchQuery = "" }) {
       <div className="max-w-5xl mx-auto px-6">
         
         {showList && !isSearching && (
-          <div id="categories" className="mb-10">
-            <h2 className="text-left text-[20px] font-bold text-[#111827] dark:text-[#FEF3C7] mb-4">{t("Browse by Category")}</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div id="categories" className="mb-8">
+            <h2 className="text-left text-[16px] font-bold text-[#111827] dark:text-[#FEF3C7] mb-2">{t("Browse by Category")}</h2>
+            <div className="grid grid-cols-4 gap-2">
               {CATEGORY_CARDS.map(({ label, cat, Icon }) => (
                 <button key={label} onClick={() => { setActiveCategory(cat); trackEvent("category_select", { category: cat }); }}
-                  className={`flex flex-col items-center justify-center gap-2 h-[90px] rounded-2xl bg-white dark:bg-[#2D2A5A] border transition-all duration-300 hover:scale-[1.02] ${activeCategory === cat ? "border-[#6D28D9] shadow-[0_4px_12px_rgba(109,40,217,0.18)]" : "border-[#F3F4F6] dark:border-[#4B3F8A] shadow-[0_2px_8px_rgba(109,40,217,0.08)]"}`}>
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center shadow-[0_4px_10px_rgba(109,40,217,0.25)]">
-                    <Icon className="w-5 h-5 text-white" strokeWidth={2.2} />
+                  className={`flex flex-row items-center px-2.5 py-2 h-12 rounded-xl bg-white dark:bg-[#2D2A5A] border transition-all duration-300 ${activeCategory === cat ? "border-[#6D28D9] shadow-[0_2px_8px_rgba(109,40,217,0.15)]" : "border-[#F3F4F6] dark:border-[#4B3F8A]"}`}>
+                  <div className="w-7 h-7 min-w-7 shrink-0 rounded-lg bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center">
+                    <Icon className="w-4 h-4 text-white" strokeWidth={2.2} />
                   </div>
-                  <span className="text-[14px] font-bold text-[#111827] dark:text-[#FEF3C7]">{t(label)}</span>
+                  <span className="text-[11px] font-bold ml-2 text-[#111827] dark:text-[#FEF3C7] leading-tight">{t(label)}</span>
                 </button>
               ))}
             </div>
