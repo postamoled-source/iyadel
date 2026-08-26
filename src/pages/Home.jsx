@@ -210,37 +210,37 @@ function HeroSection({ toolCount, catCount, searchQuery, onSearchChange }) {
       
       <div className="max-w-5xl mx-auto px-6 relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}
-          className="rounded-[3rem] bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] shadow-2xl p-10 md:p-20 text-center relative overflow-hidden group transition-colors duration-300">
+          className="rounded-[32px] bg-[#FFFBEB] dark:bg-[#1E1B4B] p-6 text-center relative overflow-hidden group transition-colors duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
           
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
 
           <div className="flex items-center justify-center gap-4 mb-6" style={{ animation: "floatC 6s ease-in-out infinite" }}>
             <Logo />
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient-x">
+            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-[#6D28D9] to-[#F59E0B] bg-clip-text text-transparent animate-gradient-x">
               iyadel
             </h1>
           </div>
           
-          <p className="text-lg md:text-xl text-[#1E1B4B]/80 dark:text-[#FEF3C7]/80 max-w-2xl mx-auto mb-10 font-medium">
+          <p className="text-[18px] leading-[1.5] text-[#374151] dark:text-[#FEF3C7]/80 max-w-2xl mx-auto mb-6 font-medium">
             {t("Your all-in-one platform")} — {toolCount}+ {t("tools in Finance, Health, Converters, Math, Brain Games, and Image Tools")}
           </p>
           
           <div className="flex flex-wrap justify-center gap-2">
-            <button onClick={() => scrollTo("tools")} className="flex items-center gap-3 rounded-full bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] px-5 py-2.5 shadow-sm hover:border-primary/50 transition-colors shadow-sm cursor-pointer">
+            <button onClick={() => scrollTo("tools")} className="flex items-center gap-3 rounded-full bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] px-[14px] py-2 shadow-sm hover:border-primary/50 transition-colors shadow-sm cursor-pointer">
               <Box className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-[#1E1B4B] dark:text-[#FEF3C7]"><span className="text-primary">{toolCount}</span> {t("Tools")}</span>
+              <span className="text-sm font-semibold text-[#1F2937] dark:text-[#FEF3C7]"><span className="text-primary">{toolCount}</span> {t("Tools")}</span>
             </button>
-            <button onClick={() => scrollTo("categories", "tools")} className="flex items-center gap-3 rounded-full bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] px-5 py-2.5 shadow-sm hover:border-accent/50 transition-colors shadow-sm cursor-pointer">
+            <button onClick={() => scrollTo("categories", "tools")} className="flex items-center gap-3 rounded-full bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] px-[14px] py-2 shadow-sm hover:border-accent/50 transition-colors shadow-sm cursor-pointer">
               <Layers className="w-4 h-4 text-accent" />
-              <span className="text-sm font-semibold text-[#1E1B4B] dark:text-[#FEF3C7]"><span className="text-accent">{catCount}</span> {t("Categories")}</span>
+              <span className="text-sm font-semibold text-[#1F2937] dark:text-[#FEF3C7]"><span className="text-accent">{catCount}</span> {t("Categories")}</span>
             </button>
-            <button onClick={() => scrollTo("why")} className="flex items-center gap-3 rounded-full bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] px-5 py-2.5 shadow-sm hover:border-primary/50 transition-colors shadow-sm cursor-pointer">
+            <button onClick={() => scrollTo("why")} className="flex items-center gap-3 rounded-full bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] px-[14px] py-2 shadow-sm hover:border-primary/50 transition-colors shadow-sm cursor-pointer">
               <Gift className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-[#1E1B4B] dark:text-[#FEF3C7]"><span className="text-primary">{t("Free")}</span> {t("for Everyone")}</span>
+              <span className="text-sm font-semibold text-[#1F2937] dark:text-[#FEF3C7]"><span className="text-primary">{t("Free")}</span> {t("for Everyone")}</span>
             </button>
           </div>
 
-          <div className="max-w-xl mx-auto mt-10">
+          <div className="max-w-xl mx-auto mt-6">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
               <input
@@ -249,7 +249,7 @@ function HeroSection({ toolCount, catCount, searchQuery, onSearchChange }) {
                 onChange={(e) => { onSearchChange(e.target.value); scrollTo("tools"); }}
                 onFocus={() => scrollTo("tools")}
                 placeholder={t("Search for a tool by name...")}
-                className="w-full h-14 rounded-2xl border-2 border-[#E9D5FF] dark:border-[#4B3F8A] bg-white dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] pl-12 pr-12 focus:outline-none focus:border-[#F59E0B] transition-all shadow-[0_4px_12px_rgba(109,40,217,0.08)] text-base"
+                className="w-full h-14 rounded-2xl border border-[#E9D5FF] dark:border-[#4B3F8A] bg-white dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] pl-12 pr-12 focus:outline-none focus:border-[#F59E0B] transition-all shadow-[0_2px_8px_rgba(0,0,0,0.05)] text-base"
               />
               {searchQuery && (
                 <button onClick={() => onSearchChange("")} aria-label={t("Clear")} className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
@@ -1254,7 +1254,7 @@ function ToolWorkspace({ tool, onBack }) {
               <ResultCard title={t("Share Links")}>
                 <div className="grid grid-cols-2 gap-3">
                   {Object.entries(links).map(([k, v]) => (
-                    <a key={k} href={v} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl bg-background border border-border px-4 py-3 text-sm font-semibold text-[#1E1B4B] dark:text-[#FEF3C7] hover:border-primary/50 hover:text-primary transition-all"><Send className="w-4 h-4" /> {k}</a>
+                    <a key={k} href={v} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl bg-background border border-border px-4 py-3 text-sm font-semibold text-[#1F2937] dark:text-[#FEF3C7] hover:border-primary/50 hover:text-primary transition-all"><Send className="w-4 h-4" /> {k}</a>
                   ))}
                 </div>
                 <InsightBox icon={Link2}>{t("Share links open each platform's native sharing dialog with your URL and message pre-filled.")}</InsightBox>
@@ -2064,20 +2064,20 @@ function ToolsHub({ searchQuery = "" }) {
         )}
         {showList && filtered.length > 0 && (
         <>
-        <h2 className="mt-5 mb-5 text-center text-[18px] font-bold text-[#1E1B4B] dark:text-[#FEF3C7]">{activeCategory === "Favorites" ? t("Favorites") : t(activeCategory)}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <h2 className="mt-6 mb-4 text-left text-[20px] font-bold text-[#111827] dark:text-[#FEF3C7]">{activeCategory === "Favorites" ? t("Favorites") : `${t("Popular")} ${t(activeCategory)}`}</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((tool, index) => {
             const Icon = ICONS[tool.icon] || Calculator;
             const fav = isFavorite(tool.slug);
             return (
               <AnimatedElement key={tool.slug || index} delay={index * 80}>
                 <div onClick={() => selectTool(tool)}
-                  className="relative w-full h-full text-center rounded-3xl bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] p-8 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(109,40,217,0.15)] hover:border-primary/40 group flex flex-col items-center justify-center cursor-pointer">
+                  className="relative w-full h-full text-center rounded-[20px] bg-white dark:bg-[#2D2A5A] border border-[#F3F4F6] dark:border-[#4B3F8A] p-4 transition-all duration-300 shadow-[0_4px_12px_rgba(109,40,217,0.08)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(109,40,217,0.15)] group flex flex-col items-center justify-center cursor-pointer">
                   
                   <button
                     onClick={(e) => { e.stopPropagation(); toggleFavorite(tool.slug); trackEvent("tool_favorite", { tool_slug: tool.slug, action: fav ? "remove" : "add" }); }}
                     aria-label={fav ? t("Remove from favorites") : t("Add to favorites")}
-                    className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 z-10 ${fav ? "bg-accent/15 text-accent" : "bg-background border border-border text-muted-foreground hover:text-accent hover:border-accent/40"}`}>
+                    className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 z-10 ${fav ? "bg-accent/15 text-accent border border-accent/30" : "bg-white dark:bg-[#1E1B4B] border border-[#E5E7EB] dark:border-[#4B3F8A] text-[#6B7280] hover:text-accent hover:border-accent/40"}`}>
                     <Star className={`w-5 h-5 ${fav ? "fill-accent" : ""}`} />
                   </button>
                   
@@ -2086,7 +2086,7 @@ function ToolsHub({ searchQuery = "" }) {
                       <GameIcon slug={tool.slug} className="w-16 h-16" />
                     </div>
                   ) : (
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-5 shadow-[0_12px_26px_-6px_hsl(var(--primary)/0.55),inset_0_1px_0_0_hsl(0_0%_100%/0.3),inset_0_-3px_6px_0_hsl(0_0%_0%/0.15)] group-hover:scale-110 group-hover:shadow-[0_16px_32px_-6px_hsl(var(--primary)/0.65)] transition-all duration-500 overflow-hidden">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center mb-4 shadow-[0_8px_20px_rgba(109,40,217,0.25)] group-hover:scale-110 transition-all duration-500 overflow-hidden">
                       {tool.logo ? (
                         <img src={tool.logo} alt={t(tool.name)} className="w-full h-full object-cover" />
                       ) : (
@@ -2095,8 +2095,8 @@ function ToolsHub({ searchQuery = "" }) {
                     </div>
                   )}
                   
-                  <h3 className="text-xl font-bold text-[#1E1B4B] dark:text-[#FEF3C7] mb-1">{t(tool.name)}</h3>
-                  <span className="text-sm font-medium text-muted-foreground">{t(tool.category)}</span>
+                  <h3 className="text-base font-bold text-[#111827] dark:text-[#FEF3C7] mb-0.5">{t(tool.name)}</h3>
+                  <span className="text-xs font-medium text-[#6B7280] dark:text-[#A8A6C4]">{t(tool.category)}</span>
                   
                 </div>
               </AnimatedElement>

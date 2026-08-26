@@ -33,14 +33,14 @@ export default function MobileNav() {
               className="relative flex flex-1 flex-col items-center justify-center gap-1 py-2.5 min-h-[56px] transition-colors active:scale-95"
             >
               <span
-                className={`absolute top-1.5 h-1 w-6 rounded-full transition-all duration-300 ${active ? "bg-primary opacity-100" : "opacity-0"}`}
+                className={`absolute top-1.5 h-1 w-6 rounded-full transition-all duration-300 ${active ? "bg-[#6D28D9] opacity-100" : "opacity-0"}`}
               />
               <Icon
-                className={`w-6 h-6 transition-all duration-300 ${active ? "text-primary scale-110" : "text-muted-foreground"}`}
+                className={`w-6 h-6 transition-all duration-300 ${active ? "text-[#6D28D9] scale-110" : "text-[#6B7280]"}`}
                 strokeWidth={active ? 2.5 : 2}
               />
               <span
-                className={`text-[11px] font-medium transition-colors ${active ? "text-primary" : "text-muted-foreground"}`}
+                className={`text-[11px] font-medium transition-colors ${active ? "text-[#6D28D9]" : "text-[#6B7280]"}`}
               >
                 {t(label)}
               </span>
