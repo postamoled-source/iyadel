@@ -108,40 +108,40 @@ function AnimatedElement({ children, className, delay = 0 }) {
 function NumInput({ label, value, onChange, placeholder }) {
   return (
     <div className="text-left">
-      <label className="block text-sm font-medium text-[#92400E] dark:text-[#FBBF24] mb-1.5 ml-1">{label}</label>
+      <label className="block text-[14px] font-semibold text-[#7C4A03] dark:text-[#FBBF24] mb-1.5 ml-1">{label}</label>
       <input type="number" inputMode="decimal" value={value ?? ""} onChange={onChange} placeholder={placeholder}
-        className="w-full rounded-[16px] border-2 border-[#FDE68A] dark:border-[#4B3F8A] bg-[#FFFBEB] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] placeholder:text-gray-400 dark:placeholder:text-[#6B6B8A] text-base px-4 py-3.5 h-[52px] transition-all duration-200 focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
+        className="w-full rounded-[16px] border-[1.5px] border-[#FFE8A0] dark:border-[#4B3F8A] bg-[#FFFEF5] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] placeholder:text-gray-400 dark:placeholder:text-[#6B6B8A] text-base px-4 h-[52px] transition-all duration-200 focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
     </div>
   );
 }
 function TxtInput({ label, value, onChange, placeholder, type = "text" }) {
   return (
     <div className="text-left">
-      <label className="block text-sm font-medium text-[#92400E] dark:text-[#FBBF24] mb-1.5 ml-1">{label}</label>
+      <label className="block text-[14px] font-semibold text-[#7C4A03] dark:text-[#FBBF24] mb-1.5 ml-1">{label}</label>
       <input type={type} inputMode={type === "number" ? "decimal" : undefined} value={value ?? ""} onChange={onChange} placeholder={placeholder}
-        className="w-full rounded-[16px] border-2 border-[#FDE68A] dark:border-[#4B3F8A] bg-[#FFFBEB] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] placeholder:text-gray-400 dark:placeholder:text-[#6B6B8A] text-base px-4 py-3.5 h-[52px] transition-all duration-200 focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
+        className="w-full rounded-[16px] border-[1.5px] border-[#FFE8A0] dark:border-[#4B3F8A] bg-[#FFFEF5] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] placeholder:text-gray-400 dark:placeholder:text-[#6B6B8A] text-base px-4 h-[52px] transition-all duration-200 focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
     </div>
   );
 }
 function FnInput({ label, value, onChange, placeholder }) {
   return (
     <div className="text-left">
-      <label className="block text-sm font-medium text-[#92400E] dark:text-[#FBBF24] mb-1.5 ml-1">{label}</label>
+      <label className="block text-[14px] font-semibold text-[#7C4A03] dark:text-[#FBBF24] mb-1.5 ml-1">{label}</label>
       <textarea value={value ?? ""} onChange={onChange} placeholder={placeholder} rows={3}
-        className="w-full rounded-[16px] border-2 border-[#FDE68A] dark:border-[#4B3F8A] bg-[#FFFBEB] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] placeholder:text-gray-400 dark:placeholder:text-[#6B6B8A] text-base px-4 py-3 h-[52px] transition-all duration-200 resize-y font-mono focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
+        className="w-full rounded-[16px] border-[1.5px] border-[#FFE8A0] dark:border-[#4B3F8A] bg-[#FFFEF5] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] placeholder:text-gray-400 dark:placeholder:text-[#6B6B8A] text-base px-4 h-[52px] transition-all duration-200 resize-y font-mono focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" />
     </div>
   );
 }
 function SelectField({ label, value, onChange, options }) {
   return (
     <div className="text-left">
-      <label className="block text-sm font-medium text-[#92400E] dark:text-[#FBBF24] mb-1.5 ml-1">{label}</label>
+      <label className="block text-[14px] font-semibold text-[#7C4A03] dark:text-[#FBBF24] mb-1.5 ml-1">{label}</label>
       <MobileSelect
         value={value}
         onChange={(v) => onChange({ target: { value: v } })}
         options={options}
         placeholder={options[0]}
-        triggerClassName="w-full flex items-center gap-2 rounded-[16px] border-2 border-[#FDE68A] dark:border-[#4B3F8A] bg-[#FFFBEB] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] text-base px-4 py-3.5 h-[52px] focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]"
+        triggerClassName="w-full flex items-center gap-2 rounded-[16px] border-[1.5px] border-[#FFE8A0] dark:border-[#4B3F8A] bg-[#FFFEF5] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] text-base px-4 h-[52px] focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)]"
       />
     </div>
   );
@@ -171,7 +171,7 @@ function ColorField({ label, value, onChange }) {
 }
 function ResultCard({ title, children }) {
   return (
-    <div data-tool-result="true" className="mt-8 rounded-[16px] p-6 animate-[fadeIn_0.5s_ease-out] bg-[#FFFBEB] dark:bg-[#2D2A5A] border-2 border-[#FDE68A] dark:border-[#4B3F8A] shadow-sm transition-colors duration-300" style={{ backgroundImage: "radial-gradient(hsl(45 96% 50% / 0.18) 1.5px, transparent 1.5px)", backgroundSize: "14px 14px" }}>
+    <div data-tool-result="true" className="mt-8 rounded-[16px] p-6 animate-[slideDown_0.3s_ease-out] bg-[#FFFBEB] dark:bg-[#2D2A5A] border-2 border-[#FDE68A] dark:border-[#4B3F8A] shadow-sm transition-colors duration-300" style={{ backgroundImage: "radial-gradient(hsl(45 96% 50% / 0.18) 1.5px, transparent 1.5px)", backgroundSize: "14px 14px" }}>
       <h4 className="text-lg font-bold text-[#1E1B4B] dark:text-[#FEF3C7] mb-4 text-center">{title}</h4>
       <div className="text-center">{children}</div>
     </div>
@@ -442,7 +442,7 @@ function ToolWorkspace({ tool, onBack }) {
   const [riddle, setRiddle] = useState(() => riddles[0]);
   const [bgResult, setBgResult] = useState(null);
   const [pdfBusy, setPdfBusy] = useState(false);
-  const [speedTest, setSpeedTest] = useState({ running: false, ping: null, download: null, upload: null });
+  const [speedTest, setSpeedTest] = useState({ running: false, phase: null, ping: null, download: null, upload: null, jitter: null, ip: null, isp: null, needle: 0 });
   const [qrUrl, setQrUrl] = useState(null);
   const [shareLinks, setShareLinks] = useState(null);
   const [policyText, setPolicyText] = useState("");
@@ -472,7 +472,7 @@ function ToolWorkspace({ tool, onBack }) {
 
   useEffect(() => {
     setInputs({}); setResult(null); setBusy(false); setRiddleAttempts(3); setRiddleMsg(""); setRiddleGuess("");
-    setSpeedTest({ running: false, ping: null, download: null, upload: null });
+    setSpeedTest({ running: false, phase: null, ping: null, download: null, upload: null, jitter: null, ip: null, isp: null, needle: 0 });
     setQrUrl(null); setShareLinks(null); setPolicyText("");
     setCropSrc(null); setCropResult(null); setBgSrc(null); setBgDone(false);
     setPdfFiles([]); setPdfReady(false); setCompressSrc(null); setCompressResult(null); setPlotData(null);
@@ -599,11 +599,46 @@ function ToolWorkspace({ tool, onBack }) {
   // Changing any input hides the previous result so it only re-appears after the next Calculate click.
   const set = (k) => (e) => { setInputs((p) => ({ ...p, [k]: e.target.value })); setResult(null); setPolicyText(""); setPlotData(null); };
 
-  const runSpeedTest = () => {
-    setSpeedTest({ running: true, ping: null, download: null, upload: null });
-    setTimeout(() => setSpeedTest((p) => ({ ...p, ping: Math.floor(Math.random() * 40) + 8 })), 900);
-    setTimeout(() => setSpeedTest((p) => ({ ...p, download: (Math.random() * 130 + 20).toFixed(1) })), 2000);
-    setTimeout(() => setSpeedTest((p) => ({ ...p, running: false, upload: (Math.random() * 45 + 5).toFixed(1) })), 3100);
+  const runSpeedTest = async () => {
+    const upd = (patch) => setSpeedTest((p) => ({ ...p, ...patch }));
+    upd({ running: true, phase: "ping", ping: null, download: null, upload: null, jitter: null, ip: null, isp: null, needle: 0 });
+    const base = "https://speed.cloudflare.com";
+    const pings = [];
+    for (let i = 0; i < 5; i++) {
+      const s = performance.now();
+      try { await fetch(`${base}/__down?bytes=0&_=${Date.now()}${i}`, { cache: "no-store" }); } catch {}
+      pings.push(performance.now() - s);
+    }
+    const ping = Math.round(pings.reduce((a, b) => a + b, 0) / pings.length);
+    const jitter = Math.round(Math.max(...pings) - Math.min(...pings));
+    upd({ phase: "download", ping, jitter, needle: 0 });
+    try {
+      const dlStart = performance.now();
+      const res = await fetch(`${base}/__down?bytes=10000000&_=${Date.now()}`, { cache: "no-store" });
+      await res.blob();
+      const dt = (performance.now() - dlStart) / 1000;
+      const download = +((10000000 * 8) / dt / 1e6).toFixed(1);
+      upd({ needle: 100 });
+      await new Promise((r) => setTimeout(r, 300));
+      upd({ download, needle: download });
+    } catch {}
+    upd({ phase: "upload" });
+    try {
+      const payload = new Blob([new Uint8Array(2 * 1024 * 1024)]);
+      const upStart = performance.now();
+      await fetch(`${base}/__up`, { method: "POST", body: payload, cache: "no-store" });
+      const ut = (performance.now() - upStart) / 1000;
+      const upload = +((2 * 1024 * 1024 * 8) / ut / 1e6).toFixed(1);
+      upd({ upload, needle: upload });
+    } catch {}
+    let ip = null, isp = null;
+    try {
+      const r = await fetch(`${base}/meta`);
+      const j = await r.json();
+      ip = j.clientIp || j.ip || null;
+      isp = j.asOrganization || j.asn || null;
+    } catch {}
+    upd({ running: false, phase: "done", ip, isp });
   };
 
   const readFile = (file, cb) => {
@@ -707,7 +742,7 @@ function ToolWorkspace({ tool, onBack }) {
         const lr = result;
         return (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="flex flex-col gap-3">
               <NumInput label={t("Loan Amount")} value={inputs.amount} onChange={set("amount")} placeholder="10000" />
               <NumInput label={t("Annual Rate (%)")} value={inputs.rate} onChange={set("rate")} placeholder="6.5" />
               <NumInput label={t("Term (Months)")} value={inputs.term} onChange={set("term")} placeholder="36" />
@@ -780,7 +815,7 @@ function ToolWorkspace({ tool, onBack }) {
         const calc = () => interestResult;
         return (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <NumInput label={t("Principal Amount")} value={inputs.principal} onChange={set("principal")} placeholder="5000" />
               <NumInput label={t("Interest Rate (%)")} value={inputs.rate} onChange={set("rate")} placeholder="7" />
               <NumInput label={t("Duration (Years)")} value={inputs.years} onChange={set("years")} placeholder="10" />
@@ -855,7 +890,7 @@ function ToolWorkspace({ tool, onBack }) {
         const swap = () => { setInputs((p) => ({ ...p, from: p.to || "EUR", to: p.from || "USD" })); setResult(null); };
         return (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="flex flex-col gap-3">
               <NumInput label={t("Amount")} value={inputs.amount} onChange={set("amount")} placeholder="100" />
               <SelectField label={t("From Currency")} value={inputs.from || "USD"} onChange={set("from")} options={currencies} />
               <SelectField label={t("To Currency")} value={inputs.to || "EUR"} onChange={set("to")} options={currencies} />
@@ -897,30 +932,79 @@ function ToolWorkspace({ tool, onBack }) {
         );
       }
       case "internet-speed-test": {
+        const st = speedTest;
+        const dispV = st.running ? (st.needle || 0) : (st.download || 0);
+        const ang = 180 * (1 - Math.min(dispV, 200) / 200);
+        const nx = 130 + 95 * Math.cos(ang * Math.PI / 180);
+        const ny = 140 - 95 * Math.sin(ang * Math.PI / 180);
+        const arcLen = Math.PI * 110;
+        const activeLen = (Math.min(dispV, 200) / 200) * arcLen;
+        const phaseLabel = st.running
+          ? (st.phase === "ping" ? t("Measuring ping...") : st.phase === "download" ? t("Testing download...") : t("Testing upload..."))
+          : (st.phase === "done" ? t("Test complete") : t("Press Start Test to begin."));
+        const sCard = (Icon, label, value, unit, color) => (
+          <div className="rounded-2xl bg-background border border-border p-3 text-center shadow-sm">
+            <Icon className={`w-5 h-5 mx-auto mb-1 ${color}`} />
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+            <div className="text-xl font-bold text-foreground tabular-nums leading-tight">{value ?? "—"} <small className="text-xs font-normal text-muted-foreground">{unit}</small></div>
+          </div>
+        );
         return (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <div className="rounded-2xl bg-background border border-border p-8 text-center shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <h4 className="text-sm font-medium text-muted-foreground mb-3 relative z-10">{t("Ping")}</h4>
-                <div className="text-4xl font-bold text-foreground relative z-10">{speedTest.ping ?? "—"} <small className="text-lg font-normal text-muted-foreground">{t("ms")}</small></div>
-              </div>
-              <div className="rounded-2xl bg-background border border-border p-8 text-center shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <h4 className="text-sm font-medium text-muted-foreground mb-3 relative z-10">{t("Download")}</h4>
-                <div className="text-4xl font-bold text-primary relative z-10">{speedTest.download ?? "—"} <small className="text-lg font-normal text-primary/70">{t("Mbps")}</small></div>
-              </div>
-              <div className="rounded-2xl bg-background border border-border p-8 text-center shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <h4 className="text-sm font-medium text-muted-foreground mb-3 relative z-10">{t("Upload")}</h4>
-                <div className="text-4xl font-bold text-accent relative z-10">{speedTest.upload ?? "—"} <small className="text-lg font-normal text-accent/70">{t("Mbps")}</small></div>
+            <div className="flex flex-col items-center">
+              <div className="relative w-[260px] h-[150px]">
+                <svg viewBox="0 0 260 150" className="w-full h-full">
+                  <defs>
+                    <linearGradient id="speedGrad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#34d399" />
+                      <stop offset="55%" stopColor="#fbbf24" />
+                      <stop offset="100%" stopColor="#f87171" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M20 140 A110 110 0 0 1 240 140" fill="none" stroke="#FDE68A" strokeWidth="14" strokeLinecap="round" />
+                  <path d="M20 140 A110 110 0 0 1 240 140" fill="none" stroke="url(#speedGrad)" strokeWidth="14" strokeLinecap="round" strokeDasharray={`${activeLen} ${arcLen}`} style={{ transition: "stroke-dasharray 0.4s ease" }} />
+                  {[0, 50, 100, 150, 200].map((v) => {
+                    const a = 180 * (1 - v / 200);
+                    const tx = 130 + 128 * Math.cos(a * Math.PI / 180);
+                    const ty = 140 - 128 * Math.sin(a * Math.PI / 180);
+                    return <text key={v} x={tx} y={ty + 4} textAnchor="middle" fontSize="11" fill="#92400E" fontWeight="700">{v}</text>;
+                  })}
+                  <line x1="130" y1="140" x2={nx} y2={ny} stroke="#6D28D9" strokeWidth="4" strokeLinecap="round" style={{ transition: "all 0.4s ease" }} />
+                  <circle cx="130" cy="140" r="11" fill="#6D28D9" />
+                  <circle cx="130" cy="140" r="4" fill="#FFFBEB" />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-end pb-1 pointer-events-none">
+                  <div className="text-4xl font-black text-[#1E1B4B] dark:text-[#FEF3C7] tabular-nums leading-none">{st.download ?? "—"}</div>
+                  <div className="text-xs font-semibold text-muted-foreground mt-1">{t("Mbps")}</div>
+                </div>
               </div>
             </div>
-            <div className="mt-8 text-center text-card-foreground font-medium">{speedTest.running ? t("Measuring your connection...") : t("Press Start Test to begin.")}</div>
-            <div className="flex justify-center mt-6">
-              <CalcButton onClick={runSpeedTest}>
-                {speedTest.running ? <RefreshCw className="w-5 h-5 mr-2 inline animate-spin" /> : <Play className="w-5 h-5 mr-2 inline" />}
-                {speedTest.running ? t("Testing...") : t("Start Speed Test")}
+            <div className="grid grid-cols-3 gap-3 mt-4">
+              {sCard(Activity, t("Ping"), st.ping, t("ms"), "text-emerald-500")}
+              {sCard(Wifi, t("Download"), st.download, t("Mbps"), "text-primary")}
+              {sCard(ArrowLeftRight, t("Upload"), st.upload, t("Mbps"), "text-accent")}
+            </div>
+            {st.phase === "done" && (
+              <div className="grid grid-cols-3 gap-3 mt-3 text-center">
+                <div className="rounded-xl bg-background border border-border p-2.5">
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("Jitter")}</div>
+                  <div className="text-sm font-bold text-foreground tabular-nums">{st.jitter ?? "—"} <small className="text-[10px] text-muted-foreground">{t("ms")}</small></div>
+                </div>
+                <div className="rounded-xl bg-background border border-border p-2.5">
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">IP</div>
+                  <div className="text-sm font-bold text-foreground truncate">{st.ip ?? "—"}</div>
+                </div>
+                <div className="rounded-xl bg-background border border-border p-2.5">
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">ISP</div>
+                  <div className="text-sm font-bold text-foreground truncate">{st.isp ?? "—"}</div>
+                </div>
+              </div>
+            )}
+            <div className="mt-4 text-center text-sm text-muted-foreground">{phaseLabel}</div>
+            <div className="flex justify-center">
+              <CalcButton onClick={runSpeedTest} busy={st.running} busyLabel={t("Testing...")}>
+                {!st.running && <Play className="w-5 h-5 mr-2 inline" />}
+                {st.running ? t("Testing...") : t("Start Speed Test")}
               </CalcButton>
             </div>
             <TipBox>{t("Close bandwidth-heavy applications for the most accurate result.")}</TipBox>
@@ -954,7 +1038,7 @@ function ToolWorkspace({ tool, onBack }) {
         const copyOne = (code) => navigator.clipboard?.writeText(code);
         return (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <NumInput label={t("Number of Codes")} value={inputs.count} onChange={set("count")} placeholder="5" />
               <NumInput label={t("Code Length")} value={inputs.length} onChange={set("length")} placeholder="8" />
               <TxtInput label={t("Prefix (optional)")} value={inputs.prefix} onChange={set("prefix")} placeholder="SALE" />
@@ -998,7 +1082,7 @@ function ToolWorkspace({ tool, onBack }) {
         const br = result;
         return (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <NumInput label={t("Face Value ($)")} value={inputs.face} onChange={set("face")} placeholder="1000" />
               <NumInput label={t("Current Price ($)")} value={inputs.price} onChange={set("price")} placeholder="950" />
               <NumInput label={t("Annual Coupon ($)")} value={inputs.coupon} onChange={set("coupon")} placeholder="50" />
@@ -1047,7 +1131,7 @@ function ToolWorkspace({ tool, onBack }) {
         const r = result;
         return (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-3">
               <NumInput label={t("Weight (kg)")} value={inputs.weight} onChange={set("weight")} placeholder="70" />
               <NumInput label={t("Height (cm)")} value={inputs.height} onChange={set("height")} placeholder="175" />
             </div>
@@ -1086,7 +1170,7 @@ function ToolWorkspace({ tool, onBack }) {
         const r = result;
         return (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-3">
               <NumInput label={t("Weight (kg)")} value={inputs.weight} onChange={set("weight")} placeholder="70" />
               <NumInput label={t("Duration (min)")} value={inputs.minutes} onChange={set("minutes")} placeholder="30" />
             </div>
@@ -1112,7 +1196,7 @@ function ToolWorkspace({ tool, onBack }) {
         const r = result;
         return (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="flex flex-col gap-3">
               <NumInput label={t("Value")} value={inputs.value} onChange={set("value")} placeholder="1" />
               <SelectField label={t("From")} value={inputs.from || "Mile"} onChange={set("from")} options={Object.keys(DISTANCE_UNITS).map((k) => ({ value: k, label: t(k) }))} />
               <SelectField label={t("To")} value={inputs.to || "Kilometer"} onChange={set("to")} options={Object.keys(DISTANCE_UNITS).map((k) => ({ value: k, label: t(k) }))} />
@@ -1138,7 +1222,7 @@ function ToolWorkspace({ tool, onBack }) {
         const r = result;
         return (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="flex flex-col gap-3">
               <NumInput label={t("Value")} value={inputs.value} onChange={set("value")} placeholder="1" />
               <SelectField label={t("From")} value={inputs.from || "Kilogram"} onChange={set("from")} options={Object.keys(WEIGHT_UNITS).map((k) => ({ value: k, label: t(k) }))} />
               <SelectField label={t("To")} value={inputs.to || "Pound"} onChange={set("to")} options={Object.keys(WEIGHT_UNITS).map((k) => ({ value: k, label: t(k) }))} />
@@ -1164,7 +1248,7 @@ function ToolWorkspace({ tool, onBack }) {
         const r = result;
         return (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="flex flex-col gap-3">
               <NumInput label={t("Value")} value={inputs.value} onChange={set("value")} placeholder="1" />
               <SelectField label={t("From")} value={inputs.from || "m²"} onChange={set("from")} options={Object.keys(AREA_UNITS).map((k) => ({ value: k, label: t(k) }))} />
               <SelectField label={t("To")} value={inputs.to || "ft²"} onChange={set("to")} options={Object.keys(AREA_UNITS).map((k) => ({ value: k, label: t(k) }))} />
@@ -1190,7 +1274,7 @@ function ToolWorkspace({ tool, onBack }) {
         const r = result;
         return (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="flex flex-col gap-3">
               <NumInput label={t("Value")} value={inputs.value} onChange={set("value")} placeholder="1" />
               <SelectField label={t("From")} value={inputs.from || "Hour"} onChange={set("from")} options={Object.keys(TIME_UNITS).map((k) => ({ value: k, label: t(k) }))} />
               <SelectField label={t("To")} value={inputs.to || "Minute"} onChange={set("to")} options={Object.keys(TIME_UNITS).map((k) => ({ value: k, label: t(k) }))} />
@@ -1216,7 +1300,7 @@ function ToolWorkspace({ tool, onBack }) {
         const r = result;
         return (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="flex flex-col gap-3">
               <NumInput label="Value" value={inputs.value} onChange={set("value")} placeholder="100" />
               <SelectField label={t("From")} value={inputs.from || "km/h"} onChange={set("from")} options={Object.keys(SPEED_UNITS).map((k) => ({ value: k, label: t(k) }))} />
               <SelectField label={t("To")} value={inputs.to || "mph"} onChange={set("to")} options={Object.keys(SPEED_UNITS).map((k) => ({ value: k, label: t(k) }))} />
@@ -1915,7 +1999,7 @@ function ToolWorkspace({ tool, onBack }) {
   };
 
   return (
-    <div className="max-w-[480px] mx-auto bg-white dark:bg-[#1E1B4B] transition-colors duration-300 rounded-[20px] p-6 shadow-xl border-0 relative overflow-hidden">
+    <div className="max-w-[480px] mx-auto bg-white dark:bg-[#1E1B4B] transition-colors duration-300 rounded-[20px] p-4 shadow-xl border-0 relative overflow-hidden">
       <button onClick={onBack} className="absolute top-8 left-8 sm:top-10 sm:left-10 flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border text-sm font-medium text-foreground hover:bg-secondary hover:text-secondary-foreground transition-all duration-300 shadow-sm z-20">
         <ArrowLeft className="w-4 h-4" /> {t("Back")}
       </button>
