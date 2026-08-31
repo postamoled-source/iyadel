@@ -1,286 +1,468 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
-import { Heart, Flame, Trophy, Play, RotateCcw, Check, X, Star, Languages } from "lucide-react";
+import { Heart, Flame, Trophy, Play, RotateCcw, Check, X, Star, Volume2, Lock, ChevronRight, Globe, Pencil } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import GameMusicButton from "@/components/games/GameMusicButton";
-import { resumeAudio, playStart, playCorrect, playWrong, playGameOver, playWin, playShuffle } from "@/lib/game-sounds";
+import { resumeAudio, playStart, playCorrect, playWrong, playGameOver, playWin } from "@/lib/game-sounds";
+import { LEVELS, VOCAB, PRAISE, WRONG } from "@/data/vocab-levels";
 
-// قاعدة بيانات المفردات: الإنجليزية ↔ العربية
-const VOCAB = [
-  { en: "Apple", ar: "تفاحة" },
-  { en: "Book", ar: "كتاب" },
-  { en: "Cat", ar: "قطة" },
-  { en: "Water", ar: "ماء" },
-  { en: "School", ar: "مدرسة" },
-  { en: "Sun", ar: "شمس" },
-  { en: "Moon", ar: "قمر" },
-  { en: "House", ar: "منزل" },
-  { en: "Tree", ar: "شجرة" },
-  { en: "Car", ar: "سيارة" },
-  { en: "Friend", ar: "صديق" },
-  { en: "Teacher", ar: "معلّم" },
-  { en: "City", ar: "مدينة" },
-  { en: "River", ar: "نهر" },
-  { en: "Star", ar: "نجم" },
-  { en: "Bird", ar: "طائر" },
-  { en: "Door", ar: "باب" },
-  { en: "Pen", ar: "قلم" },
-  { en: "Chair", ar: "كرسي" },
-  { en: "Bread", ar: "خبز" },
-  { en: "Milk", ar: "حليب" },
-  { en: "Dog", ar: "كلب" },
-  { en: "Flower", ar: "زهرة" },
-  { en: "Mountain", ar: "جبل" },
-  { en: "Clock", ar: "ساعة" },
-];
-
-const MAX_LIVES = 3;
-const LEVEL_GOAL = 5; // عدد الإجابات الصحيحة لكل مستوى
+const MAX_LIVES = 5;
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((v) => v[1]);
 const sample = (arr, n) => shuffle(arr).slice(0, n);
+const norm = (s) => (s || "").trim().toLowerCase().replace(/[.!،,؟?]/g, "").replace(/\s+/g, " ");
+
+// نطق إنجليزي عبر المتصفح
+function speak(text) {
+  try {
+    if (!("speechSynthesis" in window)) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US";
+    const voices = window.speechSynthesis.getVoices();
+    const v = voices.find((vc) => vc.lang && vc.lang.startsWith("en"));
+    if (v) u.voice = v;
+    u.rate = 0.92;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  } catch {}
+}
+if (typeof window !== "undefined" && "speechSynthesis" in window) {
+  window.speechSynthesis.onvoiceschanged = () => {};
+}
+
+// شخصية الكرة الأرضية بألوان الموقع
+function GlobeMascot({ mood = "idle", size = 72 }) {
+  const eye = mood === "happy" ? "^.^" : mood === "sad" ? ">.<" : null;
+  return (
+    <svg viewBox="0 0 100 100" width={size} height={size} className="shrink-0 drop-shadow-[0_6px_12px_hsl(var(--primary)/0.35)]">
+      <defs>
+        <radialGradient id="gmg" cx="38%" cy="32%" r="75%" fx="34%" fy="26%">
+          <stop offset="0%" stopColor="#a78bfa" />
+          <stop offset="55%" stopColor="hsl(var(--primary))" />
+          <stop offset="100%" stopColor="#3b2a8c" />
+        </radialGradient>
+        <linearGradient id="gmLand" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fbbf24" />
+          <stop offset="100%" stopColor="#b45309" />
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="40" fill="url(#gmg)" />
+      <path d="M22 44 q10 -6 18 0 q8 8 18 2 q8 -4 18 2" stroke="url(#gmLand)" strokeWidth="7" fill="none" strokeLinecap="round" opacity="0.95" />
+      <path d="M28 64 q12 4 22 -2 q10 -2 20 4" stroke="url(#gmLand)" strokeWidth="6" fill="none" strokeLinecap="round" opacity="0.9" />
+      <ellipse cx="36" cy="46" rx="6" ry="4" fill="url(#gmLand)" opacity="0.85" />
+      <ellipse cx="68" cy="58" rx="5" ry="4" fill="url(#gmLand)" opacity="0.85" />
+      {/* eyes */}
+      {eye ? (
+        <text x="50" y="58" textAnchor="middle" fontSize="20" fontWeight="800" fill="#fff" fontFamily="sans-serif">{eye}</text>
+      ) : (
+        <>
+          <circle cx="42" cy="54" r="4.2" fill="#fff" />
+          <circle cx="58" cy="54" r="4.2" fill="#fff" />
+          <circle cx="43" cy="55" r="2" fill="#1e1b4b" />
+          <circle cx="59" cy="55" r="2" fill="#1e1b4b" />
+        </>
+      )}
+      {/* smile */}
+      <path d="M42 64 q8 7 16 0" stroke="#fff" strokeWidth="2.4" fill="none" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export default function VocabQuizGame() {
   const { t, lang, isRTL } = useI18n();
-  const [phase, setPhase] = useState("ready"); // ready | playing | over
-  const [score, setScore] = useState(0);
-  const [level, setLevel] = useState(1);
+  const [phase, setPhase] = useState("map"); // map | playing | over
+  const [levelIdx, setLevelIdx] = useState(0);
+  const [exIdx, setExIdx] = useState(0);
   const [lives, setLives] = useState(MAX_LIVES);
+  const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
-  const [best, setBest] = useState(() => {
-    try { return parseInt(localStorage.getItem("vocabQuizBest") || "0", 10) || 0; } catch { return 0; }
-  });
-  const [progress, setProgress] = useState(0); // correct answers in current level
-  const [question, setQuestion] = useState(null); // { en, options[], correct }
-  const [picked, setPicked] = useState(null); // index picked
+  const [best, setBest] = useState(() => { try { return parseInt(localStorage.getItem("vocabBest") || "0", 10) || 0; } catch { return 0; } });
+  const [maxUnlocked, setMaxUnlocked] = useState(() => { try { return parseInt(localStorage.getItem("vocabUnlocked") || "0", 10) || 0; } catch { return 0; } });
+  const [picked, setPicked] = useState(null);
   const [lock, setLock] = useState(false);
-  const [showFlash, setShowFlash] = useState(false);
-  const flashTimer = useRef(null);
+  const [feedback, setFeedback] = useState(null); // { ok, correct }
+  const [typed, setTyped] = useState("");
+  const [arranged, setArranged] = useState([]); // for arrange
+  const [shuffledWords, setShuffledWords] = useState([]);
+  const [exData, setExData] = useState(null); // resolved exercise with options
+  const [mood, setMood] = useState("idle");
+  const [mascotLine, setMascotLine] = useState("");
   const advanceRef = useRef(null);
 
-  const makeQuestion = useCallback(() => {
-    const correct = VOCAB[Math.floor(Math.random() * VOCAB.length)];
-    const wrong = sample(VOCAB.filter((v) => v.ar !== correct.ar), 2);
-    const options = shuffle([correct, ...wrong]);
-    setQuestion({ en: correct.en, options: options.map((o) => o.ar), correct: correct.ar });
-    setPicked(null);
-    setLock(false);
-  }, []);
+  const level = LEVELS[levelIdx];
+  const exercise = exData;
 
-  const start = useCallback(() => {
-    resumeAudio(); playStart();
-    setScore(0); setLevel(1); setLives(MAX_LIVES); setStreak(0); setProgress(0);
-    setPhase("playing");
-    makeQuestion();
-  }, [makeQuestion]);
-
-  const next = useCallback(() => {
-    if (advanceRef.current) { clearTimeout(advanceRef.current); advanceRef.current = null; }
-    makeQuestion();
-  }, [makeQuestion]);
-
-  const gameOver = useCallback(() => {
-    setPhase("over"); playGameOver();
-    setBest((b) => { const nb = Math.max(b, score); try { localStorage.setItem("vocabQuizBest", String(nb)); } catch {} return nb; });
-  }, [score]);
-
-  const answer = useCallback((idx) => {
-    if (lock || !question) return;
-    resumeAudio();
-    setPicked(idx); setLock(true);
-    const chosen = question.options[idx];
-    if (chosen === question.correct) {
-      const gained = 10 + streak; // مكافأة السلسلة
-      setScore((s) => s + gained);
-      setStreak((s) => s + 1);
-      setProgress((p) => {
-        const np = p + 1;
-        if (np >= LEVEL_GOAL) {
-          setLevel((l) => l + 1);
-          setShowFlash(true);
-          if (flashTimer.current) clearTimeout(flashTimer.current);
-          flashTimer.current = setTimeout(() => setShowFlash(false), 1100);
-          playWin();
-          return 0;
-        } else {
-          playCorrect();
-          return np;
-        }
-      });
-      advanceRef.current = setTimeout(next, 850);
-    } else {
-      playWrong();
-      setLives((l) => {
-        const nl = l - 1;
-        if (nl <= 0) { setTimeout(gameOver, 900); }
-        else { advanceRef.current = setTimeout(next, 1300); }
-        return nl;
-      });
+  const buildExercise = useCallback((ex) => {
+    let data = { ...ex };
+    if (ex.type === "vocab" || ex.type === "listen" || ex.type === "say") {
+      const correct = ex.ar;
+      const pool = VOCAB.filter((v) => v.ar !== correct);
+      const distractors = sample(pool.map((v) => v.ar), ex.type === "say" ? 3 : 2);
+      data.options = shuffle([correct, ...distractors]);
     }
-  }, [question, lock, streak, next, gameOver]);
-
-  useEffect(() => () => {
-    if (advanceRef.current) clearTimeout(advanceRef.current);
-    if (flashTimer.current) clearTimeout(flashTimer.current);
+    if (ex.type === "arrange") {
+      const sh = shuffle(ex.words);
+      setShuffledWords(sh);
+      setArranged([]);
+    }
+    if (ex.type === "type") setTyped("");
+    setExData(data);
+    setPicked(null); setLock(false); setFeedback(null);
+    if (ex.type === "listen" || ex.type === "say") {
+      setTimeout(() => speak(ex.speak || ex.en), 350);
+    }
   }, []);
 
-  const tr = lang === "ar" ? {
-    title: "تعلّم الإنجليزية", what: "ما معنى هذه الكلمة؟", score: "النقاط", level: "المستوى",
-    lives: "القلوب", streak: "سلسلة", best: "الأفضل", start: "ابدأ", again: "العب مجدداً",
-    over: "انتهت اللعبة", wrong: "إجابة خاطئة", correctWas: "الصحيح:", next: "التالي",
-    intro: "اختر الترجمة العربية الصحيحة للكلمة الإنجليزية. كل إجابة صحيحة ترفع نقاطك وسلسلتك، والإجابة الخاطئة تكلّف قلباً!",
-    lvlUp: "مستوى جديد!", wellDone: "أحسنت",
-  } : {
-    title: "Learn English", what: "What does this word mean?", score: "Score", level: "Level",
-    lives: "Lives", streak: "Streak", best: "Best", start: "Start", again: "Play again",
-    over: "Game Over", wrong: "Wrong", correctWas: "Correct:", next: "Next",
-    intro: "Pick the correct Arabic meaning for the English word. Correct answers grow your score and streak; a wrong answer costs a heart!",
-    lvlUp: "Level Up!", wellDone: "Nice",
+  const startLevel = useCallback((idx) => {
+    resumeAudio(); playStart();
+    setLevelIdx(idx); setExIdx(0);
+    setLives(MAX_LIVES); setScore(0); setStreak(0);
+    setPhase("playing");
+    setMood("idle"); setMascotLine(lang === "ar" ? "هيا نبدأ!" : "Let's begin!");
+    speak("Let's begin!");
+    buildExercise(LEVELS[idx].exercises[0]);
+  }, [buildExercise, lang]);
+
+  const goMap = useCallback(() => {
+    if (advanceRef.current) { clearTimeout(advanceRef.current); advanceRef.current = null; }
+    setPhase("map");
+    window.speechSynthesis?.cancel?.();
+  }, []);
+
+  const nextExercise = useCallback(() => {
+    const exs = LEVELS[levelIdx].exercises;
+    const ni = exIdx + 1;
+    if (ni < exs.length) {
+      setExIdx(ni);
+      buildExercise(exs[ni]);
+    } else {
+      // level complete
+      playWin();
+      const nu = Math.max(maxUnlocked, levelIdx + 1);
+      setMaxUnlocked(nu);
+      try { localStorage.setItem("vocabUnlocked", String(nu)); } catch {}
+      setMood("happy");
+      setMascotLine(lang === "ar" ? `أحسنت! أكملت المستوى ${levelIdx + 1}` : `Great! Level ${levelIdx + 1} complete!`);
+      speak(PRAISE[Math.floor(Math.random() * PRAISE.length)]);
+      if (nu >= LEVELS.length) {
+        // all done
+        setBest((b) => { const nb = Math.max(b, score); try { localStorage.setItem("vocabBest", String(nb)); } catch {}; return nb; });
+        setTimeout(() => setPhase("over"), 1400);
+      } else {
+        advanceRef.current = setTimeout(() => {
+          setExIdx(0);
+          buildExercise(LEVELS[levelIdx + 1].exercises[0]);
+          setLevelIdx(levelIdx + 1);
+          setMood("idle"); setMascotLine("");
+        }, 1300);
+      }
+    }
+  }, [levelIdx, exIdx, buildExercise, maxUnlocked, score, lang]);
+
+  const fail = useCallback(() => {
+    setLives((l) => {
+      const nl = l - 1;
+      setMood("sad");
+      speak(WRONG[0]);
+      if (nl <= 0) {
+        setBest((b) => { const nb = Math.max(b, score); try { localStorage.setItem("vocabBest", String(nb)); } catch {}; return nb; });
+        setTimeout(() => setPhase("over"), 1000);
+      } else {
+        advanceRef.current = setTimeout(nextExercise, 1500);
+      }
+      return nl;
+    });
+  }, [nextExercise, score]);
+
+  const succeed = useCallback(() => {
+    const gained = 10 + streak;
+    setScore((s) => s + gained);
+    setStreak((s) => s + 1);
+    setMood("happy");
+    setMascotLine(PRAISE[Math.floor(Math.random() * PRAISE.length)]);
+    speak(PRAISE[Math.floor(Math.random() * PRAISE.length)]);
+    playCorrect();
+    advanceRef.current = setTimeout(nextExercise, 1100);
+  }, [streak, nextExercise]);
+
+  const checkAnswer = useCallback((chosen) => {
+    if (lock || !exercise) return;
+    resumeAudio();
+    setLock(true); setPicked(chosen);
+    const ok = chosen === (exercise.ar || exercise.answer);
+    setFeedback({ ok, correct: exercise.ar || exercise.answer });
+    if (ok) succeed(); else fail();
+  }, [lock, exercise, succeed, fail]);
+
+  const submitType = useCallback(() => {
+    if (lock || !exercise) return;
+    resumeAudio();
+    setLock(true);
+    const ok = norm(typed) === norm(exercise.en);
+    setFeedback({ ok, correct: exercise.en });
+    if (ok) succeed(); else fail();
+  }, [lock, exercise, typed, succeed, fail]);
+
+  const submitArrange = useCallback(() => {
+    if (lock || !exercise) return;
+    resumeAudio();
+    setLock(true);
+    const ok = arranged.join(" ") === exercise.words.join(" ");
+    setFeedback({ ok, correct: exercise.words.join(" ") });
+    if (ok) succeed(); else fail();
+  }, [lock, exercise, arranged, succeed, fail]);
+
+  const tapWord = (w, i) => {
+    if (lock) return;
+    setShuffledWords((p) => p.filter((_, idx) => idx !== i));
+    setArranged((p) => [...p, w]);
+  };
+  const untapWord = (w, i) => {
+    if (lock) return;
+    setArranged((p) => p.filter((_, idx) => idx !== i));
+    setShuffledWords((p) => [...p, w]);
   };
 
+  useEffect(() => () => { if (advanceRef.current) clearTimeout(advanceRef.current); window.speechSynthesis?.cancel?.(); }, []);
+
+  const tr = lang === "ar" ? {
+    title: "تعلّم الإنجليزية", what: "ما معنى هذه الكلمة؟", score: "النقاط", lives: "القلوب",
+    streak: "سلسلة", best: "الأفضل", start: "ابدأ المستوى", again: "العب مجدداً", locked: "مغلق",
+    over: "انتهت اللعبة", next: "التالي", listenQ: "استمع ثم اختر المعنى", sayQ: "ماذا قالت الشخصية؟",
+    typeQ: "اكتب الكلمة بالإنجليزية", arrangeQ: "رتّب الكلمات لتكوّن جملة", fillQ: "أكمل الفراغ الصحيح",
+    mapTitle: "اختر مستوى", level: "المستوى", intro: "اختر مستوى وابدأ رحلة تعلّم الإنجليزية مع شخصيتنا الناطقة.",
+    correctWas: "الصحيح:", playAudio: "استمع", resetArr: "إعادة", typePlaceholder: "اكتب هنا...",
+    completed: "أكملت كل المستويات!", reached: "وصلت للمستوى", finished: "أتقنت المستوى", submit: "تحقّق",
+  } : {
+    title: "Learn English", what: "What does this word mean?", score: "Score", lives: "Lives",
+    streak: "Streak", best: "Best", start: "Start Level", again: "Play again", locked: "Locked",
+    over: "Game Over", next: "Next", listenQ: "Listen, then choose", sayQ: "What did the character say?",
+    typeQ: "Type the word in English", arrangeQ: "Arrange the words to make a sentence", fillQ: "Choose the correct word",
+    mapTitle: "Choose a level", level: "Level", intro: "Pick a level and start learning English with our talking character.",
+    correctWas: "Correct:", playAudio: "Play", resetArr: "Reset", typePlaceholder: "Type here...",
+    completed: "You finished all levels!", reached: "You reached level", finished: "You mastered the level", submit: "Check",
+  };
+
+  // ---------- Level map ----------
+  if (phase === "map") {
+    return (
+      <div dir={isRTL ? "rtl" : "ltr"} className="select-none max-w-[420px] mx-auto">
+        <div className="flex items-center justify-center gap-3 mb-5">
+          <GlobeMascot mood="idle" size={64} />
+          <div className="text-center">
+            <h2 className="text-2xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{tr.title}</h2>
+            <p className="text-xs text-muted-foreground">{tr.intro}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center gap-4 mb-5 text-sm">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent/15 border border-accent/30">
+            <Trophy className="w-4 h-4 text-accent" /><span className="font-extrabold text-accent">{best}</span>
+          </div>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/15 border border-primary/30">
+            <Star className="w-4 h-4 text-primary" /><span className="font-extrabold text-primary">{LEVELS.length} {tr.level}</span>
+          </div>
+          <GameMusicButton theme="snake" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          {LEVELS.map((lv, i) => {
+            const locked = i > maxUnlocked;
+            const done = i < maxUnlocked;
+            return (
+              <button key={i} onClick={() => !locked && startLevel(i)} disabled={locked}
+                className={`relative rounded-2xl border-2 p-4 text-right transition-all ${locked ? "border-border bg-muted/40 opacity-60 cursor-not-allowed" : done ? "border-emerald-400/50 bg-emerald-500/10 hover:-translate-y-0.5" : "border-primary/40 bg-card hover:-translate-y-0.5 hover:border-primary shadow-[0_8px_20px_-10px_hsl(var(--primary)/0.5)]"}`}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-bold text-muted-foreground">#{i + 1}</span>
+                  {locked ? <Lock className="w-4 h-4 text-muted-foreground" /> : done ? <Check className="w-4 h-4 text-emerald-500" /> : <ChevronRight className="w-4 h-4 text-primary" />}
+                </div>
+                <div className="font-bold text-sm text-foreground">{lang === "ar" ? lv.titleAr : lv.title}</div>
+                <div className="text-[10px] text-muted-foreground mt-0.5">{lv.exercises.length} {t("Questions")}</div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ---------- Game over ----------
+  if (phase === "over") {
+    return (
+      <div dir={isRTL ? "rtl" : "ltr"} className="select-none max-w-[420px] mx-auto text-center">
+        <GlobeMascot mood={lives > 0 ? "happy" : "sad"} size={96} />
+        <h2 className="mt-3 text-2xl font-extrabold text-foreground">
+          {lives > 0 ? tr.completed : `${tr.reached} ${levelIdx + 1}`}
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">{lives > 0 ? tr.finished : tr.over}</p>
+        <div className="mt-5 flex items-center justify-center gap-4">
+          <div className="rounded-2xl bg-card border border-border px-4 py-2">
+            <div className="text-[10px] uppercase text-muted-foreground">{tr.score}</div>
+            <div className="text-xl font-extrabold text-emerald-500">{score}</div>
+          </div>
+          <div className="rounded-2xl bg-card border border-border px-4 py-2">
+            <div className="text-[10px] uppercase text-muted-foreground">{tr.best}</div>
+            <div className="text-xl font-extrabold text-accent">{best}</div>
+          </div>
+        </div>
+        <div className="mt-6 flex justify-center gap-3">
+          <Button onClick={() => startLevel(0)} className="bg-primary text-primary-foreground rounded-2xl px-6 py-4"><RotateCcw className="w-4 h-4 mr-2" />{tr.again}</Button>
+          <Button onClick={goMap} variant="outline" className="rounded-2xl px-6 py-4 border-border">{tr.mapTitle}</Button>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------- Playing ----------
+  const total = level.exercises.length;
+  const exMeta = level.exercises[exIdx];
+
   return (
-    <div dir={isRTL ? "rtl" : "ltr"} className="select-none flex flex-col items-center">
-      {/* Top stats */}
-      <div className="flex items-center justify-between w-full max-w-[360px] mb-3 px-1 text-sm gap-2">
-        <div className="flex items-center gap-1.5">
+    <div dir={isRTL ? "rtl" : "ltr"} className="select-none max-w-[420px] mx-auto">
+      {/* top bar */}
+      <div className="flex items-center justify-between mb-2 gap-2">
+        <button onClick={goMap} className="text-xs font-semibold text-primary hover:underline">‹ {tr.mapTitle}</button>
+        <div className="flex items-center gap-1">
           {Array.from({ length: MAX_LIVES }).map((_, i) => (
-            <Heart key={i} className={`w-5 h-5 ${i < lives ? "text-rose-500 fill-rose-500" : "text-muted-foreground/30"}`} />
+            <Heart key={i} className={`w-4 h-4 ${i < lives ? "text-rose-500 fill-rose-500" : "text-muted-foreground/30"}`} />
           ))}
         </div>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-500/15 border border-orange-400/30">
-          <Flame className="w-4 h-4 text-orange-500" />
-          <span className="font-extrabold text-orange-500 tabular-nums">{streak}</span>
-          <span className="text-muted-foreground text-xs">{tr.streak}</span>
-        </div>
         <div className="flex items-center gap-2">
-          <GameMusicButton theme="snake" />
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-500/15 border border-violet-400/30">
-            <Trophy className="w-3.5 h-3.5 text-amber-500" />
-            <span className="font-extrabold text-amber-500 tabular-nums">{best}</span>
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/15 border border-orange-400/30">
+            <Flame className="w-3.5 h-3.5 text-orange-500" /><span className="text-xs font-bold text-orange-500">{streak}</span>
           </div>
+          <GameMusicButton theme="snake" />
         </div>
       </div>
 
-      {/* Score + level + progress */}
-      <div className="w-full max-w-[360px] mb-3">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-xs text-muted-foreground">{tr.level} <span className="font-extrabold text-violet-400">{level}</span></span>
-          <span className="text-xs text-muted-foreground">{tr.score}: <span className="font-extrabold text-emerald-500">{score}</span></span>
+      {/* level + progress */}
+      <div className="mb-3">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-xs font-bold text-primary">{lang === "ar" ? level.titleAr : level.title}</span>
+          <span className="text-xs text-muted-foreground">{exIdx + 1}/{total} · {tr.score}: <span className="font-bold text-emerald-500">{score}</span></span>
         </div>
         <div className="h-2.5 rounded-full bg-muted overflow-hidden">
-          <motion.div
-            className="h-full rounded-full"
-            style={{ background: "linear-gradient(90deg,#58cc02,#fbbf24,#6d28d9)" }}
-            animate={{ width: `${(progress / LEVEL_GOAL) * 100}%` }}
-            transition={{ type: "spring", stiffness: 120, damping: 18 }}
-          />
+          <motion.div className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+            animate={{ width: `${((exIdx) / total) * 100}%` }} transition={{ type: "spring", stiffness: 120, damping: 18 }} />
         </div>
       </div>
 
-      {/* Game card */}
-      <div className="relative w-full max-w-[360px] rounded-3xl border border-violet-500/30 bg-[#1e1b4b] dark:bg-[#1e1b4b] shadow-xl shadow-violet-900/40 overflow-hidden">
-        <div className="p-5">
-          {/* Title + word */}
-          <div className="text-center mb-4">
-            <div className="inline-flex items-center gap-2 mb-2 text-xs font-bold uppercase tracking-widest text-violet-300/80">
-              <Languages className="w-4 h-4" /> {tr.title}
+      {/* card */}
+      <div className="rounded-3xl border border-border bg-card p-5 shadow-xl shadow-primary/10">
+        {/* mascot + prompt */}
+        <div className="flex items-center gap-3 mb-4">
+          <GlobeMascot mood={mood} size={56} />
+          <div className="min-w-0">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+              <Globe className="w-3.5 h-3.5" /> {tr.title}
             </div>
-            <p className="text-sm text-muted-foreground mb-2">{tr.what}</p>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={question ? question.en : "idle"}
-                initial={{ opacity: 0, y: 14, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -14, scale: 0.9 }}
-                transition={{ duration: 0.25 }}
-                className="text-4xl font-black tracking-tight bg-gradient-to-r from-[#1cb0f6] via-violet-300 to-[#58cc02] bg-clip-text text-transparent"
-              >
-                {question ? question.en : "…"}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* Options */}
-          <div className="grid gap-2.5">
-            {question && question.options.map((opt, idx) => {
-              const isCorrect = opt === question.correct;
-              const isPicked = picked === idx;
-              let cls = "border-violet-400/30 bg-violet-500/10 hover:bg-violet-500/20 text-foreground";
-              if (lock) {
-                if (isCorrect) cls = "border-emerald-400 bg-emerald-500/25 text-emerald-50";
-                else if (isPicked) cls = "border-rose-400 bg-rose-500/25 text-rose-50";
-                else cls = "border-violet-400/15 bg-violet-500/5 text-muted-foreground/60";
-              }
-              return (
-                <button
-                  key={idx}
-                  onClick={() => answer(idx)}
-                  disabled={lock}
-                  className={`relative flex items-center justify-center gap-2 h-14 rounded-2xl border-2 font-bold text-lg transition-all active:scale-[0.98] ${cls}`}
-                >
-                  {opt}
-                  {lock && isCorrect && <Check className="w-5 h-5" />}
-                  {lock && isPicked && !isCorrect && <X className="w-5 h-5" />}
-                </button>
-              );
-            })}
+            <div className="text-sm font-semibold text-foreground">
+              {exMeta.type === "vocab" ? tr.what
+                : exMeta.type === "listen" ? tr.listenQ
+                : exMeta.type === "say" ? tr.sayQ
+                : exMeta.type === "type" ? tr.typeQ
+                : exMeta.type === "fill" ? tr.fillQ
+                : tr.arrangeQ}
+            </div>
           </div>
         </div>
 
-        {/* Overlays */}
-        <AnimatePresence>
-          {phase === "ready" && (
-            <motion.div key="ready" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-background/90 backdrop-blur-sm flex flex-col items-center justify-center gap-4 p-6 text-center">
-              <Star className="w-10 h-10 text-amber-400" />
-              <div className="text-2xl font-extrabold text-foreground">{tr.title}</div>
-              <p className="text-sm text-muted-foreground max-w-[280px]">{tr.intro}</p>
-              <Button onClick={start} className="bg-primary text-primary-foreground rounded-2xl px-8 py-5 text-base font-bold">
-                <Play className="w-5 h-5 mr-2" /> {tr.start}
-              </Button>
-            </motion.div>
-          )}
-          {phase === "over" && (
-            <motion.div key="over" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-background/90 backdrop-blur-sm flex flex-col items-center justify-center gap-3 text-center p-6">
-              <Trophy className="w-9 h-9 text-amber-400" />
-              <div className="text-2xl font-extrabold text-destructive">{tr.over}</div>
-              <div className="text-sm text-muted-foreground">
-                {tr.score}: <span className="font-bold text-emerald-500">{score}</span> · {tr.level}:{" "}
-                <span className="font-bold text-violet-300">{level}</span> · {tr.best}:{" "}
-                <span className="font-bold text-amber-500">{best}</span>
-              </div>
-              <Button onClick={start} className="bg-primary text-primary-foreground rounded-2xl px-6 py-4">
-                <RotateCcw className="w-4 h-4 mr-2" /> {tr.again}
-              </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Level up flash */}
-        <AnimatePresence>
-          {showFlash && phase === "playing" && (
-            <motion.div key="flash"
-              initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.4 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-              className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="text-center">
-                <div className="text-4xl font-black tracking-tight bg-gradient-to-r from-emerald-300 via-amber-300 to-violet-300 bg-clip-text text-transparent drop-shadow-[0_2px_12px_rgba(167,139,250,0.6)]">
-                  {tr.lvlUp}
+        {/* exercise body */}
+        <AnimatePresence mode="wait">
+          <motion.div key={`${levelIdx}-${exIdx}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.22 }}>
+            {/* vocab / listen / say / fill — prompt + options */}
+            {(exercise.type === "vocab" || exercise.type === "listen" || exercise.type === "say" || exercise.type === "fill") && (
+              <>
+                <div className="flex flex-col items-center mb-4 gap-2">
+                  {(exercise.type === "listen" || exercise.type === "say") && (
+                    <button onClick={() => speak(exercise.speak || exercise.en)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/30 text-primary font-bold text-sm hover:bg-primary/20 transition-colors">
+                      <Volume2 className="w-4 h-4" /> {tr.playAudio}
+                    </button>
+                  )}
+                  {exercise.type === "vocab" && (
+                    <div className="text-4xl font-black bg-gradient-to-r from-primary via-violet-400 to-accent bg-clip-text text-transparent">{exercise.en}</div>
+                  )}
+                  {exercise.type === "fill" && (
+                    <div className="text-lg font-bold text-foreground text-center px-2">{exercise.sentence}</div>
+                  )}
+                  {exercise.type === "say" && (
+                    <div className="text-sm text-muted-foreground italic text-center">"</div>
+                  )}
                 </div>
-                <div className="mt-1 text-xs font-bold uppercase tracking-[0.3em] text-amber-200/90">{tr.level} {level - 1} → {level}</div>
+                <div className="grid gap-2.5">
+                  {exercise.options.map((opt, idx) => {
+                    const isCorrect = opt === (exercise.ar || exercise.answer);
+                    const isPicked = picked === idx;
+                    let cls = "border-primary/25 bg-primary/8 hover:bg-primary/15 text-foreground";
+                    if (lock) {
+                      if (isCorrect) cls = "border-emerald-400 bg-emerald-500/20 text-emerald-50";
+                      else if (isPicked) cls = "border-rose-400 bg-rose-500/20 text-rose-50";
+                      else cls = "border-border bg-muted/30 text-muted-foreground/60";
+                    }
+                    return (
+                      <button key={idx} onClick={() => checkAnswer(opt)} disabled={lock}
+                        className={`relative flex items-center justify-center gap-2 h-14 rounded-2xl border-2 font-bold text-lg transition-all active:scale-[0.98] ${cls}`}>
+                        {opt}
+                        {lock && isCorrect && <Check className="w-5 h-5" />}
+                        {lock && isPicked && !isCorrect && <X className="w-5 h-5" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            {/* type */}
+            {exercise.type === "type" && (
+              <div className="flex flex-col items-center gap-4">
+                <div className="text-3xl font-black text-foreground">{exercise.ar}</div>
+                <div className="relative w-full max-w-[280px]">
+                  <input
+                    autoFocus value={typed} disabled={lock}
+                    onChange={(e) => setTyped(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter" && !lock) submitType(); }}
+                    placeholder={tr.typePlaceholder} dir="ltr"
+                    className={`w-full h-14 rounded-2xl border-2 px-4 text-center text-lg font-bold outline-none transition-colors ${lock && norm(typed) === norm(exercise.en) ? "border-emerald-400 bg-emerald-500/15 text-emerald-50" : lock ? "border-rose-400 bg-rose-500/15 text-rose-50" : "border-primary/30 bg-background text-foreground focus:border-primary"}`}
+                  />
+                  <Pencil className="absolute top-1/2 -translate-y-1/2 ltr:right-3 rtl:left-3 w-4 h-4 text-muted-foreground/50" />
+                </div>
+                <Button onClick={submitType} disabled={lock} className="bg-primary text-primary-foreground rounded-2xl px-8 py-4 font-bold">{tr.submit}</Button>
               </div>
-            </motion.div>
-          )}
+            )}
+
+            {/* arrange */}
+            {exercise.type === "arrange" && (
+              <div className="flex flex-col gap-4">
+                <div className="min-h-[64px] rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-3 flex flex-wrap gap-2 justify-center items-center">
+                  {arranged.length === 0 && <span className="text-sm text-muted-foreground">{tr.arrangeQ}</span>}
+                  {arranged.map((w, i) => (
+                    <button key={i} onClick={() => untapWord(w, i)} disabled={lock}
+                      className="px-3.5 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-sm active:scale-95 transition-transform">{w}</button>
+                  ))}
+                </div>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {shuffledWords.map((w, i) => (
+                    <button key={i} onClick={() => tapWord(w, i)} disabled={lock}
+                      className="px-3.5 py-2 rounded-xl bg-muted border border-border text-foreground font-bold text-sm hover:border-primary/40 active:scale-95 transition-all">{w}</button>
+                  ))}
+                </div>
+                <div className="flex justify-center gap-3">
+                  <Button onClick={() => { setShuffledWords(shuffle(exercise.words)); setArranged([]); }} disabled={lock} variant="outline" className="rounded-2xl px-5 py-3 border-border">{tr.resetArr}</Button>
+                  <Button onClick={submitArrange} disabled={lock || arranged.length !== exercise.words.length} className="bg-primary text-primary-foreground rounded-2xl px-6 py-3 font-bold">{tr.submit}</Button>
+                </div>
+              </div>
+            )}
+          </motion.div>
         </AnimatePresence>
       </div>
 
-      {phase === "playing" && lock && (
-        <div className="mt-4 text-center text-sm">
-          {picked !== null && question.options[picked] === question.correct ? (
-            <span className="font-bold text-emerald-500">{tr.wellDone} 🎉</span>
+      {/* feedback + mascot line */}
+      {feedback && (
+        <div className="mt-3 text-center text-sm">
+          {feedback.ok ? (
+            <span className="font-bold text-emerald-500">✓ {mascotLine}</span>
           ) : (
-            <span className="font-bold text-rose-500">{tr.wrong} — {tr.correctWas} {question ? question.correct : ""}</span>
+            <span className="font-bold text-rose-500">✗ {tr.correctWas} {feedback.correct}</span>
           )}
         </div>
       )}
