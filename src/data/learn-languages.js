@@ -341,6 +341,22 @@ export const THEMES = [
   },
 ];
 
+// صور داعمة لكل مستوى حسب الموضوع (١٢ صورة)
+export const THEMES_IMAGES = [
+  "https://media.base44.com/images/public/6a7e76e3396b41955b675542/aacea1278_generated_image.png",
+  "https://media.base44.com/images/public/6a7e76e3396b41955b675542/bf49677a2_generated_image.png",
+  "https://media.base44.com/images/public/6a7e76e3396b41955b675542/72c5f40fa_generated_image.png",
+  "https://media.base44.com/images/public/6a7e76e3396b41955b675542/dcbb5fac7_generated_image.png",
+  "https://media.base44.com/images/public/6a7e76e3396b41955b675542/3def38858_generated_image.png",
+  "https://media.base44.com/images/public/6a7e76e3396b41955b675542/393df6a85_generated_image.png",
+  "https://media.base44.com/images/public/6a7e76e3396b41955b675542/03c940502_generated_image.png",
+  "https://media.base44.com/images/public/6a7e76e3396b41955b675542/fe6b41608_generated_image.png",
+  "https://media.base44.com/images/public/6a7e76e3396b41955b675542/fec5a3ca9_generated_image.png",
+  "https://media.base44.com/images/public/6a7e76e3396b41955b675542/6422fa196_generated_image.png",
+  "https://media.base44.com/images/public/6a7e76e3396b41955b675542/ea6cd04c3_generated_image.png",
+  "https://media.base44.com/images/public/6a7e76e3396b41955b675542/10c19b5ba_generated_image.png",
+];
+
 // بناء بنك أسئلة المستوى (٣٥ سؤالاً كحد أقصى) — target: لغة الهدف، base: لغة المعاني
 function buildBank(th, target, base) {
   const bank = [];
@@ -366,6 +382,7 @@ export function levelsForLang(target, base) {
   return THEMES.map((th, idx) => ({
     title: th.title,
     titleAr: th.titleAr,
+    image: THEMES_IMAGES[idx],
     exercises: buildBank(th, target, base).slice(0, COUNTS[idx]),
   }));
 }

@@ -122,9 +122,9 @@ export default function ToolPage() {
   const example = EXAMPLES[slug] || `Open the ${tool.name} calculator above to try a live example.`;
 
   const faqs = [
-    { q: `What is ${tool.name}?`, a: tool.description || intro },
-    { q: `Is ${tool.name} free to use?`, a: `Yes — ${tool.name} is 100% free, runs entirely in your browser, and needs no sign-up.` },
-    { q: `Does ${tool.name} work on mobile?`, a: `Yes, ${tool.name} is fully responsive and works on phones, tablets, and desktops.` },
+    { q: `${t("What is")} ${t(tool.name)}؟`, a: tool.description ? t(tool.description) : intro },
+    { q: `${t("Is")} ${t(tool.name)} ${t("free to use?")}`, a: t("Yes — it is 100% free, runs entirely in your browser, and needs no sign-up.") },
+    { q: `${t("Does")} ${t(tool.name)} ${t("work on mobile?")}`, a: t("Yes, it is fully responsive and works on phones, tablets, and desktops.") },
   ];
   const faqSchema = {
     "@context": "https://schema.org",
@@ -165,7 +165,7 @@ export default function ToolPage() {
           <div className="flex-1 min-w-0">
             <h1 className="text-[24px] font-bold text-[#111827] dark:text-[#FEF3C7] leading-tight">{t(tool.name)}</h1>
             <span className="inline-block mt-1 text-xs font-medium text-[#6B7280] bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] rounded-full px-2.5 py-0.5">{t(tool.category)}</span>
-            <p className="text-sm text-[#6B7280] mt-2">{tool.description}</p>
+            <p className="text-sm text-[#6B7280] mt-2">{t(tool.description)}</p>
           </div>
         </div>
 
@@ -175,7 +175,7 @@ export default function ToolPage() {
           ) : (
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <Icon className="w-10 h-10 text-[#6D28D9] mb-3" />
-              <p className="text-sm text-[#6B7280] mb-4 max-w-xs">{tool.description}</p>
+              <p className="text-sm text-[#6B7280] mb-4 max-w-xs">{t(tool.description)}</p>
               <Link to={tool.route || `/?tool=${tool.slug}`} className="inline-flex items-center gap-2 bg-gradient-to-r from-[#6D28D9] to-[#F59E0B] text-white font-semibold px-6 py-3 rounded-xl shadow-[0_4px_12px_rgba(109,40,217,0.25)] hover:opacity-90 transition-opacity">
                 <Play className="w-4 h-4" /> {t("Open")} {tool.name}
               </Link>

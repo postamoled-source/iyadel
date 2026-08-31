@@ -5,6 +5,7 @@ import { Heart, Flame, Trophy, Play, RotateCcw, Check, X, Star, Volume2, Lock, C
 import { motion, AnimatePresence } from "framer-motion";
 import GameMusicButton from "@/components/games/GameMusicButton";
 import { resumeAudio, playStart, playCorrect, playWrong, playWin } from "@/lib/game-sounds";
+import { Image } from "@/components/ui/image";
 import { LANGS, levelsForLang, meaningPool, sayPool, PRAISE, WRONG } from "@/data/learn-languages";
 
 const MAX_LIVES = 5;
@@ -55,11 +56,11 @@ function GlobeMascot({ mood = "idle", size = 72 }) {
   );
 }
 
-function PillRow({ value, onSelect, exclude }) {
+function PillRow({ value, onSelect }) {
   const { lang } = useI18n();
   return (
     <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
-      {LANGS.filter((l) => l.code !== exclude).map((l) => {
+      {LANGS.map((l) => {
         const active = l.code === value;
         return (
           <button key={l.code} onClick={() => onSelect(l.code)} className={`shrink-0 flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-xs font-bold transition-all ${active ? "bg-primary text-primary-foreground border-primary shadow-md scale-105" : "bg-card border-border text-foreground hover:border-primary/50"}`}>
@@ -296,14 +297,14 @@ export default function VocabQuizGame() {
         {/* المبادل: لغة الهدف + لغة الأساس */}
         <div className="rounded-2xl border border-border bg-card p-3 mb-4 shadow-sm">
           <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-1.5">{tr.iLearn}</p>
-          <PillRow value={langCode} onSelect={selectTarget} exclude={baseLangCode} />
+          <PillRow value={langCode} onSelect={selectTarget} />
           <div className="flex justify-center my-2">
             <button onClick={swapLangs} className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 text-xs font-bold hover:bg-primary/20 transition-colors">
               <ArrowLeftRight className="w-3.5 h-3.5" /> {tr.swap}
             </button>
           </div>
           <p className="text-[11px] font-bold uppercase tracking-wider text-accent mb-1.5">{tr.iSpeak}</p>
-          <PillRow value={baseLangCode} onSelect={selectBase} exclude={langCode} />
+          <PillRow value={baseLangCode} onSelect={selectBase} />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -313,6 +314,10 @@ export default function VocabQuizGame() {
             return (
               <button key={i} onClick={() => !locked && startLevel(i)} disabled={locked}
                 className={`relative rounded-2xl border-2 p-4 text-right transition-all ${locked ? "border-border bg-muted/40 opacity-60 cursor-not-allowed" : done ? "border-emerald-400/50 bg-emerald-500/10 hover:-translate-y-0.5" : "border-primary/40 bg-card hover:-translate-y-0.5 hover:border-primary shadow-[0_8px_20px_-10px_hsl(var(--primary)/0.5)]"}`}>
+                <div className="relative h-14 -mx-4 -mt-4 mb-2 overflow-hidden rounded-t-2xl bg-muted">
+                  <Image src={lv.image} alt={lang === "ar" ? lv.titleAr : lv.title} fittingType="fill" className="w-full h-full" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
+                </div>
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-bold text-muted-foreground">#{i + 1}</span>
                   {locked ? <Lock className="w-4 h-4 text-muted-foreground" /> : done ? <Check className="w-4 h-4 text-emerald-500" /> : <ChevronRight className="w-4 h-4 text-primary" />}
@@ -376,6 +381,9 @@ export default function VocabQuizGame() {
       </div>
       <div className="mb-3 flex justify-center"><PairBadge onClick={swapLangs} /></div>
 
+      <div className="mb-3 rounded-2xl overflow-hidden border border-border h-16 relative">
+        <Image src={level.image} alt={lang === "ar" ? level.titleAr : level.title} fittingType="fill" className="w-full h-full" />
+      </div>
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1">
           <span className="text-xs font-bold text-primary">{lang === "ar" ? level.titleAr : level.title}</span>

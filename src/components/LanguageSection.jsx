@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Globe, Volume2, Pencil, Heart, BookOpen, Play } from "lucide-react";
 
 export default function LanguageSection() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const feats = [
     { icon: Globe, en: "8 languages to choose from", ar: "٨ لغات للاختيار بينها" },
     { icon: Volume2, en: "Listening & speech in each language", ar: "استماع ونطق بكل لغة" },
@@ -27,7 +27,7 @@ export default function LanguageSection() {
               </div>
               <div className="flex-1 text-center md:text-start">
                 <span className="inline-block text-[11px] font-bold uppercase tracking-widest text-primary mb-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">{t("Learn Languages")}</span>
-                <h2 className="text-2xl md:text-3xl font-extrabold text-card-foreground mb-2">{t("Learn 8 languages with iyadel — Duolingo-style")}</h2>
+                <h2 className="text-2xl md:text-3xl font-extrabold text-card-foreground mb-2">{t("Learn 8 languages with iyadel — FluentBee-style")}</h2>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-5">
                   {t("English, Arabic, French, Spanish, Italian, German, Japanese & Portuguese — vocabulary, listening, sentence building and typing with a talking character, 12 levels per language.")}
                 </p>
@@ -35,7 +35,7 @@ export default function LanguageSection() {
                   {feats.map((f) => (
                     <div key={f.en} className="flex items-center gap-2 rounded-xl bg-background border border-border px-3 py-2 text-xs font-semibold text-foreground">
                       <f.icon className="w-4 h-4 text-accent shrink-0" />
-                      <span className="truncate">{t(f.en)}</span>
+                      <span className="truncate">{lang === "ar" ? f.ar : f.en}</span>
                     </div>
                   ))}
                 </div>
