@@ -231,23 +231,27 @@ function VocabQuiz({ className, style }) {
   return (
     <svg viewBox="0 0 64 64" className={className} style={style}>
       <defs>
-        <linearGradient id="gmvq1" x1="0" y1="0" x2="0" y2="44" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#1cb0f6" /><stop offset="100%" stopColor="#1e40af" />
-        </linearGradient>
-        <linearGradient id="gmvq2" x1="0" y1="0" x2="0" y2="44" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#58cc02" /><stop offset="100%" stopColor="#15803d" />
+        <radialGradient id="gmvqg" cx="38%" cy="32%" r="75%" fx="34%" fy="26%">
+          <stop offset="0%" stopColor="#a78bfa" />
+          <stop offset="55%" stopColor="#6D28D9" />
+          <stop offset="100%" stopColor="#3b2a8c" />
+        </radialGradient>
+        <linearGradient id="gmvqLand" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fbbf24" />
+          <stop offset="100%" stopColor="#b45309" />
         </linearGradient>
       </defs>
-      <g transform="rotate(-12 18 34)">
-        <rect x="6" y="20" width="22" height="26" rx="5" fill="url(#gmvq1)" />
-        <text x="17" y="39" textAnchor="middle" fontSize="13" fontWeight="800" fill="#fff" fontFamily="sans-serif">A</text>
-      </g>
-      <g transform="rotate(10 40 26)">
-        <rect x="34" y="14" width="22" height="26" rx="5" fill="url(#gmvq2)" />
-        <text x="45" y="33" textAnchor="middle" fontSize="13" fontWeight="800" fill="#fff" fontFamily="sans-serif">ع</text>
-      </g>
-      <path d="M26 30 q6 -4 12 0" stroke="#fbbf24" strokeWidth="2.4" strokeLinecap="round" fill="none" />
-      <path d="M36 28 l3 2 -3 2" stroke="#fbbf24" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <circle cx="32" cy="32" r="26" fill="url(#gmvqg)" />
+      <circle cx="32" cy="32" r="26" fill="none" stroke="#fff" strokeOpacity="0.18" strokeWidth="2" />
+      <path d="M10 28 q8 -5 14 0 q6 6 14 2 q6 -3 16 2" stroke="url(#gmvqLand)" strokeWidth="5" fill="none" strokeLinecap="round" />
+      <path d="M14 42 q10 4 18 -2 q8 -2 22 4" stroke="url(#gmvqLand)" strokeWidth="4" fill="none" strokeLinecap="round" />
+      <ellipse cx="22" cy="30" rx="4" ry="3" fill="url(#gmvqLand)" />
+      <ellipse cx="44" cy="38" rx="3.5" ry="3" fill="url(#gmvqLand)" />
+      <circle cx="27" cy="35" r="2.6" fill="#fff" />
+      <circle cx="37" cy="35" r="2.6" fill="#fff" />
+      <circle cx="28" cy="35.5" r="1.2" fill="#1e1b4b" />
+      <circle cx="38" cy="35.5" r="1.2" fill="#1e1b4b" />
+      <path d="M27 41 q5 4 10 0" stroke="#fff" strokeWidth="1.6" fill="none" strokeLinecap="round" />
     </svg>
   );
 }

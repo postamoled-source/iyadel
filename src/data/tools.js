@@ -254,9 +254,9 @@ export const STATIC_TOOLS = [
     name: "Learn English (Vocab Quiz)",
     slug: "vocab-quiz",
     category: "Games",
-    description: "Pick the correct Arabic meaning for each English word. Hearts, streaks, and rising levels — Duolingo-style.",
+    description: "Duolingo-style English lessons with a talking globe character: vocabulary, listening, sentence building & typing across 12 levels.",
     icon: "Languages",
-    content: "A Duolingo-style vocabulary quiz to learn English. An English word appears and you choose its correct Arabic translation from three options. Answer correctly to grow your score and build a streak — a longer streak earns bonus points. Five correct answers in a row advance you to the next level, which keeps the challenge fresh. A wrong answer costs one of your three hearts; lose them all and the round ends, with your best score saved on your device. Sound effects and background music make it feel like a real lesson. Everything runs in your browser — nothing is stored or uploaded.",
+    content: "A Duolingo-style English-learning game with a talking globe mascot. It mixes six exercise types: choosing the Arabic meaning of an English word, listening to a spoken word and picking its meaning, completing the blank in a sentence, arranging cut-up words into a correct sentence, typing the English word for an Arabic prompt, and understanding phrases the character speaks. The browser's speech engine pronounces every English word and sentence, and the mascot praises you aloud on correct answers. Five hearts, a streak bonus, twelve progressive levels (greetings, family, numbers, colors, food, animals, routines, school, time, travel, weather & feelings, conversations), and your best score is saved on your device. Everything runs in your browser — nothing is uploaded.",
   },
   {
     name: "Snake",
