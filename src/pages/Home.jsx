@@ -219,7 +219,7 @@ function CalcButton({ children, onClick, busy = false, busyLabel, variant = "pri
 }
 
 // ---------- Hero ----------
-function HeroSection({ toolCount, catCount, searchQuery, onSearchChange }) {
+function HeroSection({ catCount, searchQuery, onSearchChange }) {
   const { t } = useI18n();
   const scrollTo = (id, fallback) => {
     const el = document.getElementById(id) || (fallback && document.getElementById(fallback));
@@ -248,13 +248,13 @@ function HeroSection({ toolCount, catCount, searchQuery, onSearchChange }) {
           </div>
           
           <p className="text-[18px] leading-[1.5] text-[#374151] dark:text-[#FEF3C7]/80 max-w-2xl mx-auto mb-6 font-medium">
-            {t("Your all-in-one platform")} — {toolCount}+ {t("tools in Finance, Health, Converters, Math, Brain Games, and Image Tools")}
+            {t("Your all-in-one platform")} — {t("tools in Finance, Health, Converters, Math, Brain Games, and Image Tools")}
           </p>
           
           <div className="flex flex-wrap justify-center gap-2">
             <button onClick={() => scrollTo("tools")} className="flex items-center gap-3 rounded-full bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] px-[14px] py-2 shadow-sm hover:border-primary/50 transition-colors shadow-sm cursor-pointer">
               <Box className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-[#1F2937] dark:text-[#FEF3C7]"><span className="text-primary">{toolCount}</span> {t("Tools")}</span>
+              <span className="text-sm font-semibold text-[#1F2937] dark:text-[#FEF3C7]">{t("Tools")}</span>
             </button>
             <button onClick={() => scrollTo("categories", "tools")} className="flex items-center gap-3 rounded-full bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] px-[14px] py-2 shadow-sm hover:border-accent/50 transition-colors shadow-sm cursor-pointer">
               <Layers className="w-4 h-4 text-accent" />
@@ -2276,7 +2276,7 @@ function AppStoreSection() {
             <div className="flex-1 relative z-10">
               <h3 className="text-2xl font-bold text-card-foreground mb-4">{t("iyadel Platform")}</h3>
               <p className="text-muted-foreground mb-6 text-sm leading-relaxed max-w-sm">
-                {t("31+ interactive and accurate tools in one place. Finance, health, converters, math, brain games, and image processing — completely free and secure.")}
+                {t("Interactive and accurate tools in one place. Finance, health, converters, math, brain games, and image processing — completely free and secure.")}
               </p>
               <p className="text-xs text-muted-foreground/60 mt-auto pt-6">{t("© 2026 iyadel — All Rights Reserved")}</p>
             </div>
@@ -2337,7 +2337,7 @@ function WhySection() {
     { icon: Coins, title: "Completely free", desc: "no registration or payment required." },
     { icon: ShieldQuestion, title: "Secure & private", desc: "all processing happens in your browser, no data is uploaded to any server." },
     { icon: Layers, title: "Works on all devices", desc: "mobile, tablet, or desktop." },
-    { icon: Zap, title: "31+ tools", desc: "Finance, Health, Converters, Math, Brain Games, and Image Tools." },
+    { icon: Zap, title: "Tools", desc: "Finance, Health, Converters, Math, Brain Games, and Image Tools." },
   ];
   return (
     <section id="why" className="bg-background pb-16">
@@ -2426,12 +2426,12 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   useSeo({
     title: "Free Online Calculators, Converters & Image Tools",
-    description: "31+ free online tools: loan & interest calculators, BMI & calorie trackers, unit converters, QR generator, image cropper, compressor & background remover. Fast, private, no signup.",
+    description: "Free online tools: loan & interest calculators, BMI & calorie trackers, unit converters, QR generator, image cropper, compressor & background remover. Fast, private, no signup.",
     path: "/",
   });
   return (
     <div className="min-h-screen bg-[#FFFBEB] dark:bg-[#1E1B4B] transition-colors duration-300 selection:bg-primary/30 selection:text-primary">
-      <HeroSection toolCount={31} catCount={7} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <HeroSection catCount={7} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <LanguageSection />
       <ToolsHub searchQuery={searchQuery} />
       <AppStoreSection />

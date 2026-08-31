@@ -155,7 +155,7 @@ export default function BlogPostPage() {
 
         <div className="mt-14 rounded-3xl bg-gradient-to-br from-primary/10 to-accent/5 border border-primary/20 p-8 text-center">
           <h3 className="text-xl font-bold text-foreground mb-2">{t("Enjoyed this article?")}</h3>
-          <p className="text-muted-foreground mb-6">{t("Explore 31+ free tools that make everyday tasks effortless.")}</p>
+          <p className="text-muted-foreground mb-6">{t("Explore our free tools that make everyday tasks effortless.")}</p>
           <Link to="/" className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-6 py-3 font-semibold text-sm hover:bg-primary/90 transition-colors">
             {t("Browse Tools")}
           </Link>

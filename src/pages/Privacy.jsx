@@ -148,7 +148,7 @@ export default function Privacy() {
               <Sparkles className="w-5 h-5" />
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{t("Ready to get started?")}</h2>
-            <p className="text-muted-foreground mb-8">{t("Jump back in and explore all 31+ free tools iyadel has to offer.")}</p>
+            <p className="text-muted-foreground mb-8">{t("Jump back in and explore all the free tools iyadel has to offer.")}</p>
             <Link to="/">
               <Button className="relative overflow-hidden rounded-xl px-8 py-6 text-lg bg-accent text-accent-foreground hover:scale-105 transition-transform duration-300 shadow-lg shadow-accent/20">
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-foreground/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />

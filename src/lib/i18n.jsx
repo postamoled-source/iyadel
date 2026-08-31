@@ -394,7 +394,6 @@ const AR = {
     "تتم جميع المعالجات في متصفحك، ولا يتم رفع أي بيانات إلى أي خادم.",
   "Works on all devices": "يعمل على جميع الأجهزة",
   "mobile, tablet, or desktop.": "جوال أو جهاز لوحي أو حاسوب.",
-  "31+ tools": "أكثر من 31 أداة",
   "Finance, Health, Converters, Math, Brain Games, and Image Tools.":
     "التمويل والصحة والمحولات والرياضيات وألعاب العقل وأدوات الصور.",
   "The iyadel team works passionately to deliver the best digital experience.":
@@ -402,10 +401,10 @@ const AR = {
 
   // App store / footer block
   "iyadel Platform": "منصة iyadel",
-  "31+ interactive and accurate tools in one place. Finance, health, converters, math, brain games, and image processing — completely free and secure.":
-    "أكثر من 31 أداة تفاعلية ودقيقة في مكان واحد. تمويل وصحة ومحولات ورياضيات وألعاب عقل ومعالجة صور — مجانية تمامًا وآمنة.",
-  "31+ interactive and accurate tools in one place — designed to simplify your daily life.":
-    "أكثر من 31 أداة تفاعلية ودقيقة في مكان واحد — مصممة لتبسيط حياتك اليومية.",
+  "Interactive and accurate tools in one place. Finance, health, converters, math, brain games, and image processing — completely free and secure.":
+    "أدوات تفاعلية ودقيقة في مكان واحد. تمويل وصحة ومحولات ورياضيات وألعاب عقل ومعالجة صور — مجانية تمامًا وآمنة.",
+  "Interactive and accurate tools in one place — designed to simplify your daily life.":
+    "أدوات تفاعلية ودقيقة في مكان واحد — مصممة لتبسيط حياتك اليومية.",
   "© 2026 iyadel — All Rights Reserved": "© 2026 iyadel — جميع الحقوق محفوظة",
   "2026 iyadel — All Rights Reserved": "2026 iyadel — جميع الحقوق محفوظة",
   "Quick Links": "روابط سريعة",
@@ -493,7 +492,7 @@ const AR = {
   "Article not found": "المقال غير موجود",
   "Back to Blog": "العودة إلى المدونة",
   "Enjoyed this article?": "استمتعت بالمقال؟",
-  "Explore 31+ free tools that make everyday tasks effortless.": "استكشف أكثر من 31 أداة مجانية تجعل المهام اليومية سهلة.",
+  "Explore our free tools that make everyday tasks effortless.": "استكشف أدواتنا المجانية التي تجعل المهام اليومية سهلة.",
   "Browse Tools": "تصفّح الأدوات",
   "Font Size": "حجم الخط",
   "Background": "الخلفية",
@@ -517,7 +516,7 @@ const AR = {
   "Secure & private — all processing happens in your browser, no data is uploaded to any server.": "آمن وخاص — تتم جميع المعالجات في متصفحك، ولا يتم رفع أي بيانات إلى أي خادم.",
   "Works on all devices — mobile, tablet, or desktop.": "يعمل على جميع الأجهزة — جوال أو جهاز لوحي أو حاسوب.",
   "Supports Arabic & English — choose your preferred language.": "يدعم العربية والإنجليزية — اختر لغتك المفضلة.",
-  "31+ tools — Finance, Health, Converters, Math, Brain Games, and Image Tools.": "أكثر من 31 أداة — تمويل وصحة ومحولات ورياضيات وألعاب عقل وأدوات صور.",
+  "Tools — Finance, Health, Converters, Math, Brain Games, and Image Tools.": "أدوات — تمويل وصحة ومحولات ورياضيات وألعاب عقل وأدوات صور.",
   "Continuous updates — we keep adding new tools to meet your needs.": "تحديثات مستمرة — نواصل إضافة أدوات جديدة لتلبية احتياجاتك.",
   "3. Sharing Information": "3. مشاركة المعلومات",
   "We do not sell or rent your personal information. We may share data with trusted partners to help operate our site.": "لا نبيع أو نؤجر معلوماتك الشخصية. قد نشارك البيانات مع شركاء موثوقين للمساعدة في تشغيل موقعنا.",
@@ -531,7 +530,6 @@ const AR = {
   "All financial tools are for educational and informational purposes only, and do not constitute financial advice.": "جميع الأدوات المالية لأغراض تعليمية وإعلامية فقط، ولا تُعد نصيحة مالية.",
   "8. Contact Us": "8. اتصل بنا",
   "Ready to get started?": "جاهز للبدء؟",
-  "Jump back in and explore all 26+ free tools iyadel has to offer.": "عُد واستكشف جميع الأدوات المجانية (أكثر من 26) التي يقدمها iyadel.",
   "Back to Tools": "العودة إلى الأدوات",
 
   // Dashboard
@@ -614,8 +612,8 @@ const AR = {
 
   "9. Contact Us": "9. اتصل بنا",
   "11. Contact Us": "11. اتصل بنا",
-  "Jump back in and explore all 31+ free tools iyadel has to offer.":
-    "عُد واستكشف جميع الأدوات المجانية (أكثر من 31) التي يقدمها iyadel.",
+  "Jump back in and explore all the free tools iyadel has to offer.":
+    "عُد واستكشف جميع الأدوات المجانية التي يقدمها iyadel.",
   "6. Information Security": "6. أمان المعلومات",
   "7. Your Rights": "7. حقوقك",
 

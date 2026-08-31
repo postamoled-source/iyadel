@@ -15,7 +15,7 @@ export default function Footer() {
             <span className="font-bold text-lg text-background">{t("iyadel Platform")}</span>
           </div>
           <p className="text-sm text-background/70 mb-6 leading-relaxed">
-            {t("31+ interactive and accurate tools in one place — designed to simplify your daily life.")}
+            {t("Interactive and accurate tools in one place — designed to simplify your daily life.")}
           </p>
           <div className="flex flex-col gap-3">
             <a href="https://play.google.com/store/apps/details?id=com.iyadel.app" target="_blank" rel="noopener noreferrer" aria-label="Download on Google Play">

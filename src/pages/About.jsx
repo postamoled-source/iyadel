@@ -59,7 +59,7 @@ function AboutUsSection() {
     { icon: ShieldCheck, text: "Secure & private — all processing happens in your browser, no data is uploaded to any server." },
     { icon: Layers, text: "Works on all devices — mobile, tablet, or desktop." },
     { icon: Globe, text: "Supports Arabic & English — choose your preferred language." },
-    { icon: Wrench, text: "31+ tools — Finance, Health, Converters, Math, Brain Games, and Image Tools." },
+    { icon: Wrench, text: "Tools — Finance, Health, Converters, Math, Brain Games, and Image Tools." },
     { icon: Sparkles, text: "Continuous updates — we keep adding new tools to meet your needs." },
   ];
   return (
@@ -145,7 +145,7 @@ function CTASection() {
       <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
         <AnimatedElement>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{t("Ready to get started?")}</h2>
-          <p className="text-muted-foreground mb-8">{t("Jump back in and explore all 31+ free tools iyadel has to offer.")}</p>
+          <p className="text-muted-foreground mb-8">{t("Jump back in and explore all the free tools iyadel has to offer.")}</p>
           <Link to="/">
             <Button className="relative overflow-hidden rounded-xl px-8 py-6 text-lg bg-accent text-accent-foreground hover:scale-105 transition-transform duration-300 shadow-lg shadow-accent/20">
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-foreground/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] bg-[length:200%_100%]" />
@@ -161,7 +161,7 @@ function CTASection() {
 export default function About() {
   useSeo({
     title: "About iyadel — Free, Private, Cross-Platform Tools",
-    description: "Learn about iyadel — an integrated platform of 31+ free, private, cross-platform online tools covering finance, health, converters, math, games, and image processing.",
+    description: "Learn about iyadel — an integrated platform of free, private, cross-platform online tools covering finance, health, converters, math, games, and image processing.",
     path: "/About",
   });
   return (
