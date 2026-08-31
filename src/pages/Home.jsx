@@ -22,6 +22,7 @@ import MathPuzzleGame from "@/components/games/MathPuzzleGame";
 import WordScrambleGame from "@/components/games/WordScrambleGame";
 import GameMusicButton from "@/components/games/GameMusicButton";
 import PercentageCalculator from "@/components/tools/PercentageCalculator";
+import JpgToPngConverter from "@/components/tools/JpgToPngConverter";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
@@ -1710,6 +1711,9 @@ function ToolWorkspace({ tool, onBack }) {
             )}
           </>
         );
+      }
+      case "jpg-to-png": {
+        return <JpgToPngConverter />;
       }
       case "image-enhancer": {
         const presets = [

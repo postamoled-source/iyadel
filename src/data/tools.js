@@ -295,6 +295,15 @@ export const STATIC_TOOLS = [
     content: "Image compression reduces file size by lowering quality slightly, balancing visual fidelity with storage and bandwidth savings. This tool re-encodes your image as JPEG at a chosen quality level and shows the before-and-after sizes. Lower quality means a smaller file but more visible artifacts, so pick the level that keeps the image looking good for its purpose. Compression happens locally, so your image stays private.",
   },
   {
+    name: "JPG to PNG Converter",
+    slug: "jpg-to-png",
+    category: "Image Tools",
+    description: "Convert JPG images to high-quality PNG.",
+    icon: "FileImage",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/fc40d44ca_generated_image.png",
+    content: "Converting JPG to PNG re-encodes your image in a lossless format that preserves full quality and supports transparency. PNG is ideal for graphics, logos, and images with sharp edges or text where JPEG artifacts would be visible. This tool does the conversion entirely in your browser — your image is never uploaded, so it stays completely private. Upload a JPG, click convert, and download a high-quality PNG instantly.",
+  },
+  {
     name: "Image Enhancer",
     slug: "image-enhancer",
     category: "Image Tools",
