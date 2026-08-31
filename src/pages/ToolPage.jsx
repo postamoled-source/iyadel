@@ -3,6 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import { useSeo } from "@/lib/analytics";
 import { STATIC_TOOLS } from "@/data/tools";
 import { TOOL_GUIDES } from "@/data/tool-guides";
+import { TOOL_CONTENT_AR, TOOL_GUIDES_AR } from "@/data/translations-ar";
 import {
   ArrowLeft, ChevronRight, Play,
   Calculator as CalcIcon, TrendingUp, LineChart, Activity, Flame, DollarSign, Ruler,
@@ -99,7 +100,7 @@ function Faq({ q, a }) {
 
 export default function ToolPage() {
   const { slug } = useParams();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const navigate = useNavigate();
   const tool = STATIC_TOOLS.find((x) => x.slug === slug);
 
@@ -112,12 +113,13 @@ export default function ToolPage() {
   if (!tool) return <PageNotFound />;
 
   const guide = TOOL_GUIDES[slug] || {};
-  const steps = guide.steps || [
+  const guideAr = TOOL_GUIDES_AR[slug] || {};
+  const steps = (lang === "ar" ? guideAr.steps : guide.steps) || [
     `Open the ${tool.name} calculator above.`,
     "Enter your values into the input fields.",
     "Read the result shown instantly.",
   ];
-  const intro = guide.intro || tool.content || tool.description;
+  const intro = lang === "ar" ? (TOOL_CONTENT_AR[slug] || guideAr.intro || tool.content || tool.description) : (guide.intro || tool.content || tool.description);
   const formula = FORMULAS[slug] || `// ${tool.name} — interactive tool, see How to use above.`;
   const example = EXAMPLES[slug] || `Open the ${tool.name} calculator above to try a live example.`;
 
@@ -185,7 +187,7 @@ export default function ToolPage() {
 
         <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed mb-6">{intro}</p>
 
-        <Section title={`${t("How to use")} ${tool.name}`}>
+        <Section title={`${t("How to use")} ${t(tool.name)}`}>
           <ol className="space-y-3">
             {steps.slice(0, 3).map((s, i) => (
               <li key={i} className="flex gap-3">
