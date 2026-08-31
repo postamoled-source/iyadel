@@ -28,7 +28,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, RIDDLES, RIDDLES_AR, convertUnit, calcMolarMass, compileExpr, FN_COLORS } from "@/lib/tool-utils";
-import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, SlidersHorizontal, Swords, Spline, Instagram, Facebook, Image as ImageIcon, Pencil, Maximize2 } from "lucide-react";
+import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, SlidersHorizontal, Swords, Spline, Instagram, Facebook, Image as ImageIcon, Pencil, Maximize2, FileDown } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { trackEvent, useSeo } from "@/lib/analytics";
 import { TOOL_CONTENT_AR, TOOL_GUIDES_AR } from "@/data/translations-ar";
@@ -61,7 +61,7 @@ const CATEGORY_CARDS = [
   { label: "Math", cat: "Math", Icon: Calculator },
   { label: "Brain Games", cat: "Games", Icon: Puzzle },
   { label: "Image Tools", cat: "Image Tools", Icon: ImageEditIcon },
-  { label: "Daily Tools", cat: "All", Icon: Layers },
+  { label: "PDF Tools", cat: "PDF Tools", Icon: FileDown, route: "/pdf-tools" },
   { label: "All Tools", cat: "All", Icon: Box },
 ];
 
@@ -2141,9 +2141,9 @@ function ToolsHub({ searchQuery = "" }) {
           <div id="categories" className="mb-8">
             <h2 className="text-left text-[16px] font-bold text-[#111827] dark:text-[#FEF3C7] mb-2">{t("Browse by Category")}</h2>
             <div className="grid grid-cols-4 gap-2">
-              {CATEGORY_CARDS.map(({ label, cat, Icon }) => (
-                <button key={label} onClick={() => { setActiveCategory(cat); trackEvent("category_select", { category: cat }); }}
-                  className={`flex flex-col items-center justify-center px-1 py-2 h-[84px] rounded-[14px] bg-white dark:bg-[#2D2A5A] border shadow-[0_2px_6px_rgba(109,40,217,0.06)] transition-all duration-300 ${activeCategory === cat ? "border-[#6D28D9]" : "border-[#F3F4F6] dark:border-[#4B3F8A]"}`}>
+              {CATEGORY_CARDS.map(({ label, cat, Icon, route }) => (
+                <button key={label} onClick={() => { if (route) { navigate(route); trackEvent("category_select", { category: cat }); return; } setActiveCategory(cat); trackEvent("category_select", { category: cat }); }}
+                  className={`flex flex-col items-center justify-center px-1 py-2 h-[84px] rounded-[14px] bg-white dark:bg-[#2D2A5A] border shadow-[0_2px_6px_rgba(109,40,217,0.06)] transition-all duration-300 ${!route && activeCategory === cat ? "border-[#6D28D9]" : "border-[#F3F4F6] dark:border-[#4B3F8A]"}`}>
                   <div className="w-[42px] h-[42px] rounded-full bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center">
                     <Icon className="w-[22px] h-[22px] text-white" strokeWidth={2} />
                   </div>
