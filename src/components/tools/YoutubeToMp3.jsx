@@ -18,7 +18,9 @@ const translations = {
     error: "❌ حدث خطأ. يرجى التحقق من الرابط والمحاولة مرة أخرى.",
     retry: " قد تكون الخدمة مؤقتة، حاول استخدام رابط آخر.",
     ready: "✅ تم التحويل بنجاح!",
+    empty: "⚠️ يرجى إدخال رابط يوتيوب.",
     invalid: "⚠️ يرجى إدخال رابط يوتيوب صحيح.",
+    invalidUrl: "⚠️ الرابط غير صالح. تأكد من أنه رابط يوتيوب صحيح.",
     downloadText: "تحميل الملف",
     paste: "لصق مثال",
     clear: "مسح",
@@ -42,7 +44,9 @@ const translations = {
     error: "❌ An error occurred. Please check the link and try again.",
     retry: " The service might be temporary, try another link.",
     ready: "✅ Conversion completed successfully!",
+    empty: "⚠️ Please enter a YouTube link.",
     invalid: "⚠️ Please enter a valid YouTube link.",
+    invalidUrl: "⚠️ Invalid URL. Please enter a valid YouTube link.",
     downloadText: "Download File",
     paste: "Paste Example",
     clear: "Clear",
@@ -58,6 +62,30 @@ const translations = {
   },
 };
 
+function extractVideoId(url) {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=)([^&]+)/i,
+    /(?:youtu\.be\/)([^?]+)/i,
+    /(?:youtube\.com\/embed\/)([^?]+)/i,
+    /(?:youtube\.com\/v\/)([^?]+)/i,
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+function normalizeUrl(url) {
+  const videoId = extractVideoId(url);
+  return videoId ? `https://www.youtube.com/watch?v=${videoId}` : url;
+}
+
+const APIS = (url, quality) => [
+  { url: `https://api.vevioz.com/api/button/mp3/${encodeURIComponent(url)}?quality=${quality}` },
+  { url: `https://api.y2mate.com/convert?url=${encodeURIComponent(url)}&quality=${quality}` },
+];
+
 export default function YoutubeToMp3() {
   const { lang, isRTL } = useI18n();
   const tr = translations[lang] || translations.ar;
@@ -68,31 +96,49 @@ export default function YoutubeToMp3() {
   const [result, setResult] = useState(null); // { title, downloadUrl, sizeMB }
   const [openFaq, setOpenFaq] = useState(0);
 
-  const isValid = (u) => u.includes("youtube.com/watch") || u.includes("youtu.be/");
-
   const startConversion = async () => {
-    const value = url.trim();
-    if (!value || !isValid(value)) {
-      setStatus({ type: "error", text: tr.invalid });
+    const rawUrl = url.trim();
+    if (!rawUrl) {
+      setStatus({ type: "error", text: tr.empty });
       setResult(null);
       return;
     }
+    const videoId = extractVideoId(rawUrl);
+    if (!videoId) {
+      setStatus({ type: "error", text: tr.invalidUrl });
+      setResult(null);
+      return;
+    }
+    const normalizedUrl = normalizeUrl(rawUrl);
     setLoading(true);
     setStatus({ type: "processing", text: tr.processing });
     setResult(null);
     try {
-      const apiUrl = `https://api.vevioz.com/api/button/mp3/${encodeURIComponent(value)}?quality=${quality}`;
-      const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = await response.json();
-      const downloadUrl = data.download_url || data.link || data.url;
-      if (!downloadUrl) throw new Error("No download link");
-      const title = data.title || "audio";
-      const sizeMB = data.size ? (data.size / (1024 * 1024)).toFixed(1) : "?";
-      setResult({ title, downloadUrl, sizeMB });
-      setStatus({ type: "ready", text: tr.ready });
-    } catch (err) {
-      setStatus({ type: "error", text: tr.error + tr.retry });
+      let success = false;
+      for (const api of APIS(normalizedUrl, quality)) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 8000);
+          const response = await fetch(api.url, { signal: controller.signal });
+          clearTimeout(timeout);
+          if (!response.ok) continue;
+          const data = await response.json();
+          const downloadUrl = data.download_url || data.link || data.url;
+          if (downloadUrl) {
+            const title = data.title || `video_${videoId}`;
+            const sizeMB = data.size ? (data.size / (1024 * 1024)).toFixed(1) : "?";
+            setResult({ title, downloadUrl, sizeMB });
+            setStatus({ type: "ready", text: tr.ready });
+            success = true;
+            break;
+          }
+        } catch (e) {
+          // try next API
+        }
+      }
+      if (!success) {
+        setStatus({ type: "error", text: tr.error + tr.retry });
+      }
     } finally {
       setLoading(false);
     }
