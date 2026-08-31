@@ -204,7 +204,6 @@ export default function VocabQuizGame() {
     try { localStorage.setItem(`vocabUnlocked_${pair}`, String(Math.min(nu, levels.length - 1))); } catch {}
     setMood("happy");
     setMascotLine(lang === "ar" ? `أحسنت! أكملت المستوى ${levelIdx + 1}` : `Great! Level ${levelIdx + 1} complete!`);
-    speak(PRAISE[Math.floor(Math.random() * PRAISE.length)], targetLang.tts);
     if (nu >= levels.length) {
       setWon(true);
       setBest((b) => { const nb = Math.max(b, score); try { localStorage.setItem(`vocabBest_${pair}`, String(nb)); } catch {}; return nb; });
@@ -218,7 +217,7 @@ export default function VocabQuizGame() {
 
   const fail = useCallback(() => {
     setLives((l) => Math.max(0, l - 1));
-    setStreak(0); setMood("sad"); speak(WRONG[0], targetLang.tts); playWrong();
+    setStreak(0); setMood("sad"); playWrong();
     advanceRef.current = setTimeout(() => buildExercise(levels[levelIdx].exercises[exIdx]), 1400);
   }, [levelIdx, exIdx, buildExercise, levels, targetLang]);
 
@@ -226,7 +225,7 @@ export default function VocabQuizGame() {
     const gained = 10 + streak;
     setScore((s) => s + gained); setStreak((s) => s + 1); setMood("happy");
     setMascotLine(PRAISE[Math.floor(Math.random() * PRAISE.length)]);
-    speak(PRAISE[Math.floor(Math.random() * PRAISE.length)], targetLang.tts); playCorrect();
+    playCorrect();
     advanceRef.current = setTimeout(nextExercise, 1100);
   }, [streak, nextExercise, targetLang]);
 
