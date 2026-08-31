@@ -251,12 +251,12 @@ export const STATIC_TOOLS = [
     content: "Ball Launcher is a 2D physics game. A cannon at the bottom aims toward your finger — tap and release to launch a ball in a gravity arc toward floating bubbles. Pop a bubble to score 10 points; new bubbles keep spawning so the board stays full. You have 30 seconds to score as much as you can, and your best result is saved on your device. The game sharpens aim and trajectory intuition and runs entirely in your browser, so nothing is stored. Beat your own high score every round.",
   },
   {
-    name: "Learn English (Vocab Quiz)",
+    name: "Learn Languages (Vocab Quiz)",
     slug: "vocab-quiz",
     category: "Games",
-    description: "Duolingo-style English lessons with a talking globe character: vocabulary, listening, sentence building & typing across 12 levels.",
+    description: "Duolingo-style lessons for 8 languages (English, Arabic, French, Spanish, Italian, German, Japanese, Portuguese) with a talking globe — vocab, listening, sentence building & typing, 12 levels each.",
     icon: "Languages",
-    content: "A Duolingo-style English-learning game with a talking globe mascot. It mixes six exercise types: choosing the Arabic meaning of an English word, listening to a spoken word and picking its meaning, completing the blank in a sentence, arranging cut-up words into a correct sentence, typing the English word for an Arabic prompt, and understanding phrases the character speaks. The browser's speech engine pronounces every English word and sentence, and the mascot praises you aloud on correct answers. Five hearts, a streak bonus, twelve progressive levels (greetings, family, numbers, colors, food, animals, routines, school, time, travel, weather & feelings, conversations), and your best score is saved on your device. Everything runs in your browser — nothing is uploaded.",
+    content: "A Duolingo-style language-learning game with a talking globe mascot. Pick a language from the top menu — English, Arabic, French, Spanish, Italian, German, Japanese or Portuguese — then work through 12 themed levels (greetings, family, numbers, colors, food, animals, routines, school, time, travel, weather & feelings, conversations), 15 questions each. Six exercise types: choose the Arabic meaning of a foreign word, listen to a spoken word and pick its meaning, complete the blank in a sentence, arrange cut-up words into a correct sentence, type the word in the target language, and understand phrases the character speaks. The browser's speech engine pronounces every word and sentence in the correct language, and the mascot praises you aloud on correct answers. Wrong answers send you back to the same question until you answer it correctly, so you can't advance to the next level without mastering every question. Five hearts, a streak bonus, and your best score per language is saved on your device. Everything runs in your browser — nothing is uploaded.",
   },
   {
     name: "Snake",

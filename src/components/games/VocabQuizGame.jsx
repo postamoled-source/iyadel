@@ -1,27 +1,28 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Heart, Flame, Trophy, Play, RotateCcw, Check, X, Star, Volume2, Lock, ChevronRight, Globe, Pencil } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import GameMusicButton from "@/components/games/GameMusicButton";
-import { resumeAudio, playStart, playCorrect, playWrong, playGameOver, playWin } from "@/lib/game-sounds";
-import { LEVELS, VOCAB, PRAISE, WRONG } from "@/data/vocab-levels";
+import { resumeAudio, playStart, playCorrect, playWrong, playWin } from "@/lib/game-sounds";
+import { LANGS, levelsForLang, MEANING_POOL, PRAISE, WRONG } from "@/data/learn-languages";
 
 const MAX_LIVES = 5;
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((v) => v[1]);
 const sample = (arr, n) => shuffle(arr).slice(0, n);
 const norm = (s) => (s || "").trim().toLowerCase().replace(/[.!،,؟?]/g, "").replace(/\s+/g, " ");
 
-// نطق إنجليزي عبر المتصفح
-function speak(text) {
+// نطق عبر المتصفح بلغة الهدف
+function speak(text, tts = "en-US") {
   try {
     if (!("speechSynthesis" in window)) return;
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = "en-US";
+    u.lang = tts;
     const voices = window.speechSynthesis.getVoices();
-    const v = voices.find((vc) => vc.lang && vc.lang.startsWith("en"));
+    const base = tts.split("-")[0];
+    const v = voices.find((vc) => vc.lang && vc.lang.startsWith(base));
     if (v) u.voice = v;
-    u.rate = 0.92;
+    u.rate = 0.9;
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(u);
   } catch {}
@@ -51,7 +52,6 @@ function GlobeMascot({ mood = "idle", size = 72 }) {
       <path d="M28 64 q12 4 22 -2 q10 -2 20 4" stroke="url(#gmLand)" strokeWidth="6" fill="none" strokeLinecap="round" opacity="0.9" />
       <ellipse cx="36" cy="46" rx="6" ry="4" fill="url(#gmLand)" opacity="0.85" />
       <ellipse cx="68" cy="58" rx="5" ry="4" fill="url(#gmLand)" opacity="0.85" />
-      {/* eyes */}
       {eye ? (
         <text x="50" y="58" textAnchor="middle" fontSize="20" fontWeight="800" fill="#fff" fontFamily="sans-serif">{eye}</text>
       ) : (
@@ -62,7 +62,6 @@ function GlobeMascot({ mood = "idle", size = 72 }) {
           <circle cx="59" cy="55" r="2" fill="#1e1b4b" />
         </>
       )}
-      {/* smile */}
       <path d="M42 64 q8 7 16 0" stroke="#fff" strokeWidth="2.4" fill="none" strokeLinecap="round" />
     </svg>
   );
@@ -70,62 +69,75 @@ function GlobeMascot({ mood = "idle", size = 72 }) {
 
 export default function VocabQuizGame() {
   const { t, lang, isRTL } = useI18n();
+  const [langCode, setLangCode] = useState(() => { try { return localStorage.getItem("learnLang") || "en"; } catch { return "en"; } });
+  const curLang = useMemo(() => LANGS.find((l) => l.code === langCode) || LANGS[0], [langCode]);
+  const levels = useMemo(() => levelsForLang(langCode), [langCode]);
+
   const [phase, setPhase] = useState("map"); // map | playing | over
   const [levelIdx, setLevelIdx] = useState(0);
   const [exIdx, setExIdx] = useState(0);
   const [lives, setLives] = useState(MAX_LIVES);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
-  const [best, setBest] = useState(() => { try { return parseInt(localStorage.getItem("vocabBest") || "0", 10) || 0; } catch { return 0; } });
-  const [maxUnlocked, setMaxUnlocked] = useState(() => { try { return parseInt(localStorage.getItem("vocabUnlocked") || "0", 10) || 0; } catch { return 0; } });
+  const [best, setBest] = useState(() => { try { return parseInt(localStorage.getItem(`vocabBest_${langCode}`) || "0", 10) || 0; } catch { return 0; } });
+  const [maxUnlocked, setMaxUnlocked] = useState(() => { try { return parseInt(localStorage.getItem(`vocabUnlocked_${langCode}`) || "0", 10) || 0; } catch { return 0; } });
   const [picked, setPicked] = useState(null);
   const [lock, setLock] = useState(false);
-  const [feedback, setFeedback] = useState(null); // { ok, correct }
+  const [feedback, setFeedback] = useState(null);
   const [typed, setTyped] = useState("");
-  const [arranged, setArranged] = useState([]); // for arrange
+  const [arranged, setArranged] = useState([]);
   const [shuffledWords, setShuffledWords] = useState([]);
-  const [exData, setExData] = useState(null); // resolved exercise with options
+  const [exData, setExData] = useState(null);
   const [mood, setMood] = useState("idle");
   const [mascotLine, setMascotLine] = useState("");
   const [won, setWon] = useState(false);
   const advanceRef = useRef(null);
 
-  const level = LEVELS[levelIdx];
+  const level = levels[levelIdx];
   const exercise = exData;
+
+  // اختيار لغة جديدة → إعادة الضبط
+  const selectLang = useCallback((code) => {
+    if (advanceRef.current) { clearTimeout(advanceRef.current); advanceRef.current = null; }
+    window.speechSynthesis?.cancel?.();
+    setLangCode(code);
+    try { localStorage.setItem("learnLang", code); } catch {}
+    setBest(() => { try { return parseInt(localStorage.getItem(`vocabBest_${code}`) || "0", 10) || 0; } catch { return 0; } });
+    setMaxUnlocked(() => { try { return parseInt(localStorage.getItem(`vocabUnlocked_${code}`) || "0", 10) || 0; } catch { return 0; } });
+    setPhase("map"); setWon(false); setScore(0); setStreak(0); setLives(MAX_LIVES);
+    setExData(null); setFeedback(null); setPicked(null); setLock(false);
+  }, []);
 
   const buildExercise = useCallback((ex) => {
     let data = { ...ex };
     if (ex.type === "vocab" || ex.type === "listen" || ex.type === "say") {
       const correct = ex.ar;
-      const pool = VOCAB.filter((v) => v.ar !== correct);
-      const distractors = sample(pool.map((v) => v.ar), ex.type === "say" ? 3 : 2);
+      const pool = MEANING_POOL.filter((m) => m !== correct);
+      const distractors = sample(pool, ex.type === "say" ? 3 : 2);
       data.options = shuffle([correct, ...distractors]);
     }
-    if (ex.type === "fill") {
-      data.options = shuffle(ex.options);
-    }
+    if (ex.type === "fill") data.options = shuffle(ex.options);
     if (ex.type === "arrange") {
-      const sh = shuffle(ex.words);
-      setShuffledWords(sh);
+      setShuffledWords(shuffle(ex.words));
       setArranged([]);
     }
     if (ex.type === "type") setTyped("");
     setExData(data);
     setPicked(null); setLock(false); setFeedback(null);
     if (ex.type === "listen" || ex.type === "say") {
-      setTimeout(() => speak(ex.speak || ex.en), 350);
+      setTimeout(() => speak(ex.speak || ex.word, curLang.tts), 350);
     }
-  }, []);
+  }, [curLang]);
 
   const startLevel = useCallback((idx) => {
     resumeAudio(); playStart();
     setLevelIdx(idx); setExIdx(0);
-    setLives(MAX_LIVES); setScore(0); setStreak(0);
+    setLives(MAX_LIVES); setScore(0); setStreak(0); setWon(false);
     setPhase("playing");
     setMood("idle"); setMascotLine(lang === "ar" ? "هيا نبدأ!" : "Let's begin!");
-    speak("Let's begin!");
-    buildExercise(LEVELS[idx].exercises[0]);
-  }, [buildExercise, lang]);
+    speak("Let's begin!", curLang.tts);
+    buildExercise(levels[idx].exercises[0]);
+  }, [buildExercise, lang, curLang, levels]);
 
   const goMap = useCallback(() => {
     if (advanceRef.current) { clearTimeout(advanceRef.current); advanceRef.current = null; }
@@ -134,47 +146,45 @@ export default function VocabQuizGame() {
   }, []);
 
   const nextExercise = useCallback(() => {
-    const exs = LEVELS[levelIdx].exercises;
+    const exs = levels[levelIdx].exercises;
     const ni = exIdx + 1;
     if (ni < exs.length) {
       setExIdx(ni);
       buildExercise(exs[ni]);
     } else {
-      // level complete
       playWin();
       const nu = Math.max(maxUnlocked, levelIdx + 1);
       setMaxUnlocked(nu);
-      try { localStorage.setItem("vocabUnlocked", String(nu)); } catch {}
+      try { localStorage.setItem(`vocabUnlocked_${langCode}`, String(Math.min(nu, levels.length - 1))); } catch {}
       setMood("happy");
       setMascotLine(lang === "ar" ? `أحسنت! أكملت المستوى ${levelIdx + 1}` : `Great! Level ${levelIdx + 1} complete!`);
-      speak(PRAISE[Math.floor(Math.random() * PRAISE.length)]);
-      if (nu >= LEVELS.length) {
-        // all done
+      speak(PRAISE[Math.floor(Math.random() * PRAISE.length)], curLang.tts);
+      if (nu >= levels.length) {
         setWon(true);
-        setBest((b) => { const nb = Math.max(b, score); try { localStorage.setItem("vocabBest", String(nb)); } catch {}; return nb; });
+        setBest((b) => { const nb = Math.max(b, score); try { localStorage.setItem(`vocabBest_${langCode}`, String(nb)); } catch {}; return nb; });
         setTimeout(() => setPhase("over"), 1400);
       } else {
         advanceRef.current = setTimeout(() => {
           setExIdx(0);
-          buildExercise(LEVELS[levelIdx + 1].exercises[0]);
+          buildExercise(levels[levelIdx + 1].exercises[0]);
           setLevelIdx(levelIdx + 1);
           setMood("idle"); setMascotLine("");
         }, 1300);
       }
     }
-  }, [levelIdx, exIdx, buildExercise, maxUnlocked, score, lang]);
+  }, [levelIdx, exIdx, buildExercise, maxUnlocked, score, lang, curLang, levels, langCode]);
 
   const fail = useCallback(() => {
     setLives((l) => Math.max(0, l - 1));
     setStreak(0);
     setMood("sad");
-    speak(WRONG[0]);
+    speak(WRONG[0], curLang.tts);
     playWrong();
     // العودة لنفس السؤال الخاطئ والإجابة عليه بشكل صحيح قبل المرور
     advanceRef.current = setTimeout(() => {
-      buildExercise(LEVELS[levelIdx].exercises[exIdx]);
+      buildExercise(levels[levelIdx].exercises[exIdx]);
     }, 1400);
-  }, [levelIdx, exIdx, buildExercise]);
+  }, [levelIdx, exIdx, buildExercise, levels, curLang]);
 
   const succeed = useCallback(() => {
     const gained = 10 + streak;
@@ -182,7 +192,7 @@ export default function VocabQuizGame() {
     setStreak((s) => s + 1);
     setMood("happy");
     setMascotLine(PRAISE[Math.floor(Math.random() * PRAISE.length)]);
-    speak(PRAISE[Math.floor(Math.random() * PRAISE.length)]);
+    speak(PRAISE[Math.floor(Math.random() * PRAISE.length)], curLang.tts);
     playCorrect();
     advanceRef.current = setTimeout(nextExercise, 1100);
   }, [streak, nextExercise]);
@@ -200,8 +210,8 @@ export default function VocabQuizGame() {
     if (lock || !exercise) return;
     resumeAudio();
     setLock(true);
-    const ok = norm(typed) === norm(exercise.en);
-    setFeedback({ ok, correct: exercise.en });
+    const ok = norm(typed) === norm(exercise.word);
+    setFeedback({ ok, correct: exercise.word });
     if (ok) succeed(); else fail();
   }, [lock, exercise, typed, succeed, fail]);
 
@@ -228,47 +238,68 @@ export default function VocabQuizGame() {
   useEffect(() => () => { if (advanceRef.current) clearTimeout(advanceRef.current); window.speechSynthesis?.cancel?.(); }, []);
 
   const tr = lang === "ar" ? {
-    title: "تعلّم الإنجليزية", what: "ما معنى هذه الكلمة؟", score: "النقاط", lives: "القلوب",
+    title: "تعلّم اللغات", learn: "تعلّم", what: "ما معنى هذه الكلمة؟", score: "النقاط", lives: "القلوب",
     streak: "سلسلة", best: "الأفضل", start: "ابدأ المستوى", again: "العب مجدداً", locked: "مغلق",
     over: "انتهت اللعبة", next: "التالي", listenQ: "استمع ثم اختر المعنى", sayQ: "ماذا قالت الشخصية؟",
-    typeQ: "اكتب الكلمة بالإنجليزية", arrangeQ: "رتّب الكلمات لتكوّن جملة", fillQ: "أكمل الفراغ الصحيح",
-    mapTitle: "اختر مستوى", level: "المستوى", intro: "اختر مستوى وابدأ رحلة تعلّم الإنجليزية مع شخصيتنا الناطقة.",
+    typeQ: "اكتب الكلمة باللغة الهدف", arrangeQ: "رتّب الكلمات لتكوّن جملة", fillQ: "أكمل الفراغ الصحيح",
+    mapTitle: "اختر مستوى", level: "المستوى", intro: "اختر لغة ثم مستوى وابدأ التعلّم مع شخصيتنا الناطقة.",
     correctWas: "الصحيح:", playAudio: "استمع", resetArr: "إعادة", typePlaceholder: "اكتب هنا...",
     completed: "أكملت كل المستويات!", reached: "وصلت للمستوى", finished: "أتقنت المستوى", submit: "تحقّق",
+    chooseLang: "اختر لغة",
   } : {
-    title: "Learn English", what: "What does this word mean?", score: "Score", lives: "Lives",
+    title: "Learn Languages", learn: "Learn", what: "What does this word mean?", score: "Score", lives: "Lives",
     streak: "Streak", best: "Best", start: "Start Level", again: "Play again", locked: "Locked",
     over: "Game Over", next: "Next", listenQ: "Listen, then choose", sayQ: "What did the character say?",
-    typeQ: "Type the word in English", arrangeQ: "Arrange the words to make a sentence", fillQ: "Choose the correct word",
-    mapTitle: "Choose a level", level: "Level", intro: "Pick a level and start learning English with our talking character.",
+    typeQ: "Type the word in the target language", arrangeQ: "Arrange the words to make a sentence", fillQ: "Choose the correct word",
+    mapTitle: "Choose a level", level: "Level", intro: "Pick a language, then a level and start learning with our talking character.",
     correctWas: "Correct:", playAudio: "Play", resetArr: "Reset", typePlaceholder: "Type here...",
     completed: "You finished all levels!", reached: "You reached level", finished: "You mastered the level", submit: "Check",
+    chooseLang: "Choose a language",
   };
+
+  // شريط اللغات في الأعلى (أقسام)
+  const LangTabs = ({ compact = false }) => (
+    <div className={`flex gap-2 overflow-x-auto pb-1 ${compact ? "" : "mb-4"}`} style={{ scrollbarWidth: "none" }}>
+      {LANGS.map((l) => {
+        const active = l.code === langCode;
+        return (
+          <button key={l.code} onClick={() => selectLang(l.code)}
+            className={`shrink-0 flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-xs font-bold transition-all ${active ? "bg-primary text-primary-foreground border-primary shadow-md scale-105" : "bg-card border-border text-foreground hover:border-primary/50"}`}>
+            <span className="text-base leading-none">{l.flag}</span>
+            <span>{lang === "ar" ? l.nameAr : l.name}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
 
   // ---------- Level map ----------
   if (phase === "map") {
     return (
       <div dir={isRTL ? "rtl" : "ltr"} className="select-none max-w-[420px] mx-auto">
-        <div className="flex items-center justify-center gap-3 mb-5">
-          <GlobeMascot mood="idle" size={64} />
+        <div className="flex items-center justify-center gap-3 mb-3">
+          <GlobeMascot mood="idle" size={60} />
           <div className="text-center">
             <h2 className="text-2xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{tr.title}</h2>
             <p className="text-xs text-muted-foreground">{tr.intro}</p>
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-4 mb-5 text-sm">
+        <div className="flex items-center justify-center gap-3 mb-3 text-sm">
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent/15 border border-accent/30">
             <Trophy className="w-4 h-4 text-accent" /><span className="font-extrabold text-accent">{best}</span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/15 border border-primary/30">
-            <Star className="w-4 h-4 text-primary" /><span className="font-extrabold text-primary">{LEVELS.length} {tr.level}</span>
+            <Star className="w-4 h-4 text-primary" /><span className="font-extrabold text-primary">{levels.length} {tr.level}</span>
           </div>
           <GameMusicButton theme="snake" />
         </div>
 
+        <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5 text-center">{tr.chooseLang}</p>
+        <LangTabs />
+
         <div className="grid grid-cols-2 gap-3">
-          {LEVELS.map((lv, i) => {
+          {levels.map((lv, i) => {
             const locked = i > maxUnlocked;
             const done = i < maxUnlocked;
             return (
@@ -292,7 +323,8 @@ export default function VocabQuizGame() {
   if (phase === "over") {
     return (
       <div dir={isRTL ? "rtl" : "ltr"} className="select-none max-w-[420px] mx-auto text-center">
-        <GlobeMascot mood={lives > 0 ? "happy" : "sad"} size={96} />
+        <GlobeMascot mood={won ? "happy" : "sad"} size={96} />
+        <div className="mt-2 flex justify-center"><LangTabs compact /></div>
         <h2 className="mt-3 text-2xl font-extrabold text-foreground">
           {won ? tr.completed : `${tr.reached} ${levelIdx + 1}`}
         </h2>
@@ -319,12 +351,13 @@ export default function VocabQuizGame() {
   // ---------- Playing ----------
   const total = level.exercises.length;
   const exMeta = level.exercises[exIdx];
+  const isAr = langCode === "ar";
 
   return (
     <div dir={isRTL ? "rtl" : "ltr"} className="select-none max-w-[420px] mx-auto">
-      {/* top bar */}
+      {/* شريط اللغات + الأعلى */}
       <div className="flex items-center justify-between mb-2 gap-2">
-        <button onClick={goMap} className="text-xs font-semibold text-primary hover:underline">‹ {tr.mapTitle}</button>
+        <button onClick={goMap} className="text-xs font-semibold text-primary hover:underline shrink-0">‹ {tr.mapTitle}</button>
         <div className="flex items-center gap-1">
           {Array.from({ length: MAX_LIVES }).map((_, i) => (
             <Heart key={i} className={`w-4 h-4 ${i < lives ? "text-rose-500 fill-rose-500" : "text-muted-foreground/30"}`} />
@@ -337,8 +370,15 @@ export default function VocabQuizGame() {
           <GameMusicButton theme="snake" />
         </div>
       </div>
+      <div className="mb-3">
+        <button onClick={() => selectLang(langCode)} className="flex items-center gap-1.5 text-xs font-bold text-primary">
+          <span className="text-base leading-none">{curLang.flag}</span>
+          <span>{lang === "ar" ? curLang.nameAr : curLang.name}</span>
+          <ChevronRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
 
-      {/* level + progress */}
+      {/* المستوى + التقدّم */}
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1">
           <span className="text-xs font-bold text-primary">{lang === "ar" ? level.titleAr : level.title}</span>
@@ -346,18 +386,17 @@ export default function VocabQuizGame() {
         </div>
         <div className="h-2.5 rounded-full bg-muted overflow-hidden">
           <motion.div className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
-            animate={{ width: `${((exIdx) / total) * 100}%` }} transition={{ type: "spring", stiffness: 120, damping: 18 }} />
+            animate={{ width: `${(exIdx / total) * 100}%` }} transition={{ type: "spring", stiffness: 120, damping: 18 }} />
         </div>
       </div>
 
-      {/* card */}
+      {/* البطاقة */}
       <div className="rounded-3xl border border-border bg-card p-5 shadow-xl shadow-primary/10">
-        {/* mascot + prompt */}
         <div className="flex items-center gap-3 mb-4">
           <GlobeMascot mood={mood} size={56} />
           <div className="min-w-0">
             <div className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
-              <Globe className="w-3.5 h-3.5" /> {tr.title}
+              <Globe className="w-3.5 h-3.5" /> {curLang.name}
             </div>
             <div className="text-sm font-semibold text-foreground">
               {exMeta.type === "vocab" ? tr.what
@@ -370,27 +409,23 @@ export default function VocabQuizGame() {
           </div>
         </div>
 
-        {/* exercise body */}
         <AnimatePresence mode="wait">
           <motion.div key={`${levelIdx}-${exIdx}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.22 }}>
-            {/* vocab / listen / say / fill — prompt + options */}
             {(exercise.type === "vocab" || exercise.type === "listen" || exercise.type === "say" || exercise.type === "fill") && (
               <>
                 <div className="flex flex-col items-center mb-4 gap-2">
                   {(exercise.type === "listen" || exercise.type === "say") && (
-                    <button onClick={() => speak(exercise.speak || exercise.en)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/30 text-primary font-bold text-sm hover:bg-primary/20 transition-colors">
+                    <button onClick={() => speak(exercise.speak || exercise.word, curLang.tts)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/30 text-primary font-bold text-sm hover:bg-primary/20 transition-colors">
                       <Volume2 className="w-4 h-4" /> {tr.playAudio}
                     </button>
                   )}
                   {exercise.type === "vocab" && (
-                    <div className="text-4xl font-black bg-gradient-to-r from-primary via-violet-400 to-accent bg-clip-text text-transparent">{exercise.en}</div>
+                    <div className="text-4xl font-black bg-gradient-to-r from-primary via-violet-400 to-accent bg-clip-text text-transparent" dir={isAr ? "rtl" : "ltr"}>{exercise.word}</div>
                   )}
                   {exercise.type === "fill" && (
-                    <div className="text-lg font-bold text-foreground text-center px-2">{exercise.sentence}</div>
+                    <div className="text-lg font-bold text-foreground text-center px-2" dir={isAr ? "rtl" : "ltr"}>{exercise.sentence}</div>
                   )}
-                  {exercise.type === "say" && (
-                    <div className="text-sm text-muted-foreground italic text-center">"</div>
-                  )}
+                  {exercise.type === "say" && <div className="text-sm text-muted-foreground italic text-center">"</div>}
                 </div>
                 <div className="grid gap-2.5">
                   {exercise.options.map((opt, idx) => {
@@ -404,7 +439,7 @@ export default function VocabQuizGame() {
                     }
                     return (
                       <button key={idx} onClick={() => checkAnswer(opt)} disabled={lock}
-                        className={`relative flex items-center justify-center gap-2 h-14 rounded-2xl border-2 font-bold text-lg transition-all active:scale-[0.98] ${cls}`}>
+                        className={`relative flex items-center justify-center gap-2 h-14 rounded-2xl border-2 font-bold text-lg transition-all active:scale-[0.98] ${cls}`} dir="rtl">
                         {opt}
                         {lock && isCorrect && <Check className="w-5 h-5" />}
                         {lock && isPicked && !isCorrect && <X className="w-5 h-5" />}
@@ -415,17 +450,16 @@ export default function VocabQuizGame() {
               </>
             )}
 
-            {/* type */}
             {exercise.type === "type" && (
               <div className="flex flex-col items-center gap-4">
-                <div className="text-3xl font-black text-foreground">{exercise.ar}</div>
+                <div className="text-3xl font-black text-foreground" dir="rtl">{exercise.ar}</div>
                 <div className="relative w-full max-w-[280px]">
                   <input
                     autoFocus value={typed} disabled={lock}
                     onChange={(e) => setTyped(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter" && !lock) submitType(); }}
-                    placeholder={tr.typePlaceholder} dir="ltr"
-                    className={`w-full h-14 rounded-2xl border-2 px-4 text-center text-lg font-bold outline-none transition-colors ${lock && norm(typed) === norm(exercise.en) ? "border-emerald-400 bg-emerald-500/15 text-emerald-50" : lock ? "border-rose-400 bg-rose-500/15 text-rose-50" : "border-primary/30 bg-background text-foreground focus:border-primary"}`}
+                    placeholder={tr.typePlaceholder} dir={isAr ? "rtl" : "ltr"}
+                    className={`w-full h-14 rounded-2xl border-2 px-4 text-center text-lg font-bold outline-none transition-colors ${lock && norm(typed) === norm(exercise.word) ? "border-emerald-400 bg-emerald-500/15 text-emerald-50" : lock ? "border-rose-400 bg-rose-500/15 text-rose-50" : "border-primary/30 bg-background text-foreground focus:border-primary"}`}
                   />
                   <Pencil className="absolute top-1/2 -translate-y-1/2 ltr:right-3 rtl:left-3 w-4 h-4 text-muted-foreground/50" />
                 </div>
@@ -433,17 +467,16 @@ export default function VocabQuizGame() {
               </div>
             )}
 
-            {/* arrange */}
             {exercise.type === "arrange" && (
               <div className="flex flex-col gap-4">
-                <div className="min-h-[64px] rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-3 flex flex-wrap gap-2 justify-center items-center">
+                <div className="min-h-[64px] rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-3 flex flex-wrap gap-2 justify-center items-center" dir={isAr ? "rtl" : "ltr"}>
                   {arranged.length === 0 && <span className="text-sm text-muted-foreground">{tr.arrangeQ}</span>}
                   {arranged.map((w, i) => (
                     <button key={i} onClick={() => untapWord(w, i)} disabled={lock}
                       className="px-3.5 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-sm active:scale-95 transition-transform">{w}</button>
                   ))}
                 </div>
-                <div className="flex flex-wrap gap-2 justify-center">
+                <div className="flex flex-wrap gap-2 justify-center" dir={isAr ? "rtl" : "ltr"}>
                   {shuffledWords.map((w, i) => (
                     <button key={i} onClick={() => tapWord(w, i)} disabled={lock}
                       className="px-3.5 py-2 rounded-xl bg-muted border border-border text-foreground font-bold text-sm hover:border-primary/40 active:scale-95 transition-all">{w}</button>
@@ -459,7 +492,6 @@ export default function VocabQuizGame() {
         </AnimatePresence>
       </div>
 
-      {/* feedback + mascot line */}
       {feedback && (
         <div className="mt-3 text-center text-sm">
           {feedback.ok ? (
