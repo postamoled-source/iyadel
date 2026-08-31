@@ -304,6 +304,15 @@ export const STATIC_TOOLS = [
     content: "Converting JPG to PNG re-encodes your image in a lossless format that preserves full quality and supports transparency. PNG is ideal for graphics, logos, and images with sharp edges or text where JPEG artifacts would be visible. This tool does the conversion entirely in your browser — your image is never uploaded, so it stays completely private. Upload a JPG, click convert, and download a high-quality PNG instantly.",
   },
   {
+    name: "Image Resizer",
+    slug: "image-resizer",
+    category: "Image Tools",
+    description: "Resize images by dimensions or percentage.",
+    icon: "Maximize2",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/dc77da0e0_generated_image.png",
+    content: "Resizing an image changes its pixel dimensions to fit a specific width, height, or scale while keeping the file lightweight. This tool lets you resize by exact dimensions (with an optional aspect-ratio lock so the image never distorts) or by a percentage of the original size. Resizing happens entirely in your browser — your image is never uploaded, so it stays private. Smaller dimensions mean a smaller file, ideal for emails, websites, and thumbnails; larger dimensions enlarge the image but cannot add detail that was not in the original.",
+  },
+  {
     name: "Image Enhancer",
     slug: "image-enhancer",
     category: "Image Tools",

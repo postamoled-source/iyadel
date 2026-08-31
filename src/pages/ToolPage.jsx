@@ -8,7 +8,7 @@ import {
   Calculator as CalcIcon, TrendingUp, LineChart, Activity, Flame, DollarSign, Ruler,
   Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent,
   Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown,
-  Ticket, Wand2, Palette, Hammer, Crosshair, Spline,
+  Ticket, Wand2, Palette, Hammer, Crosshair, Spline, Maximize2,
 } from "lucide-react";
 import Game2048 from "@/components/games/Game2048";
 import MemoryMatch from "@/components/games/MemoryMatch";
@@ -24,7 +24,7 @@ const ICONS = {
   Calculator: CalcIcon, TrendingUp, LineChart, Activity, Flame, DollarSign, Ruler, Weight,
   Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom,
   FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket,
-  Wand2, Palette, Hammer, Crosshair, Spline,
+  Wand2, Palette, Hammer, Crosshair, Spline, Maximize2,
 };
 
 // Tools whose interactive calculator is an importable component → embedded directly.
