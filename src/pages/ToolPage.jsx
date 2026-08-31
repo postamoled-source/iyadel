@@ -8,7 +8,7 @@ import {
   Calculator as CalcIcon, TrendingUp, LineChart, Activity, Flame, DollarSign, Ruler,
   Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent,
   Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown,
-  Ticket, Wand2, Palette, Hammer, Crosshair, Spline, Maximize2,
+  Ticket, Wand2, Palette, Hammer, Crosshair, Spline, Maximize2, FileDown,
 } from "lucide-react";
 import Game2048 from "@/components/games/Game2048";
 import MemoryMatch from "@/components/games/MemoryMatch";
@@ -24,7 +24,7 @@ const ICONS = {
   Calculator: CalcIcon, TrendingUp, LineChart, Activity, Flame, DollarSign, Ruler, Weight,
   Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom,
   FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket,
-  Wand2, Palette, Hammer, Crosshair, Spline, Maximize2,
+  Wand2, Palette, Hammer, Crosshair, Spline, Maximize2, FileDown,
 };
 
 // Tools whose interactive calculator is an importable component → embedded directly.
@@ -174,7 +174,7 @@ export default function ToolPage() {
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <Icon className="w-10 h-10 text-[#6D28D9] mb-3" />
               <p className="text-sm text-[#6B7280] mb-4 max-w-xs">{tool.description}</p>
-              <Link to={`/?tool=${tool.slug}`} className="inline-flex items-center gap-2 bg-gradient-to-r from-[#6D28D9] to-[#F59E0B] text-white font-semibold px-6 py-3 rounded-xl shadow-[0_4px_12px_rgba(109,40,217,0.25)] hover:opacity-90 transition-opacity">
+              <Link to={tool.route || `/?tool=${tool.slug}`} className="inline-flex items-center gap-2 bg-gradient-to-r from-[#6D28D9] to-[#F59E0B] text-white font-semibold px-6 py-3 rounded-xl shadow-[0_4px_12px_rgba(109,40,217,0.25)] hover:opacity-90 transition-opacity">
                 <Play className="w-4 h-4" /> {t("Open")} {tool.name}
               </Link>
             </div>

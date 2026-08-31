@@ -313,6 +313,16 @@ export const STATIC_TOOLS = [
     content: "Resizing an image changes its pixel dimensions to fit a specific width, height, or scale while keeping the file lightweight. This tool lets you resize by exact dimensions (with an optional aspect-ratio lock so the image never distorts) or by a percentage of the original size. Resizing happens entirely in your browser — your image is never uploaded, so it stays private. Smaller dimensions mean a smaller file, ideal for emails, websites, and thumbnails; larger dimensions enlarge the image but cannot add detail that was not in the original.",
   },
   {
+    name: "PDF Tools",
+    slug: "pdf-tools",
+    category: "PDF Tools",
+    description: "A complete suite of PDF tools that run in your browser.",
+    icon: "FileDown",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/e81fd918f_generated_image.png",
+    route: "/pdf-tools",
+    content: "A full PDF tools suite that runs entirely in your browser — merge, split, extract pages, compress, protect with a password, add watermarks and page numbers, convert Word/Excel/images to PDF, extract text and images from PDF, OCR, and more. Nothing is uploaded; every operation happens on your device.",
+  },
+  {
     name: "Image Enhancer",
     slug: "image-enhancer",
     category: "Image Tools",

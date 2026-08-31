@@ -19,6 +19,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Privacy from './pages/Privacy';
 import ToolPage from './pages/ToolPage';
+import PdfTools from './pages/PdfTools';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -54,6 +55,7 @@ const AuthenticatedApp = () => {
         <Route path="/Blog/post" element={<BlogPostPage />} />
         <Route path="/Privacy" element={<Privacy />} />
         <Route path="/tools/:slug" element={<ToolPage />} />
+        <Route path="/pdf-tools" element={<PdfTools />} />
         <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} requireAdmin />}>
           <Route path="/Dashboard" element={<Dashboard />} />
         </Route>
