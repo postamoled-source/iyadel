@@ -87,6 +87,7 @@ export default function VocabQuizGame() {
   const [exData, setExData] = useState(null); // resolved exercise with options
   const [mood, setMood] = useState("idle");
   const [mascotLine, setMascotLine] = useState("");
+  const [won, setWon] = useState(false);
   const advanceRef = useRef(null);
 
   const level = LEVELS[levelIdx];
@@ -99,6 +100,9 @@ export default function VocabQuizGame() {
       const pool = VOCAB.filter((v) => v.ar !== correct);
       const distractors = sample(pool.map((v) => v.ar), ex.type === "say" ? 3 : 2);
       data.options = shuffle([correct, ...distractors]);
+    }
+    if (ex.type === "fill") {
+      data.options = shuffle(ex.options);
     }
     if (ex.type === "arrange") {
       const sh = shuffle(ex.words);
@@ -146,6 +150,7 @@ export default function VocabQuizGame() {
       speak(PRAISE[Math.floor(Math.random() * PRAISE.length)]);
       if (nu >= LEVELS.length) {
         // all done
+        setWon(true);
         setBest((b) => { const nb = Math.max(b, score); try { localStorage.setItem("vocabBest", String(nb)); } catch {}; return nb; });
         setTimeout(() => setPhase("over"), 1400);
       } else {
@@ -160,19 +165,16 @@ export default function VocabQuizGame() {
   }, [levelIdx, exIdx, buildExercise, maxUnlocked, score, lang]);
 
   const fail = useCallback(() => {
-    setLives((l) => {
-      const nl = l - 1;
-      setMood("sad");
-      speak(WRONG[0]);
-      if (nl <= 0) {
-        setBest((b) => { const nb = Math.max(b, score); try { localStorage.setItem("vocabBest", String(nb)); } catch {}; return nb; });
-        setTimeout(() => setPhase("over"), 1000);
-      } else {
-        advanceRef.current = setTimeout(nextExercise, 1500);
-      }
-      return nl;
-    });
-  }, [nextExercise, score]);
+    setLives((l) => Math.max(0, l - 1));
+    setStreak(0);
+    setMood("sad");
+    speak(WRONG[0]);
+    playWrong();
+    // العودة لنفس السؤال الخاطئ والإجابة عليه بشكل صحيح قبل المرور
+    advanceRef.current = setTimeout(() => {
+      buildExercise(LEVELS[levelIdx].exercises[exIdx]);
+    }, 1400);
+  }, [levelIdx, exIdx, buildExercise]);
 
   const succeed = useCallback(() => {
     const gained = 10 + streak;
@@ -292,9 +294,9 @@ export default function VocabQuizGame() {
       <div dir={isRTL ? "rtl" : "ltr"} className="select-none max-w-[420px] mx-auto text-center">
         <GlobeMascot mood={lives > 0 ? "happy" : "sad"} size={96} />
         <h2 className="mt-3 text-2xl font-extrabold text-foreground">
-          {lives > 0 ? tr.completed : `${tr.reached} ${levelIdx + 1}`}
+          {won ? tr.completed : `${tr.reached} ${levelIdx + 1}`}
         </h2>
-        <p className="text-sm text-muted-foreground mt-1">{lives > 0 ? tr.finished : tr.over}</p>
+        <p className="text-sm text-muted-foreground mt-1">{won ? tr.finished : tr.over}</p>
         <div className="mt-5 flex items-center justify-center gap-4">
           <div className="rounded-2xl bg-card border border-border px-4 py-2">
             <div className="text-[10px] uppercase text-muted-foreground">{tr.score}</div>
@@ -305,6 +307,7 @@ export default function VocabQuizGame() {
             <div className="text-xl font-extrabold text-accent">{best}</div>
           </div>
         </div>
+        {won && <p className="mt-3 text-sm font-bold text-emerald-500">🎉 {tr.completed}</p>}
         <div className="mt-6 flex justify-center gap-3">
           <Button onClick={() => startLevel(0)} className="bg-primary text-primary-foreground rounded-2xl px-6 py-4"><RotateCcw className="w-4 h-4 mr-2" />{tr.again}</Button>
           <Button onClick={goMap} variant="outline" className="rounded-2xl px-6 py-4 border-border">{tr.mapTitle}</Button>
