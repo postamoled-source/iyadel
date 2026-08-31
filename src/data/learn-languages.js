@@ -17,11 +17,21 @@ export const LANGS = [
   { code: "pt", name: "Portuguese", nameAr: "البرتغالية", flag: "🇵🇹", tts: "pt-PT" },
 ];
 
-// خطة موحّدة لكل المستويات: [type, index]
-const PLAN = [
-  ["vocab", 0], ["vocab", 1], ["listen", 2], ["listen", 3], ["type", 4],
-  ["vocab", 5], ["listen", 6], ["type", 7], ["vocab", 8], ["vocab", 9],
-  ["fill", 0], ["arrange", 0], ["arrange", 1], ["say", 0], ["type", 0],
+// عدد الأسئلة لكل مستوى: ١-٤ → ١٥ ، ٥-٦ → ٢٠ ، ٧-٨ → ٢٥ ، ٩-١٠ → ٣٠ ، ١١-١٢ → ٣٥
+export const COUNTS = [15, 15, 15, 15, 20, 20, 25, 25, 30, 30, 35, 35];
+
+// ترتيب بنك الأسئلة (interleaved لتنويع الأنواع وتغطية الكلمات)
+const SEQ = [
+  [0, "vocab"], [0, "listen"], [0, "type"], "fill",
+  [1, "vocab"], [1, "listen"], [1, "type"], "arrange0",
+  [2, "vocab"], [2, "listen"], [2, "type"], "say",
+  [3, "vocab"], [3, "listen"], [3, "type"], "arrange1",
+  [4, "vocab"], [4, "listen"], [4, "type"], "listenSay",
+  [5, "vocab"], [5, "listen"], [5, "type"],
+  [6, "vocab"], [6, "listen"], [6, "type"],
+  [7, "vocab"], [7, "listen"], [7, "type"],
+  [8, "vocab"], [8, "listen"], [8, "type"],
+  [9, "vocab"], [9, "listen"], [9, "type"],
 ];
 
 // كل كلمة: { ar, en, fr, es, it, de, ja, pt }
@@ -331,28 +341,42 @@ export const THEMES = [
   },
 ];
 
-// بناء مستويات اللغة المختارة
-export function levelsForLang(code) {
-  return THEMES.map((th) => ({
+// بناء بنك أسئلة المستوى (٣٥ سؤالاً كحد أقصى) — target: لغة الهدف، base: لغة المعاني
+function buildBank(th, target, base) {
+  const bank = [];
+  const w = (i, type) => {
+    const word = th.words[i];
+    if (type === "vocab") bank.push({ type, word: word[target], ar: word[base] });
+    else if (type === "listen") bank.push({ type, speak: word[target], ar: word[base] });
+    else if (type === "type") bank.push({ type, ar: word[base], word: word[target] });
+  };
+  for (const s of SEQ) {
+    if (Array.isArray(s)) w(s[0], s[1]);
+    else if (s === "fill") bank.push({ type: "fill", sentence: th.fill[0][target].s, answer: th.fill[0][target].a, options: th.fill[0][target].o });
+    else if (s === "arrange0") bank.push({ type: "arrange", words: th.arrange[0][target] });
+    else if (s === "arrange1") bank.push({ type: "arrange", words: th.arrange[1][target] });
+    else if (s === "say") bank.push({ type: "say", speak: th.say[0][target], ar: th.say[0][base] });
+    else if (s === "listenSay") bank.push({ type: "listen", speak: th.say[0][target], ar: th.say[0][base], pool: "say" });
+  }
+  return bank;
+}
+
+// بناء مستويات اللغة الهدف مع لغة الأساس (base) لتقديم المعاني
+export function levelsForLang(target, base) {
+  return THEMES.map((th, idx) => ({
     title: th.title,
     titleAr: th.titleAr,
-    exercises: PLAN.map(([type, i]) => {
-      if (type === "vocab") return { type, word: th.words[i][code], ar: th.words[i].ar };
-      if (type === "listen") return { type, speak: th.words[i][code], ar: th.words[i].ar };
-      if (type === "type") return { type, ar: th.words[i].ar, word: th.words[i][code] };
-      if (type === "fill") {
-        const f = th.fill[i][code];
-        return { type, sentence: f.s, answer: f.a, options: f.o };
-      }
-      if (type === "arrange") return { type, words: th.arrange[i][code] };
-      if (type === "say") return { type, speak: th.say[i][code], ar: th.say[i].ar };
-      return null;
-    }),
+    exercises: buildBank(th, target, base).slice(0, COUNTS[idx]),
   }));
 }
 
-// مجمّع المعاني العربية لتوليد المشتّتات (نفسه لكل اللغات)
-export const MEANING_POOL = Array.from(new Set(THEMES.flatMap((th) => th.words.map((w) => w.ar))));
+// مجمّعات المعاني لتوليد المشتّتات حسب لغة الأساس
+export function meaningPool(base) {
+  return Array.from(new Set(THEMES.flatMap((th) => th.words.map((w) => w[base]))));
+}
+export function sayPool(base) {
+  return THEMES.map((th) => th.say[0][base]);
+}
 
 // عبارات تشجيعية تنطقها الشخصية (TTS) عند الإجابة
 export const PRAISE = ["Great job!", "Well done!", "Perfect!", "You are amazing!", "Keep going!"];
