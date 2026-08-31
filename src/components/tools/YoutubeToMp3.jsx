@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { youtubeToMp3 } from "@/functions/youtubeToMp3";
 import {
   Youtube, ClipboardPaste, Eraser, ChevronDown,
-  AlertCircle, Music, ExternalLink,
+  AlertCircle, Music, Download, Loader2, ExternalLink,
 } from "lucide-react";
 
 const translations = {
@@ -11,16 +12,22 @@ const translations = {
     subtitle: "أسرع أداة لتحميل الصوت من يوتيوب بجودة عالية – مجاناً وبدون إعلانات",
     placeholder: "https://www.youtube.com/watch?v=...",
     btnText: "تحويل",
+    converting: "جارٍ التحويل...",
+    convertingHint: "قد يستغرق ذلك بضع ثوانٍ حسب طول الفيديو",
     empty: "⚠️ يرجى إدخال رابط يوتيوب.",
     invalidUrl: "⚠️ الرابط غير صالح. تأكد من أنه رابط يوتيوب صحيح.",
     paste: "لصق مثال",
     clear: "مسح",
-    iframeTitle: "اختر الجودة وحمّل الملف",
-    iframeHint: "اضغط أحد أزرار الجودة بالأسفل لبدء التحميل",
+    downloadReady: "✅ الملف جاهز للتحميل",
+    downloadBtn: "تحميل MP3",
+    openBtn: "فتح الرابط",
+    errorTitle: "تعذّر التحويل",
+    errorMsg: "واجهة التحويل تعيد خطأ حالياً (قد يكون عطلاً مؤقتاً في خوادم المزوّد أو قيداً على الباقة). حاول لاحقاً أو بفيديو آخر.",
+    retry: "إعادة المحاولة",
     faqTitle: "الأسئلة الشائعة",
     faqs: [
       { q: "هل أداة تحويل يوتيوب إلى MP3 مجانية؟", a: "نعم، الأداة مجانية تماماً ولا تتطلب تسجيل أو اشتراك. يمكنك استخدامها لتحويل أي فيديو عام من يوتيوب إلى MP3." },
-      { q: "ما هي جودة الصوت التي يمكنني الحصول عليها؟", a: "تظهر أزرار لعدة جودات (64، 128، 192، 320 kbps) داخل نافذة التحميل. ننصح باختيار 320 kbps للحصول على أفضل جودة صوت." },
+      { q: "ما هي جودة الصوت التي يمكنني الحصول عليها؟", a: "يتم التحويل بجودة 128 kbps افتراضياً، وهي جودة جيدة توازن بين الحجم والوضوح. للحصول على أفضل جودة يمكنك استخدام جودة أعلى." },
       { q: "هل أحتاج إلى تثبيت برنامج أو إضافة؟", a: "لا، الأداة تعمل مباشرة في متصفحك. كل ما عليك فعله هو لصق رابط الفيديو والضغط على زر التحويل." },
       { q: "كم تستغرق عملية التحويل؟", a: "تستغرق العملية عادةً من 3 إلى 10 ثوانٍ حسب طول الفيديو وسرعة اتصالك بالإنترنت." },
       { q: "هل يمكنني تحويل فيديوهات خاصة أو محمية؟", a: "لا، الأداة تدعم فقط الفيديوهات العامة المتاحة على يوتيوب." },
@@ -31,16 +38,22 @@ const translations = {
     subtitle: "The fastest tool to download audio from YouTube in high quality – free and ad-free",
     placeholder: "https://www.youtube.com/watch?v=...",
     btnText: "Convert",
+    converting: "Converting...",
+    convertingHint: "This may take a few seconds depending on the video length",
     empty: "⚠️ Please enter a YouTube link.",
     invalidUrl: "⚠️ Invalid URL. Please enter a valid YouTube link.",
     paste: "Paste Example",
     clear: "Clear",
-    iframeTitle: "Pick a quality and download",
-    iframeHint: "Tap one of the quality buttons below to start the download",
+    downloadReady: "✅ Your file is ready to download",
+    downloadBtn: "Download MP3",
+    openBtn: "Open Link",
+    errorTitle: "Conversion failed",
+    errorMsg: "The conversion API is currently returning an error (likely a temporary provider server outage or a plan limitation). Please try again later or with another video.",
+    retry: "Retry",
     faqTitle: "Frequently Asked Questions",
     faqs: [
       { q: "Is the YouTube to MP3 converter free?", a: "Yes, the tool is completely free and does not require registration or subscription. You can use it to convert any public YouTube video to MP3." },
-      { q: "What audio quality can I get?", a: "Quality buttons (64, 128, 192, 320 kbps) appear inside the download panel. We recommend 320 kbps for the best audio quality." },
+      { q: "What audio quality can I get?", a: "Conversion defaults to 128 kbps, a good balance between size and clarity. Higher quality is available for better audio." },
       { q: "Do I need to install any software or extension?", a: "No, the tool works directly in your browser. Just paste the video link and click the convert button." },
       { q: "How long does the conversion take?", a: "The process usually takes 3 to 10 seconds depending on the video length and your internet speed." },
       { q: "Can I convert private or protected videos?", a: "No, the tool only supports public videos available on YouTube." },
@@ -67,21 +80,36 @@ export default function YoutubeToMp3() {
   const { lang, isRTL } = useI18n();
   const tr = translations[lang] || translations.ar;
   const [url, setUrl] = useState("");
-  const [videoId, setVideoId] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null); // { status, downloadUrl, title }
   const [openFaq, setOpenFaq] = useState(0);
 
-  const startConversion = () => {
+  const startConversion = async () => {
     const rawUrl = url.trim();
-    if (!rawUrl) { setError(tr.empty); setVideoId(null); return; }
-    const id = extractVideoId(rawUrl);
-    if (!id) { setError(tr.invalidUrl); setVideoId(null); return; }
+    if (!rawUrl) { setError(tr.empty); setResult(null); return; }
+    if (!extractVideoId(rawUrl)) { setError(tr.invalidUrl); setResult(null); return; }
     setError("");
-    setVideoId(id);
+    setResult(null);
+    setLoading(true);
+    try {
+      const res = await youtubeToMp3({ url: rawUrl });
+      const data = res.data || res;
+      setResult(data);
+      if (data.status && data.status !== "COMPLETED" && data.status !== "AVAILABLE" && data.status !== "SUCCESS") {
+        // provider returned a non-success terminal status
+        if (!data.downloadUrl) {
+          setError(tr.errorMsg);
+        }
+      }
+    } catch (e) {
+      setError((e && e.message) || tr.errorMsg);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // vevioz button widget — renders download-quality buttons for the video.
-  const widgetSrc = videoId ? `https://api.vevioz.com/api/button/mp3/${videoId}` : null;
+  const hasDownload = result && result.downloadUrl && (result.status === "COMPLETED" || result.status === "AVAILABLE" || result.status === "SUCCESS");
 
   return (
     <div dir={isRTL ? "rtl" : "ltr"} className="max-w-[560px] mx-auto w-full">
@@ -103,18 +131,20 @@ export default function YoutubeToMp3() {
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") startConversion(); }}
+            onKeyDown={(e) => { if (e.key === "Enter" && !loading) startConversion(); }}
             placeholder={tr.placeholder}
             dir="ltr"
-            className="flex-1 min-w-0 bg-transparent outline-none px-4 h-[48px] text-[#0f172a] dark:text-[#FEF3C7] placeholder:text-[#94a3b8] dark:placeholder:text-[#6B6B8A] text-sm"
+            disabled={loading}
+            className="flex-1 min-w-0 bg-transparent outline-none px-4 h-[48px] text-[#0f172a] dark:text-[#FEF3C7] placeholder:text-[#94a3b8] dark:placeholder:text-[#6B6B8A] text-sm disabled:opacity-50"
           />
           <button
             type="button"
             onClick={startConversion}
-            className="shrink-0 inline-flex items-center justify-center gap-2 h-[48px] px-6 rounded-full bg-[#ef4444] hover:bg-[#dc2626] text-white font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-95"
+            disabled={loading}
+            className="shrink-0 inline-flex items-center justify-center gap-2 h-[48px] px-6 rounded-full bg-[#ef4444] hover:bg-[#dc2626] text-white font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-95 disabled:opacity-60 disabled:hover:scale-100"
           >
-            <ExternalLink className="w-4 h-4" />
-            <span>{tr.btnText}</span>
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
+            <span>{loading ? tr.btnText : tr.btnText}</span>
           </button>
         </div>
 
@@ -122,15 +152,17 @@ export default function YoutubeToMp3() {
         <div className="flex justify-center gap-2 mt-3">
           <button
             type="button"
-            onClick={() => setUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ")}
-            className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-[#f1f5f9] dark:bg-[#2D2A5A] border border-[#e2e8f0] dark:border-[#4B3F8A] text-[#334155] dark:text-[#A8A6C4] hover:border-[#ef4444] transition-colors"
+            onClick={() => { setUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ"); setError(""); setResult(null); }}
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-[#f1f5f9] dark:bg-[#2D2A5A] border border-[#e2e8f0] dark:border-[#4B3F8A] text-[#334155] dark:text-[#A8A6C4] hover:border-[#ef4444] transition-colors disabled:opacity-50"
           >
             <ClipboardPaste className="w-3.5 h-3.5" /> {tr.paste}
           </button>
           <button
             type="button"
-            onClick={() => { setUrl(""); setError(""); setVideoId(null); }}
-            className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-[#f1f5f9] dark:bg-[#2D2A5A] border border-[#e2e8f0] dark:border-[#4B3F8A] text-[#334155] dark:text-[#A8A6C4] hover:border-[#ef4444] transition-colors"
+            onClick={() => { setUrl(""); setError(""); setResult(null); }}
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-[#f1f5f9] dark:bg-[#2D2A5A] border border-[#e2e8f0] dark:border-[#4B3F8A] text-[#334155] dark:text-[#A8A6C4] hover:border-[#ef4444] transition-colors disabled:opacity-50"
           >
             <Eraser className="w-3.5 h-3.5" /> {tr.clear}
           </button>
@@ -138,26 +170,51 @@ export default function YoutubeToMp3() {
 
         {/* Error */}
         {error && (
-          <div className="mt-4 text-center text-sm font-semibold flex items-center justify-center gap-2 text-[#ef4444]">
-            <AlertCircle className="w-4 h-4" />
-            <span>{error}</span>
+          <div className="mt-4 rounded-[16px] bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 p-4 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-[#ef4444] shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <div className="font-bold text-sm text-[#ef4444]">{tr.errorTitle}</div>
+              <div className="text-xs text-[#475569] dark:text-[#A8A6C4] mt-1">{error}</div>
+              <button
+                type="button"
+                onClick={startConversion}
+                disabled={loading}
+                className="mt-2 text-xs font-bold text-[#ef4444] hover:underline disabled:opacity-50"
+              >
+                {tr.retry}
+              </button>
+            </div>
           </div>
         )}
 
-        {/* Download widget (iframe) */}
-        {widgetSrc && (
-          <div className="mt-5">
-            <p className="text-center text-xs text-[#475569] dark:text-[#A8A6C4] mb-2">{tr.iframeHint}</p>
-            <div className="rounded-[18px] border-2 border-[#e2e8f0] dark:border-[#4B3F8A] bg-[#f8fafc] dark:bg-[#2D2A5A] overflow-hidden">
-              <iframe
-                title={tr.iframeTitle}
-                src={widgetSrc}
-                className="w-full"
-                style={{ height: 220, border: "none", background: "transparent" }}
-                scrolling="no"
-                allowTransparency="true"
-              />
+        {/* Converting state */}
+        {loading && (
+          <div className="mt-5 rounded-[18px] border-2 border-[#e2e8f0] dark:border-[#4B3F8A] bg-[#f8fafc] dark:bg-[#2D2A5A] p-6 flex flex-col items-center justify-center gap-3 animate-[fadeIn_0.3s_ease-out]">
+            <Loader2 className="w-8 h-8 text-[#ef4444] animate-spin" />
+            <div className="text-sm font-bold text-[#0f172a] dark:text-[#FEF3C7]">{tr.converting}</div>
+            <div className="text-xs text-[#475569] dark:text-[#A8A6C4]">{tr.convertingHint}</div>
+          </div>
+        )}
+
+        {/* Download ready */}
+        {hasDownload && !loading && (
+          <div className="mt-5 rounded-[18px] border-2 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 p-5 flex flex-col items-center gap-3 animate-[slideDown_0.3s_ease-out]">
+            <div className="flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+              <Music className="w-4 h-4" />
+              {tr.downloadReady}
             </div>
+            {result.title && (
+              <div className="text-xs text-[#475569] dark:text-[#A8A6C4] text-center max-w-full truncate">{result.title}</div>
+            )}
+            <a
+              href={result.downloadUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 h-[48px] px-6 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-95"
+            >
+              <Download className="w-4 h-4" />
+              {tr.downloadBtn}
+            </a>
           </div>
         )}
 
