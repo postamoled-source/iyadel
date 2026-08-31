@@ -60,14 +60,7 @@ export const STATIC_TOOLS = [
     logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/6c12dfff1_generated_image.png",
     content: "Currency conversion translates an amount from one currency to another using exchange rates. This tool fetches live exchange rates for 166 world currencies from a reliable source, so your result reflects current market values. In real markets, rates fluctuate constantly and include a spread between buying and selling prices, so the figure here may differ slightly from what a bank or card provider offers at the moment of a transaction. For large or time-sensitive transfers, always confirm the rate and any fees with your provider.",
   },
-  {
-    name: "YouTube to MP3",
-    slug: "youtube-to-mp3",
-    category: "Converters",
-    description: "Convert YouTube videos to high-quality MP3 audio — fast, free, and ad-free.",
-    icon: "Youtube",
-    content: "A YouTube to MP3 converter extracts the audio track from a YouTube video and saves it as an MP3 file you can listen to offline. Paste the video link, choose your preferred bitrate (64, 128, 192, or 320 kbps), and the tool fetches the audio directly in your browser — no software or registration required. Higher bitrates preserve more detail but produce larger files; 320 kbps is recommended for music. Only public, non-copyright-protected videos are supported. Always respect creators' rights and your local copyright laws when using this tool.",
-  },
+
   {
     name: "Distance Converter",
     slug: "distance-converter",
