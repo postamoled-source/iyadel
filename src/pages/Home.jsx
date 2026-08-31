@@ -28,7 +28,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { jsPDF } from "jspdf";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, RIDDLES, RIDDLES_AR, convertUnit, calcMolarMass, compileExpr, FN_COLORS } from "@/lib/tool-utils";
-import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, SlidersHorizontal, Swords, Spline, Instagram, Facebook, Image as ImageIcon, Pencil, Maximize2, FileDown } from "lucide-react";
+import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, SlidersHorizontal, Swords, Spline, Instagram, Facebook, Image as ImageIcon, Pencil, Maximize2, FileDown, Youtube } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { trackEvent, useSeo } from "@/lib/analytics";
 import { TOOL_CONTENT_AR, TOOL_GUIDES_AR } from "@/data/translations-ar";
@@ -40,7 +40,7 @@ const BlogPostEntity = base44.entities.BlogPost;
 const ICONS = {
   Calculator, TrendingUp, LineChart: LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight,
   Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical,
-  HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket, Wand2, Palette, Hammer, Crosshair, Swords, Spline, Maximize2
+  HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket, Wand2, Palette, Hammer, Crosshair, Swords, Spline, Maximize2, Youtube
 };
 
 function ImageEditIcon() {
