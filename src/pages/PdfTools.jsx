@@ -345,8 +345,8 @@ export default function PdfTools() {
               <div className="flex items-center gap-3 mb-4 pb-2 border-b-2 border-[#FDE68A] dark:border-[#4B3F8A]">
                 <span className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"><CatIcon className="w-5 h-5 text-primary" /></span>
                 <div className="min-w-0">
-                  <h2 className="text-lg font-bold text-[#1E1B4B] dark:text-[#FEF3C7] truncate">{cat.name} <span className="text-xs font-normal text-muted-foreground">({cat.nameEn})</span></h2>
-                  <p className="text-xs text-muted-foreground truncate">{cat.desc}</p>
+                  <h2 className="text-lg truncate"><span className="font-light text-muted-foreground">{cat.name}</span> <span className="font-bold text-[#1E1B4B] dark:text-[#FEF3C7]">{cat.nameEn}</span></h2>
+                  <p className="text-xs font-light text-muted-foreground truncate">{cat.desc}</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -357,9 +357,9 @@ export default function PdfTools() {
                       <span className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-violet-600 shadow-md mb-2 group-hover:scale-110 transition-transform">
                         <ToolIcon className="w-5 h-5 text-white" />
                       </span>
-                      <h3 className="text-sm font-bold text-[#1E1B4B] dark:text-[#FEF3C7]">{tool.name}</h3>
-                      <span className="block text-[11px] text-muted-foreground">{tool.nameEn}</span>
-                      <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{tool.desc}</p>
+                      <h3 className="text-sm font-bold text-[#1E1B4B] dark:text-[#FEF3C7]">{tool.nameEn}</h3>
+                      <span className="block text-[11px] font-light text-muted-foreground">{tool.name}</span>
+                      <p className="mt-1 text-xs font-light text-muted-foreground line-clamp-2">{tool.desc}</p>
                     </button>
                   );
                 })}
@@ -378,8 +378,8 @@ export default function PdfTools() {
             <div className="flex items-center gap-3 mb-4">
               <span className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-violet-600 shadow-md">{HeaderIcon ? <HeaderIcon className="w-6 h-6 text-white" /> : null}</span>
               <div>
-                <h3 className="text-xl font-extrabold text-[#1E1B4B] dark:text-[#FEF3C7]">{activeTool.tool.name}</h3>
-                <span className="text-xs text-muted-foreground">{activeTool.tool.nameEn} · {activeTool.cat.name}</span>
+                <h3 className="text-xl font-extrabold text-[#1E1B4B] dark:text-[#FEF3C7]">{activeTool.tool.nameEn}</h3>
+                <span className="text-xs font-light text-muted-foreground">{activeTool.tool.name} · {activeTool.cat.name}</span>
               </div>
             </div>
             <p className="text-sm text-muted-foreground mb-3">{activeTool.tool.desc}</p>
