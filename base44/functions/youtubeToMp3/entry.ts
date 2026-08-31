@@ -1,6 +1,6 @@
 import { secrets } from "base44:runtime";
 
-const API_HOST = "youtube-to-mp315.p.rapidapi.com";
+const API_HOST = "youtube-mp310.p.rapidapi.com";
 
 function extractVideoId(url) {
   const patterns = [
@@ -17,8 +17,6 @@ function extractVideoId(url) {
   return null;
 }
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
 export default async function (req) {
   try {
     const body = await req.json().catch(() => ({}));
@@ -28,57 +26,52 @@ export default async function (req) {
     const vid = extractVideoId(url);
     if (!vid) return Response.json({ error: "Invalid YouTube URL" }, { status: 400 });
 
-    const watch = encodeURIComponent("https://www.youtube.com/watch?v=" + vid);
+    const watch = "https://www.youtube.com/watch?v=" + vid;
     const key = secrets.get("RAPIDAPI_KEY");
     if (!key) return Response.json({ error: "RAPIDAPI_KEY not set" }, { status: 500 });
 
-    const headers = {
-      "X-RapidAPI-Key": key,
-      "X-RapidAPI-Host": API_HOST,
-      "Content-Type": "application/json",
-    };
+    // youtube-mp310 returns a ready downloadUrl in a single request (no polling)
+    const r = await fetch(
+      "https://" + API_HOST + "/download/mp3?url=" + encodeURIComponent(watch),
+      {
+        method: "GET",
+        headers: {
+          "X-RapidAPI-Key": key,
+          "X-RapidAPI-Host": API_HOST,
+        },
+      }
+    );
 
-    // 1) Start the conversion job
-    const start = await fetch("https://" + API_HOST + "/download?url=" + watch, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ format: "mp3", quality: 128 }),
-    });
-    if (!start.ok) {
-      const t = await start.text();
+    const text = await r.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
       return Response.json(
-        { error: "Conversion request failed (" + start.status + ")", detail: t.slice(0, 200) },
+        { error: "Provider returned a non-JSON response (" + r.status + ")", detail: text.slice(0, 200) },
         { status: 502 }
       );
     }
-    const job = await start.json();
-    if (!job || !job.id) {
-      return Response.json({ error: "No job id returned from provider" }, { status: 502 });
+
+    if (!r.ok) {
+      return Response.json(
+        { error: "Conversion request failed (" + r.status + ")", detail: data },
+        { status: 502 }
+      );
     }
 
-    // 2) Poll until terminal (max ~30s)
-    let result = job;
-    const MAX_POLLS = 10;
-    for (let i = 0; i < MAX_POLLS; i++) {
-      await sleep(3000);
-      let s;
-      try {
-        s = await fetch("https://" + API_HOST + "/status/" + job.id, {
-          headers: { "X-RapidAPI-Key": key, "X-RapidAPI-Host": API_HOST },
-        });
-      } catch {
-        continue;
-      }
-      if (!s.ok) continue;
-      result = await s.json();
-      if (result.status !== "CONVERTING") break;
+    const downloadUrl = data.downloadUrl || (data.result && data.result.downloadUrl);
+    if (!downloadUrl) {
+      return Response.json(
+        { error: "No downloadUrl returned by provider", detail: data },
+        { status: 502 }
+      );
     }
 
     return Response.json({
-      id: result.id,
-      status: result.status,
-      downloadUrl: result.downloadUrl,
-      title: result.title,
+      status: "AVAILABLE",
+      downloadUrl,
+      title: data.title || (data.result && data.result.title) || null,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
