@@ -251,6 +251,14 @@ export const STATIC_TOOLS = [
     content: "Ball Launcher is a 2D physics game. A cannon at the bottom aims toward your finger — tap and release to launch a ball in a gravity arc toward floating bubbles. Pop a bubble to score 10 points; new bubbles keep spawning so the board stays full. You have 30 seconds to score as much as you can, and your best result is saved on your device. The game sharpens aim and trajectory intuition and runs entirely in your browser, so nothing is stored. Beat your own high score every round.",
   },
   {
+    name: "Learn English (Vocab Quiz)",
+    slug: "vocab-quiz",
+    category: "Games",
+    description: "Pick the correct Arabic meaning for each English word. Hearts, streaks, and rising levels — Duolingo-style.",
+    icon: "Languages",
+    content: "A Duolingo-style vocabulary quiz to learn English. An English word appears and you choose its correct Arabic translation from three options. Answer correctly to grow your score and build a streak — a longer streak earns bonus points. Five correct answers in a row advance you to the next level, which keeps the challenge fresh. A wrong answer costs one of your three hearts; lose them all and the round ends, with your best score saved on your device. Sound effects and background music make it feel like a real lesson. Everything runs in your browser — nothing is stored or uploaded.",
+  },
+  {
     name: "Snake",
     slug: "snake-game",
     category: "Games",

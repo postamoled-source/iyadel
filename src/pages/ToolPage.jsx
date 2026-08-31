@@ -8,7 +8,7 @@ import {
   Calculator as CalcIcon, TrendingUp, LineChart, Activity, Flame, DollarSign, Ruler,
   Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent,
   Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown,
-  Ticket, Wand2, Palette, Hammer, Crosshair, Spline, Maximize2, FileDown,
+  Ticket, Wand2, Palette, Hammer, Crosshair, Spline, Maximize2, FileDown, Languages,
 } from "lucide-react";
 import Game2048 from "@/components/games/Game2048";
 import MemoryMatch from "@/components/games/MemoryMatch";
@@ -17,6 +17,7 @@ import BallLauncher from "@/components/games/BallLauncher";
 import SnakeGame from "@/components/games/SnakeGame";
 import MathPuzzleGame from "@/components/games/MathPuzzleGame";
 import WordScrambleGame from "@/components/games/WordScrambleGame";
+import VocabQuizGame from "@/components/games/VocabQuizGame";
 import PercentageCalculator from "@/components/tools/PercentageCalculator";
 import PageNotFound from "@/lib/PageNotFound";
 
@@ -24,7 +25,7 @@ const ICONS = {
   Calculator: CalcIcon, TrendingUp, LineChart, Activity, Flame, DollarSign, Ruler, Weight,
   Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom,
   FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket,
-  Wand2, Palette, Hammer, Crosshair, Spline, Maximize2, FileDown,
+  Wand2, Palette, Hammer, Crosshair, Spline, Maximize2, FileDown, Languages,
 };
 
 // Tools whose interactive calculator is an importable component → embedded directly.
@@ -36,6 +37,7 @@ const EMBED = {
   "snake-game": SnakeGame,
   "math-puzzle": MathPuzzleGame,
   "word-scramble": WordScrambleGame,
+  "vocab-quiz": VocabQuizGame,
   "percentage-calculator": PercentageCalculator,
 };
 

@@ -227,6 +227,31 @@ function WordScramble({ className, style }) {
   );
 }
 
+function VocabQuiz({ className, style }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} style={style}>
+      <defs>
+        <linearGradient id="gmvq1" x1="0" y1="0" x2="0" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#1cb0f6" /><stop offset="100%" stopColor="#1e40af" />
+        </linearGradient>
+        <linearGradient id="gmvq2" x1="0" y1="0" x2="0" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#58cc02" /><stop offset="100%" stopColor="#15803d" />
+        </linearGradient>
+      </defs>
+      <g transform="rotate(-12 18 34)">
+        <rect x="6" y="20" width="22" height="26" rx="5" fill="url(#gmvq1)" />
+        <text x="17" y="39" textAnchor="middle" fontSize="13" fontWeight="800" fill="#fff" fontFamily="sans-serif">A</text>
+      </g>
+      <g transform="rotate(10 40 26)">
+        <rect x="34" y="14" width="22" height="26" rx="5" fill="url(#gmvq2)" />
+        <text x="45" y="33" textAnchor="middle" fontSize="13" fontWeight="800" fill="#fff" fontFamily="sans-serif">ع</text>
+      </g>
+      <path d="M26 30 q6 -4 12 0" stroke="#fbbf24" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+      <path d="M36 28 l3 2 -3 2" stroke="#fbbf24" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+}
+
 const MAP = {
   "snake-game": Snake,
   "game-2048": Game2048,
@@ -236,6 +261,7 @@ const MAP = {
   "riddle-game": Riddle,
   "math-puzzle": MathPuzzle,
   "word-scramble": WordScramble,
+  "vocab-quiz": VocabQuiz,
 };
 
 export default function GameIcon({ slug, className = "w-16 h-16" }) {
