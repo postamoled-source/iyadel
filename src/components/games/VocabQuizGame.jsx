@@ -11,7 +11,24 @@ import { LANGS, levelsForLang, meaningPool, sayPool, PRAISE, WRONG } from "@/dat
 const MAX_LIVES = 5;
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((v) => v[1]);
 const sample = (arr, n) => shuffle(arr).slice(0, n);
-const norm = (s) => (s || "").trim().toLowerCase().replace(/[.!،,؟?]/g, "").replace(/\s+/g, " ");
+const norm = (s) => (s || "")
+  .toString()
+  .trim()
+  .toLowerCase()
+  .normalize("NFKC")
+  // إزالة التشكيل وعلامات المد العربية
+  .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g, "")
+  // إزالة التطويل
+  .replace(/\u0640/g, "")
+  // توحيد ألف الهمزات والممدودة إلى ا
+  .replace(/[\u0622\u0623\u0625\u0671]/g, "\u0627")
+  // توحيد الألف المقصورة ى -> ي
+  .replace(/\u0649/g, "\u064A")
+  // توحيد التاء المربوطة ة -> ه (تسهيلاً للمستخدم)
+  .replace(/\u0629/g, "\u0647")
+  // إزالة علامات الترقيم العربية والإنجليزية
+  .replace(/[.!،,؛؟?:"'()\[\]{}…\-\u060C\u061B\u061F]/g, "")
+  .replace(/\s+/g, " ");
 const langBy = (code) => LANGS.find((l) => l.code === code) || LANGS[0];
 
 function speak(text, tts = "en-US") {
