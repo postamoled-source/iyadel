@@ -25,6 +25,7 @@ import PercentageCalculator from "@/components/tools/PercentageCalculator";
 import JpgToPngConverter from "@/components/tools/JpgToPngConverter";
 import ImageResizer from "@/components/tools/ImageResizer";
 import LanguageSection from "@/components/LanguageSection";
+import AppStoreSectionHome from "@/components/AppStoreSection";
 import PrivacyTeaser from "@/components/PrivacyTeaser";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
@@ -2434,7 +2435,7 @@ export default function Home() {
       <HeroSection catCount={7} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <LanguageSection />
       <ToolsHub searchQuery={searchQuery} />
-      <AppStoreSection />
+      <AppStoreSectionHome />
       <WhySection />
       <PrivacyTeaser />
       <BlogTeaser />
