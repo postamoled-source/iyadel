@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { uploadWithProgress } from "@/lib/uploadWithProgress";
 import { useAuth } from "@/lib/AuthContext";
 import { useI18n } from "@/lib/i18n";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,6 +27,7 @@ export default function AppStoreAdmin() {
   const [busy, setBusy] = useState(false);
   const [uploadingField, setUploadingField] = useState(null);
   const [apkProgress, setApkProgress] = useState(null);
+  const [apkError, setApkError] = useState(null);
   const iconInput = useRef(null);
   const apkInput = useRef(null);
   const galleryInput = useRef(null);
@@ -81,20 +83,14 @@ export default function AppStoreAdmin() {
     if (!file) return;
     setUploadingField("apk");
     setApkProgress(0);
-    const estMs = Math.max(2500, Math.round((file.size / (1024 * 1024)) * 1200));
-    const start = Date.now();
-    const timer = setInterval(() => {
-      const pct = Math.min(94, Math.round(((Date.now() - start) / estMs) * 100));
-      setApkProgress(pct);
-    }, 180);
+    setApkError(null);
     try {
-      const url = await uploadFile(file);
-      clearInterval(timer);
+      const url = await uploadWithProgress(file, (pct) => setApkProgress(pct));
       setApkProgress(100);
       setForm((p) => ({ ...p, apk_url: url }));
-      setTimeout(() => setApkProgress(null), 700);
-    } catch {
-      clearInterval(timer);
+      setTimeout(() => setApkProgress(null), 800);
+    } catch (err) {
+      setApkError(err?.message || t("Upload failed"));
       setApkProgress(null);
     }
     setUploadingField(null);
@@ -276,6 +272,8 @@ export default function AppStoreAdmin() {
                       </Button>
                       {apkProgress !== null ? (
                         <p className="text-xs text-primary font-medium mt-2 truncate max-w-[180px]">{t("Uploading")} {apkProgress}%</p>
+                      ) : apkError ? (
+                        <p className="text-xs text-destructive mt-2 max-w-[180px]">{apkError}</p>
                       ) : form.apk_url ? (
                         <p className="text-xs text-emerald-600 mt-2 truncate max-w-[180px]">{form.apk_url.split("/").pop()}</p>
                       ) : null}
