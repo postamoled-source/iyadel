@@ -28,12 +28,13 @@ function speak(text, tts = "en-US") {
   } catch {}
 }
 
-export default function AdvancedLevels({ n, langCode, title, image, onExit, onComplete }) {
+export default function AdvancedLevels({ n, langCode, baseLangCode, title, image, onExit, onComplete }) {
   const { lang, isRTL } = useI18n();
   const targetLang = langBy(langCode);
+  const baseLang = langBy(baseLangCode);
   const isRtl = langCode === "ar";
   const meta = ADV_LEVELS_BY_N[n];
-  const buildQ = useCallback(() => getAdvQuestions(n, langCode), [n, langCode]);
+  const buildQ = useCallback(() => getAdvQuestions(n, langCode, baseLangCode), [n, langCode, baseLangCode]);
   const [questions, setQuestions] = useState(buildQ);
   const [idx, setIdx] = useState(0);
   const [score, setScore] = useState(0);
@@ -221,7 +222,7 @@ export default function AdvancedLevels({ n, langCode, title, image, onExit, onCo
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-center gap-2">
                   <div className="text-base font-bold text-foreground text-center" dir={isRtl ? "rtl" : "ltr"}>{q.hint}</div>
-                  <button onClick={() => speak(q.hint, targetLang.tts)} className="text-primary hover:text-primary/80 shrink-0"><Volume2 className="w-4 h-4" /></button>
+                  <button onClick={() => speak(q.hint, baseLang.tts)} className="text-primary hover:text-primary/80 shrink-0"><Volume2 className="w-4 h-4" /></button>
                 </div>
                 <div className="min-h-[64px] rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-3 flex flex-wrap gap-2 justify-center items-center" dir={isRtl ? "rtl" : "ltr"}>
                   {arranged.length === 0 && <span className="text-sm text-muted-foreground">{tr.arrangeHint}</span>}

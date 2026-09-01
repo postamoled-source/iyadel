@@ -392,6 +392,7 @@ export default function VocabQuizGame() {
       <AdvancedLevels
         n={advMeta.n}
         langCode={langCode}
+        baseLangCode={baseLangCode}
         title={lang === "ar" ? advMeta.titleAr : advMeta.title}
         image={advMeta.image}
         onExit={goMap}
