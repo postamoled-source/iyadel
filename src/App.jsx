@@ -21,6 +21,7 @@ import Privacy from './pages/Privacy';
 import ToolPage from './pages/ToolPage';
 import PdfTools from './pages/PdfTools';
 import AppStore from './pages/AppStore';
+import AppStoreAdmin from './pages/AppStoreAdmin';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -60,6 +61,7 @@ const AuthenticatedApp = () => {
         <Route path="/app-store" element={<AppStore />} />
         <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} requireAdmin />}>
           <Route path="/Dashboard" element={<Dashboard />} />
+          <Route path="/app-store/admin" element={<AppStoreAdmin />} />
         </Route>
         {/* Add your page Route elements here */}
       </Route>
