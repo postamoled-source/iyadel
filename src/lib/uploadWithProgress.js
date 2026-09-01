@@ -21,6 +21,10 @@ export function uploadWithProgress(file, onProgress) {
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", `/apps/${appId}/integration-endpoints/Core/UploadFile`);
+    xhr.setRequestHeader("X-App-Id", String(appId));
+    if (typeof window !== "undefined" && window.location) {
+      xhr.setRequestHeader("X-Origin-URL", window.location.href);
+    }
     if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
 
     xhr.upload.onprogress = (e) => {

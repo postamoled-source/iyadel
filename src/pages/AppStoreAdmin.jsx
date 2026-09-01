@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Package, ArrowLeft, Plus, Trash2, Upload, Save, RefreshCw, X,
-  ImageIcon, FileArchive, Pencil, ShieldCheck, LogIn,
+  ImageIcon, FileArchive, Pencil, ShieldCheck, LogIn, AlertCircle,
 } from "lucide-react";
 
 const AppEntity = base44.entities.AppStoreApp;
@@ -273,7 +273,10 @@ export default function AppStoreAdmin() {
                       {apkProgress !== null ? (
                         <p className="text-xs text-primary font-medium mt-2 truncate max-w-[180px]">{t("Uploading")} {apkProgress}%</p>
                       ) : apkError ? (
-                        <p className="text-xs text-destructive mt-2 max-w-[180px]">{apkError}</p>
+                        <div className="mt-2 flex items-start gap-1.5 rounded-lg bg-destructive/10 px-2.5 py-1.5">
+                          <AlertCircle className="w-3.5 h-3.5 text-destructive shrink-0 mt-0.5" />
+                          <p className="text-xs text-destructive leading-relaxed break-words">{apkError}</p>
+                        </div>
                       ) : form.apk_url ? (
                         <p className="text-xs text-emerald-600 mt-2 truncate max-w-[180px]">{form.apk_url.split("/").pop()}</p>
                       ) : null}
