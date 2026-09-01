@@ -7,6 +7,8 @@ import GameMusicButton from "@/components/games/GameMusicButton";
 import { resumeAudio, playStart, playCorrect, playWrong, playWin } from "@/lib/game-sounds";
 import { Image } from "@/components/ui/image";
 import { LANGS, levelsForLang, meaningPool, sayPool, PRAISE, WRONG } from "@/data/learn-languages";
+import BeeMascot from "@/components/games/BeeMascot";
+import AdvancedLevels from "@/components/games/AdvancedLevels";
 
 const MAX_LIVES = 5;
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((v) => v[1]);
@@ -46,55 +48,6 @@ function speak(text, tts = "en-US") {
   } catch {}
 }
 if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.onvoiceschanged = () => {};
-
-function BeeMascot({ mood = "idle", size = 72 }) {
-  const happy = mood === "happy";
-  const sad = mood === "sad";
-  return (
-    <svg viewBox="0 0 100 100" width={size} height={size} className="shrink-0 drop-shadow-[0_6px_12px_hsl(var(--primary)/0.35)]">
-      <defs>
-        <radialGradient id="bmg" cx="38%" cy="30%" r="78%">
-          <stop offset="0%" stopColor="#fde68a" /><stop offset="60%" stopColor="#fbbf24" /><stop offset="100%" stopColor="#b45309" />
-        </radialGradient>
-      </defs>
-      {/* أجنحة */}
-      <ellipse cx="36" cy="34" rx="13" ry="9" fill="#ffffff" opacity="0.55" transform="rotate(-22 36 34)" />
-      <ellipse cx="64" cy="34" rx="13" ry="9" fill="#ffffff" opacity="0.55" transform="rotate(22 64 34)" />
-      {/* قرون الاستشعار */}
-      <path d="M42 22 q-5 -10 -9 -12" stroke="#312e81" strokeWidth="2.2" fill="none" strokeLinecap="round" />
-      <path d="M58 22 q5 -10 9 -12" stroke="#312e81" strokeWidth="2.2" fill="none" strokeLinecap="round" />
-      <circle cx="33" cy="9" r="2.4" fill="#312e81" /><circle cx="67" cy="9" r="2.4" fill="#312e81" />
-      {/* الجسم */}
-      <ellipse cx="50" cy="60" rx="28" ry="26" fill="url(#bmg)" />
-      <path d="M22 56 q28 10 56 0" stroke="#312e81" strokeWidth="3" fill="none" opacity="0.85" />
-      <path d="M24 66 q26 8 52 0" stroke="#312e81" strokeWidth="3" fill="none" opacity="0.85" />
-      {/* العيون */}
-      {happy ? (
-        <>
-          <path d="M40 55 q4 -6 8 0" stroke="#1e1b4b" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-          <path d="M52 55 q4 -6 8 0" stroke="#1e1b4b" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-        </>
-      ) : sad ? (
-        <>
-          <circle cx="44" cy="56" r="3.4" fill="#1e1b4b" /><circle cx="60" cy="56" r="3.4" fill="#1e1b4b" />
-        </>
-      ) : (
-        <>
-          <circle cx="44" cy="56" r="4.2" fill="#fff" /><circle cx="60" cy="56" r="4.2" fill="#fff" />
-          <circle cx="45" cy="57" r="2" fill="#1e1b4b" /><circle cx="61" cy="57" r="2" fill="#1e1b4b" />
-        </>
-      )}
-      {/* الفم */}
-      {happy ? (
-        <path d="M44 68 q6 7 12 0" stroke="#1e1b4b" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-      ) : sad ? (
-        <path d="M44 72 q6 -7 12 0" stroke="#1e1b4b" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-      ) : (
-        <path d="M45 68 q5 4 10 0" stroke="#1e1b4b" strokeWidth="2.2" fill="none" strokeLinecap="round" />
-      )}
-    </svg>
-  );
-}
 
 function PillRow({ value, onSelect }) {
   const { lang } = useI18n();
@@ -145,6 +98,7 @@ export default function VocabQuizGame() {
   const [mood, setMood] = useState("idle");
   const [mascotLine, setMascotLine] = useState("");
   const [won, setWon] = useState(false);
+  const [advMeta, setAdvMeta] = useState(null);
   const advanceRef = useRef(null);
 
   const level = levels[levelIdx];
@@ -211,6 +165,14 @@ export default function VocabQuizGame() {
   }, [mPool, sPool, targetLang]);
 
   const startLevel = useCallback((idx) => {
+    const lv = levels[idx];
+    if (lv.advanced) {
+      resumeAudio(); playStart();
+      setLevelIdx(idx);
+      setAdvMeta({ n: lv.advN, title: lv.title, titleAr: lv.titleAr, image: lv.image });
+      setPhase("advanced");
+      return;
+    }
     resumeAudio(); playStart();
     setLevelIdx(idx); setExIdx(0); setLives(MAX_LIVES); setScore(0); setStreak(0); setWon(false);
     setPhase("playing");
@@ -239,9 +201,14 @@ export default function VocabQuizGame() {
       setBest((b) => { const nb = Math.max(b, score); try { localStorage.setItem(`vocabBest_${pair}`, String(nb)); } catch {}; return nb; });
       setTimeout(() => setPhase("over"), 1400);
     } else {
-      advanceRef.current = setTimeout(() => {
-        setExIdx(0); buildExercise(levels[levelIdx + 1].exercises[0]); setLevelIdx(levelIdx + 1); setMood("idle"); setMascotLine("");
-      }, 1300);
+      const nextLv = levels[levelIdx + 1];
+      if (nextLv.advanced) {
+        setPhase("map");
+      } else {
+        advanceRef.current = setTimeout(() => {
+          setExIdx(0); buildExercise(nextLv.exercises[0]); setLevelIdx(levelIdx + 1); setMood("idle"); setMascotLine("");
+        }, 1300);
+      }
     }
   }, [levelIdx, exIdx, buildExercise, maxUnlocked, score, lang, targetLang, levels, pair]);
 
@@ -373,7 +340,7 @@ export default function VocabQuizGame() {
             const done = i < maxUnlocked;
             return (
               <button key={i} onClick={() => !locked && startLevel(i)} disabled={locked}
-                className={`relative rounded-2xl border-2 p-4 text-right transition-all ${locked ? "border-border bg-muted/40 opacity-60 cursor-not-allowed" : done ? "border-emerald-400/50 bg-emerald-500/10 hover:-translate-y-0.5" : "border-primary/40 bg-card hover:-translate-y-0.5 hover:border-primary shadow-[0_8px_20px_-10px_hsl(var(--primary)/0.5)]"}`}>
+                className={`relative rounded-2xl border-2 p-4 text-right transition-all ${locked ? "border-border bg-muted/40 opacity-60 cursor-not-allowed" : done ? "border-emerald-400/50 bg-emerald-500/10 hover:-translate-y-0.5" : lv.special ? "border-accent/60 bg-accent/5 hover:-translate-y-0.5 hover:border-accent shadow-[0_8px_20px_-10px_hsl(var(--accent)/0.5)]" : "border-primary/40 bg-card hover:-translate-y-0.5 hover:border-primary shadow-[0_8px_20px_-10px_hsl(var(--primary)/0.5)]"}`}>
                 <div className="relative h-14 -mx-4 -mt-4 mb-2 overflow-hidden rounded-t-2xl bg-muted">
                   <Image src={lv.image} alt={lang === "ar" ? lv.titleAr : lv.title} fittingType="fill" className="w-full h-full" />
                   <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
@@ -383,7 +350,7 @@ export default function VocabQuizGame() {
                   {locked ? <Lock className="w-4 h-4 text-muted-foreground" /> : done ? <Check className="w-4 h-4 text-emerald-500" /> : <ChevronRight className="w-4 h-4 text-primary" />}
                 </div>
                 <div className="font-bold text-sm text-foreground">{lang === "ar" ? lv.titleAr : lv.title}</div>
-                <div className="text-[10px] text-muted-foreground mt-0.5">{lv.exercises.length} {tr.questions}</div>
+                <div className="text-[10px] text-muted-foreground mt-0.5">{lv.advanced ? (lang === "ar" ? lv.qLabelAr : lv.qLabel) : `${lv.exercises.length} ${tr.questions}`}</div>
               </button>
             );
           })}
@@ -416,6 +383,24 @@ export default function VocabQuizGame() {
           <Button onClick={goMap} variant="outline" className="rounded-2xl px-6 py-4 border-border">{tr.mapTitle}</Button>
         </div>
       </div>
+    );
+  }
+
+  // ---------- Advanced levels (21-24) ----------
+  if (phase === "advanced" && advMeta) {
+    return (
+      <AdvancedLevels
+        n={advMeta.n}
+        langCode={langCode}
+        title={lang === "ar" ? advMeta.titleAr : advMeta.title}
+        image={advMeta.image}
+        onExit={goMap}
+        onComplete={() => {
+          const nu = Math.max(maxUnlocked, levelIdx + 1);
+          setMaxUnlocked(nu);
+          try { localStorage.setItem(`vocabUnlocked_${pair}`, String(Math.min(nu, levels.length - 1))); } catch {}
+        }}
+      />
     );
   }
 

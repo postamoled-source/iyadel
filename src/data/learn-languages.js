@@ -8,6 +8,7 @@
 
 import { CLOZE_LEVELS } from "./learn-cloze";
 import { ARRANGE_LEVELS, ARRANGE_IMAGES } from "./learn-arrange";
+import { ADV_LEVELS } from "./learn-advanced";
 
 export const LANGS = [
   { code: "en", name: "English", nameAr: "الإنجليزية", flag: "🇬🇧", tts: "en-US" },
@@ -406,7 +407,7 @@ export function levelsForLang(target, base) {
     image: ARRANGE_IMAGES[lv.imageIdx],
     exercises: lv.build(target, base),
   }));
-  return [...themeLevels, ...clozeLevels, ...arrangeLevels];
+  return [...themeLevels, ...clozeLevels, ...arrangeLevels, ...ADV_LEVELS];
 }
 
 // مجمّعات المعاني لتوليد المشتّتات حسب لغة الأساس
