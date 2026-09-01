@@ -47,28 +47,51 @@ function speak(text, tts = "en-US") {
 }
 if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.onvoiceschanged = () => {};
 
-function GlobeMascot({ mood = "idle", size = 72 }) {
-  const eye = mood === "happy" ? "^.^" : mood === "sad" ? ">.<" : null;
+function BeeMascot({ mood = "idle", size = 72 }) {
+  const happy = mood === "happy";
+  const sad = mood === "sad";
   return (
     <svg viewBox="0 0 100 100" width={size} height={size} className="shrink-0 drop-shadow-[0_6px_12px_hsl(var(--primary)/0.35)]">
       <defs>
-        <radialGradient id="gmg" cx="38%" cy="32%" r="75%" fx="34%" fy="26%">
-          <stop offset="0%" stopColor="#a78bfa" /><stop offset="55%" stopColor="hsl(var(--primary))" /><stop offset="100%" stopColor="#3b2a8c" />
+        <radialGradient id="bmg" cx="38%" cy="30%" r="78%">
+          <stop offset="0%" stopColor="#fde68a" /><stop offset="60%" stopColor="#fbbf24" /><stop offset="100%" stopColor="#b45309" />
         </radialGradient>
-        <linearGradient id="gmLand" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#fbbf24" /><stop offset="100%" stopColor="#b45309" /></linearGradient>
       </defs>
-      <circle cx="50" cy="50" r="40" fill="url(#gmg)" />
-      <path d="M22 44 q10 -6 18 0 q8 8 18 2 q8 -4 18 2" stroke="url(#gmLand)" strokeWidth="7" fill="none" strokeLinecap="round" opacity="0.95" />
-      <path d="M28 64 q12 4 22 -2 q10 -2 20 4" stroke="url(#gmLand)" strokeWidth="6" fill="none" strokeLinecap="round" opacity="0.9" />
-      <ellipse cx="36" cy="46" rx="6" ry="4" fill="url(#gmLand)" opacity="0.85" />
-      <ellipse cx="68" cy="58" rx="5" ry="4" fill="url(#gmLand)" opacity="0.85" />
-      {eye ? <text x="50" y="58" textAnchor="middle" fontSize="20" fontWeight="800" fill="#fff" fontFamily="sans-serif">{eye}</text> : (
+      {/* أجنحة */}
+      <ellipse cx="36" cy="34" rx="13" ry="9" fill="#ffffff" opacity="0.55" transform="rotate(-22 36 34)" />
+      <ellipse cx="64" cy="34" rx="13" ry="9" fill="#ffffff" opacity="0.55" transform="rotate(22 64 34)" />
+      {/* قرون الاستشعار */}
+      <path d="M42 22 q-5 -10 -9 -12" stroke="#312e81" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      <path d="M58 22 q5 -10 9 -12" stroke="#312e81" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      <circle cx="33" cy="9" r="2.4" fill="#312e81" /><circle cx="67" cy="9" r="2.4" fill="#312e81" />
+      {/* الجسم */}
+      <ellipse cx="50" cy="60" rx="28" ry="26" fill="url(#bmg)" />
+      <path d="M22 56 q28 10 56 0" stroke="#312e81" strokeWidth="3" fill="none" opacity="0.85" />
+      <path d="M24 66 q26 8 52 0" stroke="#312e81" strokeWidth="3" fill="none" opacity="0.85" />
+      {/* العيون */}
+      {happy ? (
         <>
-          <circle cx="42" cy="54" r="4.2" fill="#fff" /><circle cx="58" cy="54" r="4.2" fill="#fff" />
-          <circle cx="43" cy="55" r="2" fill="#1e1b4b" /><circle cx="59" cy="55" r="2" fill="#1e1b4b" />
+          <path d="M40 55 q4 -6 8 0" stroke="#1e1b4b" strokeWidth="2.6" fill="none" strokeLinecap="round" />
+          <path d="M52 55 q4 -6 8 0" stroke="#1e1b4b" strokeWidth="2.6" fill="none" strokeLinecap="round" />
+        </>
+      ) : sad ? (
+        <>
+          <circle cx="44" cy="56" r="3.4" fill="#1e1b4b" /><circle cx="60" cy="56" r="3.4" fill="#1e1b4b" />
+        </>
+      ) : (
+        <>
+          <circle cx="44" cy="56" r="4.2" fill="#fff" /><circle cx="60" cy="56" r="4.2" fill="#fff" />
+          <circle cx="45" cy="57" r="2" fill="#1e1b4b" /><circle cx="61" cy="57" r="2" fill="#1e1b4b" />
         </>
       )}
-      <path d="M42 64 q8 7 16 0" stroke="#fff" strokeWidth="2.4" fill="none" strokeLinecap="round" />
+      {/* الفم */}
+      {happy ? (
+        <path d="M44 68 q6 7 12 0" stroke="#1e1b4b" strokeWidth="2.6" fill="none" strokeLinecap="round" />
+      ) : sad ? (
+        <path d="M44 72 q6 -7 12 0" stroke="#1e1b4b" strokeWidth="2.6" fill="none" strokeLinecap="round" />
+      ) : (
+        <path d="M45 68 q5 4 10 0" stroke="#1e1b4b" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      )}
     </svg>
   );
 }
@@ -314,7 +337,7 @@ export default function VocabQuizGame() {
     return (
       <div dir={isRTL ? "rtl" : "ltr"} className="select-none max-w-[420px] mx-auto">
         <div className="flex items-center justify-center gap-3 mb-3">
-          <GlobeMascot mood="idle" size={60} />
+          <BeeMascot mood="idle" size={60} />
           <div className="text-center">
             <h2 className="text-2xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{tr.title}</h2>
             <p className="text-xs text-muted-foreground">{tr.intro}</p>
@@ -373,7 +396,7 @@ export default function VocabQuizGame() {
   if (phase === "over") {
     return (
       <div dir={isRTL ? "rtl" : "ltr"} className="select-none max-w-[420px] mx-auto text-center">
-        <GlobeMascot mood={won ? "happy" : "sad"} size={96} />
+        <BeeMascot mood={won ? "happy" : "sad"} size={96} />
         <div className="mt-2 flex justify-center"><PairBadge onClick={goMap} /></div>
         <h2 className="mt-3 text-2xl font-extrabold text-foreground">{won ? tr.completed : `${tr.reached} ${levelIdx + 1}`}</h2>
         <p className="text-sm text-muted-foreground mt-1">{won ? tr.finished : tr.over}</p>
@@ -433,7 +456,7 @@ export default function VocabQuizGame() {
 
       <div className="rounded-3xl border border-border bg-card p-5 shadow-xl shadow-primary/10">
         <div className="flex items-center gap-3 mb-4">
-          <GlobeMascot mood={mood} size={56} />
+          <BeeMascot mood={mood} size={56} />
           <div className="min-w-0">
             <div className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
               <Globe className="w-3.5 h-3.5" /> {lang === "ar" ? targetLang.nameAr : targetLang.name}

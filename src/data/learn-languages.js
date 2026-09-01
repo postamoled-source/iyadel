@@ -7,7 +7,7 @@
 // say: الشخصية تنطق جملة باللغة الهدف ثم تختار معناها العربي
 
 import { CLOZE_LEVELS } from "./learn-cloze";
-import { ARRANGE_LEVELS } from "./learn-arrange";
+import { ARRANGE_LEVELS, ARRANGE_IMAGES } from "./learn-arrange";
 
 export const LANGS = [
   { code: "en", name: "English", nameAr: "الإنجليزية", flag: "🇬🇧", tts: "en-US" },
@@ -403,7 +403,7 @@ export function levelsForLang(target, base) {
   const arrangeLevels = ARRANGE_LEVELS.map((lv) => ({
     title: lv.title,
     titleAr: lv.titleAr,
-    image: THEMES_IMAGES[lv.imageIdx],
+    image: ARRANGE_IMAGES[lv.imageIdx],
     exercises: lv.build(target, base),
   }));
   return [...themeLevels, ...clozeLevels, ...arrangeLevels];
