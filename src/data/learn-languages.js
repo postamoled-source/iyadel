@@ -403,7 +403,7 @@ export function levelsForLang(target, base) {
   const arrangeLevels = ARRANGE_LEVELS.map((lv) => ({
     title: lv.title,
     titleAr: lv.titleAr,
-    image: lv.image,
+    image: THEMES_IMAGES[lv.imageIdx],
     exercises: lv.build(target, base),
   }));
   return [...themeLevels, ...clozeLevels, ...arrangeLevels];
