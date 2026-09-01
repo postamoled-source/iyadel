@@ -6,6 +6,8 @@
 // listen: استماع ثم اختيار المعنى العربي
 // say: الشخصية تنطق جملة باللغة الهدف ثم تختار معناها العربي
 
+import { CLOZE_LEVELS } from "./learn-cloze";
+
 export const LANGS = [
   { code: "en", name: "English", nameAr: "الإنجليزية", flag: "🇬🇧", tts: "en-US" },
   { code: "ar", name: "Arabic", nameAr: "العربية", flag: "🇸🇦", tts: "ar-SA" },
@@ -379,12 +381,25 @@ function buildBank(th, target, base) {
 
 // بناء مستويات اللغة الهدف مع لغة الأساس (base) لتقديم المعاني
 export function levelsForLang(target, base) {
-  return THEMES.map((th, idx) => ({
+  const themeLevels = THEMES.map((th, idx) => ({
     title: th.title,
     titleAr: th.titleAr,
     image: THEMES_IMAGES[idx],
     exercises: buildBank(th, target, base).slice(0, COUNTS[idx]),
   }));
+  const clozeLevels = CLOZE_LEVELS.map((lv) => ({
+    title: lv.title,
+    titleAr: lv.titleAr,
+    image: lv.image,
+    exercises: lv.banks(target).map((q) => ({
+      type: "cloze",
+      sentences: q.s,
+      options: q.o,
+      answer: q.a,
+      thumb: q.e,
+    })),
+  }));
+  return [...themeLevels, ...clozeLevels];
 }
 
 // مجمّعات المعاني لتوليد المشتّتات حسب لغة الأساس

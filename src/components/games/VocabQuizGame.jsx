@@ -167,7 +167,7 @@ export default function VocabQuizGame() {
       const correct = ex.ar;
       const distractors = sample(sPool.filter((m) => m !== correct), 3);
       data.options = shuffle([correct, ...distractors]);
-    } else if (ex.type === "fill") {
+    } else if (ex.type === "fill" || ex.type === "cloze") {
       data.options = shuffle(ex.options);
     } else if (ex.type === "arrange") {
       setShuffledWords(shuffle(ex.words));
@@ -263,6 +263,7 @@ export default function VocabQuizGame() {
     streak: "سلسلة", best: "الأفضل", start: "ابدأ المستوى", again: "العب مجدداً", locked: "مغلق",
     over: "انتهت اللعبة", listenQ: "استمع ثم اختر المعنى", sayQ: "ماذا قالت الشخصية؟",
     typeQ: "اكتب الكلمة بلغة الهدف", arrangeQ: "رتّب الكلمات لتكوّن جملة", fillQ: "أكمل الفراغ الصحيح",
+    clozeQ: "اختر الكلمة التي تكمل جميع الجمل",
     mapTitle: "اختر مستوى", level: "المستوى", intro: "اختر لغة الهدف ولغتك، ثم ابدأ التعلّم مع شخصيتنا الناطقة.",
     correctWas: "الصحيح:", playAudio: "استمع", resetArr: "إعادة", typePlaceholder: "اكتب هنا...",
     completed: "أكملت كل المستويات!", reached: "وصلت للمستوى", finished: "أتقنت المستوى", submit: "تحقّق",
@@ -272,6 +273,7 @@ export default function VocabQuizGame() {
     streak: "Streak", best: "Best", start: "Start Level", again: "Play again", locked: "Locked",
     over: "Game Over", listenQ: "Listen, then choose", sayQ: "What did the character say?",
     typeQ: "Type the word in the target language", arrangeQ: "Arrange the words to make a sentence", fillQ: "Choose the correct word",
+    clozeQ: "Choose the word that fits all sentences",
     mapTitle: "Choose a level", level: "Level", intro: "Pick the language you learn and your own language, then start.",
     correctWas: "Correct:", playAudio: "Play", resetArr: "Reset", typePlaceholder: "Type here...",
     completed: "You finished all levels!", reached: "You reached level", finished: "You mastered the level", submit: "Check",
@@ -418,14 +420,15 @@ export default function VocabQuizGame() {
               <Globe className="w-3.5 h-3.5" /> {lang === "ar" ? targetLang.nameAr : targetLang.name}
             </div>
             <div className="text-sm font-semibold text-foreground">
-              {exMeta.type === "vocab" ? tr.what : exMeta.type === "listen" ? tr.listenQ : exMeta.type === "say" ? tr.sayQ : exMeta.type === "type" ? tr.typeQ : exMeta.type === "fill" ? tr.fillQ : tr.arrangeQ}
+              {exMeta.type === "vocab" ? tr.what : exMeta.type === "listen" ? tr.listenQ : exMeta.type === "say" ? tr.sayQ : exMeta.type === "type" ? tr.typeQ : exMeta.type === "fill" ? tr.fillQ : exMeta.type === "cloze" ? tr.clozeQ : tr.arrangeQ}
             </div>
           </div>
+          {exercise.thumb && <span className="ms-auto text-3xl shrink-0">{exercise.thumb}</span>}
         </div>
 
         <AnimatePresence mode="wait">
           <motion.div key={`${levelIdx}-${exIdx}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.22 }}>
-            {(exercise.type === "vocab" || exercise.type === "listen" || exercise.type === "say" || exercise.type === "fill") && (
+            {(exercise.type === "vocab" || exercise.type === "listen" || exercise.type === "say" || exercise.type === "fill" || exercise.type === "cloze") && (
               <>
                 <div className="flex flex-col items-center mb-4 gap-2">
                   {(exercise.type === "listen" || exercise.type === "say") && (
@@ -440,6 +443,13 @@ export default function VocabQuizGame() {
                     <div className="text-lg font-bold text-foreground text-center px-2" dir={isTargetRtl ? "rtl" : "ltr"}>{exercise.sentence}</div>
                   )}
                   {exercise.type === "say" && <div className="text-sm text-muted-foreground italic text-center">"</div>}
+                  {exercise.type === "cloze" && (
+                    <div className="w-full flex flex-col gap-1.5">
+                      {exercise.sentences.map((sen, i) => (
+                        <div key={i} dir={isTargetRtl ? "rtl" : "ltr"} className="text-sm sm:text-[15px] font-semibold text-foreground text-center px-3 py-2 rounded-xl bg-primary/8 border border-primary/15 leading-relaxed">{sen}</div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="grid gap-2.5">
                   {exercise.options.map((opt, idx) => {
