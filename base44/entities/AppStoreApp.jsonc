@@ -1,0 +1,29 @@
+{
+  "name": "AppStoreApp",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "default": "1.0"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "category": {
+      "type": "string"
+    },
+    "icon_url": {
+      "type": "string"
+    },
+    "apk_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
