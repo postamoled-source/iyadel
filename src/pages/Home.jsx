@@ -28,6 +28,8 @@ import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { DISTANCE_UNITS, WEIGHT_UNITS, AREA_UNITS, TIME_UNITS, SPEED_UNITS, CURRENCY_RATES, ATOMIC_WEIGHTS, RIDDLES, RIDDLES_AR, convertUnit, calcMolarMass, compileExpr, FN_COLORS } from "@/lib/tool-utils";
 import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, RefreshCw, ArrowLeftRight, ChevronRight, Copy, Send, Play, ShieldQuestion, Coins, Layers, Zap, Box, Gift, ExternalLink, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, SlidersHorizontal, Swords, Spline, Instagram, Facebook, Image as ImageIcon, Pencil } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
+import LanguageSection from "@/components/LanguageSection";
+import PdfSection from "@/components/PdfSection";
 import { trackEvent, useSeo } from "@/lib/analytics";
 import { TOOL_CONTENT_AR, TOOL_GUIDES_AR } from "@/data/translations-ar";
 import { TOOL_GUIDES } from "@/data/tool-guides";
@@ -2461,6 +2463,8 @@ export default function Home() {
     <div className="min-h-screen bg-[#FFFBEB] dark:bg-[#1E1B4B] transition-colors duration-300 selection:bg-primary/30 selection:text-primary">
       <HeroSection toolCount={31} catCount={7} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <ToolsHub searchQuery={searchQuery} />
+      <LanguageSection />
+      <PdfSection />
       <AppStoreSection />
       <WhySection />
       <PrivacyTeaser />
