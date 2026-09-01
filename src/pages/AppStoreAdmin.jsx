@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { uploadWithProgress } from "@/lib/uploadWithProgress";
 import { useAuth } from "@/lib/AuthContext";
 import { useI18n } from "@/lib/i18n";
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,6 +30,9 @@ export default function AppStoreAdmin() {
   const iconInput = useRef(null);
   const apkInput = useRef(null);
   const galleryInput = useRef(null);
+  const apkTimer = useRef(null);
+
+  useEffect(() => () => { if (apkTimer.current) clearInterval(apkTimer.current); }, []);
 
   const isAdmin = user && user.role === "admin";
 
@@ -84,12 +86,18 @@ export default function AppStoreAdmin() {
     setUploadingField("apk");
     setApkProgress(0);
     setApkError(null);
+    // Smooth easing progress toward 90% while the SDK upload runs; jumps to 100% on completion.
+    apkTimer.current = setInterval(() => {
+      setApkProgress((p) => (p < 90 ? p + Math.max(0.5, (90 - p) * 0.06) : p));
+    }, 250);
     try {
-      const url = await uploadWithProgress(file, (pct) => setApkProgress(pct));
+      const url = await uploadFile(file);
+      if (apkTimer.current) { clearInterval(apkTimer.current); apkTimer.current = null; }
       setApkProgress(100);
       setForm((p) => ({ ...p, apk_url: url }));
-      setTimeout(() => setApkProgress(null), 800);
+      setTimeout(() => setApkProgress(null), 700);
     } catch (err) {
+      if (apkTimer.current) { clearInterval(apkTimer.current); apkTimer.current = null; }
       setApkError(err?.message || t("Upload failed"));
       setApkProgress(null);
     }
@@ -260,7 +268,7 @@ export default function AppStoreAdmin() {
                       )}
                       {apkProgress !== null && (
                         <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-primary">
-                          {apkProgress}%
+                          {Math.round(apkProgress)}%
                         </span>
                       )}
                     </div>
@@ -271,7 +279,7 @@ export default function AppStoreAdmin() {
                         {form.apk_url ? t("Replace File") : t("Upload File")}
                       </Button>
                       {apkProgress !== null ? (
-                        <p className="text-xs text-primary font-medium mt-2 truncate max-w-[180px]">{t("Uploading")} {apkProgress}%</p>
+                        <p className="text-xs text-primary font-medium mt-2 truncate max-w-[180px]">{t("Uploading")} {Math.round(apkProgress)}%</p>
                       ) : apkError ? (
                         <div className="mt-2 flex items-start gap-1.5 rounded-lg bg-destructive/10 px-2.5 py-1.5">
                           <AlertCircle className="w-3.5 h-3.5 text-destructive shrink-0 mt-0.5" />
