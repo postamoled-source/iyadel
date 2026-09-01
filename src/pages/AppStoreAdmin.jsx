@@ -25,6 +25,7 @@ export default function AppStoreAdmin() {
   const [form, setForm] = useState(EMPTY);
   const [busy, setBusy] = useState(false);
   const [uploadingField, setUploadingField] = useState(null);
+  const [apkProgress, setApkProgress] = useState(null);
   const iconInput = useRef(null);
   const apkInput = useRef(null);
   const galleryInput = useRef(null);
@@ -79,10 +80,23 @@ export default function AppStoreAdmin() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingField("apk");
+    setApkProgress(0);
+    const estMs = Math.max(2500, Math.round((file.size / (1024 * 1024)) * 1200));
+    const start = Date.now();
+    const timer = setInterval(() => {
+      const pct = Math.min(94, Math.round(((Date.now() - start) / estMs) * 100));
+      setApkProgress(pct);
+    }, 180);
     try {
       const url = await uploadFile(file);
+      clearInterval(timer);
+      setApkProgress(100);
       setForm((p) => ({ ...p, apk_url: url }));
-    } catch { /* ignore */ }
+      setTimeout(() => setApkProgress(null), 700);
+    } catch {
+      clearInterval(timer);
+      setApkProgress(null);
+    }
     setUploadingField(null);
     if (apkInput.current) apkInput.current.value = "";
   };
@@ -241,18 +255,30 @@ export default function AppStoreAdmin() {
                 <div>
                   <Label className="mb-1.5 block text-sm font-semibold">{t("App File (APK)")}</Label>
                   <div className="flex items-center gap-4">
-                    <div className="h-16 w-16 rounded-2xl bg-muted flex items-center justify-center shrink-0">
-                      <FileArchive className="w-7 h-7 text-muted-foreground" />
+                    <div className="relative h-16 w-16 rounded-2xl bg-muted flex items-center justify-center shrink-0 overflow-hidden">
+                      <FileArchive className={`w-7 h-7 text-muted-foreground ${apkProgress !== null ? "opacity-40" : ""}`} />
+                      {apkProgress !== null && (
+                        <div className="absolute inset-x-0 bottom-0 h-2 bg-primary/15">
+                          <div className="h-full bg-primary transition-all duration-200" style={{ width: `${apkProgress}%` }} />
+                        </div>
+                      )}
+                      {apkProgress !== null && (
+                        <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-primary">
+                          {apkProgress}%
+                        </span>
+                      )}
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <input ref={apkInput} type="file" accept=".apk,application/vnd.android.package-archive" onChange={onUploadApk} className="hidden" />
                       <Button type="button" variant="outline" onClick={() => apkInput.current?.click()} disabled={uploadingField === "apk"} className="rounded-xl">
                         {uploadingField === "apk" ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                         {form.apk_url ? t("Replace File") : t("Upload File")}
                       </Button>
-                      {form.apk_url && (
-                        <p className="text-xs text-muted-foreground mt-2 truncate max-w-[180px]">{form.apk_url.split("/").pop()}</p>
-                      )}
+                      {apkProgress !== null ? (
+                        <p className="text-xs text-primary font-medium mt-2 truncate max-w-[180px]">{t("Uploading")} {apkProgress}%</p>
+                      ) : form.apk_url ? (
+                        <p className="text-xs text-emerald-600 mt-2 truncate max-w-[180px]">{form.apk_url.split("/").pop()}</p>
+                      ) : null}
                     </div>
                   </div>
                 </div>
