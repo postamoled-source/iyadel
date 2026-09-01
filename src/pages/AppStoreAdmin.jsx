@@ -245,7 +245,7 @@ export default function AppStoreAdmin() {
                       <FileArchive className="w-7 h-7 text-muted-foreground" />
                     </div>
                     <div className="min-w-0">
-                      <input ref={apkInput} type="file" onChange={onUploadApk} className="hidden" />
+                      <input ref={apkInput} type="file" accept=".apk,application/vnd.android.package-archive" onChange={onUploadApk} className="hidden" />
                       <Button type="button" variant="outline" onClick={() => apkInput.current?.click()} disabled={uploadingField === "apk"} className="rounded-xl">
                         {uploadingField === "apk" ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                         {form.apk_url ? t("Replace File") : t("Upload File")}

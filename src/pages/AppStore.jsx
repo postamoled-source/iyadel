@@ -132,6 +132,8 @@ export default function AppStore() {
                 <a
                   href={app.apk_url}
                   download
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
                   className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition hover:brightness-95"
                 >
@@ -214,6 +216,8 @@ export default function AppStore() {
                 <a
                   href={selected.apk_url}
                   download
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-bold text-accent-foreground transition hover:brightness-95"
                 >
                   <Download className="h-4 w-4" />
