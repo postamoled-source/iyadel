@@ -7,6 +7,7 @@
 // say: الشخصية تنطق جملة باللغة الهدف ثم تختار معناها العربي
 
 import { CLOZE_LEVELS } from "./learn-cloze";
+import { ARRANGE_LEVELS } from "./learn-arrange";
 
 export const LANGS = [
   { code: "en", name: "English", nameAr: "الإنجليزية", flag: "🇬🇧", tts: "en-US" },
@@ -399,7 +400,13 @@ export function levelsForLang(target, base) {
       thumb: q.e,
     })),
   }));
-  return [...themeLevels, ...clozeLevels];
+  const arrangeLevels = ARRANGE_LEVELS.map((lv) => ({
+    title: lv.title,
+    titleAr: lv.titleAr,
+    image: lv.image,
+    exercises: lv.build(target, base),
+  }));
+  return [...themeLevels, ...clozeLevels, ...arrangeLevels];
 }
 
 // مجمّعات المعاني لتوليد المشتّتات حسب لغة الأساس

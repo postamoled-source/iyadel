@@ -114,6 +114,10 @@ export default function VocabQuizGame() {
   const [typed, setTyped] = useState("");
   const [arranged, setArranged] = useState([]);
   const [shuffledWords, setShuffledWords] = useState([]);
+  const [arrangedT, setArrangedT] = useState([]);
+  const [shuffledT, setShuffledT] = useState([]);
+  const [arrangedB, setArrangedB] = useState([]);
+  const [shuffledB, setShuffledB] = useState([]);
   const [exData, setExData] = useState(null);
   const [mood, setMood] = useState("idle");
   const [mascotLine, setMascotLine] = useState("");
@@ -172,6 +176,9 @@ export default function VocabQuizGame() {
     } else if (ex.type === "arrange") {
       setShuffledWords(shuffle(ex.words));
       setArranged([]);
+    } else if (ex.type === "pair") {
+      setShuffledT(shuffle(ex.targetWords)); setArrangedT([]);
+      setShuffledB(shuffle(ex.baseWords)); setArrangedB([]);
     } else if (ex.type === "type") {
       setTyped("");
     }
@@ -256,6 +263,18 @@ export default function VocabQuizGame() {
   const tapWord = (w, i) => { if (lock) return; setShuffledWords((p) => p.filter((_, idx) => idx !== i)); setArranged((p) => [...p, w]); };
   const untapWord = (w, i) => { if (lock) return; setArranged((p) => p.filter((_, idx) => idx !== i)); setShuffledWords((p) => [...p, w]); };
 
+  const tapPairT = (w, i) => { if (lock) return; setShuffledT((p) => p.filter((_, idx) => idx !== i)); setArrangedT((p) => [...p, w]); };
+  const untapPairT = (w, i) => { if (lock) return; setArrangedT((p) => p.filter((_, idx) => idx !== i)); setShuffledT((p) => [...p, w]); };
+  const tapPairB = (w, i) => { if (lock) return; setShuffledB((p) => p.filter((_, idx) => idx !== i)); setArrangedB((p) => [...p, w]); };
+  const untapPairB = (w, i) => { if (lock) return; setArrangedB((p) => p.filter((_, idx) => idx !== i)); setShuffledB((p) => [...p, w]); };
+  const submitPair = useCallback(() => {
+    if (lock || !exercise) return;
+    resumeAudio(); setLock(true);
+    const ok = arrangedT.join(" ") === exercise.targetWords.join(" ") && arrangedB.join(" ") === exercise.baseWords.join(" ");
+    setFeedback({ ok, correct: exercise.targetWords.join(" ") });
+    if (ok) succeed(); else fail();
+  }, [lock, exercise, arrangedT, arrangedB, succeed, fail]);
+
   useEffect(() => () => { if (advanceRef.current) clearTimeout(advanceRef.current); window.speechSynthesis?.cancel?.(); }, []);
 
   const tr = lang === "ar" ? {
@@ -263,7 +282,7 @@ export default function VocabQuizGame() {
     streak: "سلسلة", best: "الأفضل", start: "ابدأ المستوى", again: "العب مجدداً", locked: "مغلق",
     over: "انتهت اللعبة", listenQ: "استمع ثم اختر المعنى", sayQ: "ماذا قالت الشخصية؟",
     typeQ: "اكتب الكلمة بلغة الهدف", arrangeQ: "رتّب الكلمات لتكوّن جملة", fillQ: "أكمل الفراغ الصحيح",
-    clozeQ: "اختر الكلمة التي تكمل جميع الجمل",
+    clozeQ: "اختر الكلمة التي تكمل جميع الجمل", pairQ: "رتّب الجملة بلغة التعلم وبلغتك",
     mapTitle: "اختر مستوى", level: "المستوى", intro: "اختر لغة الهدف ولغتك، ثم ابدأ التعلّم مع شخصيتنا الناطقة.",
     correctWas: "الصحيح:", playAudio: "استمع", resetArr: "إعادة", typePlaceholder: "اكتب هنا...",
     completed: "أكملت كل المستويات!", reached: "وصلت للمستوى", finished: "أتقنت المستوى", submit: "تحقّق",
@@ -273,7 +292,7 @@ export default function VocabQuizGame() {
     streak: "Streak", best: "Best", start: "Start Level", again: "Play again", locked: "Locked",
     over: "Game Over", listenQ: "Listen, then choose", sayQ: "What did the character say?",
     typeQ: "Type the word in the target language", arrangeQ: "Arrange the words to make a sentence", fillQ: "Choose the correct word",
-    clozeQ: "Choose the word that fits all sentences",
+    clozeQ: "Choose the word that fits all sentences", pairQ: "Arrange the sentence in both languages",
     mapTitle: "Choose a level", level: "Level", intro: "Pick the language you learn and your own language, then start.",
     correctWas: "Correct:", playAudio: "Play", resetArr: "Reset", typePlaceholder: "Type here...",
     completed: "You finished all levels!", reached: "You reached level", finished: "You mastered the level", submit: "Check",
@@ -420,7 +439,7 @@ export default function VocabQuizGame() {
               <Globe className="w-3.5 h-3.5" /> {lang === "ar" ? targetLang.nameAr : targetLang.name}
             </div>
             <div className="text-sm font-semibold text-foreground">
-              {exMeta.type === "vocab" ? tr.what : exMeta.type === "listen" ? tr.listenQ : exMeta.type === "say" ? tr.sayQ : exMeta.type === "type" ? tr.typeQ : exMeta.type === "fill" ? tr.fillQ : exMeta.type === "cloze" ? tr.clozeQ : tr.arrangeQ}
+              {exMeta.type === "vocab" ? tr.what : exMeta.type === "listen" ? tr.listenQ : exMeta.type === "say" ? tr.sayQ : exMeta.type === "type" ? tr.typeQ : exMeta.type === "fill" ? tr.fillQ : exMeta.type === "cloze" ? tr.clozeQ : exMeta.type === "pair" ? tr.pairQ : tr.arrangeQ}
             </div>
           </div>
           {exercise.thumb && <span className="ms-auto text-3xl shrink-0">{exercise.thumb}</span>}
@@ -506,6 +525,35 @@ export default function VocabQuizGame() {
                 <div className="flex justify-center gap-3">
                   <Button onClick={() => { setShuffledWords(shuffle(exercise.words)); setArranged([]); }} disabled={lock} variant="outline" className="rounded-2xl px-5 py-3 border-border">{tr.resetArr}</Button>
                   <Button onClick={submitArrange} disabled={lock || arranged.length !== exercise.words.length} className="bg-primary text-primary-foreground rounded-2xl px-6 py-3 font-bold">{tr.submit}</Button>
+                </div>
+              </div>
+            )}
+
+            {exercise.type === "pair" && (
+              <div className="flex flex-col gap-4">
+                <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-primary mb-1.5">{tr.iLearn}</div>
+                  <div className="min-h-[56px] rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-3 flex flex-wrap gap-2 justify-center items-center" dir={isTargetRtl ? "rtl" : "ltr"}>
+                    {arrangedT.length === 0 && <span className="text-xs text-muted-foreground">{tr.arrangeQ}</span>}
+                    {arrangedT.map((w, i) => (<button key={i} onClick={() => untapPairT(w, i)} disabled={lock} className="px-3 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-sm active:scale-95 transition-transform">{w}</button>))}
+                  </div>
+                  <div className="flex flex-wrap gap-2 justify-center mt-2" dir={isTargetRtl ? "rtl" : "ltr"}>
+                    {shuffledT.map((w, i) => (<button key={i} onClick={() => tapPairT(w, i)} disabled={lock} className="px-3.5 py-2 rounded-xl bg-muted border border-border text-foreground font-bold text-sm hover:border-primary/40 active:scale-95 transition-all">{w}</button>))}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-accent mb-1.5">{tr.iSpeak}</div>
+                  <div className="min-h-[56px] rounded-2xl border-2 border-dashed border-accent/40 bg-accent/5 p-3 flex flex-wrap gap-2 justify-center items-center" dir={isBaseRtl ? "rtl" : "ltr"}>
+                    {arrangedB.length === 0 && <span className="text-xs text-muted-foreground">{tr.arrangeQ}</span>}
+                    {arrangedB.map((w, i) => (<button key={i} onClick={() => untapPairB(w, i)} disabled={lock} className="px-3 py-2 rounded-xl bg-accent text-accent-foreground font-bold text-sm active:scale-95 transition-transform">{w}</button>))}
+                  </div>
+                  <div className="flex flex-wrap gap-2 justify-center mt-2" dir={isBaseRtl ? "rtl" : "ltr"}>
+                    {shuffledB.map((w, i) => (<button key={i} onClick={() => tapPairB(w, i)} disabled={lock} className="px-3.5 py-2 rounded-xl bg-muted border border-border text-foreground font-bold text-sm hover:border-accent/40 active:scale-95 transition-all">{w}</button>))}
+                  </div>
+                </div>
+                <div className="flex justify-center gap-3">
+                  <Button onClick={() => { setShuffledT(shuffle(exercise.targetWords)); setArrangedT([]); setShuffledB(shuffle(exercise.baseWords)); setArrangedB([]); }} disabled={lock} variant="outline" className="rounded-2xl px-5 py-3 border-border">{tr.resetArr}</Button>
+                  <Button onClick={submitPair} disabled={lock || arrangedT.length !== exercise.targetWords.length || arrangedB.length !== exercise.baseWords.length} className="bg-primary text-primary-foreground rounded-2xl px-6 py-3 font-bold">{tr.submit}</Button>
                 </div>
               </div>
             )}

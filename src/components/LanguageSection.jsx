@@ -10,7 +10,7 @@ export default function LanguageSection() {
     { icon: Globe, en: "8 languages to choose from", ar: "٨ لغات للاختيار بينها" },
     { icon: Volume2, en: "Listening & speech in each language", ar: "استماع ونطق بكل لغة" },
     { icon: Pencil, en: "Type, arrange & fill-in exercises", ar: "كتابة وترتيب وإكمال فراغ" },
-    { icon: Heart, en: "Hearts, streaks & 12 levels per language", ar: "قلوب وسلاسل و١٢ مستوى لكل لغة" },
+    { icon: Heart, en: "Hearts, streaks & levels per language", ar: "قلوب وسلاسل ومستويات لكل لغة" },
   ];
   return (
     <section className="bg-[#FFFBEB] dark:bg-[#1E1B4B] transition-colors duration-300 py-16" id="learn-english">
@@ -29,7 +29,7 @@ export default function LanguageSection() {
                 <span className="inline-block text-[11px] font-bold uppercase tracking-widest text-primary mb-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">{t("Learn Languages")}</span>
                 <h2 className="text-2xl md:text-3xl font-extrabold text-card-foreground mb-2">{t("Learn 8 languages with iyadel — FluentBee-style")}</h2>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-5">
-                  {t("English, Arabic, French, Spanish, Italian, German, Japanese & Portuguese — vocabulary, listening, sentence building and typing with a talking character, 12 levels per language.")}
+                  {t("English, Arabic, French, Spanish, Italian, German, Japanese & Portuguese — vocabulary, listening, sentence building and typing with a talking character, levels per language.")}
                 </p>
                 <div className="grid grid-cols-2 gap-2.5 mb-6">
                   {feats.map((f) => (
