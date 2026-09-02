@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import VersionPanel from "@/components/appstore/VersionPanel";
 import {
   Package, ArrowLeft, Plus, Trash2, Upload, Save, RefreshCw, X,
-  ImageIcon, Pencil, ShieldCheck, LogIn, History, Rocket,
+  ImageIcon, Pencil, ShieldCheck, LogIn, History, Rocket, FileArchive,
 } from "lucide-react";
 
 const AppEntity = base44.entities.AppStoreApp;
@@ -275,6 +275,33 @@ export default function AppStoreAdmin() {
                     ))}
                   </div>
                 )}
+              </div>
+
+              {/* APK / Versions shortcut — discoverable from the editor */}
+              <div className="mt-6 rounded-2xl bg-primary/5 border border-primary/20 p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <FileArchive className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-foreground">{t("ملفات APK")}</p>
+                    {editing === "new" ? (
+                      <p className="text-xs text-muted-foreground">{t("احفظ التطبيق أولاً ثم ارجع لرفع ملفات APK عبر الإصدارات.")}</p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">{t("ارفع وأدر ملفات APK عبر لوحة الإصدارات.")}</p>
+                    )}
+                  </div>
+                  {editing !== "new" && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => setVersionApp({ id: editing, name: form.name, current_version_id: form.current_version_id })}
+                      className="rounded-lg"
+                    >
+                      <Upload className="w-3.5 h-3.5" /> {t("رفع APK")}
+                    </Button>
+                  )}
+                </div>
               </div>
 
               {/* Actions */}
