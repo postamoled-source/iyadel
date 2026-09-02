@@ -10,16 +10,31 @@ import { Image } from "@/components/ui/image";
 export default function AppStoreSection() {
   const { t } = useI18n();
   const [apps, setApps] = useState(null);
+  const [latestByApp, setLatestByApp] = useState({});
 
   useEffect(() => {
     let alive = true;
-    base44.entities.AppStoreApp.list("-created_date", 8)
-      .then((rows) => alive && setApps(rows))
-      .catch(() => alive && setApps([]));
+    (async () => {
+      try {
+        const [allApps, versions] = await Promise.all([
+          base44.entities.AppStoreApp.list("-created_date", 50),
+          base44.entities.AppVersion.filter({ status: "published" }, "-created_date", 200),
+        ]);
+        if (!alive) return;
+        const map = {};
+        for (const v of versions) {
+          if (!map[v.app_id]) map[v.app_id] = v;
+        }
+        setLatestByApp(map);
+        setApps(allApps.filter((a) => a.status === "published"));
+      } catch {
+        if (alive) setApps([]);
+      }
+    })();
     return () => { alive = false; };
   }, []);
 
-  const items = (apps || []).slice(0, 8);
+  const items = (apps || []).filter((a) => latestByApp[a.id]).slice(0, 8);
 
   return (
     <section className="bg-[#FFFBEB] dark:bg-[#1E1B4B] transition-colors duration-300 py-16" id="app-store">
@@ -89,20 +104,25 @@ export default function AppStoreSection() {
                     <span className="text-[11px] font-semibold text-primary bg-primary/10 rounded-full px-2.5 py-0.5 mb-2">{app.category}</span>
                   )}
                   <p className="text-xs text-[#6B7280] dark:text-[#A8A6C4] line-clamp-2 mb-3">{app.description}</p>
-                  {app.apk_url ? (
-                    <a
-                      href={app.apk_url}
-                      download
+                  {(() => {
+                    const ver = latestByApp[app.id];
+                    return ver ? (
+                      <a
+                        href={ver.apk_url}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
                       className="mt-auto inline-flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#6D28D9] to-[#8B5CF6] text-white px-5 py-2 text-xs font-bold shadow-sm hover:shadow-md transition-all w-full"
                     >
                       <Download className="w-3.5 h-3.5" />
-                      {t("Download")}
-                    </a>
-                  ) : (
-                    <span className="mt-auto inline-flex items-center justify-center rounded-full bg-secondary text-muted-foreground px-5 py-2 text-xs font-medium w-full">
-                      {t("Coming soon")}
-                    </span>
-                  )}
+                        {t("Download")}
+                      </a>
+                    ) : (
+                      <span className="mt-auto inline-flex items-center justify-center rounded-full bg-secondary text-muted-foreground px-5 py-2 text-xs font-medium w-full">
+                        {t("Coming soon")}
+                      </span>
+                    );
+                  })()}
                 </div>
               </motion.div>
             ))}

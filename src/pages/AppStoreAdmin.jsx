@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
@@ -8,38 +8,47 @@ import { Image as Img } from "@/components/ui/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import VersionPanel from "@/components/appstore/VersionPanel";
 import {
   Package, ArrowLeft, Plus, Trash2, Upload, Save, RefreshCw, X,
-  ImageIcon, FileArchive, Pencil, ShieldCheck, LogIn, AlertCircle,
+  ImageIcon, Pencil, ShieldCheck, LogIn, History, Rocket,
 } from "lucide-react";
 
 const AppEntity = base44.entities.AppStoreApp;
 
-const EMPTY = { name: "", version: "1.0", description: "", category: "", icon_url: "", apk_url: "", images: [] };
+const EMPTY = { name: "", slug: "", description: "", category: "", icon_url: "", status: "draft", images: [] };
+
+const slugify = (s) => s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
 export default function AppStoreAdmin() {
   const { t } = useI18n();
   const { user } = useAuth();
   const [apps, setApps] = useState(null);
-  const [editing, setEditing] = useState(null); // App being edited or "new"
+  const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY);
   const [busy, setBusy] = useState(false);
-  const [uploadingField, setUploadingField] = useState(null);
-  const [apkProgress, setApkProgress] = useState(null);
-  const [apkError, setApkError] = useState(null);
-  const iconInput = useRef(null);
-  const apkInput = useRef(null);
-  const galleryInput = useRef(null);
-  const apkTimer = useRef(null);
-
-  useEffect(() => () => { if (apkTimer.current) clearInterval(apkTimer.current); }, []);
+  const [uploadingIcon, setUploadingIcon] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [versionApp, setVersionApp] = useState(null);
+  const [appsVersionCount, setAppsVersionCount] = useState({});
 
   const isAdmin = user && user.role === "admin";
 
   const load = async () => {
     setApps(null);
-    try { setApps(await AppEntity.list("-created_date", 200)); }
-    catch { setApps([]); }
+    try {
+      const list = await AppEntity.list("-created_date", 200);
+      setApps(list);
+      // version counts per app (for display)
+      try {
+        const vs = await base44.entities.AppVersion.list("-created_date", 500);
+        const counts = {};
+        for (const v of vs) counts[v.app_id] = (counts[v.app_id] || 0) + 1;
+        setAppsVersionCount(counts);
+      } catch { /* ignore */ }
+    } catch {
+      setApps([]);
+    }
   };
   useEffect(() => { if (isAdmin) load(); }, [isAdmin]);
 
@@ -71,50 +80,25 @@ export default function AppStoreAdmin() {
   const onUploadIcon = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploadingField("icon");
+    setUploadingIcon(true);
     try {
       const url = await uploadFile(file);
       setForm((p) => ({ ...p, icon_url: url }));
     } catch { /* ignore */ }
-    setUploadingField(null);
-    if (iconInput.current) iconInput.current.value = "";
-  };
-
-  const onUploadApk = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadingField("apk");
-    setApkProgress(0);
-    setApkError(null);
-    // Smooth easing progress toward 90% while the SDK upload runs; jumps to 100% on completion.
-    apkTimer.current = setInterval(() => {
-      setApkProgress((p) => (p < 90 ? p + Math.max(0.5, (90 - p) * 0.06) : p));
-    }, 250);
-    try {
-      const url = await uploadFile(file);
-      if (apkTimer.current) { clearInterval(apkTimer.current); apkTimer.current = null; }
-      setApkProgress(100);
-      setForm((p) => ({ ...p, apk_url: url }));
-      setTimeout(() => setApkProgress(null), 700);
-    } catch (err) {
-      if (apkTimer.current) { clearInterval(apkTimer.current); apkTimer.current = null; }
-      setApkError(err?.message || t("Upload failed"));
-      setApkProgress(null);
-    }
-    setUploadingField(null);
-    if (apkInput.current) apkInput.current.value = "";
+    setUploadingIcon(false);
+    e.target.value = "";
   };
 
   const onUploadGallery = async (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
-    setUploadingField("gallery");
+    setUploadingGallery(true);
     try {
       const urls = await Promise.all(files.map(uploadFile));
       setForm((p) => ({ ...p, images: [...(p.images || []), ...urls] }));
     } catch { /* ignore */ }
-    setUploadingField(null);
-    if (galleryInput.current) galleryInput.current.value = "";
+    setUploadingGallery(false);
+    e.target.value = "";
   };
 
   const removeImage = (idx) => setForm((p) => ({ ...p, images: (p.images || []).filter((_, i) => i !== idx) }));
@@ -132,11 +116,11 @@ export default function AppStoreAdmin() {
     try {
       const payload = {
         name: form.name.trim(),
-        version: form.version || "1.0",
+        slug: form.slug.trim() || slugify(form.name),
         description: form.description || "",
         category: form.category || "",
         icon_url: form.icon_url || "",
-        apk_url: form.apk_url || "",
+        status: form.status || "draft",
         images: form.images || [],
       };
       if (editing === "new") {
@@ -146,13 +130,18 @@ export default function AppStoreAdmin() {
       }
       cancelEdit();
       load();
-    } catch (err) { /* ignore */ }
+    } catch { /* ignore */ }
     setBusy(false);
   };
 
   const remove = async (app) => {
     if (!confirm(`${t("Delete")} "${app.name}"?`)) return;
-    try { await AppEntity.delete(app.id); load(); } catch { /* ignore */ }
+    try {
+      // remove versions of this app
+      await base44.entities.AppVersion.deleteMany({ app_id: app.id });
+      await AppEntity.delete(app.id);
+      load();
+    } catch { /* ignore */ }
   };
 
   const set = (k) => (e) => setForm((p) => ({ ...p, [k]: e.target.value }));
@@ -210,12 +199,19 @@ export default function AppStoreAdmin() {
                   <Input value={form.name} onChange={set("name")} placeholder="My App" />
                 </div>
                 <div>
-                  <Label className="mb-1.5 block text-sm font-semibold">{t("Version")}</Label>
-                  <Input value={form.version} onChange={set("version")} placeholder="1.0" />
-                </div>
-                <div>
                   <Label className="mb-1.5 block text-sm font-semibold">{t("Category")}</Label>
                   <Input value={form.category} onChange={set("category")} placeholder="Productivity" />
+                </div>
+                <div>
+                  <Label className="mb-1.5 block text-sm font-semibold">{t("Status")}</Label>
+                  <select
+                    value={form.status}
+                    onChange={set("status")}
+                    className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                  >
+                    <option value="draft">{t("Draft")}</option>
+                    <option value="published">{t("Published")}</option>
+                  </select>
                 </div>
                 <div className="sm:col-span-2">
                   <Label className="mb-1.5 block text-sm font-semibold">{t("Description")}</Label>
@@ -229,66 +225,28 @@ export default function AppStoreAdmin() {
                 </div>
               </div>
 
-              {/* Icon + APK uploads */}
-              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <Label className="mb-1.5 block text-sm font-semibold">{t("App Icon")}</Label>
-                  <div className="flex items-center gap-4">
-                    <div className="h-16 w-16 rounded-2xl overflow-hidden bg-muted flex items-center justify-center shrink-0">
-                      {form.icon_url ? (
-                        <img src={form.icon_url} alt="icon" className="h-full w-full object-cover" />
-                      ) : (
-                        <ImageIcon className="w-7 h-7 text-muted-foreground" />
-                      )}
-                    </div>
-                    <div>
-                      <input ref={iconInput} type="file" accept="image/*" onChange={onUploadIcon} className="hidden" />
-                      <Button type="button" variant="outline" onClick={() => iconInput.current?.click()} disabled={uploadingField === "icon"} className="rounded-xl">
-                        {uploadingField === "icon" ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                        {t("Upload Icon")}
-                      </Button>
-                      {form.icon_url && (
-                        <button onClick={() => setForm((p) => ({ ...p, icon_url: "" }))} className="block text-xs text-destructive mt-2 hover:underline">
-                          {t("Remove")}
-                        </button>
-                      )}
-                    </div>
+              {/* Icon upload */}
+              <div className="mt-6">
+                <Label className="mb-1.5 block text-sm font-semibold">{t("App Icon")}</Label>
+                <div className="flex items-center gap-4">
+                  <div className="h-16 w-16 rounded-2xl overflow-hidden bg-muted flex items-center justify-center shrink-0">
+                    {form.icon_url ? (
+                      <img src={form.icon_url} alt="icon" className="h-full w-full object-cover" />
+                    ) : (
+                      <ImageIcon className="w-7 h-7 text-muted-foreground" />
+                    )}
                   </div>
-                </div>
-
-                <div>
-                  <Label className="mb-1.5 block text-sm font-semibold">{t("App File (APK)")}</Label>
-                  <div className="flex items-center gap-4">
-                    <div className="relative h-16 w-16 rounded-2xl bg-muted flex items-center justify-center shrink-0 overflow-hidden">
-                      <FileArchive className={`w-7 h-7 text-muted-foreground ${apkProgress !== null ? "opacity-40" : ""}`} />
-                      {apkProgress !== null && (
-                        <div className="absolute inset-x-0 bottom-0 h-2 bg-primary/15">
-                          <div className="h-full bg-primary transition-all duration-200" style={{ width: `${apkProgress}%` }} />
-                        </div>
-                      )}
-                      {apkProgress !== null && (
-                        <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-primary">
-                          {Math.round(apkProgress)}%
-                        </span>
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <input ref={apkInput} type="file" accept=".apk,application/vnd.android.package-archive" onChange={onUploadApk} className="hidden" />
-                      <Button type="button" variant="outline" onClick={() => apkInput.current?.click()} disabled={uploadingField === "apk"} className="rounded-xl">
-                        {uploadingField === "apk" ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                        {form.apk_url ? t("Replace File") : t("Upload File")}
-                      </Button>
-                      {apkProgress !== null ? (
-                        <p className="text-xs text-primary font-medium mt-2 truncate max-w-[180px]">{t("Uploading")} {Math.round(apkProgress)}%</p>
-                      ) : apkError ? (
-                        <div className="mt-2 flex items-start gap-1.5 rounded-lg bg-destructive/10 px-2.5 py-1.5">
-                          <AlertCircle className="w-3.5 h-3.5 text-destructive shrink-0 mt-0.5" />
-                          <p className="text-xs text-destructive leading-relaxed break-words">{apkError}</p>
-                        </div>
-                      ) : form.apk_url ? (
-                        <p className="text-xs text-emerald-600 mt-2 truncate max-w-[180px]">{form.apk_url.split("/").pop()}</p>
-                      ) : null}
-                    </div>
+                  <div>
+                    <input id="icon-input" type="file" accept="image/*" onChange={onUploadIcon} className="hidden" />
+                    <Button type="button" variant="outline" onClick={() => document.getElementById("icon-input")?.click()} disabled={uploadingIcon} className="rounded-xl">
+                      {uploadingIcon ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                      {t("Upload Icon")}
+                    </Button>
+                    {form.icon_url && (
+                      <button onClick={() => setForm((p) => ({ ...p, icon_url: "" }))} className="block text-xs text-destructive mt-2 hover:underline">
+                        {t("Remove")}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -296,9 +254,9 @@ export default function AppStoreAdmin() {
               {/* Gallery */}
               <div className="mt-6">
                 <Label className="mb-1.5 block text-sm font-semibold">{t("App Images (Gallery)")}</Label>
-                <input ref={galleryInput} type="file" accept="image/*" multiple onChange={onUploadGallery} className="hidden" />
-                <Button type="button" variant="outline" onClick={() => galleryInput.current?.click()} disabled={uploadingField === "gallery"} className="rounded-xl">
-                  {uploadingField === "gallery" ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                <input id="gallery-input" type="file" accept="image/*" multiple onChange={onUploadGallery} className="hidden" />
+                <Button type="button" variant="outline" onClick={() => document.getElementById("gallery-input")?.click()} disabled={uploadingGallery} className="rounded-xl">
+                  {uploadingGallery ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                   {t("Add Images")}
                 </Button>
 
@@ -326,6 +284,7 @@ export default function AppStoreAdmin() {
                   {t("Save App")}
                 </Button>
                 <Button onClick={cancelEdit} variant="ghost" className="rounded-xl">{t("Cancel")}</Button>
+                <p className="text-xs text-muted-foreground mr-auto">{t("APK files are uploaded from the Versions panel.")}</p>
               </div>
             </motion.div>
           )}
@@ -333,7 +292,7 @@ export default function AppStoreAdmin() {
 
         {/* List */}
         {apps === null ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="h-44 animate-pulse rounded-3xl bg-muted/60" />
             ))}
@@ -346,37 +305,53 @@ export default function AppStoreAdmin() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {apps.map((app) => (
-              <div key={app.id} className="rounded-3xl bg-card border border-border p-4 shadow-sm flex gap-3">
-                <div className="h-16 w-16 shrink-0 rounded-2xl overflow-hidden bg-muted flex items-center justify-center">
-                  {app.icon_url ? (
-                    <Img src={app.icon_url} alt={app.name} fittingType="fill" className="h-full w-full" />
-                  ) : (
-                    <Package className="w-7 h-7 text-muted-foreground" />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="font-bold text-foreground truncate">{app.name}</h3>
-                  {app.category && <span className="text-xs text-primary font-medium">{app.category}</span>}
-                  <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{app.description || "—"}</p>
-                  <div className="flex items-center gap-2 mt-2 text-[11px] text-muted-foreground">
-                    <span className="inline-flex items-center gap-1"><ImageIcon className="w-3 h-3" /> {(app.images || []).length}</span>
-                    {app.apk_url && <span className="inline-flex items-center gap-1 text-emerald-600"><FileArchive className="w-3 h-3" /> {t("File")}</span>}
+            {apps.map((app) => {
+              const published = app.status === "published" && app.current_version_id;
+              return (
+                <div key={app.id} className="rounded-3xl bg-card border border-border p-4 shadow-sm flex gap-3">
+                  <div className="h-16 w-16 shrink-0 rounded-2xl overflow-hidden bg-muted flex items-center justify-center">
+                    {app.icon_url ? (
+                      <Img src={app.icon_url} alt={app.name} fittingType="fill" className="h-full w-full" />
+                    ) : (
+                      <Package className="w-7 h-7 text-muted-foreground" />
+                    )}
                   </div>
-                  <div className="flex items-center gap-2 mt-3">
-                    <Button onClick={() => startEdit(app)} variant="outline" size="sm" className="rounded-lg h-8">
-                      <Pencil className="w-3.5 h-3.5" /> {t("Edit")}
-                    </Button>
-                    <Button onClick={() => remove(app)} variant="ghost" size="sm" className="rounded-lg h-8 text-destructive hover:text-destructive">
-                      <Trash2 className="w-3.5 h-3.5" /> {t("Delete")}
-                    </Button>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-foreground truncate">{app.name}</h3>
+                      {published ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                          <Rocket className="w-3 h-3" /> {t("Live")}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{t("Draft")}</span>
+                      )}
+                    </div>
+                    {app.category && <span className="text-xs text-primary font-medium">{app.category}</span>}
+                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{app.description || "—"}</p>
+                    <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground">
+                      <span className="inline-flex items-center gap-1"><History className="w-3 h-3" /> {appsVersionCount[app.id] || 0} {t("versions")}</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 mt-3">
+                      <Button onClick={() => setVersionApp(app)} variant="default" size="sm" className="rounded-lg h-8">
+                        <History className="w-3.5 h-3.5" /> {t("Versions")}
+                      </Button>
+                      <Button onClick={() => startEdit(app)} variant="outline" size="sm" className="rounded-lg h-8">
+                        <Pencil className="w-3.5 h-3.5" /> {t("Edit")}
+                      </Button>
+                      <Button onClick={() => remove(app)} variant="ghost" size="sm" className="rounded-lg h-8 text-destructive hover:text-destructive">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
+
+      {versionApp && <VersionPanel app={versionApp} onClose={() => { setVersionApp(null); load(); }} />}
     </div>
   );
 }

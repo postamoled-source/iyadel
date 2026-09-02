@@ -1,21 +1,38 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Download, Package, Settings, Search, X, Images } from "lucide-react";
+import { Download, Package, Settings, Search, X, Images, FileArchive } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Image } from "@/components/ui/image";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
+import { formatBytes } from "@/lib/uploadApkToR2";
 
 export default function AppStore() {
   const [apps, setApps] = useState(null);
+  const [latestByApp, setLatestByApp] = useState({});
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
     let alive = true;
-    base44.entities.AppStoreApp.list("-created_date", 100)
-      .then((rows) => alive && setApps(rows))
-      .catch(() => alive && setApps([]));
+    (async () => {
+      try {
+        const [allApps, versions] = await Promise.all([
+          base44.entities.AppStoreApp.list("-created_date", 200),
+          base44.entities.AppVersion.filter({ status: "published" }, "-created_date", 500),
+        ]);
+        if (!alive) return;
+        // versions sorted desc → first seen per app_id is the latest
+        const map = {};
+        for (const v of versions) {
+          if (!map[v.app_id]) map[v.app_id] = v;
+        }
+        setLatestByApp(map);
+        setApps(allApps.filter((a) => a.status === "published"));
+      } catch {
+        if (alive) setApps([]);
+      }
+    })();
     return () => { alive = false; };
   }, []);
 
@@ -28,6 +45,8 @@ export default function AppStore() {
       (a.category || "").toLowerCase().includes(q)
     );
   });
+
+  const latest = selected ? latestByApp[selected.id] : null;
 
   return (
     <div dir="rtl" className="min-h-screen bg-background px-4 py-8 sm:px-6 lg:px-8">
@@ -86,67 +105,70 @@ export default function AppStore() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 sm:gap-6">
-            {filtered.map((app, i) => (
-              <motion.div
-              key={app.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.3) }}
-              className="flex flex-col rounded-3xl bg-card p-4 text-center shadow-sm ring-1 ring-border transition hover:-translate-y-1 hover:shadow-lg sm:p-5 cursor-pointer"
-              onClick={() => setSelected(app)}
-              >
-              <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-2xl bg-muted">
-                {app.icon_url ? (
-                  <Image
-                    src={app.icon_url}
-                    alt={app.name}
-                    fittingType="fill"
-                    className="h-full w-full"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-                    <Package className="h-8 w-8" />
-                  </div>
-                )}
-              </div>
-              <h3 className="line-clamp-1 text-base font-bold text-foreground sm:text-lg">{app.name}</h3>
-              {app.version && (
-                <span className="mt-1 inline-block text-xs text-muted-foreground">
-                  الإصدار {app.version}
-                </span>
-              )}
-              {app.category && (
-                <span className="mt-2 inline-block w-fit mx-auto rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                  {app.category}
-                </span>
-              )}
-              <p className="mt-3 line-clamp-2 flex-1 text-sm text-muted-foreground">
-                {app.description || "—"}
-              </p>
-              {app.images && app.images.length > 0 && (
-                <span className="mt-3 inline-flex items-center justify-center gap-1 text-[11px] text-muted-foreground">
-                  <Images className="h-3.5 w-3.5" /> {app.images.length} صور
-                </span>
-              )}
-              {app.apk_url ? (
-                <a
-                  href={app.apk_url}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition hover:brightness-95"
+            {filtered.map((app, i) => {
+              const ver = latestByApp[app.id];
+              return (
+                <motion.div
+                  key={app.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.3) }}
+                  className="flex flex-col rounded-3xl bg-card p-4 text-center shadow-sm ring-1 ring-border transition hover:-translate-y-1 hover:shadow-lg sm:p-5 cursor-pointer"
+                  onClick={() => setSelected(app)}
                 >
-                  <Download className="h-4 w-4" />
-                  تحميل
-                </a>
-              ) : (
-                <span className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-muted px-5 py-2.5 text-sm font-medium text-muted-foreground">
-                  غير متوفر
-                </span>
-              )}
-              </motion.div>
-            ))}
+                  <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-2xl bg-muted">
+                    {app.icon_url ? (
+                      <Image
+                        src={app.icon_url}
+                        alt={app.name}
+                        fittingType="fill"
+                        className="h-full w-full"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                        <Package className="h-8 w-8" />
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="line-clamp-1 text-base font-bold text-foreground sm:text-lg">{app.name}</h3>
+                  {ver && (
+                    <span className="mt-1 inline-block text-xs text-muted-foreground">
+                      الإصدار {ver.version_name}
+                    </span>
+                  )}
+                  {app.category && (
+                    <span className="mt-2 inline-block w-fit mx-auto rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                      {app.category}
+                    </span>
+                  )}
+                  <p className="mt-3 line-clamp-2 flex-1 text-sm text-muted-foreground">
+                    {app.description || "—"}
+                  </p>
+                  {app.images && app.images.length > 0 && (
+                    <span className="mt-3 inline-flex items-center justify-center gap-1 text-[11px] text-muted-foreground">
+                      <Images className="h-3.5 w-3.5" /> {app.images.length} صور
+                    </span>
+                  )}
+                  {ver ? (
+                    <a
+                      href={ver.apk_url}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition hover:brightness-95"
+                    >
+                      <Download className="h-4 w-4" />
+                      تحميل APK
+                    </a>
+                  ) : (
+                    <span className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-muted px-5 py-2.5 text-sm font-medium text-muted-foreground">
+                      غير متوفر
+                    </span>
+                  )}
+                </motion.div>
+              );
+            })}
           </div>
         )}
 
@@ -200,7 +222,7 @@ export default function AppStore() {
                 <div className="min-w-0">
                   <h2 className="text-xl font-extrabold text-foreground truncate">{selected.name}</h2>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                    {selected.version && <span>الإصدار {selected.version}</span>}
+                    {latest && <span>الإصدار {latest.version_name}</span>}
                     {selected.category && (
                       <span className="rounded-full bg-primary/10 px-2 py-0.5 text-primary font-medium">{selected.category}</span>
                     )}
@@ -212,17 +234,30 @@ export default function AppStore() {
                 <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{selected.description}</p>
               )}
 
-              {selected.apk_url && (
-                <a
-                  href={selected.apk_url}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-bold text-accent-foreground transition hover:brightness-95"
-                >
-                  <Download className="h-4 w-4" />
-                  تحميل التطبيق
-                </a>
+              {latest && (
+                <>
+                  {latest.release_notes && (
+                    <div className="mt-4 rounded-2xl bg-muted/40 border border-border p-3">
+                      <p className="text-xs font-bold text-foreground mb-1">ملاحظات الإصدار {latest.version_name}</p>
+                      <p className="text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed">{latest.release_notes}</p>
+                    </div>
+                  )}
+                  <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                    <FileArchive className="w-3.5 h-3.5" />
+                    <span className="truncate">{latest.apk_filename}</span>
+                    <span>· {formatBytes(latest.apk_size)}</span>
+                  </div>
+                  <a
+                    href={latest.apk_url}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-bold text-accent-foreground transition hover:brightness-95"
+                  >
+                    <Download className="h-4 h-4" />
+                    تحميل APK
+                  </a>
+                </>
               )}
             </div>
           </div>
