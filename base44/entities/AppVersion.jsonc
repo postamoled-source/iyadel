@@ -1,0 +1,45 @@
+{
+  "name": "AppVersion",
+  "type": "object",
+  "properties": {
+    "app_id": {
+      "type": "string"
+    },
+    "version_name": {
+      "type": "string"
+    },
+    "version_code": {
+      "type": "number",
+      "default": 1
+    },
+    "apk_url": {
+      "type": "string"
+    },
+    "apk_filename": {
+      "type": "string"
+    },
+    "apk_size": {
+      "type": "number",
+      "default": 0
+    },
+    "minimum_android_version": {
+      "type": "string"
+    },
+    "release_notes": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "app_id",
+    "version_name"
+  ]
+}

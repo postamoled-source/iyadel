@@ -5,9 +5,8 @@
     "name": {
       "type": "string"
     },
-    "version": {
-      "type": "string",
-      "default": "1.0"
+    "slug": {
+      "type": "string"
     },
     "description": {
       "type": "string",
@@ -19,7 +18,15 @@
     "icon_url": {
       "type": "string"
     },
-    "apk_url": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "draft"
+    },
+    "current_version_id": {
       "type": "string"
     },
     "images": {
