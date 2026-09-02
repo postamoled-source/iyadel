@@ -1,9 +1,10 @@
 User-agent: *
 Allow: /
+Disallow: /Dashboard
+Disallow: /app-store/admin
 Disallow: /login
 Disallow: /register
-Disallow: /forgot-password
 Disallow: /reset-password
-Disallow: /Dashboard
+Disallow: /forgot-password
 
-Sitemap: https://iyadel.com/sitemap.xml
+Sitemap: https://iyadel.base44.app/sitemap.xml
