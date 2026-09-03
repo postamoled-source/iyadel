@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
+
+# Private / admin areas — keep out of the index
 Disallow: /Dashboard
 Disallow: /app-store/admin
 Disallow: /login

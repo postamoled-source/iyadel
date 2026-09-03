@@ -18,8 +18,6 @@ import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, ArrowLeftRight, ChevronRight, ShieldQuestion, Coins, Layers, Zap, Box, Gift, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, Swords, Spline, Instagram, Facebook, Image as ImageIcon, Pencil, Maximize2, FileDown, Youtube } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { trackEvent, useSeo } from "@/lib/analytics";
-import { TOOL_CONTENT_AR, TOOL_GUIDES_AR } from "@/data/translations-ar";
-import { TOOL_GUIDES } from "@/data/tool-guides";
 
 const ToolEntity = base44.entities.Tool;
 const BlogPostEntity = base44.entities.BlogPost;
@@ -171,9 +169,8 @@ function HeroSection({ catCount, searchQuery, onSearchChange }) {
 // ---------- Tool workspace (all calculators) ----------
 // Logo drawing + image sharpening helpers live in @/components/tools/ToolCalculator.
 function ToolWorkspace({ tool, onBack }) {
-  const { t, lang } = useI18n();
+  const { t } = useI18n();
   const { isFavorite, toggleFavorite } = useFavorites();
-  const [showGuide, setShowGuide] = useState(false);
 
   return (
     <div className="max-w-[480px] mx-auto bg-white dark:bg-[#1E1B4B] transition-colors duration-300 rounded-[20px] p-4 shadow-xl border-0 relative overflow-hidden">
@@ -194,62 +191,11 @@ function ToolWorkspace({ tool, onBack }) {
 
       <div className="max-w-4xl mx-auto relative z-10">
         <ToolCalculator slug={tool.slug} />
-        {(() => {
-          const aboutContent = tool.content
-            ? (lang === "ar" ? (TOOL_CONTENT_AR[tool.slug] || tool.content) : tool.content)
-            : null;
-          if (!aboutContent) return null;
-          const guide = lang === "ar" ? TOOL_GUIDES_AR[tool.slug] : TOOL_GUIDES[tool.slug];
-          return (
-            <>
-              {tool.image && (
-                <div className="mt-10 rounded-2xl overflow-hidden border border-border">
-                  <Img src={tool.image} alt={t(tool.name)} fittingType="fill" className="w-full h-48" />
-                </div>
-              )}
-              <div className="mt-10 rounded-2xl bg-secondary border border-border p-6 text-sm text-secondary-foreground leading-relaxed text-left">
-                <h3 className="font-bold text-foreground mb-3">{t("About this tool")}</h3>
-                <p>{aboutContent}</p>
-                {guide && (
-                  <button onClick={() => setShowGuide((s) => !s)}
-                    className="mt-4 inline-flex items-center gap-1.5 text-primary font-semibold text-sm hover:gap-3 transition-all duration-300">
-                    {showGuide ? t("Show less") : t("Read more")} <ChevronRight className={`w-4 h-4 transition-transform ${showGuide ? "rotate-90" : ""}`} />
-                  </button>
-                )}
-              </div>
-              {guide && showGuide && (
-                <div className="mt-4 rounded-2xl bg-card border border-primary/20 p-6 text-left shadow-sm">
-                  <h3 className="font-bold text-foreground mb-3 flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-accent" /> {t("How to use this tool")}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-5">{guide.intro}</p>
-                  <div className="mb-5">
-                    <h4 className="font-semibold text-foreground text-sm mb-3">{t("Steps")}</h4>
-                    <ol className="space-y-2.5">
-                      {guide.steps.map((step, i) => (
-                        <li key={i} className="flex gap-3 text-sm text-card-foreground/90">
-                          <span className="shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">{i + 1}</span>
-                          <span className="leading-relaxed pt-0.5">{step}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-foreground text-sm mb-3">{t("Tips")}</h4>
-                    <ul className="space-y-2">
-                      {guide.tips.map((tip, i) => (
-                        <li key={i} className="flex gap-2.5 text-sm text-card-foreground/90">
-                          <span className="shrink-0 text-accent mt-0.5"><ShieldCheck className="w-4 h-4" /></span>
-                          <span className="leading-relaxed">{tip}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
-            </>
-          );
-        })()}
+        <div className="mt-10 text-center">
+          <Link to={`/tools/${tool.slug}`} className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-6 py-3 font-semibold text-sm hover:bg-primary/90 transition-colors shadow-sm">
+            {t("Open full page")} <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
     </div>
   );

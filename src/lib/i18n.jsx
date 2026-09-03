@@ -506,6 +506,7 @@ const AR = {
   "Tap the star on any tool to save it here for quick access.": "اضغط النجمة على أي أداة لحفظها هنا للوصول السريع.",
   "Add to favorites": "إضافة إلى المفضّلة",
   "Remove from favorites": "إزالة من المفضّلة",
+  "Open full page": "افتح الصفحة الكاملة",
 
   // About page
   "About iyadel": "عن iyadel",
