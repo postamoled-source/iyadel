@@ -23,6 +23,7 @@ import VocabQuizGame from "@/components/games/VocabQuizGame";
 import PercentageCalculator from "@/components/tools/PercentageCalculator";
 import JpgToPngConverter from "@/components/tools/JpgToPngConverter";
 import ImageResizer from "@/components/tools/ImageResizer";
+import ToolCalculator from "@/components/tools/ToolCalculator";
 import PageNotFound from "@/lib/PageNotFound";
 
 const ICONS = {
@@ -45,6 +46,32 @@ const EMBED = {
   "percentage-calculator": PercentageCalculator,
   "jpg-to-png": JpgToPngConverter,
   "image-resizer": ImageResizer,
+  "loan-calculator": ToolCalculator,
+  "simple-compound-interest": ToolCalculator,
+  "currency-converter": ToolCalculator,
+  "internet-speed-test": ToolCalculator,
+  "coupon-code-generator": ToolCalculator,
+  "bond-yield": ToolCalculator,
+  "bmi-calculator": ToolCalculator,
+  "calories-burned": ToolCalculator,
+  "distance-converter": ToolCalculator,
+  "weight-converter": ToolCalculator,
+  "area-converter": ToolCalculator,
+  "time-converter": ToolCalculator,
+  "speed-converter": ToolCalculator,
+  "qr-code-generator": ToolCalculator,
+  "share-link-generator": ToolCalculator,
+  "privacy-policy-generator": ToolCalculator,
+  "math-function-calculator": ToolCalculator,
+  "physics-calculators": ToolCalculator,
+  "chemistry-calculators": ToolCalculator,
+  "riddle-game": ToolCalculator,
+  "image-cropper": ToolCalculator,
+  "background-remover": ToolCalculator,
+  "image-to-pdf": ToolCalculator,
+  "image-compressor": ToolCalculator,
+  "image-enhancer": ToolCalculator,
+  "logo-maker": ToolCalculator,
 };
 
 const FORMULAS = {
@@ -207,7 +234,7 @@ export default function ToolPage() {
 
         <div className="bg-white dark:bg-[#2D2A5A] rounded-[20px] p-5 shadow-[0_4px_12px_rgba(109,40,217,0.08)] mb-6">
           {Calc ? (
-            <Calc />
+            <Calc slug={slug} />
           ) : (
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <Icon className="w-10 h-10 text-[#6D28D9] mb-3" />
