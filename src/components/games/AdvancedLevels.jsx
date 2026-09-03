@@ -1,4 +1,4 @@
-// المستويات المتقدمة 21–24 — واجهة لعب مستقلّة لا تمسّ دورة المستويات الكلاسيكية
+// المستويات المتقدمة 21–26 — واجهة لعب مستقلّة لا تمسّ دورة المستويات الكلاسيكية
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
@@ -57,11 +57,15 @@ export default function AdvancedLevels({ n, langCode, baseLangCode, title, image
     arrangeHint: "رتّب الكلمات حسب الجملة", choose: "اختر الإجابة الصحيحة", timed: "اختر بسرعة!",
     finishedTitle: "أحسنت! أكملت المستوى", again: "العب مجدداً", map: "الخريطة", timeUp: "انتهى الوقت!",
     noData: "لا توجد أسئلة لهذا المستوى بعد", mirrorHint: "تحدَّ أخطاءك السابقة",
+    reviewHint: "مراجعة شاملة — أصعب أسئلة كل المستويات", kingHint: "مستوى الملك — قواعد اللغة الأكاديمية",
+    gapHint: "أكمل الفراغ بالصيغة الصحيحة", pickHint: "اختر الجملة الصحيحة نحوياً", synHint: "اختر الجملة الأقرب في المعنى",
   } : {
     back: "‹ Map", score: "Score", check: "Check", reset: "Reset", correctWas: "Correct:",
     arrangeHint: "Arrange the words to match the sentence", choose: "Choose the correct answer", timed: "Answer quickly!",
     finishedTitle: "Well done! Level complete", again: "Play again", map: "Map", timeUp: "Time's up!",
     noData: "No questions for this level yet", mirrorHint: "Beat your past mistakes",
+    reviewHint: "Grand review — the hardest questions from all levels", kingHint: "King level — the academic grammar test",
+    gapHint: "Fill in the blank with the correct form", pickHint: "Choose the grammatically correct sentence", synHint: "Choose the closest sentence in meaning",
   };
 
   const clearTimer = useCallback(() => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } }, []);
@@ -167,17 +171,30 @@ export default function AdvancedLevels({ n, langCode, baseLangCode, title, image
     } else if (n === 24) {
       ok = choice === q.correct; correctVal = q.options[q.correct];
       if (!ok) logAdvMistake(langCode, q.word, correctVal);
+    } else if (n === 25 || n === 26) {
+      ok = choice === q.correct; correctVal = q.options[q.correct];
+      if (!ok) logAdvMistake(langCode, q.word || q.hint || (Array.isArray(q.s) ? q.s[0] : q.s) || correctVal, correctVal);
     }
     setFeedback({ ok, correct: correctVal });
     if (ok) { setScore((s) => s + 1); playCorrect(); } else playWrong();
     setTimeout(advance, 1300);
   };
 
+  const optCls = (i) => {
+    let cls = "border-primary/25 bg-primary/8 hover:bg-primary/15 text-foreground";
+    if (lock) {
+      if (q && i === q.correct) cls = "border-emerald-400 bg-emerald-500/20 text-emerald-50";
+      else if (picked === i) cls = "border-rose-400 bg-rose-500/20 text-rose-50";
+      else cls = "border-border bg-muted/30 text-muted-foreground/60";
+    }
+    return cls;
+  };
   const resetArr = () => { if (lock) return; setShuffled(shuffle(q.shuffled)); setArranged([]); };
   const tapW = (w, i) => { if (lock) return; setShuffled((p) => p.filter((_, k) => k !== i)); setArranged((p) => [...p, w]); };
   const untapW = (w, i) => { if (lock) return; setArranged((p) => p.filter((_, k) => k !== i)); setShuffled((p) => [...p, w]); };
 
-  const promptText = n === 21 ? tr.arrangeHint : n === 24 ? tr.mirrorHint : n === 22 ? tr.timed : tr.choose;
+  const kindText = n >= 25 && q ? (q.t === "order" ? tr.arrangeHint : q.t === "pick" ? tr.pickHint : q.t === "syn" ? tr.synHint : tr.gapHint) : null;
+  const promptText = kindText || (n === 21 ? tr.arrangeHint : n === 24 ? tr.mirrorHint : n === 22 ? tr.timed : n === 25 ? tr.reviewHint : n === 26 ? tr.kingHint : tr.choose);
 
   return (
     <div dir={isRTL ? "rtl" : "ltr"} className="select-none max-w-[420px] mx-auto">
@@ -195,7 +212,7 @@ export default function AdvancedLevels({ n, langCode, baseLangCode, title, image
 
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-[11px] uppercase tracking-wider text-muted-foreground">{n === 24 ? "🪞" : ""} {promptText}</span>
+          <span className="text-[11px] uppercase tracking-wider text-muted-foreground">{n === 24 ? "🪞" : n === 26 ? "👑" : ""} {promptText}</span>
           <span className="text-xs text-muted-foreground">{idx + 1}/{total}</span>
         </div>
         <div className="h-2.5 rounded-full bg-muted overflow-hidden">
@@ -296,6 +313,101 @@ export default function AdvancedLevels({ n, langCode, baseLangCode, title, image
                 </div>
               </div>
             )}
+            {(n === 25 || n === 26) && q && (
+              <div className="flex flex-col items-center gap-4 w-full">
+                {q.img && (
+                  <Image src={q.img} alt="" fittingType="fill" className="w-full max-w-[240px] h-24 rounded-xl border border-border" />
+                )}
+                {q.t === "mcq" && (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <div className="text-3xl font-black bg-gradient-to-r from-primary via-violet-400 to-accent bg-clip-text text-transparent" dir={isRtl ? "rtl" : "ltr"}>{q.word}</div>
+                      <button onClick={() => speak(q.word, targetLang.tts)} className="text-primary hover:text-primary/80"><Volume2 className="w-4 h-4" /></button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2.5 w-full">
+                      {q.options.map((opt, i) => (
+                        <button key={i} onClick={() => choose(i)} disabled={lock} dir={isRtl ? "rtl" : "ltr"}
+                          className={`relative flex items-center justify-center gap-2 h-14 rounded-2xl border-2 font-bold text-base transition-all active:scale-[0.98] ${optCls(i)}`}>
+                          {opt}
+                          {lock && i === q.correct && <Check className="w-5 h-5" />}
+                          {lock && picked === i && i !== q.correct && <X className="w-5 h-5" />}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+                {(q.t === "gap" || q.t === "cloze") && (
+                  <>
+                    <div className="w-full flex flex-col gap-1.5">
+                      {(Array.isArray(q.s) ? q.s : [q.s]).map((sen, i) => (
+                        <div key={i} dir={isRtl ? "rtl" : "ltr"} className="text-sm sm:text-[15px] font-semibold text-foreground text-center px-3 py-2 rounded-xl bg-primary/8 border border-primary/15 leading-relaxed">{sen.replace(/___/g, "______")}</div>
+                      ))}
+                    </div>
+                    <div className="grid gap-2.5 w-full">
+                      {q.options.map((opt, i) => (
+                        <button key={i} onClick={() => choose(i)} disabled={lock} dir={isRtl ? "rtl" : "ltr"}
+                          className={`relative flex items-center justify-center gap-2 min-h-[52px] py-3 rounded-2xl border-2 font-bold text-base transition-all active:scale-[0.98] ${optCls(i)}`}>
+                          {opt}
+                          {lock && i === q.correct && <Check className="w-5 h-5" />}
+                          {lock && picked === i && i !== q.correct && <X className="w-5 h-5" />}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+                {q.t === "pick" && (
+                  <div className="grid gap-2.5 w-full">
+                    {q.options.map((opt, i) => (
+                      <button key={i} onClick={() => choose(i)} disabled={lock} dir={isRtl ? "rtl" : "ltr"}
+                        className={`relative flex items-center gap-2 min-h-[56px] py-3 px-4 rounded-2xl border-2 font-semibold text-sm text-start leading-relaxed transition-all active:scale-[0.98] ${optCls(i)}`}>
+                        <span>{opt}</span>
+                        {lock && i === q.correct && <Check className="w-5 h-5 shrink-0 ms-auto" />}
+                        {lock && picked === i && i !== q.correct && <X className="w-5 h-5 shrink-0 ms-auto" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {q.t === "syn" && (
+                  <>
+                    <div dir={isRtl ? "rtl" : "ltr"} className="w-full text-center text-[15px] font-bold text-foreground px-4 py-3 rounded-2xl bg-accent/10 border border-accent/30 leading-relaxed">«{q.s}»</div>
+                    <div className="grid gap-2.5 w-full">
+                      {q.options.map((opt, i) => (
+                        <button key={i} onClick={() => choose(i)} disabled={lock} dir={isRtl ? "rtl" : "ltr"}
+                          className={`relative flex items-center gap-2 min-h-[56px] py-3 px-4 rounded-2xl border-2 font-semibold text-sm text-start leading-relaxed transition-all active:scale-[0.98] ${optCls(i)}`}>
+                          <span>{opt}</span>
+                          {lock && i === q.correct && <Check className="w-5 h-5 shrink-0 ms-auto" />}
+                          {lock && picked === i && i !== q.correct && <X className="w-5 h-5 shrink-0 ms-auto" />}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+                {q.t === "order" && (
+                  <>
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="text-base font-bold text-foreground text-center" dir={isRtl ? "rtl" : "ltr"}>{q.hint}</div>
+                      <button onClick={() => speak(q.hint, baseLang.tts)} className="text-primary hover:text-primary/80 shrink-0"><Volume2 className="w-4 h-4" /></button>
+                    </div>
+                    <div className="min-h-[64px] rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-3 flex flex-wrap gap-2 justify-center items-center" dir={isRtl ? "rtl" : "ltr"}>
+                      {arranged.length === 0 && <span className="text-sm text-muted-foreground">{tr.arrangeHint}</span>}
+                      {arranged.map((w, i) => (
+                        <button key={i} onClick={() => untapW(w, i)} disabled={lock} className="px-3.5 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-sm active:scale-95 transition-transform">{w}</button>
+                      ))}
+                    </div>
+                    <div className="flex flex-wrap gap-2 justify-center" dir={isRtl ? "rtl" : "ltr"}>
+                      {shuffled.map((w, i) => (
+                        <button key={i} onClick={() => tapW(w, i)} disabled={lock} className="px-3.5 py-2 rounded-xl bg-muted border border-border text-foreground font-bold text-sm hover:border-primary/40 active:scale-95 transition-all">{w}</button>
+                      ))}
+                    </div>
+                    <div className="flex justify-center gap-3">
+                      <Button onClick={resetArr} disabled={lock} variant="outline" className="rounded-2xl px-5 py-3 border-border">{tr.reset}</Button>
+                      <Button onClick={submitOrdering} disabled={lock || arranged.length !== q.correct.length} className="bg-primary text-primary-foreground rounded-2xl px-6 py-3 font-bold">{tr.check}</Button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
           </motion.div>
         </AnimatePresence>
       </div>
