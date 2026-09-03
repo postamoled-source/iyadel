@@ -1,0 +1,198 @@
+// High-CTR SEO overrides for key tool pages.
+// Consumed by ToolPage (titles, meta description, h1, unique content, unique FAQs).
+// Slugs must match STATIC_TOOLS entries in src/data/tools.js.
+
+export const TOOLS_SEO = {
+  "coupon-code-generator": {
+    title: "Free Coupon Code Generator - Bulk 1000 Codes with Prefix & CSV [2026]",
+    metaDescription: "Generate 1000+ unique coupon codes in bulk. Set length, prefix SALE, suffix, export to CSV for Shopify & WooCommerce. Free, no signup.",
+    h1: "Coupon Code Generator - Bulk Promo Codes",
+    keywords: "coupon code generator, promo code generator, shopify coupon codes, bulk discount codes",
+    content: "A coupon code generator creates random, unique discount codes you can import straight into Shopify, WooCommerce, or any POS system that accepts CSV. It is built for big seasonal campaigns — Black Friday, Ramadan sales, launch giveaways — where you need hundreds or thousands of single-use codes instead of one shared promo. You control the character length, a prefix like SALE or BF2026, and a suffix, then export the finished list as CSV. Uniqueness is guaranteed by random generation with duplicate checks, so every customer gets a code nobody else can redeem.",
+    faqs: [
+      { q: "Can I generate codes with a prefix like SALE2026?", a: "Yes. Type SALE2026 in the prefix field, set the random length (for example 4), and generate — codes come out like SALE2026-8F3K. Export the list to CSV when done." },
+      { q: "How do I avoid duplicate coupon codes?", a: "The generator checks each new code against the ones already produced in the run, so every code is unique. For extra safety across campaigns, use a different prefix or suffix per campaign." },
+      { q: "What code length works best for Shopify?", a: "8 to 12 characters is the sweet spot: short enough for customers to type, long enough that codes cannot be guessed. A prefix of 4-6 characters plus 4-6 random characters works well." },
+    ],
+  },
+  "math-function-calculator": {
+    title: "Math Function Calculator - Plot f(x) Graph Online Free [2026]",
+    metaDescription: "Plot f(x) like sin(x), x^2-1, log(x) instantly. Graph calculator with zoom, table, domain & range. Free online, no signup.",
+    h1: "Math Function Calculator - Plot f(x)",
+    keywords: "math function calculator, graph calculator, plot f(x) online, function grapher",
+    content: "This function calculator plots any expression f(x) — trigonometric like sin(x) or cos(x), polynomials like x^2-1, logarithms like log(x) — and renders it as an interactive graph. It parses standard math notation, so you type x^2 - 1 exactly as you would write it on paper. Use it to visualize domain and range, spot roots and intersections, or check homework answers before submitting them. The tool runs entirely in your browser, so nothing is uploaded and it works even while offline.",
+    faqs: [
+      { q: "Can I plot sin(x) and cos(x) together?", a: "Yes — plot one function first, then enter the second one; both curves appear on the same axes so you can see where they intersect." },
+      { q: "What does f(x) mean?", a: "f(x) is a function: for every input x it produces one output. For example, if f(x) = x^2 - 1, then f(3) = 8. The graph shows all these input-output pairs as points." },
+      { q: "Why is my graph not showing?", a: "Check the expression for typos — implicit multiplication like 2x should be written 2*x, and parentheses must be balanced. If the y-range is far from the curve, adjust the zoom." },
+    ],
+  },
+  "image-to-pdf": {
+    title: "Free Image to PDF Converter - Merge JPG to PDF, No Watermark",
+    metaDescription: "Convert JPG, PNG, WEBP to PDF in seconds. Merge 50+ images into one PDF. 100% free, offline, no watermark. No signup.",
+    h1: "Image to PDF Converter - JPG to PDF",
+    keywords: "image to pdf, jpg to pdf converter, png to pdf, merge images into pdf",
+    content: "Convert JPG, PNG, WEBP and most common image formats into a single PDF document without installing software or paying for a subscription. You can merge dozens of photos into one multi-page PDF — perfect for scanned documents, receipts, portfolios, or homework submissions. The conversion happens inside your browser: your images are never uploaded to a server, which keeps private documents private. There is no watermark, no page limit, and no sign-up wall between you and your finished PDF.",
+    faqs: [
+      { q: "Can I merge 50 images into one PDF?", a: "Yes. Add all your images, arrange them in the order you want, and convert — every image becomes one page of the same PDF file." },
+      { q: "Will my images be uploaded to a server?", a: "No. The conversion runs 100% in your browser using client-side processing, so your files never leave your device." },
+      { q: "Is there a watermark or page limit?", a: "No watermark and no page limit. The PDF you download is clean and identical to what you composed, free of charge." },
+    ],
+  },
+  "currency-converter": {
+    title: "Live Currency Converter - 150+ Currencies, USD to MAD Real Rate",
+    metaDescription: "Convert USD, EUR, MAD & 150+ currencies with live rates. Accurate USD to MAD, EUR to MAD. Free, no ads, works offline.",
+    h1: "Currency Converter - Live Exchange Rates",
+    keywords: "currency converter, usd to mad, exchange rates, euro to dollar",
+    content: "Convert between 150+ world currencies using live mid-market exchange rates, including USD to MAD, EUR to USD, GBP, SAR and AED. Rates are refreshed from a reliable exchange-rate feed, so the numbers you see reflect the real market instead of rounded approximations. A reverse conversion is one tap away — see what your foreign purchase costs in your home currency instantly. Recent rates are cached, so the converter keeps working even when your connection drops.",
+    faqs: [
+      { q: "Are the exchange rates live?", a: "Yes. The converter pulls fresh mid-market rates from an exchange-rate feed and caches the latest ones, so conversions stay accurate even between refreshes." },
+      { q: "How accurate is USD to MAD?", a: "It uses the live mid-market rate — the same rate you see on financial sites. Banks and exchange offices add a margin on top, so your actual rate may differ slightly." },
+      { q: "Does it work offline?", a: "The most recently fetched rates are cached on your device, so you can still convert with the last known rates when you are offline." },
+    ],
+  },
+  "bmi-calculator": {
+    title: "BMI Calculator - Ideal Weight by Age & Gender, Free [2026]",
+    metaDescription: "Calculate BMI instantly with age & gender. Get ideal weight range, health category, kg/lb, cm/ft. Free, accurate, private.",
+    h1: "BMI Calculator & Ideal Weight",
+    keywords: "bmi calculator, ideal weight calculator, body mass index, healthy weight range",
+    content: "Body Mass Index compares your weight to your height and is the standard first screening for underweight, normal, overweight and obese categories. This calculator also shows the healthy weight range for your exact height, so you know the target zone rather than just a number. Enter your measurements in metric (kg/cm) or imperial (lb/ft-in) units and get your category instantly, along with how far you are from the healthy range. Everything is computed in your browser — your health data is never stored or sent anywhere.",
+    faqs: [
+      { q: "What is a healthy BMI range?", a: "For most adults, a BMI between 18.5 and 24.9 is considered healthy. Below 18.5 is underweight, 25-29.9 is overweight, and 30+ falls in the obese range." },
+      { q: "How much should I weigh for my height?", a: "The calculator shows the ideal weight range for your height — the weights that correspond to a BMI of 18.5 to 24.9. Muscle mass and body composition matter too, so treat it as a guide, not a verdict." },
+      { q: "Does BMI change with age or gender?", a: "The standard BMI formula is the same for adult men and women, but its interpretation can shift with age — older adults often have a slightly higher healthy range. Athletes with high muscle mass may read as overweight without being overfat." },
+    ],
+  },
+  "image-compressor": {
+    title: "Image Compressor - Reduce Size 90% Without Losing Quality",
+    metaDescription: "Compress JPG, PNG, WEBP up to 90% while keeping quality. Bulk compress 50 images, browser-based, private. Free, no limit.",
+    h1: "Image Compressor - 90% Smaller",
+    keywords: "image compressor, compress jpg, reduce image size, bulk photo compression",
+    content: "Shrink JPG, PNG and WEBP files by up to 90% while keeping them visually identical for web and social media use. Large photos slow down pages and eat storage — compression fixes that in seconds, directly in your browser. Compress a single image or drop in a whole batch and download them all at once. Because processing is client-side, nothing is uploaded: your photos stay on your device, and there is no file-count or size limit.",
+    faqs: [
+      { q: "Will compression reduce the quality of my photos?", a: "You control the trade-off. A moderate level typically cuts 60-90% of the file size with no visible difference; push it further and you save more space at the cost of fine detail." },
+      { q: "Can I compress many images at once?", a: "Yes — the bulk mode compresses an entire batch and lets you download all the optimized files in one go." },
+      { q: "Are my images uploaded to a server?", a: "No. Compression happens entirely inside your browser, so your photos never leave your device." },
+    ],
+  },
+  "internet-speed-test": {
+    title: "Internet Speed Test - Check Ping, Download, Upload in 30s",
+    metaDescription: "Test WiFi speed in 30 seconds. Measure ping, download & upload. Accurate, free, no app needed. See if your speed is fast or slow.",
+    h1: "Internet Speed Test - Fast & Accurate",
+    keywords: "internet speed test, wifi speed test, check download speed, ping test",
+    content: "Run a full internet speed test in about 30 seconds and get your download speed, upload speed and ping in one clean result. It is the quickest way to check whether your ISP is delivering the plan you pay for, or to find out if buffering during video calls comes from a slow line or just a weak WiFi spot. Ping matters for gaming and calls, download for streaming and browsing, upload for sending files and live video. No app installation is needed — the test runs straight in your browser.",
+    faqs: [
+      { q: "What is a good internet speed?", a: "For HD streaming and normal browsing, 10-25 Mbps per person is comfortable; 4K streaming wants 25+ Mbps, and competitive gaming benefits from a ping under 50 ms." },
+      { q: "What does ping mean?", a: "Ping is the reaction time of your connection — how long a small packet takes to travel to the server and back. Lower is better: under 20 ms feels instant, while above 150 ms causes lag in games and calls." },
+      { q: "Why is my speed test slower than my plan?", a: "WiFi interference, other devices sharing the line, distance from the router, and time-of-day congestion all reduce measured speed. Test over a wired connection or close to the router to see your line's true capacity." },
+    ],
+  },
+  "loan-calculator": {
+    title: "Loan Calculator - Monthly Payment, Interest & Amortization",
+    metaDescription: "Estimate loan payment, total interest & amortization schedule. Compare offers, see how extra payments save thousands. Free tool.",
+    h1: "Loan Calculator - Payment & Interest",
+    keywords: "loan calculator, monthly payment calculator, amortization schedule, loan interest",
+    content: "Estimate your monthly payment, total interest cost, and the full amortization schedule for any fixed-rate loan — car loans, personal loans, or mortgages. Small differences in rate or term move the total cost by thousands, so comparing offers side by side before signing is the single most valuable thing you can do. The calculator also shows how one extra payment per year shortens the loan and cuts interest. All math runs locally; your financial details are never sent anywhere.",
+    faqs: [
+      { q: "How is the monthly payment calculated?", a: "With the standard annuity formula: M = P × r(1+r)^n / ((1+r)^n − 1), where P is the loan amount, r the monthly interest rate, and n the number of payments. The calculator applies it instantly." },
+      { q: "How much do extra payments save?", a: "Extra payments go straight to the principal, which shortens the term and removes all the interest that principal would have accrued — often thousands over the life of the loan." },
+      { q: "Does it include insurance and fees?", a: "The calculator covers principal and interest, the core of any fixed-rate loan. Add insurance or fees on top when budgeting your real monthly cost." },
+    ],
+  },
+  "time-converter": {
+    title: "Time Converter - Hours to Minutes, Seconds & Decimal Hours Fast",
+    metaDescription: "Convert hours to minutes and seconds, or time to decimal hours for payroll & timesheets. Fast, free, accurate. No signup.",
+    h1: "Time Converter - Hours, Minutes & Decimal",
+    keywords: "time converter, hours to minutes, decimal hours calculator, timesheet conversion",
+    content: "Convert time units instantly — hours to minutes, minutes to seconds, days to hours — plus the decimal format payroll systems expect. Entering 7 hours 45 minutes as 7.75 decimal hours is a classic timesheet headache this converter solves in one step. It is handy for cooking, workout planning, travel estimates, and logging work hours accurately. Everything is converted on the fly as you type, with no rounding surprises.",
+    faqs: [
+      { q: "How do I convert 7 hours 45 minutes to decimal hours?", a: "45 minutes is 45/60 = 0.75 hours, so 7 h 45 min = 7.75 decimal hours — the format most payroll and timesheet systems require." },
+      { q: "How many seconds are in a day?", a: "24 hours × 60 minutes × 60 seconds = 86,400 seconds. The converter handles these multi-step conversions in one operation." },
+      { q: "Can it convert work hours for a timesheet?", a: "Yes — enter your hours and minutes and read the decimal result, e.g. 6 h 30 min = 6.5 hours, ready to enter in any timesheet." },
+    ],
+  },
+  "simple-compound-interest": {
+    title: "Compound Interest Calculator - See How Your Money Grows [Chart]",
+    metaDescription: "Calculate compound interest with monthly contributions. See final balance chart, APY, total interest. Free, simple, accurate.",
+    h1: "Compound Interest Calculator",
+    keywords: "compound interest calculator, savings growth calculator, simple interest, apy",
+    content: "Compound interest is what makes long-term saving powerful: your interest earns interest, so growth accelerates over time. This calculator compares simple against compound interest and lets you add monthly contributions, then charts the final balance year by year. See exactly how much of your final amount came from contributions versus earned interest. It works for savings accounts, investments, and comparing bank offers with different compounding frequencies.",
+    faqs: [
+      { q: "What is the difference between simple and compound interest?", a: "Simple interest is earned only on the original amount. Compound interest is earned on the amount plus all past interest, so the balance grows faster the longer it stays invested." },
+      { q: "How much does $1,000 become at 5% compounded monthly?", a: "After 10 years: about $1,647. With an added $100 monthly contribution, the same period ends near $17,000 — contributions plus compounding do the heavy lifting." },
+      { q: "Does compounding frequency matter?", a: "Yes. Monthly compounding earns more than yearly at the same nominal rate: 5% monthly ≈ 5.12% effective (APY). The calculator shows the effective rate for each frequency." },
+    ],
+  },
+  "image-cropper": {
+    title: "Free Image Cropper - Circle, Square, Custom, No Upload",
+    metaDescription: "Crop images to circle, square, 16:9, 4:3. Browser-based, private, no upload. Works offline. Free image cropper.",
+    h1: "Image Cropper - Any Shape",
+    keywords: "image cropper, crop circle image, crop photo online, aspect ratio crop",
+    content: "Crop images to the exact shape you need — circle for avatars and profile pictures, square for Instagram, 16:9 for thumbnails and YouTube, 4:3 for presentations. Adjust the crop area freely with handles, or lock a preset ratio for pixel-perfect output. Because the cropper runs entirely in your browser, photos never leave your device and it keeps working offline. Export the result as PNG or JPG in one click.",
+    faqs: [
+      { q: "How do I crop a picture into a circle?", a: "Choose the circle preset, position the crop over the part you want to keep, and export — the result is a PNG with a transparent background outside the circle." },
+      { q: "Which aspect ratios are supported?", a: "Free-form plus common presets: square 1:1, 4:3, 16:9, 3:2 and more — covering social media, presentation, and thumbnail sizes." },
+      { q: "Is my image uploaded anywhere?", a: "No. Cropping happens locally in your browser — the image is never sent to a server, which also means it works without internet." },
+    ],
+  },
+  "area-converter": {
+    title: "Area Converter - Sq Meters to Sq Feet, Acres, Hectares Fast",
+    metaDescription: "Convert area: sq meters to sq feet, acres, hectares, km2. Fast, free, accurate. Instant results, no signup.",
+    h1: "Area Converter - All Units",
+    keywords: "area converter, sq meters to sq feet, acre to hectare, land area conversion",
+    content: "Convert between every common area unit — square meters, square feet, square yards, acres, hectares, and square kilometers. Real-estate listings mix units constantly: land quoted in hectares, houses in square meters, international listings in square feet. This converter removes the guesswork from comparing plots, apartments, and farmland in one step. It uses exact conversion factors, so results are accurate to the last decimal.",
+    faqs: [
+      { q: "How do I convert square meters to square feet?", a: "Multiply by 10.7639: a 100 m² apartment is about 1,076 sq ft. The converter applies the exact factor instantly." },
+      { q: "How big is one acre in hectares?", a: "One acre = 0.4047 hectares (about 4,047 m²). It is roughly the size of a football pitch's playing area." },
+      { q: "Which unit should land be quoted in?", a: "Hectares dominate in Europe and North Africa, acres in the US and UK, square meters for built houses and apartments. This converter moves between all three freely." },
+    ],
+  },
+  "distance-converter": {
+    title: "Distance Converter - Miles to KM, Meters to Feet & More",
+    metaDescription: "Convert miles to km, meters to feet, yards, inches. Fast and accurate distance converter. Free, no signup.",
+    h1: "Distance Converter - Miles to KM",
+    keywords: "distance converter, miles to km, meters to feet, length conversion",
+    content: "Convert distance and length units instantly: miles to kilometers, meters to feet, yards, inches, and nautical miles. Ideal for travel planning, running and cycling logs, school physics problems, and reading international maps and speed signs. The converter uses exact factors — one mile is precisely 1.609344 km — so results are reliable, not approximations. Results update live as you type, in both directions.",
+    faqs: [
+      { q: "How many kilometers is one mile?", a: "Exactly 1.609344 km. A 5-mile run is just over 8 km — handy for comparing training plans in different units." },
+      { q: "How do I convert meters to feet?", a: "Multiply by 3.28084: a 1,600 m summit is about 5,250 ft. The converter handles the multiplication (and the reverse) instantly." },
+      { q: "What is a nautical mile?", a: "One nautical mile is 1.852 km — defined as one minute of latitude. It is the standard unit in aviation and maritime navigation." },
+    ],
+  },
+  "speed-converter": {
+    title: "Speed Converter - MPH to KPH, Knots, m/s Instant",
+    metaDescription: "Convert MPH to KPH, knots, m/s, ft/s. Accurate speed converter for driving, aviation. Free and instant.",
+    h1: "Speed Converter - MPH to KPH",
+    keywords: "speed converter, mph to kph, knots to km/h, m/s conversion",
+    content: "Convert speed units in real time: miles per hour to kilometers per hour, knots for boating and aviation, meters per second for physics and science class, feet per second for ballistics and engineering. Reading a car speedometer abroad, decoding a wind forecast, or solving a kinematics problem all become one-step conversions. Exact factors are applied — 1 mph = 1.609344 km/h, 1 knot = 1.852 km/h — so results are precise, with instant reverse conversion.",
+    faqs: [
+      { q: "How do I convert mph to km/h?", a: "Multiply by 1.609344: 60 mph ≈ 96.6 km/h, and 100 km/h ≈ 62.1 mph. The converter switches both directions instantly." },
+      { q: "How fast is one knot in km/h?", a: "One knot = 1.852 km/h. A 20-knot wind blows at about 37 km/h — typical of a fresh breeze on a sailing forecast." },
+      { q: "What is m/s used for?", a: "Meters per second is the scientific unit for speed — physics formulas, athletics split times, and weather models all use it. 1 m/s = 3.6 km/h." },
+    ],
+  },
+  "weight-converter": {
+    title: "Weight Converter - KG to LBS, Grams, Ounces & Tons",
+    metaDescription: "Convert kg to lbs, grams to ounces, tons. Fast weight converter for cooking, gym, shipping. Free, accurate.",
+    h1: "Weight Converter - KG to LBS",
+    keywords: "weight converter, kg to lbs, grams to ounces, mass conversion",
+    content: "Convert weight and mass units instantly: kilograms to pounds, grams to ounces, metric tons, stones, and carats. Recipes, gym plates, shipping labels, and baby-weight charts rarely use the same unit — this converter ends the mental arithmetic. It uses exact international factors, including the precise definition 1 kg = 2.20462 lb, so results are accurate for cooking, fitness tracking, and postage alike. Live conversion in both directions as you type.",
+    faqs: [
+      { q: "How do I convert kg to lbs?", a: "Multiply by 2.20462: 70 kg ≈ 154.3 lb. The converter applies the exact factor in both directions as you type." },
+      { q: "How many grams are in an ounce?", a: "One ounce = 28.3495 g. For cooking, 100 g ≈ 3.5 oz — the converter handles the precision for you." },
+      { q: "What is a stone in kg?", a: "One stone = 6.35 kg, the traditional British body-weight unit: 12 stone ≈ 76.2 kg." },
+    ],
+  },
+  "logo-maker": {
+    title: "Free AI Logo Maker - Design Professional Logo in 2 Minutes",
+    metaDescription: "Create professional logo with AI. 1000+ templates, icons, fonts, brand colors. Edit canvas and download PNG free. No signup.",
+    h1: "AI Logo Maker - Free Design",
+    keywords: "logo maker, free logo generator, ai logo design, brand logo creator",
+    content: "Create a professional logo in minutes: describe your brand, let AI generate concepts, then refine fonts, colors, icons and layout on an editable canvas. It replaces both clip-art logo builders and expensive design agencies for small businesses, side projects, and personal brands. Choose your brand colors, iterate until the mark feels right, and download a ready-to-use PNG. No design skills and no sign-up required — the whole flow runs in your browser.",
+    faqs: [
+      { q: "Can I download the logo for free?", a: "Yes — once you are happy with the design, export it as a PNG straight from the canvas at no cost and with no sign-up." },
+      { q: "Can I use the logo commercially?", a: "Yes. The generated logo is yours to use for your business, social media, and products, including commercial use." },
+      { q: "Can I change colors and fonts after generating?", a: "Yes. The canvas lets you adjust colors, fonts, icon placement and size, so you can fine-tune the AI concept to match your exact brand palette." },
+    ],
+  },
+};

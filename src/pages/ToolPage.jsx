@@ -2,6 +2,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { useSeo } from "@/lib/analytics";
 import { STATIC_TOOLS } from "@/data/tools";
+import { TOOLS_SEO } from "@/data/tools-seo";
 import { TOOL_GUIDES } from "@/data/tool-guides";
 import { TOOL_CONTENT_AR, TOOL_GUIDES_AR } from "@/data/translations-ar";
 import {
@@ -103,10 +104,16 @@ export default function ToolPage() {
   const { t, lang } = useI18n();
   const navigate = useNavigate();
   const tool = STATIC_TOOLS.find((x) => x.slug === slug);
+  const seo = slug ? TOOLS_SEO[slug] : null;
+  const useSeoCfg = !!(seo && lang !== "ar");
 
   useSeo({
-    title: tool ? `${tool.name} — Free Online Tool | iyadel` : "Tool not found | iyadel",
-    description: tool ? (tool.description || (tool.content || "").slice(0, 150)) : "Tool not found",
+    title: useSeoCfg ? seo.title : (tool ? `${tool.name} — Free Online Tool` : "Tool not found"),
+    rawTitle: useSeoCfg,
+    description: useSeoCfg
+      ? seo.metaDescription
+      : (tool ? (tool.description || (tool.content || "").slice(0, 150)) : "Tool not found"),
+    keywords: useSeoCfg ? seo.keywords : undefined,
     path: `/tools/${slug}`,
   });
 
@@ -123,15 +130,36 @@ export default function ToolPage() {
   const formula = FORMULAS[slug] || `// ${tool.name} — interactive tool, see How to use above.`;
   const example = EXAMPLES[slug] || `Open the ${tool.name} calculator above to try a live example.`;
 
-  const faqs = [
-    { q: `${t("What is")} ${t(tool.name)}؟`, a: tool.description ? t(tool.description) : intro },
-    { q: `${t("Is")} ${t(tool.name)} ${t("free to use?")}`, a: t("Yes — it is 100% free, runs entirely in your browser, and needs no sign-up.") },
-    { q: `${t("Does")} ${t(tool.name)} ${t("work on mobile?")}`, a: t("Yes, it is fully responsive and works on phones, tablets, and desktops.") },
-  ];
+  const faqs = useSeoCfg
+    ? seo.faqs.map((f) => ({ q: f.q, a: f.a }))
+    : [
+        { q: `${t("What is")} ${t(tool.name)}؟`, a: tool.description ? t(tool.description) : intro },
+        { q: `${t("Is")} ${t(tool.name)} ${t("free to use?")}`, a: t("Yes — it is 100% free, runs entirely in your browser, and needs no sign-up.") },
+        { q: `${t("Does")} ${t(tool.name)} ${t("work on mobile?")}`, a: t("Yes, it is fully responsive and works on phones, tablets, and desktops.") },
+      ];
+  const schemaBase = "https://iyadel.com";
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+  };
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${schemaBase}/` },
+      { "@type": "ListItem", position: 2, name: tool.category, item: `${schemaBase}/?cat=${encodeURIComponent(tool.category)}` },
+      { "@type": "ListItem", position: 3, name: tool.name, item: `${schemaBase}/tools/${slug}` },
+    ],
+  };
+  const appSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: tool.name,
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any (Web browser)",
+    url: `${schemaBase}/tools/${slug}`,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   };
 
   const sameCat = STATIC_TOOLS.filter((x) => x.category === tool.category && x.slug !== tool.slug);
@@ -165,7 +193,9 @@ export default function ToolPage() {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-[24px] font-bold text-[#111827] dark:text-[#FEF3C7] leading-tight">{t(tool.name)}</h1>
+            <h1 className="text-[24px] font-bold text-[#111827] dark:text-[#FEF3C7] leading-tight">
+              {useSeoCfg ? seo.h1 : t(tool.name)}
+            </h1>
             <span className="inline-block mt-1 text-xs font-medium text-[#6B7280] bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] rounded-full px-2.5 py-0.5">{t(tool.category)}</span>
             <p className="text-sm text-[#6B7280] mt-2">{t(tool.description)}</p>
           </div>
@@ -186,6 +216,17 @@ export default function ToolPage() {
         </div>
 
         <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed mb-6">{intro}</p>
+
+        {useSeoCfg && seo.content && (
+          <div className="mb-6">
+            <Section title={`What is ${tool.name}?`}>
+              <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed">{seo.content}</p>
+              <p className="mt-3 text-xs text-[#9CA3AF] dark:text-[#8B8AB0]">
+                {lang === "ar" ? "آخر تحديث: سبتمبر 2026" : "Last updated: September 2026"}
+              </p>
+            </Section>
+          </div>
+        )}
 
         <Section title={`${t("How to use")} ${t(tool.name)}`}>
           <ol className="space-y-3">

@@ -33,10 +33,16 @@ function upsertMeta(selector, attrs) {
   return tag;
 }
 
-export function useSeo({ title, description, image, path, noindex } = {}) {
+export function useSeo({ title, description, image, path, noindex, keywords, rawTitle } = {}) {
   useEffect(() => {
-    const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} — Free Online Calculators, Converters & Image Tools`;
+    const fullTitle = title
+      ? (rawTitle ? title : `${title} | ${SITE_NAME}`)
+      : `${SITE_NAME} — Free Online Calculators, Converters & Image Tools`;
     document.title = fullTitle;
+
+    if (keywords) {
+      upsertMeta('meta[name="keywords"]', { name: "keywords", content: keywords });
+    }
 
     if (description) {
       upsertMeta('meta[name="description"]', { name: "description", content: description });
@@ -66,5 +72,5 @@ export function useSeo({ title, description, image, path, noindex } = {}) {
         ? "noindex, nofollow"
         : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
     });
-  }, [title, description, image, path, noindex]);
+  }, [title, description, image, path, noindex, keywords, rawTitle]);
 }
