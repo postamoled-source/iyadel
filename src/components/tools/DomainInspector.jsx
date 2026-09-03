@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/analytics";
 import {
   Search, Loader2, Globe, Server, MapPin, Building2, Network,
   ShieldCheck, AlertTriangle, FileClock, User, Database,
+  CheckCircle2, Info, Activity, Clock, ExternalLink,
 } from "lucide-react";
 
 // ============================================================
@@ -32,11 +34,11 @@ class DomainInspectorEngine {
       return { status: "error", message: "invalid_domain" };
     }
 
-    const [rdap, dns, location, status] = await Promise.all([
+    const [rdap, dns, location, uptime] = await Promise.all([
       this.getRdap(cleanDomain),
       this.getDnsRecords(cleanDomain),
       this.getLocation(cleanDomain),
-      this.checkStatus(cleanDomain),
+      this.getUptime(cleanDomain),
     ]);
 
     const result = {
@@ -49,13 +51,19 @@ class DomainInspectorEngine {
         country: location.country || "—",
         city: location.city || "—",
         isp: location.isp || "—",
-        site_availability: status ? "🟢 Active (Working)" : "🔴 Inactive or Not Responding",
+        site_availability:
+          uptime.uptime_percent === 100
+            ? "🟢 Active (3/3 checks passed)"
+            : uptime.uptime_percent > 0
+              ? "🟡 Partially responding"
+              : "🔴 Not responding",
       },
       details: {
         rdap_info: rdap,
         dns_records: dns,
         hosting_location: location,
-        online_check: status,
+        online_check: uptime.uptime_percent > 0,
+        uptime_info: uptime,
       },
     };
 
@@ -136,21 +144,36 @@ class DomainInspectorEngine {
     }
   }
 
-  // 6. فحص حالة الموقع (نشط أم لا)
-  static async checkStatus(domain) {
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 5000);
-      await fetch(`https://${domain}`, {
-        method: "HEAD",
-        signal: controller.signal,
-        mode: "no-cors",
-      });
-      clearTimeout(timeout);
-      return true;
-    } catch {
-      return false;
+  // 6. فحص التشغيل المباشر (Uptime) — 3 محاولات متتالية مع قياس زمن الاستجابة
+  static async getUptime(domain) {
+    const checks = [];
+    for (let i = 0; i < 3; i++) {
+      const start = performance.now();
+      let ok = false;
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 6000);
+        await fetch(`https://${domain}`, {
+          method: "HEAD",
+          signal: controller.signal,
+          mode: "no-cors",
+          cache: "no-store",
+        });
+        clearTimeout(timeout);
+        ok = true;
+      } catch {
+        ok = false;
+      }
+      checks.push({ ok, ms: ok ? Math.round(performance.now() - start) : null });
     }
+    const passed = checks.filter((c) => c.ok).length;
+    const times = checks.filter((c) => c.ok && c.ms != null).map((c) => c.ms);
+    return {
+      checks,
+      uptime_percent: Math.round((passed / 3) * 100),
+      avg_response_ms: times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : null,
+      https_ok: passed > 0,
+    };
   }
 
   // 7. الترجمة الفورية
@@ -274,8 +297,37 @@ function RecordChips({ items }) {
   );
 }
 
+// ---------- Notices & Remarks generator (from scan results) ----------
+function buildNotices(result) {
+  const notes = [];
+  const rdap = result?.details?.rdap_info || {};
+  const dns = result?.details?.dns_records || {};
+  const up = result?.details?.uptime_info;
+  const realRecords = (list) => (list || []).filter((r) => typeof r === "string" && !r.startsWith("No "));
+  if (up) {
+    if (up.uptime_percent === 100) notes.push({ level: "good", key: "The website responded successfully to all live checks over HTTPS." });
+    else if (up.uptime_percent > 0) notes.push({ level: "warn", key: "The website responded to some checks only — it may be slow or blocking automated requests." });
+    else notes.push({ level: "warn", key: "The website is not responding right now — it may be down or blocking automated checks." });
+  }
+  if (rdap.expiration_date && rdap.expiration_date !== "—") {
+    const exp = new Date(rdap.expiration_date);
+    if (!isNaN(exp)) {
+      const days = Math.round((exp - Date.now()) / 86400000);
+      if (days < 30) notes.push({ level: "warn", key: "The domain expires in less than 30 days — renew it soon to avoid losing it." });
+      else if (days < 90) notes.push({ level: "info", key: "The domain expires in less than 90 days — plan your renewal." });
+      else notes.push({ level: "good", key: "Domain registration is valid and not expiring soon." });
+    }
+  }
+  if (realRecords(dns.a_records).length > 0) notes.push({ level: "good", key: "A records resolved — the domain points to a live server." });
+  else notes.push({ level: "warn", key: "No A records found — the domain does not point to a server." });
+  if (realRecords(dns.mx_records).length === 0) notes.push({ level: "info", key: "No MX records found — this domain cannot receive email on its own." });
+  if (rdap.registrant && rdap.registrant !== "—") notes.push({ level: "info", key: "Owner information is shown as published in the public registry." });
+  else notes.push({ level: "info", key: "Owner information is hidden (WHOIS privacy protection)." });
+  return notes;
+}
+
 // ---------- Section ----------
-export default function DomainInspector() {
+export default function DomainInspector({ hideGuideLink = false }) {
   const { t, lang } = useI18n();
   const [domain, setDomain] = useState("");
   const [loading, setLoading] = useState(false);
@@ -312,6 +364,8 @@ export default function DomainInspector() {
   const rdap = result?.details?.rdap_info || {};
   const dns = result?.details?.dns_records || {};
   const online = result?.details?.online_check;
+  const uptime = result?.details?.uptime_info;
+  const notices = result ? buildNotices(result) : [];
 
   return (
     <section id="domain-inspector" className="bg-background pb-16">
@@ -350,6 +404,14 @@ export default function DomainInspector() {
                 {loading ? t("Checking...") : t("Inspect")}
               </Button>
             </form>
+
+            {!hideGuideLink && (
+              <p className="text-center mt-4 text-sm text-muted-foreground">
+                <Link to="/domain-inspector" className="inline-flex items-center gap-1.5 font-semibold text-primary hover:underline">
+                  {t("Full guide: how this inspection works")} <ExternalLink className="w-3.5 h-3.5" />
+                </Link>
+              </p>
+            )}
 
             {error && (
               <div className="mt-4 flex items-center gap-2 rounded-xl bg-destructive/10 border border-destructive/20 px-4 py-3 text-sm text-destructive">
@@ -415,6 +477,48 @@ export default function DomainInspector() {
                     </div>
                   </div>
                 </div>
+
+                {/* Uptime & live availability */}
+                {uptime && (
+                  <div className="rounded-2xl border border-border bg-background p-5">
+                    <h3 className="font-bold text-card-foreground mb-4 flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-primary" /> {t("Uptime & Live Availability")}
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <InfoChip icon={ShieldCheck} label={t("Uptime")} value={`${uptime.uptime_percent}%`} good={uptime.uptime_percent === 100} />
+                      <InfoChip icon={Clock} label={t("Avg response time")} value={uptime.avg_response_ms != null ? `${uptime.avg_response_ms} ms` : "—"} />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {uptime.checks.map((c, i) => (
+                        <div key={i} className={`flex-1 h-2.5 rounded-full ${c.ok ? "bg-emerald-500" : "bg-red-400"}`} title={c.ok ? `✓ ${c.ms} ms` : "✗"} />
+                      ))}
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">{t("3 live checks")}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Notices & Remarks */}
+                {notices.length > 0 && (
+                  <div className="rounded-2xl border border-border bg-background p-5">
+                    <h3 className="font-bold text-card-foreground mb-4 flex items-center gap-2">
+                      <Info className="w-4 h-4 text-primary" /> {t("Notices & Remarks")}
+                    </h3>
+                    <ul className="space-y-3">
+                      {notices.map((n, i) => (
+                        <li key={i} className="flex items-start gap-2.5 text-sm">
+                          {n.level === "good" ? (
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                          ) : n.level === "warn" ? (
+                            <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                          ) : (
+                            <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+                          )}
+                          <span className="text-muted-foreground leading-snug">{t(n.key)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
           </div>

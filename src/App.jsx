@@ -20,6 +20,7 @@ import ResetPassword from './pages/ResetPassword';
 import Privacy from './pages/Privacy';
 import ToolPage from './pages/ToolPage';
 import PdfTools from './pages/PdfTools';
+import DomainInspectorPage from './pages/DomainInspectorPage';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -56,6 +57,7 @@ const AuthenticatedApp = () => {
         <Route path="/Privacy" element={<Privacy />} />
         <Route path="/tools/:slug" element={<ToolPage />} />
         <Route path="/pdf-tools" element={<PdfTools />} />
+        <Route path="/domain-inspector" element={<DomainInspectorPage />} />
         <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} requireAdmin />}>
           <Route path="/Dashboard" element={<Dashboard />} />
         </Route>
