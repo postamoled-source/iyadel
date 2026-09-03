@@ -12,10 +12,10 @@ import Logo from "@/components/Logo";
 import GameIcon from "@/components/game-icons";
 import ToolCalculator from "@/components/tools/ToolCalculator";
 import LanguageSection from "@/components/LanguageSection";
-import AppStoreSectionHome from "@/components/AppStoreSection";
+import DomainInspector from "@/components/tools/DomainInspector";
 import PrivacyTeaser from "@/components/PrivacyTeaser";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
-import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, ArrowLeftRight, ChevronRight, ShieldQuestion, Coins, Layers, Zap, Box, Gift, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, Swords, Spline, Instagram, Facebook, Image as ImageIcon, Pencil, Maximize2, FileDown, Youtube } from "lucide-react";
+import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, ArrowLeftRight, ChevronRight, ShieldQuestion, Coins, Layers, Zap, Box, Gift, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, Swords, Spline, Instagram, Facebook, Image as ImageIcon, Pencil, Maximize2, FileDown, Youtube, Globe } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { trackEvent, useSeo } from "@/lib/analytics";
 
@@ -48,6 +48,7 @@ const CATEGORY_CARDS = [
   { label: "Image Tools", cat: "Image Tools", Icon: ImageEditIcon },
   { label: "PDF Tools", cat: "PDF Tools", Icon: FileDown, route: "/pdf-tools" },
   { label: "All Tools", cat: "All", Icon: Box },
+  { label: "Domain Inspector", cat: "Network", Icon: Globe, scrollTo: "domain-inspector", wide: true },
 ];
 
 
@@ -256,15 +257,43 @@ function ToolsHub({ searchQuery = "" }) {
           <div id="categories" className="mb-8">
             <h2 className="text-left text-[16px] font-bold text-[#111827] dark:text-[#FEF3C7] mb-2">{t("Browse by Category")}</h2>
             <div className="grid grid-cols-4 gap-2">
-              {CATEGORY_CARDS.map(({ label, cat, Icon, route }) => (
-                <button key={label} onClick={() => { if (route) { navigate(route); trackEvent("category_select", { category: cat }); return; } setActiveCategory(cat); trackEvent("category_select", { category: cat }); }}
-                  className={`flex flex-col items-center justify-center px-1 py-2 h-[84px] rounded-[14px] bg-white dark:bg-[#2D2A5A] border shadow-[0_2px_6px_rgba(109,40,217,0.06)] transition-all duration-300 ${!route && activeCategory === cat ? "border-[#6D28D9]" : "border-[#F3F4F6] dark:border-[#4B3F8A]"}`}>
-                  <div className="w-[42px] h-[42px] rounded-full bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center">
-                    <Icon className="w-[22px] h-[22px] text-white" strokeWidth={2} />
-                  </div>
-                  <span className="text-[11px] font-bold text-[#111827] dark:text-[#FEF3C7] mt-1.5 text-center leading-[1.1] break-words">
-                    {t(label).split(" ").map((w, i) => <span key={i} className="block">{w}</span>)}
-                  </span>
+              {CATEGORY_CARDS.map(({ label, cat, Icon, route, scrollTo, wide }) => (
+                <button key={label} onClick={() => {
+                  if (scrollTo) {
+                    const el = document.getElementById(scrollTo);
+                    if (el) { const y = el.getBoundingClientRect().top + window.scrollY - 80; try { window.scrollTo({ top: y, behavior: "smooth" }); } catch { window.scrollTo(0, y); } }
+                    trackEvent("category_select", { category: cat });
+                    return;
+                  }
+                  if (route) { navigate(route); trackEvent("category_select", { category: cat }); return; }
+                  setActiveCategory(cat); trackEvent("category_select", { category: cat });
+                }}
+                  className={[
+                    "rounded-[14px] bg-white dark:bg-[#2D2A5A] border shadow-[0_2px_6px_rgba(109,40,217,0.06)] transition-all duration-300",
+                    wide
+                      ? "col-span-4 flex flex-row items-center justify-start gap-3 px-4 h-[64px] border-[#6D28D9]/40 bg-gradient-to-r from-[#6D28D9]/5 to-[#F59E0B]/5 text-start"
+                      : `flex flex-col items-center justify-center px-1 py-2 h-[84px] ${!route && activeCategory === cat ? "border-[#6D28D9]" : "border-[#F3F4F6] dark:border-[#4B3F8A]"}`,
+                  ].join(" ")}>
+                  {wide ? (
+                    <>
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center shrink-0">
+                        <Icon className="w-5 h-5 text-white" strokeWidth={2} />
+                      </div>
+                      <span className="min-w-0">
+                        <span className="block text-[13px] font-bold text-[#111827] dark:text-[#FEF3C7]">{t(label)}</span>
+                        <span className="block text-[11px] font-medium text-[#6B7280] dark:text-[#A8A6C4] leading-snug">{t("Check any domain or server: DNS records, hosting location, registration info and live status — all in one scan.")}</span>
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-[42px] h-[42px] rounded-full bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center">
+                        <Icon className="w-[22px] h-[22px] text-white" strokeWidth={2} />
+                      </div>
+                      <span className="text-[11px] font-bold text-[#111827] dark:text-[#FEF3C7] mt-1.5 text-center leading-[1.1] break-words">
+                        {t(label).split(" ").map((w, i) => <span key={i} className="block">{w}</span>)}
+                      </span>
+                    </>
+                  )}
                 </button>
               ))}
             </div>
@@ -547,7 +576,7 @@ export default function Home() {
       <HeroSection catCount={7} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <LanguageSection />
       <ToolsHub searchQuery={searchQuery} />
-      <AppStoreSectionHome />
+      <DomainInspector />
       <WhySection />
       <PrivacyTeaser />
       <BlogTeaser />
