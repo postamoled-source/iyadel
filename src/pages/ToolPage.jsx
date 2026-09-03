@@ -21,6 +21,8 @@ import MathPuzzleGame from "@/components/games/MathPuzzleGame";
 import WordScrambleGame from "@/components/games/WordScrambleGame";
 import VocabQuizGame from "@/components/games/VocabQuizGame";
 import PercentageCalculator from "@/components/tools/PercentageCalculator";
+import JpgToPngConverter from "@/components/tools/JpgToPngConverter";
+import ImageResizer from "@/components/tools/ImageResizer";
 import PageNotFound from "@/lib/PageNotFound";
 
 const ICONS = {
@@ -41,6 +43,8 @@ const EMBED = {
   "word-scramble": WordScrambleGame,
   "vocab-quiz": VocabQuizGame,
   "percentage-calculator": PercentageCalculator,
+  "jpg-to-png": JpgToPngConverter,
+  "image-resizer": ImageResizer,
 };
 
 const FORMULAS = {
@@ -221,9 +225,7 @@ export default function ToolPage() {
           <div className="mb-6">
             <Section title={`What is ${tool.name}?`}>
               <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed">{seo.content}</p>
-              <p className="mt-3 text-xs text-[#9CA3AF] dark:text-[#8B8AB0]">
-                {lang === "ar" ? "آخر تحديث: سبتمبر 2026" : "Last updated: September 2026"}
-              </p>
+              <p className="mt-3 text-xs text-[#9CA3AF] dark:text-[#8B8AB0]">Last updated: September 2026</p>
             </Section>
           </div>
         )}
@@ -270,6 +272,8 @@ export default function ToolPage() {
         </Section>
 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(appSchema) }} />
       </div>
     </section>
   );
