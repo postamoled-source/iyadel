@@ -119,7 +119,7 @@ function HeroSection({ catCount, searchQuery, onSearchChange }) {
 
           <div className="flex items-center justify-center gap-4 mb-6" style={{ animation: "floatC 6s ease-in-out infinite" }}>
             <Logo />
-            <h1 className="text-4xl md:text-6xl tracking-[0.04em] bg-clip-text text-transparent not-italic text-center animate-gradient-x font-light [font-family:'Alfabet',_sans-serif]" style={{ backgroundImage: "linear-gradient(90deg, #6D28D9, #F59E0B, #CA8A04, #B91C1C)" }}>iyadel</h1>
+            <h1 className="text-4xl md:text-6xl tracking-[0.04em] bg-clip-text text-transparent not-italic text-center animate-gradient-x font-light [font-family:'Be_Vietnam_Pro',_sans-serif]" style={{ backgroundImage: "linear-gradient(90deg, #6D28D9, #F59E0B, #CA8A04, #B91C1C)" }}>iyadel</h1>
           </div>
           
           <p className="text-[18px] leading-[1.5] text-[#374151] dark:text-[#FEF3C7]/80 max-w-2xl mx-auto mb-6 font-medium">
