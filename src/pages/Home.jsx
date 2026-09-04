@@ -130,7 +130,7 @@ function HeroSection({ catCount, searchQuery, onSearchChange }) {
           
           <div className="flex flex-wrap justify-center gap-2">
             <button onClick={() => scrollTo("tools")} className="flex items-center gap-3 rounded-full bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] px-[14px] py-2 shadow-sm hover:border-primary/50 transition-colors shadow-sm cursor-pointer">
-              <Box className="w-4 h-4 text-primary" />
+              <Box className="w-4 h-4 text-[#92281c]" />
               <span className="text-sm font-semibold text-[#1F2937] dark:text-[#FEF3C7]">{t("Tools")}</span>
             </button>
             <button onClick={() => scrollTo("categories", "tools")} className="flex items-center gap-3 rounded-full bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] px-[14px] py-2 shadow-sm hover:border-accent/50 transition-colors shadow-sm cursor-pointer">
