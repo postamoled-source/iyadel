@@ -323,7 +323,7 @@ function ToolsHub({ searchQuery = "" }) {
           }
         {showList && filtered.length > 0 &&
           <>
-        <h2 className="mt-6 mb-4 text-left text-[20px] font-bold text-[#111827] dark:text-[#FEF3C7] [font-family:'Abril_Fatface',_system-ui] underline italic">{activeCategory === "Favorites" ? t("Favorites") : activeCategory === "All" ? t("All Tools") : `${t("Popular")} ${t(activeCategory)}`}</h2>
+        <h2 className="mt-6 mb-4 text-left text-[20px] font-bold text-[#111827] dark:text-[#FEF3C7] underline italic [font-family:'Brygada_1918',_serif]">{activeCategory === "Favorites" ? t("Favorites") : activeCategory === "All" ? t("All Tools") : `${t("Popular")} ${t(activeCategory)}`}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((tool, index) => {
                 const Icon = ICONS[tool.icon] || Calculator;
