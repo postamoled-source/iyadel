@@ -41,7 +41,7 @@ export default function Header() {
         <nav className="hidden sm:flex items-center gap-6 select-none">
           <Link to="/" className="text-sm font-medium hover:text-primary transition-colors text-[hsl(var(--primary))]">{t("Home")}</Link>
           <Link to="/Blog" className="text-sm font-medium hover:text-primary transition-colors text-[hsl(var(--accent))]">{t("Blog")}</Link>
-          <Link to="/About" className="text-sm font-medium hover:text-primary transition-colors text-[#b36f6f]">{t("About Us")}</Link>
+          <Link to="/About" className="text-sm font-medium hover:text-primary transition-colors text-[hsl(var(--destructive))]">{t("About Us")}</Link>
         </nav>
 
         {/* Right: Tools (desktop) */}
