@@ -271,17 +271,17 @@ function ToolsHub({ searchQuery = "" }) {
               className={[
               "rounded-[14px] bg-white dark:bg-[#2D2A5A] border shadow-[0_2px_6px_rgba(109,40,217,0.06)] transition-all duration-300",
               wide ?
-              "col-span-4 flex flex-row items-center justify-start gap-3 px-4 h-[64px] border-[#6D28D9]/40 bg-gradient-to-r from-[#6D28D9]/5 to-[#F59E0B]/5 text-start" :
+              "col-span-4 flex flex-row items-center justify-start gap-3 px-4 h-[64px] border-[#C7D2FE] bg-gradient-to-r from-[#4F46E5]/5 to-[#6366F1]/5 text-start shadow-[0_4px_14px_rgba(79,70,229,0.10)]" :
               `flex flex-col items-center justify-center px-1 py-2 h-[84px] ${!route && activeCategory === cat ? "border-[#6D28D9]" : "border-[#F3F4F6] dark:border-[#4B3F8A]"}`].
               join(" ")}>
                   {wide ?
                 <>
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4F46E5] to-[#6366F1] flex items-center justify-center shrink-0 shadow-[0_4px_12px_rgba(79,70,229,0.30)]">
                         <Icon className="w-5 h-5 text-white" strokeWidth={2} />
                       </div>
                       <span className="min-w-0">
-                        <span className="block text-[13px] font-bold text-[#111827] dark:text-[#FEF3C7]">{t(label)}</span>
-                        <span className="block text-[11px] font-medium text-[#6B7280] dark:text-[#A8A6C4] leading-snug">{t("Check any domain or server: DNS records, hosting location, registration info and live status — all in one scan.")}</span>
+                        <span className="block text-[13px] font-bold text-[#1E293B] dark:text-[#E0E7FF]">{t(label)}</span>
+                        <span className="block text-[11px] font-medium text-[#475569] dark:text-[#A5B4FC] leading-snug">{t("Check any domain or server: DNS records, hosting location, registration info and live status — all in one scan.")}</span>
                       </span>
                     </> :
 
