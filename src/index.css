@@ -78,32 +78,11 @@
   src: url('https://media.base44.com/files/public/builder-assets/wix-fonts/alfabet-850-normal.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'Univers LT Std';
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-  src: url('https://media.base44.com/files/public/builder-assets/wix-fonts/univers-lt-std-400-italic.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Univers LT Std';
-  font-weight: 400;
+  font-family: 'VAG Rounded Next';
+  font-weight: 1000;
   font-style: normal;
   font-display: swap;
-  src: url('https://media.base44.com/files/public/builder-assets/wix-fonts/univers-lt-std-400-normal.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Univers LT Std';
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-  src: url('https://media.base44.com/files/public/builder-assets/wix-fonts/univers-lt-std-700-italic.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Univers LT Std';
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-  src: url('https://media.base44.com/files/public/builder-assets/wix-fonts/univers-lt-std-700-normal.woff2') format('woff2');
+  src: url('https://media.base44.com/files/public/builder-assets/wix-fonts/vag-rounded-next-1000-normal.woff2') format('woff2');
 }
 /* base44-workspace-fonts:end */
 
