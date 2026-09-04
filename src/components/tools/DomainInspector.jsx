@@ -375,8 +375,8 @@ export default function DomainInspector({ hideGuideLink = false }) {
 
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center shrink-0">
-                <Globe className="w-6 h-6 text-white mx-1" />
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#4F46E5] to-[#6366F1] flex items-center justify-center shrink-0 shadow-[0_6px_16px_rgba(79,70,229,0.30)]">
+                <Globe className="w-6 h-6 text-white" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-card-foreground">{t("Domain & Server Inspector")}</h2>
             </div>
