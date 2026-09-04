@@ -113,7 +113,7 @@ function HeroSection({ catCount, searchQuery, onSearchChange }) {
       
       <div className="max-w-5xl mx-auto px-6 relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}
-        className="bg-[#FFFBEB] dark:bg-[#1E1B4B] p-6 text-center relative overflow-hidden group transition-colors duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.05)] rounded-[10003px]">
+        className="bg-[#FFFBEB] dark:bg-[#1E1B4B] p-6 text-center relative overflow-hidden group transition-colors duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.05)] rounded-[40px]">
           
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
 
