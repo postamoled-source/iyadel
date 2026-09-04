@@ -7,7 +7,7 @@ export function NumInput({ label, value, onChange, placeholder }) {
     <div className="text-left">
       <label className="block text-[13px] font-semibold text-[#8B4513] dark:text-[#FBBF24] mb-1 ml-1">{label}</label>
       <input type="number" inputMode="decimal" value={value ?? ""} onChange={onChange} placeholder={placeholder}
-      className="w-full border-[1.5px] border-[#FFE8A0] dark:border-[#4B3F8A] bg-[#FFFEF5] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] placeholder:text-gray-400 dark:placeholder:text-[#6B6B8A] text-base px-4 h-[52px] transition-all duration-200 focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)] rounded-2xl opacity-95" />
+      className="w-full border-[1.5px] border-[#FFE8A0] dark:border-[#4B3F8A] bg-[#FFFEF5] dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] placeholder:text-gray-400 dark:placeholder:text-[#6B6B8A] text-base px-4 h-[52px] transition-all duration-200 focus:outline-none focus:border-[#F59E0B] focus:shadow-[0_0_0_4px_rgba(245,158,11,0.15)] rounded-2xl opacity-80" />
     </div>);
 
 }
