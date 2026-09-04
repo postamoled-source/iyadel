@@ -6,8 +6,8 @@ import { trackEvent } from "@/lib/analytics";
 import {
   Search, Loader2, Globe, Server, MapPin, Building2, Network,
   ShieldCheck, AlertTriangle, FileClock, User, Database,
-  CheckCircle2, Info, Activity, Clock, ExternalLink,
-} from "lucide-react";
+  CheckCircle2, Info, Activity, Clock, ExternalLink } from
+"lucide-react";
 
 // ============================================================
 // DomainInspectorEngine — فحص النطاقات والخوادم
@@ -18,11 +18,11 @@ import {
 class DomainInspectorEngine {
   // 1. التحقق من صحة النطاق
   static validateDomain(input) {
-    const domain = String(input || "")
-      .trim()
-      .replace(/^https?:\/\//, "")
-      .replace(/\/.*$/, "")
-      .replace(/^www\./, "");
+    const domain = String(input || "").
+    trim().
+    replace(/^https?:\/\//, "").
+    replace(/\/.*$/, "").
+    replace(/^www\./, "");
     const regex = /^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/;
     return regex.test(domain) ? domain : false;
   }
@@ -35,11 +35,11 @@ class DomainInspectorEngine {
     }
 
     const [rdap, dns, location, uptime] = await Promise.all([
-      this.getRdap(cleanDomain),
-      this.getDnsRecords(cleanDomain),
-      this.getLocation(cleanDomain),
-      this.getUptime(cleanDomain),
-    ]);
+    this.getRdap(cleanDomain),
+    this.getDnsRecords(cleanDomain),
+    this.getLocation(cleanDomain),
+    this.getUptime(cleanDomain)]
+    );
 
     const result = {
       status: "success",
@@ -52,19 +52,19 @@ class DomainInspectorEngine {
         city: location.city || "—",
         isp: location.isp || "—",
         site_availability:
-          uptime.uptime_percent === 100
-            ? "🟢 Active (3/3 checks passed)"
-            : uptime.uptime_percent > 0
-              ? "🟡 Partially responding"
-              : "🔴 Not responding",
+        uptime.uptime_percent === 100 ?
+        "🟢 Active (3/3 checks passed)" :
+        uptime.uptime_percent > 0 ?
+        "🟡 Partially responding" :
+        "🔴 Not responding"
       },
       details: {
         rdap_info: rdap,
         dns_records: dns,
         hosting_location: location,
         online_check: uptime.uptime_percent > 0,
-        uptime_info: uptime,
-      },
+        uptime_info: uptime
+      }
     };
 
     if (lang && lang !== "en") {
@@ -85,14 +85,14 @@ class DomainInspectorEngine {
       const creation = events.find((e) => e.eventAction === "registration")?.eventDate || "";
       const expiry = events.find((e) => e.eventAction === "expiration")?.eventDate || "";
       const registrant =
-        data.entities?.find((e) => e.roles?.includes("registrant"))?.vcardArray?.[1]?.[1]?.[3] || "";
+      data.entities?.find((e) => e.roles?.includes("registrant"))?.vcardArray?.[1]?.[1]?.[3] || "";
 
       return {
         registrar: data.registrar?.name || "—",
         creation_date: creation ? creation.split("T")[0] : "—",
         expiration_date: expiry ? expiry.split("T")[0] : "—",
         nameservers,
-        registrant: registrant || "—",
+        registrant: registrant || "—"
       };
     } catch {
       return { registrar: "—", creation_date: "—", expiration_date: "—", nameservers: "—", registrant: "—" };
@@ -103,7 +103,7 @@ class DomainInspectorEngine {
   static async getDnsRecords(domain) {
     const query = async (type) => {
       const res = await fetch(`https://cloudflare-dns.com/dns-query?name=${domain}&type=${type}`, {
-        headers: { Accept: "application/dns-json" },
+        headers: { Accept: "application/dns-json" }
       });
       return res.json();
     };
@@ -116,7 +116,7 @@ class DomainInspectorEngine {
       return {
         a_records: ips.length > 0 ? ips : ["No A records"],
         mx_records: mx.length > 0 ? mx : ["No MX records"],
-        ns_records: ns.length > 0 ? ns : ["No NS records"],
+        ns_records: ns.length > 0 ? ns : ["No NS records"]
       };
     } catch {
       return { a_records: [], mx_records: [], ns_records: [] };
@@ -137,7 +137,7 @@ class DomainInspectorEngine {
         ip: data.ip || "—",
         country: data.country || "—",
         city: data.city || "—",
-        isp: data.connection?.isp || "—",
+        isp: data.connection?.isp || "—"
       };
     } catch {
       return { ip: "—", country: "—", city: "—", isp: "—" };
@@ -157,7 +157,7 @@ class DomainInspectorEngine {
           method: "HEAD",
           signal: controller.signal,
           mode: "no-cors",
-          cache: "no-store",
+          cache: "no-store"
         });
         clearTimeout(timeout);
         ok = true;
@@ -170,9 +170,9 @@ class DomainInspectorEngine {
     const times = checks.filter((c) => c.ok && c.ms != null).map((c) => c.ms);
     return {
       checks,
-      uptime_percent: Math.round((passed / 3) * 100),
+      uptime_percent: Math.round(passed / 3 * 100),
       avg_response_ms: times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : null,
-      https_ok: passed > 0,
+      https_ok: passed > 0
     };
   }
 
@@ -204,16 +204,16 @@ class DomainInspectorEngine {
       await Promise.all(
         Object.entries(obj).map(async ([key, value]) => {
           if (
-            typeof value === "string" &&
-            !this.isDateString(value) &&
-            !this.isIpAddress(value) &&
-            key !== "domain" &&
-            key !== "domain_name" &&
-            key !== "server_ip" &&
-            key !== "creation_date" &&
-            key !== "expiration_date" &&
-            key !== "timestamp"
-          ) {
+          typeof value === "string" &&
+          !this.isDateString(value) &&
+          !this.isIpAddress(value) &&
+          key !== "domain" &&
+          key !== "domain_name" &&
+          key !== "server_ip" &&
+          key !== "creation_date" &&
+          key !== "expiration_date" &&
+          key !== "timestamp")
+          {
             translated[key] = await this.translateText(value, lang);
           } else if (typeof value === "object" && value !== null) {
             translated[key] = await this.translateObject(value, lang);
@@ -256,19 +256,19 @@ class DomainInspectorEngine {
 // ---------- UI atoms ----------
 function InfoChip({ icon: Icon, label, value, good }) {
   const tone =
-    good === true
-      ? "text-emerald-600 dark:text-emerald-400"
-      : good === false
-        ? "text-red-500 dark:text-red-400"
-        : "text-[#111827] dark:text-[#FEF3C7]";
+  good === true ?
+  "text-emerald-600 dark:text-emerald-400" :
+  good === false ?
+  "text-red-500 dark:text-red-400" :
+  "text-[#111827] dark:text-[#FEF3C7]";
   return (
     <div className="min-w-0 rounded-2xl bg-background border border-border px-4 py-3">
       <div className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground mb-1">
         <Icon className="w-3.5 h-3.5 shrink-0" /> {label}
       </div>
       <div className={`text-sm font-bold break-all ${tone}`}>{value || "—"}</div>
-    </div>
-  );
+    </div>);
+
 }
 
 function InfoRow({ icon: Icon, label, value }) {
@@ -278,8 +278,8 @@ function InfoRow({ icon: Icon, label, value }) {
         <Icon className="w-4 h-4 text-primary" /> {label}
       </dt>
       <dd className="text-sm font-bold text-foreground text-end break-all">{value || "—"}</dd>
-    </div>
-  );
+    </div>);
+
 }
 
 function RecordChips({ items }) {
@@ -288,13 +288,13 @@ function RecordChips({ items }) {
   }
   return (
     <div className="flex flex-wrap gap-2">
-      {items.map((v, i) => (
-        <code key={i} dir="ltr" className="text-xs font-mono bg-secondary border border-border rounded-lg px-2.5 py-1 text-foreground break-all">
+      {items.map((v, i) =>
+      <code key={i} dir="ltr" className="text-xs font-mono bg-secondary border border-border rounded-lg px-2.5 py-1 text-foreground break-all">
           {v}
         </code>
-      ))}
-    </div>
-  );
+      )}
+    </div>);
+
 }
 
 // ---------- Notices & Remarks generator (from scan results) ----------
@@ -305,24 +305,24 @@ function buildNotices(result) {
   const up = result?.details?.uptime_info;
   const realRecords = (list) => (list || []).filter((r) => typeof r === "string" && !r.startsWith("No "));
   if (up) {
-    if (up.uptime_percent === 100) notes.push({ level: "good", key: "The website responded successfully to all live checks over HTTPS." });
-    else if (up.uptime_percent > 0) notes.push({ level: "warn", key: "The website responded to some checks only — it may be slow or blocking automated requests." });
-    else notes.push({ level: "warn", key: "The website is not responding right now — it may be down or blocking automated checks." });
+    if (up.uptime_percent === 100) notes.push({ level: "good", key: "The website responded successfully to all live checks over HTTPS." });else
+    if (up.uptime_percent > 0) notes.push({ level: "warn", key: "The website responded to some checks only — it may be slow or blocking automated requests." });else
+    notes.push({ level: "warn", key: "The website is not responding right now — it may be down or blocking automated checks." });
   }
   if (rdap.expiration_date && rdap.expiration_date !== "—") {
     const exp = new Date(rdap.expiration_date);
     if (!isNaN(exp)) {
       const days = Math.round((exp - Date.now()) / 86400000);
-      if (days < 30) notes.push({ level: "warn", key: "The domain expires in less than 30 days — renew it soon to avoid losing it." });
-      else if (days < 90) notes.push({ level: "info", key: "The domain expires in less than 90 days — plan your renewal." });
-      else notes.push({ level: "good", key: "Domain registration is valid and not expiring soon." });
+      if (days < 30) notes.push({ level: "warn", key: "The domain expires in less than 30 days — renew it soon to avoid losing it." });else
+      if (days < 90) notes.push({ level: "info", key: "The domain expires in less than 90 days — plan your renewal." });else
+      notes.push({ level: "good", key: "Domain registration is valid and not expiring soon." });
     }
   }
-  if (realRecords(dns.a_records).length > 0) notes.push({ level: "good", key: "A records resolved — the domain points to a live server." });
-  else notes.push({ level: "warn", key: "No A records found — the domain does not point to a server." });
+  if (realRecords(dns.a_records).length > 0) notes.push({ level: "good", key: "A records resolved — the domain points to a live server." });else
+  notes.push({ level: "warn", key: "No A records found — the domain does not point to a server." });
   if (realRecords(dns.mx_records).length === 0) notes.push({ level: "info", key: "No MX records found — this domain cannot receive email on its own." });
-  if (rdap.registrant && rdap.registrant !== "—") notes.push({ level: "info", key: "Owner information is shown as published in the public registry." });
-  else notes.push({ level: "info", key: "Owner information is hidden (WHOIS privacy protection)." });
+  if (rdap.registrant && rdap.registrant !== "—") notes.push({ level: "info", key: "Owner information is shown as published in the public registry." });else
+  notes.push({ level: "info", key: "Owner information is hidden (WHOIS privacy protection)." });
   return notes;
 }
 
@@ -352,7 +352,7 @@ export default function DomainInspector({ hideGuideLink = false }) {
       if (res && res.status === "success") {
         setResult(res);
       } else {
-        setError((res && res.message) || t("Something went wrong while checking. Please try again."));
+        setError(res && res.message || t("Something went wrong while checking. Please try again."));
       }
     } catch {
       setError(t("Something went wrong while checking. Please try again."));
@@ -376,7 +376,7 @@ export default function DomainInspector({ hideGuideLink = false }) {
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center shrink-0">
-                <Globe className="w-6 h-6 text-white" />
+                <Globe className="w-6 h-6 text-white mx-1" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-card-foreground">{t("Domain & Server Inspector")}</h2>
             </div>
@@ -394,10 +394,10 @@ export default function DomainInspector({ hideGuideLink = false }) {
                   autoCorrect="off"
                   spellCheck={false}
                   value={domain}
-                  onChange={(e) => { setDomain(e.target.value); setError(""); }}
+                  onChange={(e) => {setDomain(e.target.value);setError("");}}
                   placeholder={t("Enter a domain, e.g. google.com")}
-                  className="w-full min-h-[48px] h-14 rounded-2xl border border-input bg-background text-foreground ps-12 pe-4 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all text-base"
-                />
+                  className="w-full min-h-[48px] h-14 rounded-2xl border border-input bg-background text-foreground ps-12 pe-4 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all text-base" />
+                
               </div>
               <Button type="submit" disabled={loading} className="h-14 rounded-2xl px-8 font-bold text-base">
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
@@ -405,30 +405,30 @@ export default function DomainInspector({ hideGuideLink = false }) {
               </Button>
             </form>
 
-            {!hideGuideLink && (
-              <p className="text-center mt-4 text-sm text-muted-foreground">
+            {!hideGuideLink &&
+            <p className="text-center mt-4 text-sm text-muted-foreground">
                 <Link to="/domain-inspector" className="inline-flex items-center gap-1.5 font-semibold text-primary hover:underline">
                   {t("Full guide: how this inspection works")} <ExternalLink className="w-3.5 h-3.5" />
                 </Link>
               </p>
-            )}
+            }
 
-            {error && (
-              <div className="mt-4 flex items-center gap-2 rounded-xl bg-destructive/10 border border-destructive/20 px-4 py-3 text-sm text-destructive">
+            {error &&
+            <div className="mt-4 flex items-center gap-2 rounded-xl bg-destructive/10 border border-destructive/20 px-4 py-3 text-sm text-destructive">
                 <AlertTriangle className="w-4 h-4 shrink-0" /> {error}
               </div>
-            )}
+            }
 
-            {loading && (
-              <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="h-20 animate-pulse rounded-2xl bg-muted/60" />
-                ))}
+            {loading &&
+            <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {Array.from({ length: 6 }).map((_, i) =>
+              <div key={i} className="h-20 animate-pulse rounded-2xl bg-muted/60" />
+              )}
               </div>
-            )}
+            }
 
-            {result && !loading && (
-              <div className="mt-6 space-y-6">
+            {result && !loading &&
+            <div className="mt-6 space-y-6">
                 <div className="flex items-center gap-2">
                   <span className="text-lg font-extrabold text-primary" dir="ltr">{result.domain}</span>
                   <span className="text-xs text-muted-foreground">{result.timestamp?.split("T")[0]}</span>
@@ -479,8 +479,8 @@ export default function DomainInspector({ hideGuideLink = false }) {
                 </div>
 
                 {/* Uptime & live availability */}
-                {uptime && (
-                  <div className="rounded-2xl border border-border bg-background p-5">
+                {uptime &&
+              <div className="rounded-2xl border border-border bg-background p-5">
                     <h3 className="font-bold text-card-foreground mb-4 flex items-center gap-2">
                       <Activity className="w-4 h-4 text-primary" /> {t("Uptime & Live Availability")}
                     </h3>
@@ -489,41 +489,41 @@ export default function DomainInspector({ hideGuideLink = false }) {
                       <InfoChip icon={Clock} label={t("Avg response time")} value={uptime.avg_response_ms != null ? `${uptime.avg_response_ms} ms` : "—"} />
                     </div>
                     <div className="flex items-center gap-2">
-                      {uptime.checks.map((c, i) => (
-                        <div key={i} className={`flex-1 h-2.5 rounded-full ${c.ok ? "bg-emerald-500" : "bg-red-400"}`} title={c.ok ? `✓ ${c.ms} ms` : "✗"} />
-                      ))}
+                      {uptime.checks.map((c, i) =>
+                  <div key={i} className={`flex-1 h-2.5 rounded-full ${c.ok ? "bg-emerald-500" : "bg-red-400"}`} title={c.ok ? `✓ ${c.ms} ms` : "✗"} />
+                  )}
                       <span className="text-xs text-muted-foreground whitespace-nowrap">{t("3 live checks")}</span>
                     </div>
                   </div>
-                )}
+              }
 
                 {/* Notices & Remarks */}
-                {notices.length > 0 && (
-                  <div className="rounded-2xl border border-border bg-background p-5">
+                {notices.length > 0 &&
+              <div className="rounded-2xl border border-border bg-background p-5">
                     <h3 className="font-bold text-card-foreground mb-4 flex items-center gap-2">
                       <Info className="w-4 h-4 text-primary" /> {t("Notices & Remarks")}
                     </h3>
                     <ul className="space-y-3">
-                      {notices.map((n, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-sm">
-                          {n.level === "good" ? (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                          ) : n.level === "warn" ? (
-                            <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-                          ) : (
-                            <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                          )}
+                      {notices.map((n, i) =>
+                  <li key={i} className="flex items-start gap-2.5 text-sm">
+                          {n.level === "good" ?
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /> :
+                    n.level === "warn" ?
+                    <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" /> :
+
+                    <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+                    }
                           <span className="text-muted-foreground leading-snug">{t(n.key)}</span>
                         </li>
-                      ))}
+                  )}
                     </ul>
                   </div>
-                )}
+              }
               </div>
-            )}
+            }
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 }
