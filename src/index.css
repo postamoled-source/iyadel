@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&family=Playfair+Display:wght@700;800&family=Pacifico&family=Bebas+Neue:wght@400&family=Lobster&family=Oswald:wght@400;700&family=Anton&family=Montserrat:wght@400;700;800&family=Dancing+Script:wght@700&family=Abril+Fatface:wght@400&family=Brygada+1918:wght@400;500;600;700&family=Cormorant:wght@300;400;500;600;700&family=Architects+Daughter:wght@400&family=Great+Vibes:wght@400&family=Send+Flowers:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&family=Playfair+Display:wght@700;800&family=Pacifico&family=Bebas+Neue:wght@400&family=Lobster&family=Oswald:wght@400;700&family=Anton&family=Montserrat:wght@400;700;800&family=Dancing+Script:wght@700&family=Abril+Fatface:wght@400&family=Brygada+1918:wght@400;500;600;700&family=Cormorant:wght@300;400;500;600;700&family=Architects+Daughter:wght@400&family=Great+Vibes:wght@400&family=Send+Flowers:wght@400&family=Satisfy:wght@400&display=swap');
 /* base44-workspace-fonts:start */
 @font-face {
   font-family: 'Benzin';
@@ -13,13 +13,6 @@
   font-style: normal;
   font-display: swap;
   src: url('https://media.base44.com/files/public/builder-assets/wix-fonts/benzin-700-normal.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Adobe Caslon';
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  src: url('https://media.base44.com/files/public/builder-assets/wix-fonts/adobe-caslon-400-normal.woff2') format('woff2');
 }
 /* base44-workspace-fonts:end */
 
