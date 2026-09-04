@@ -35,29 +35,29 @@ function ImageEditIcon() {
       <span className="absolute -right-1.5 -bottom-1.5 w-4 h-4 rounded-full bg-white flex items-center justify-center shadow">
         <Pencil className="w-2 h-2 text-[#6D28D9]" strokeWidth={2.5} />
       </span>
-    </span>
-  );
+    </span>);
+
 }
 
 const CATEGORY_CARDS = [
-  { label: "Finance", cat: "Finance", Icon: DollarSign },
-  { label: "Health", cat: "Health", Icon: Activity },
-  { label: "Converters", cat: "Converters", Icon: ArrowLeftRight },
-  { label: "Math", cat: "Math", Icon: Calculator },
-  { label: "Brain Games", cat: "Games", Icon: Puzzle },
-  { label: "Image Tools", cat: "Image Tools", Icon: ImageEditIcon },
-  { label: "PDF Tools", cat: "PDF Tools", Icon: FileDown, route: "/pdf-tools" },
-  { label: "All Tools", cat: "All", Icon: Box },
-  { label: "Domain Inspector", cat: "Network", Icon: Globe, scrollTo: "domain-inspector", wide: true },
-];
+{ label: "Finance", cat: "Finance", Icon: DollarSign },
+{ label: "Health", cat: "Health", Icon: Activity },
+{ label: "Converters", cat: "Converters", Icon: ArrowLeftRight },
+{ label: "Math", cat: "Math", Icon: Calculator },
+{ label: "Brain Games", cat: "Games", Icon: Puzzle },
+{ label: "Image Tools", cat: "Image Tools", Icon: ImageEditIcon },
+{ label: "PDF Tools", cat: "PDF Tools", Icon: FileDown, route: "/pdf-tools" },
+{ label: "All Tools", cat: "All", Icon: Box },
+{ label: "Domain Inspector", cat: "Network", Icon: Globe, scrollTo: "domain-inspector", wide: true }];
+
 
 
 
 const STATIC_BLOG = [
-  { title: "5 Smart Ways to Pay Off Your Loan Faster", excerpt: "Small changes to your repayment strategy can save you thousands in interest.", category: "Finance", date: "Aug 10, 2026", image_url: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/58374ccbe_generated_5e9014e0.png" },
-  { title: "Understanding BMI: What the Numbers Really Mean", excerpt: "Body Mass Index is a starting point, not the full picture.", category: "Health", date: "Aug 5, 2026", image_url: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/091f98734_generated_92bd36b3.png" },
-  { title: "Compound Interest: The Eighth Wonder of the World", excerpt: "See how compounding accelerates your savings over time.", category: "Finance", date: "Jul 28, 2026", image_url: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/ff5a36d61_generated_8395a13a.png" },
-];
+{ title: "5 Smart Ways to Pay Off Your Loan Faster", excerpt: "Small changes to your repayment strategy can save you thousands in interest.", category: "Finance", date: "Aug 10, 2026", image_url: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/58374ccbe_generated_5e9014e0.png" },
+{ title: "Understanding BMI: What the Numbers Really Mean", excerpt: "Body Mass Index is a starting point, not the full picture.", category: "Health", date: "Aug 5, 2026", image_url: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/091f98734_generated_92bd36b3.png" },
+{ title: "Compound Interest: The Eighth Wonder of the World", excerpt: "See how compounding accelerates your savings over time.", category: "Finance", date: "Jul 28, 2026", image_url: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/ff5a36d61_generated_8395a13a.png" }];
+
 
 
 
@@ -78,19 +78,19 @@ function AnimatedElement({ children, className, delay = 0 }) {
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight) { setIsVisible(true); return; }
+    if (rect.top < window.innerHeight) {setIsVisible(true);return;}
     const fallback = setTimeout(() => setIsVisible(true), 800 + delay);
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { clearTimeout(fallback); setTimeout(() => setIsVisible(true), delay); observer.unobserve(el); }
+      if (entry.isIntersecting) {clearTimeout(fallback);setTimeout(() => setIsVisible(true), delay);observer.unobserve(el);}
     }, { threshold: 0.05, rootMargin: "0px 0px 100px 0px" });
     observer.observe(el);
-    return () => { observer.disconnect(); clearTimeout(fallback); };
+    return () => {observer.disconnect();clearTimeout(fallback);};
   }, [delay]);
   return (
     <div ref={ref} className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${className || ""}`}>
       {children}
-    </div>
-  );
+    </div>);
+
 }
 
 // Shared tool form atoms live in @/components/tools/ToolUI (used by ToolCalculator).
@@ -99,11 +99,11 @@ function AnimatedElement({ children, className, delay = 0 }) {
 function HeroSection({ catCount, searchQuery, onSearchChange }) {
   const { t } = useI18n();
   const scrollTo = (id, fallback) => {
-    const el = document.getElementById(id) || (fallback && document.getElementById(fallback));
+    const el = document.getElementById(id) || fallback && document.getElementById(fallback);
     if (!el) return;
     const y = el.getBoundingClientRect().top + window.scrollY - 80;
-    try { window.scrollTo({ top: y, behavior: "smooth" }); }
-    catch { window.scrollTo(0, y); }
+    try {window.scrollTo({ top: y, behavior: "smooth" });}
+    catch {window.scrollTo(0, y);}
   };
   return (
     <section className="relative overflow-hidden bg-[#FFFBEB] dark:bg-[#1E1B4B] transition-colors duration-300 pt-10 pb-16">
@@ -113,7 +113,7 @@ function HeroSection({ catCount, searchQuery, onSearchChange }) {
       
       <div className="max-w-5xl mx-auto px-6 relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}
-          className="rounded-[32px] bg-[#FFFBEB] dark:bg-[#1E1B4B] p-6 text-center relative overflow-hidden group transition-colors duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+        className="bg-[#FFFBEB] dark:bg-[#1E1B4B] p-6 text-center relative overflow-hidden group transition-colors duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.05)] rounded-[10003px]">
           
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
 
@@ -149,22 +149,22 @@ function HeroSection({ catCount, searchQuery, onSearchChange }) {
               <input
                 type="text"
                 value={searchQuery || ""}
-                onChange={(e) => { onSearchChange(e.target.value); scrollTo("tools"); }}
+                onChange={(e) => {onSearchChange(e.target.value);scrollTo("tools");}}
                 onFocus={() => scrollTo("tools")}
                 placeholder={t("Search for a tool by name...")}
-                className="w-full h-14 rounded-2xl border border-[#E9D5FF] dark:border-[#4B3F8A] bg-white dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] pl-12 pr-12 focus:outline-none focus:border-[#F59E0B] transition-all shadow-[0_2px_8px_rgba(0,0,0,0.05)] text-base"
-              />
-              {searchQuery && (
-                <button onClick={() => onSearchChange("")} aria-label={t("Clear")} className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
+                className="w-full h-14 rounded-2xl border border-[#E9D5FF] dark:border-[#4B3F8A] bg-white dark:bg-[#2D2A5A] text-[#1E1B4B] dark:text-[#FEF3C7] pl-12 pr-12 focus:outline-none focus:border-[#F59E0B] transition-all shadow-[0_2px_8px_rgba(0,0,0,0.05)] text-base" />
+              
+              {searchQuery &&
+              <button onClick={() => onSearchChange("")} aria-label={t("Clear")} className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
                   <X className="w-4 h-4" />
                 </button>
-              )}
+              }
             </div>
           </div>
         </motion.div>
       </div>
-    </section>
-  );
+    </section>);
+
 }
 
 // ---------- Tool workspace (all calculators) ----------
@@ -198,8 +198,8 @@ function ToolWorkspace({ tool, onBack }) {
           </Link>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 // ---------- Tools Hub ----------
@@ -212,26 +212,26 @@ function ToolsHub({ searchQuery = "" }) {
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const isMobile = useIsMobile();
 
-  const load = useCallback(async () => { try { setTools(await ToolEntity.list()); } catch {} }, []);
-  useEffect(() => { load(); }, [load]);
+  const load = useCallback(async () => {try {setTools(await ToolEntity.list());} catch {}}, []);
+  useEffect(() => {load();}, [load]);
 
   const items = (() => {
     const map = new Map();
     STATIC_TOOLS.forEach((t) => map.set(t.slug, t));
-    tools.forEach((t) => { if (!map.has(t.slug)) map.set(t.slug, t); });
+    tools.forEach((t) => {if (!map.has(t.slug)) map.set(t.slug, t);});
     return Array.from(map.values());
   })();
   const toolSlug = searchParams.get("tool");
   const selectedTool = toolSlug ? items.find((t) => t.slug === toolSlug) || null : null;
   const query = (searchQuery || "").trim().toLowerCase();
   const isSearching = query.length > 0;
-  const filtered = isSearching
-    ? items.filter((t) => (`${t.name} ${t.category} ${t.description || ""}`).toLowerCase().includes(query))
-    : activeCategory === "Favorites"
-      ? items.filter((t) => isFavorite(t.slug))
-      : activeCategory === "All"
-        ? items
-        : items.filter((t) => t.category === activeCategory);
+  const filtered = isSearching ?
+  items.filter((t) => `${t.name} ${t.category} ${t.description || ""}`.toLowerCase().includes(query)) :
+  activeCategory === "Favorites" ?
+  items.filter((t) => isFavorite(t.slug)) :
+  activeCategory === "All" ?
+  items :
+  items.filter((t) => t.category === activeCategory);
 
   const selectTool = (tool) => {
     setActiveCategory(tool.category);
@@ -253,29 +253,29 @@ function ToolsHub({ searchQuery = "" }) {
       <PullToRefresh onRefresh={load}>
       <div className="max-w-5xl mx-auto px-6">
         
-        {showList && !isSearching && (
+        {showList && !isSearching &&
           <div id="categories" className="mb-8">
             <h2 className="text-left text-[16px] font-bold text-[#111827] dark:text-[#FEF3C7] mb-2">{t("Browse by Category")}</h2>
             <div className="grid grid-cols-4 gap-2">
-              {CATEGORY_CARDS.map(({ label, cat, Icon, route, scrollTo, wide }) => (
-                <button key={label} onClick={() => {
-                  if (scrollTo) {
-                    const el = document.getElementById(scrollTo);
-                    if (el) { const y = el.getBoundingClientRect().top + window.scrollY - 80; try { window.scrollTo({ top: y, behavior: "smooth" }); } catch { window.scrollTo(0, y); } }
-                    trackEvent("category_select", { category: cat });
-                    return;
-                  }
-                  if (route) { navigate(route); trackEvent("category_select", { category: cat }); return; }
-                  setActiveCategory(cat); trackEvent("category_select", { category: cat });
-                }}
-                  className={[
-                    "rounded-[14px] bg-white dark:bg-[#2D2A5A] border shadow-[0_2px_6px_rgba(109,40,217,0.06)] transition-all duration-300",
-                    wide
-                      ? "col-span-4 flex flex-row items-center justify-start gap-3 px-4 h-[64px] border-[#6D28D9]/40 bg-gradient-to-r from-[#6D28D9]/5 to-[#F59E0B]/5 text-start"
-                      : `flex flex-col items-center justify-center px-1 py-2 h-[84px] ${!route && activeCategory === cat ? "border-[#6D28D9]" : "border-[#F3F4F6] dark:border-[#4B3F8A]"}`,
-                  ].join(" ")}>
-                  {wide ? (
-                    <>
+              {CATEGORY_CARDS.map(({ label, cat, Icon, route, scrollTo, wide }) =>
+              <button key={label} onClick={() => {
+                if (scrollTo) {
+                  const el = document.getElementById(scrollTo);
+                  if (el) {const y = el.getBoundingClientRect().top + window.scrollY - 80;try {window.scrollTo({ top: y, behavior: "smooth" });} catch {window.scrollTo(0, y);}}
+                  trackEvent("category_select", { category: cat });
+                  return;
+                }
+                if (route) {navigate(route);trackEvent("category_select", { category: cat });return;}
+                setActiveCategory(cat);trackEvent("category_select", { category: cat });
+              }}
+              className={[
+              "rounded-[14px] bg-white dark:bg-[#2D2A5A] border shadow-[0_2px_6px_rgba(109,40,217,0.06)] transition-all duration-300",
+              wide ?
+              "col-span-4 flex flex-row items-center justify-start gap-3 px-4 h-[64px] border-[#6D28D9]/40 bg-gradient-to-r from-[#6D28D9]/5 to-[#F59E0B]/5 text-start" :
+              `flex flex-col items-center justify-center px-1 py-2 h-[84px] ${!route && activeCategory === cat ? "border-[#6D28D9]" : "border-[#F3F4F6] dark:border-[#4B3F8A]"}`].
+              join(" ")}>
+                  {wide ?
+                <>
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center shrink-0">
                         <Icon className="w-5 h-5 text-white" strokeWidth={2} />
                       </div>
@@ -283,9 +283,9 @@ function ToolsHub({ searchQuery = "" }) {
                         <span className="block text-[13px] font-bold text-[#111827] dark:text-[#FEF3C7]">{t(label)}</span>
                         <span className="block text-[11px] font-medium text-[#6B7280] dark:text-[#A8A6C4] leading-snug">{t("Check any domain or server: DNS records, hosting location, registration info and live status — all in one scan.")}</span>
                       </span>
-                    </>
-                  ) : (
-                    <>
+                    </> :
+
+                <>
                       <div className="w-[42px] h-[42px] rounded-full bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center">
                         <Icon className="w-[22px] h-[22px] text-white" strokeWidth={2} />
                       </div>
@@ -293,23 +293,23 @@ function ToolsHub({ searchQuery = "" }) {
                         {t(label).split(" ").map((w, i) => <span key={i} className="block">{w}</span>)}
                       </span>
                     </>
-                  )}
+                }
                 </button>
-              ))}
+              )}
             </div>
           </div>
-        )}
+          }
 
-        {isSearching && (
+        {isSearching &&
           <div className="mb-8 text-center">
             <p className="text-sm text-muted-foreground">
-              {filtered.length > 0
-                ? `${filtered.length} ${t("results for")} "${searchQuery}"`
-                : t("No tools found. Try another name.")}
+              {filtered.length > 0 ?
+              `${filtered.length} ${t("results for")} "${searchQuery}"` :
+              t("No tools found. Try another name.")}
             </p>
           </div>
-        )}
-        {showList && filtered.length === 0 && activeCategory === "Favorites" && !isSearching && (
+          }
+        {showList && filtered.length === 0 && activeCategory === "Favorites" && !isSearching &&
           <div className="text-center py-16">
             <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
               <Star className="w-8 h-8 text-muted-foreground" />
@@ -320,64 +320,64 @@ function ToolsHub({ searchQuery = "" }) {
               {t("Browse Tools")}
             </button>
           </div>
-        )}
-        {showList && filtered.length > 0 && (
-        <>
+          }
+        {showList && filtered.length > 0 &&
+          <>
         <h2 className="mt-6 mb-4 text-left text-[20px] font-bold text-[#111827] dark:text-[#FEF3C7]">{activeCategory === "Favorites" ? t("Favorites") : activeCategory === "All" ? t("All Tools") : `${t("Popular")} ${t(activeCategory)}`}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((tool, index) => {
-            const Icon = ICONS[tool.icon] || Calculator;
-            const fav = isFavorite(tool.slug);
-            return (
-              <AnimatedElement key={tool.slug || index} delay={index * 80}>
-                <div onClick={() => { navigate(`/tools/${tool.slug}`); trackEvent("tool_open_page", { tool_slug: tool.slug, tool_name: tool.name }); }}
-                  className="relative w-full h-full text-center rounded-[20px] bg-white dark:bg-[#2D2A5A] border border-[#F3F4F6] dark:border-[#4B3F8A] p-4 transition-all duration-300 shadow-[0_4px_12px_rgba(109,40,217,0.08)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(109,40,217,0.15)] group flex flex-col items-center justify-center cursor-pointer">
+                const Icon = ICONS[tool.icon] || Calculator;
+                const fav = isFavorite(tool.slug);
+                return (
+                  <AnimatedElement key={tool.slug || index} delay={index * 80}>
+                <div onClick={() => {navigate(`/tools/${tool.slug}`);trackEvent("tool_open_page", { tool_slug: tool.slug, tool_name: tool.name });}}
+                    className="relative w-full h-full text-center rounded-[20px] bg-white dark:bg-[#2D2A5A] border border-[#F3F4F6] dark:border-[#4B3F8A] p-4 transition-all duration-300 shadow-[0_4px_12px_rgba(109,40,217,0.08)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(109,40,217,0.15)] group flex flex-col items-center justify-center cursor-pointer">
                   
                   <button
-                    onClick={(e) => { e.stopPropagation(); toggleFavorite(tool.slug); trackEvent("tool_favorite", { tool_slug: tool.slug, action: fav ? "remove" : "add" }); }}
-                    aria-label={fav ? t("Remove from favorites") : t("Add to favorites")}
-                    className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 z-10 ${fav ? "bg-accent/15 text-accent border border-accent/30" : "bg-white dark:bg-[#1E1B4B] border border-[#E5E7EB] dark:border-[#4B3F8A] text-[#6B7280] hover:text-accent hover:border-accent/40"}`}>
+                        onClick={(e) => {e.stopPropagation();toggleFavorite(tool.slug);trackEvent("tool_favorite", { tool_slug: tool.slug, action: fav ? "remove" : "add" });}}
+                        aria-label={fav ? t("Remove from favorites") : t("Add to favorites")}
+                        className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 z-10 ${fav ? "bg-accent/15 text-accent border border-accent/30" : "bg-white dark:bg-[#1E1B4B] border border-[#E5E7EB] dark:border-[#4B3F8A] text-[#6B7280] hover:text-accent hover:border-accent/40"}`}>
                     <Star className={`w-5 h-5 ${fav ? "fill-accent" : ""}`} />
                   </button>
                   
-                  {tool.category === "Games" ? (
-                    <div className="w-16 h-16 mb-5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                  {tool.category === "Games" ?
+                      <div className="w-16 h-16 mb-5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
                       <GameIcon slug={tool.slug} className="w-16 h-16" />
-                    </div>
-                  ) : (
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center mb-4 shadow-[0_8px_20px_rgba(109,40,217,0.25)] group-hover:scale-110 transition-all duration-500 overflow-hidden">
-                      {tool.logo ? (
-                        <img src={tool.logo} alt={t(tool.name)} className="w-full h-full object-cover" />
-                      ) : (
+                    </div> :
+
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] flex items-center justify-center mb-4 shadow-[0_8px_20px_rgba(109,40,217,0.25)] group-hover:scale-110 transition-all duration-500 overflow-hidden">
+                      {tool.logo ?
+                        <img src={tool.logo} alt={t(tool.name)} className="w-full h-full object-cover" /> :
+
                         <Icon className="w-7 h-7 text-primary-foreground" strokeWidth={2.2} />
-                      )}
+                        }
                     </div>
-                  )}
+                      }
                   
                   <h3 className="text-base font-bold text-[#111827] dark:text-[#FEF3C7] mb-0.5">{t(tool.name)}</h3>
                   <span className="text-xs font-medium text-[#6B7280] dark:text-[#A8A6C4]">{t(tool.category)}</span>
                   
                 </div>
-              </AnimatedElement>
-            );
-          })}
+              </AnimatedElement>);
+
+              })}
         </div>
         </>
-        )}
+          }
 
         {/* Desktop: inline workspace with a subtle slide-up */}
         <AnimatePresence mode="wait">
-          {selectedTool && !isSearching && !isMobile && (
+          {selectedTool && !isSearching && !isMobile &&
             <motion.div
               key={`ws-${selectedTool.slug}`}
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 24 }}
-              transition={{ duration: 0.26, ease: "easeOut" }}
-            >
+              transition={{ duration: 0.26, ease: "easeOut" }}>
+              
               <ToolWorkspace tool={selectedTool} onBack={clearTool} />
             </motion.div>
-          )}
+            }
         </AnimatePresence>
       </div>
       </PullToRefresh>
@@ -385,24 +385,24 @@ function ToolsHub({ searchQuery = "" }) {
       {/* Mobile: full-screen slide-up modal workspace (ported to body to escape page-transition transforms) */}
       {createPortal(
         <AnimatePresence>
-          {selectedTool && !isSearching && isMobile && (
-            <motion.div
-              key="ws-mobile"
-              className="fixed inset-0 z-[60] bg-card overflow-y-auto overscroll-contain"
-              style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ duration: 0.34, ease: [0.32, 0.72, 0, 1] }}
-            >
+          {selectedTool && !isSearching && isMobile &&
+          <motion.div
+            key="ws-mobile"
+            className="fixed inset-0 z-[60] bg-card overflow-y-auto overscroll-contain"
+            style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ duration: 0.34, ease: [0.32, 0.72, 0, 1] }}>
+            
               <ToolWorkspace tool={selectedTool} onBack={clearTool} />
             </motion.div>
-          )}
+          }
         </AnimatePresence>,
         document.body
       )}
-    </section>
-  );
+    </section>);
+
 }
 
 // ---------- App Store Banner & Quick Links (Footer block from screenshot) ----------
@@ -468,19 +468,19 @@ function AppStoreSection() {
           </div>
         </AnimatedElement>
       </div>
-    </section>
-  );
+    </section>);
+
 }
 
 // ---------- Why iyadel & About Content ----------
 function WhySection() {
   const { t } = useI18n();
   const features = [
-    { icon: Coins, title: "Completely free", desc: "no registration or payment required." },
-    { icon: ShieldQuestion, title: "Secure & private", desc: "all processing happens in your browser, no data is uploaded to any server." },
-    { icon: Layers, title: "Works on all devices", desc: "mobile, tablet, or desktop." },
-    { icon: Zap, title: "Tools", desc: "Finance, Health, Converters, Math, Brain Games, and Image Tools." },
-  ];
+  { icon: Coins, title: "Completely free", desc: "no registration or payment required." },
+  { icon: ShieldQuestion, title: "Secure & private", desc: "all processing happens in your browser, no data is uploaded to any server." },
+  { icon: Layers, title: "Works on all devices", desc: "mobile, tablet, or desktop." },
+  { icon: Zap, title: "Tools", desc: "Finance, Health, Converters, Math, Brain Games, and Image Tools." }];
+
   return (
     <section id="why" className="bg-background pb-16">
       <div className="max-w-5xl mx-auto px-6">
@@ -496,8 +496,8 @@ function WhySection() {
             </p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {features.map((f, i) => (
-                <div key={f.title} className="rounded-2xl bg-background border border-border p-6 hover:-translate-y-1 hover:border-primary/30 transition-all duration-300">
+              {features.map((f, i) =>
+              <div key={f.title} className="rounded-2xl bg-background border border-border p-6 hover:-translate-y-1 hover:border-primary/30 transition-all duration-300">
                   <div className="flex items-start gap-3">
                     <f.icon className="w-5 h-5 text-accent mt-0.5 shrink-0" />
                     <div>
@@ -506,7 +506,7 @@ function WhySection() {
                     </div>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
             
             <p className="text-sm text-muted-foreground mt-10 italic">
@@ -515,15 +515,15 @@ function WhySection() {
           </div>
         </AnimatedElement>
       </div>
-    </section>
-  );
+    </section>);
+
 }
 
 // ---------- Blog teaser ----------
 function BlogTeaser() {
   const { t } = useI18n();
   const [posts, setPosts] = useState([]);
-  useEffect(() => { BlogPostEntity.list("-created_date", 3).then(setPosts).catch(() => {}); }, []);
+  useEffect(() => {BlogPostEntity.list("-created_date", 3).then(setPosts).catch(() => {});}, []);
   const published = posts.filter((p) => (p.status || "published") === "published");
   const items = (published.length > 0 ? published : STATIC_BLOG).slice(0, 3);
 
@@ -541,8 +541,8 @@ function BlogTeaser() {
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {items.map((post, i) => (
-                <Link key={post.title} to="/Blog" className="block h-full rounded-[2rem] bg-background border border-border overflow-hidden hover:-translate-y-2 hover:shadow-xl hover:border-primary/30 transition-all duration-400 group">
+              {items.map((post, i) =>
+              <Link key={post.title} to="/Blog" className="block h-full rounded-[2rem] bg-background border border-border overflow-hidden hover:-translate-y-2 hover:shadow-xl hover:border-primary/30 transition-all duration-400 group">
                   <div className="aspect-[16/9] overflow-hidden">
                     <img src={post.image_url} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   </div>
@@ -553,13 +553,13 @@ function BlogTeaser() {
                     <span className="text-xs font-medium text-muted-foreground/70 mt-5 block uppercase tracking-wider">{post.date}</span>
                   </div>
                 </Link>
-              ))}
+              )}
             </div>
           </div>
         </AnimatedElement>
       </div>
-    </section>
-  );
+    </section>);
+
 }
 
 
@@ -569,7 +569,7 @@ export default function Home() {
   useSeo({
     title: "Free Online Calculators, Converters & Image Tools",
     description: "Free online tools: loan & interest calculators, BMI & calorie trackers, unit converters, QR generator, image cropper, compressor & background remover. Fast, private, no signup.",
-    path: "/",
+    path: "/"
   });
   return (
     <div className="min-h-screen bg-[#FFFBEB] dark:bg-[#1E1B4B] transition-colors duration-300 selection:bg-primary/30 selection:text-primary">
@@ -580,6 +580,6 @@ export default function Home() {
       <WhySection />
       <PrivacyTeaser />
       <BlogTeaser />
-    </div>
-  );
+    </div>);
+
 }
