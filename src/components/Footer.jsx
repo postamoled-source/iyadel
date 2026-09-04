@@ -28,7 +28,7 @@ export default function Footer() {
               <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" width={120} alt="Fazier badge" className="h-10 w-auto" />
             </a>
             <a href="https://submitaitools.org" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block">
-              <img src="https://submitaitools.org/static_submitaitools/images/submitaitools.png" alt="Submit AI Tools" style={{ borderRadius: "10px", width: "200px", height: "60px" }} />
+              <img src="https://media.base44.com/images/public/6a7e76e3396b41955b675542/093bd4c0f_generated_402c6f71.png" alt="Submit AI Tools" style={{ borderRadius: "10px", width: "200px", height: "60px" }} />
             </a>
           </div>
         </div>
@@ -71,6 +71,6 @@ export default function Footer() {
           {t("2026 iyadel — All Rights Reserved")}
         </div>
       </div>
-    </footer>
-  );
+    </footer>);
+
 }
