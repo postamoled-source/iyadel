@@ -4,6 +4,10 @@ import { mathEngine } from "@/lib/math-engine";
 import {
   NumInput, TxtInput, SelectField, ResultCard, ResultCircle, InsightBox, TipBox, CalcButton,
 } from "@/components/tools/ToolUI";
+import {
+  BasicKeypad, ScientificKeypad, FractionVisual, StatsVisual, GeometryVisual,
+  ParabolaVisual, DivisorVisual, PermCombVisual,
+} from "@/components/tools/MathVisuals";
 
 function ErrorResult({ msg }) {
   return (
@@ -22,6 +26,8 @@ export default function MathTools({ slug }) {
   useEffect(() => { setInputs({}); setResult(null); setBusy(false); }, [slug]);
 
   const set = (k) => (e) => { setInputs((p) => ({ ...p, [k]: e.target.value })); setResult(null); };
+  const press = (k) => { setInputs((p) => ({ ...p, expr: (p.expr || "") + k })); setResult(null); };
+  const clearExpr = () => { setInputs((p) => ({ ...p, expr: "" })); setResult(null); };
 
   const runCalc = (compute) => {
     setBusy(true);
@@ -51,6 +57,7 @@ export default function MathTools({ slug }) {
         <>
           <TxtInput label={t("Expression")} value={inputs.expr} onChange={set("expr")} placeholder="2 + 3 * 4" />
           <p className="text-xs text-muted-foreground mt-2 ml-1">{t("Supports")} +, −, ×, ÷, ( )</p>
+          <BasicKeypad expr={inputs.expr} onKey={press} onClear={clearExpr} onEquals={() => runCalc(calc)} />
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
           {res(r, () => (
             <ResultCard title={t("Result")}>
@@ -72,6 +79,7 @@ export default function MathTools({ slug }) {
         <>
           <TxtInput label={t("Expression")} value={inputs.expr} onChange={set("expr")} placeholder="sin(pi/2) + 2^3" />
           <p className="text-xs text-muted-foreground mt-2 ml-1">{t("Supports")} sin, cos, tan, sqrt, ln, log, ^, π, e</p>
+          <ScientificKeypad expr={inputs.expr} onKey={press} onClear={clearExpr} onEquals={() => runCalc(calc)} />
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
           {res(r, () => (
             <ResultCard title={t("Result")}>
@@ -100,6 +108,7 @@ export default function MathTools({ slug }) {
             <NumInput label={t("Numerator 2")} value={inputs.c} onChange={set("c")} placeholder="3" />
             <NumInput label={t("Denominator 2")} value={inputs.d} onChange={set("d")} placeholder="4" />
           </div>
+          <FractionVisual a={inputs.a} b={inputs.b} c={inputs.c} d={inputs.d} op={inputs.op || "add"} />
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
           {res(r, () => (
             <ResultCard title={t("Result")}>
@@ -127,6 +136,7 @@ export default function MathTools({ slug }) {
       return (
         <>
           <TxtInput label={t("Numbers (comma-separated)")} value={inputs.numbers} onChange={set("numbers")} placeholder="5, 10, 15, 20, 25" />
+          <StatsVisual numbers={inputs.numbers} />
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
           {res(r, () => (
             <ResultCard title={t("Statistics")}>
@@ -167,6 +177,7 @@ export default function MathTools({ slug }) {
             {needB && <NumInput label={t("b")} value={inputs.b} onChange={set("b")} placeholder={ph[mode][1]} />}
             {needC && <NumInput label={t("c")} value={inputs.c} onChange={set("c")} placeholder="depth" />}
           </div>
+          <GeometryVisual type={mode} a={inputs.a} b={inputs.b} c={inputs.c} />
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
           {res(r, () => (
             <ResultCard title={t(r.label)}>
@@ -196,6 +207,7 @@ export default function MathTools({ slug }) {
             <NumInput label="c" value={inputs.c} onChange={set("c")} placeholder="2" />
           </div>
           <p className="text-xs text-muted-foreground mt-2 ml-1">{t("Solves")} ax² + bx + c = 0</p>
+          <ParabolaVisual a={inputs.a} b={inputs.b} c={inputs.c} />
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Solve")}</CalcButton></div>
           {res(r, () => (
             <ResultCard title={t("Solution")}>
@@ -217,6 +229,7 @@ export default function MathTools({ slug }) {
       return (
         <>
           <TxtInput label={t("Numbers (comma-separated)")} value={inputs.numbers} onChange={set("numbers")} placeholder="12, 18, 24" />
+          <DivisorVisual numbers={inputs.numbers} />
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
           {res(r, () => (
             <ResultCard title={t("Result")}>
@@ -249,6 +262,7 @@ export default function MathTools({ slug }) {
             <NumInput label="r" value={inputs.r} onChange={set("r")} placeholder="2" />
           </div>
           <p className="text-xs text-muted-foreground mt-2 ml-1">{t("nPr = ordered arrangements · nCr = unordered selections")}</p>
+          <PermCombVisual n={inputs.n} r={inputs.r} />
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
           {res(r, () => (
             <ResultCard title={t("Result")}>
