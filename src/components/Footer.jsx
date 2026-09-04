@@ -11,7 +11,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <img src={LOGO_URL} alt="iyadel" className="w-9 h-9 rounded-xl object-cover" />
+            <img src="https://media.base44.com/images/public/6a7e76e3396b41955b675542/0d65d3bca_generated_8ca21047.png" alt="iyadel" className="w-9 h-9 rounded-xl object-cover" />
             <span className="font-bold text-lg text-background">{t("iyadel Platform")}</span>
           </div>
           <p className="text-sm text-background/70 mb-6 leading-relaxed">
