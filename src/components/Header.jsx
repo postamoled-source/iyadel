@@ -59,7 +59,7 @@ export default function Header() {
             onChange={(v) => setLang(v)}
             options={LANG_OPTIONS}
             placeholder="🇬🇧 English"
-            leading={<Globe className="w-4 h-4 text-[hsl(var(--destructive))]" />}
+            leading={<Globe className="w-4 h-4 text-[hsl(var(--primary))]" />}
             triggerClassName="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 h-auto w-auto min-w-0 text-xs font-medium text-card-foreground shadow-none focus:ring-0 hover:border-primary/50 transition-all duration-300" />
           
 
