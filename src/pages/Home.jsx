@@ -119,7 +119,7 @@ function HeroSection({ catCount, searchQuery, onSearchChange }) {
 
           <div className="flex items-center justify-center gap-4 mb-6" style={{ animation: "floatC 6s ease-in-out infinite" }}>
             <Logo />
-            <h1 className="text-4xl md:text-6xl tracking-tight from-[#6D28D9] to-[#F59E0B] bg-clip-text text-transparent animate-gradient-x font-normal [font-family:'Segoe_UI',_sans-serif] not-italic text-right">iyadel
+            <h1 className="text-4xl md:text-6xl tracking-tight from-[#6D28D9] to-[#F59E0B] bg-clip-text text-transparent animate-gradient-x font-normal not-italic text-center [font-family:'Abril_Fatface',_system-ui]">iyadel
 
             </h1>
           </div>
