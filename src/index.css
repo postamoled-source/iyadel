@@ -35,6 +35,13 @@
   font-display: swap;
   src: url('https://media.base44.com/files/public/builder-assets/wix-fonts/adobe-caslon-400-normal.woff2') format('woff2');
 }
+@font-face {
+  font-family: 'American Typewriter';
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  src: url('https://media.base44.com/files/public/builder-assets/wix-fonts/american-typewriter-300-normal.woff2') format('woff2');
+}
 /* base44-workspace-fonts:end */
 
 @tailwind base;
