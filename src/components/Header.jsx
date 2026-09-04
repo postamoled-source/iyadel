@@ -39,7 +39,7 @@ export default function Header() {
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
         {/* Left: Navigation (desktop) */}
         <nav className="hidden sm:flex items-center gap-6 select-none">
-          <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t("Home")}</Link>
+          <Link to="/" className="text-sm font-medium hover:text-primary transition-colors text-[hsl(var(--primary))]">{t("Home")}</Link>
           <Link to="/Blog" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t("Blog")}</Link>
           <Link to="/About" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t("About Us")}</Link>
         </nav>
