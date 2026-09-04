@@ -16,7 +16,7 @@ export const TOOLS_SEO = {
     ],
   },
   "math-function-calculator": {
-    title: "Math Function Calculator - Plot f(x) Graph Online Free [2026]",
+    title: "Plot f(x) Instantly & Zoom — Free Graph Tool",
     metaDescription: "Plot f(x) like sin(x), x^2-1, log(x) instantly. Graph calculator with zoom, table, domain & range. Free online, no signup.",
     h1: "Math Function Calculator - Plot f(x)",
     keywords: "math function calculator, graph calculator, plot f(x) online, function grapher",
@@ -64,7 +64,7 @@ export const TOOLS_SEO = {
     ],
   },
   "image-compressor": {
-    title: "Image Compressor - Reduce Size 90% Without Losing Quality",
+    title: "Shrink Images 90% in Seconds — Keep Full Quality",
     metaDescription: "Compress JPG, PNG, WEBP up to 90% while keeping quality. Bulk compress 50 images, browser-based, private. Free, no limit.",
     h1: "Image Compressor - 90% Smaller",
     keywords: "image compressor, compress jpg, reduce image size, bulk photo compression",
@@ -136,7 +136,7 @@ export const TOOLS_SEO = {
     ],
   },
   "area-converter": {
-    title: "Area Converter - Sq Meters to Sq Feet, Acres, Hectares Fast",
+    title: "Convert Area Instantly: m², ft², Acres & Hectares",
     metaDescription: "Convert area: sq meters to sq feet, acres, hectares, km2. Fast, free, accurate. Instant results, no signup.",
     h1: "Area Converter - All Units",
     keywords: "area converter, sq meters to sq feet, acre to hectare, land area conversion",
@@ -148,7 +148,7 @@ export const TOOLS_SEO = {
     ],
   },
   "distance-converter": {
-    title: "Distance Converter - Miles to KM, Meters to Feet & More",
+    title: "Convert Distance Fast: Miles, KM, Meters & Feet",
     metaDescription: "Convert miles to km, meters to feet, yards, inches. Fast and accurate distance converter. Free, no signup.",
     h1: "Distance Converter - Miles to KM",
     keywords: "distance converter, miles to km, meters to feet, length conversion",
@@ -172,7 +172,7 @@ export const TOOLS_SEO = {
     ],
   },
   "weight-converter": {
-    title: "Weight Converter - KG to LBS, Grams, Ounces & Tons",
+    title: "Convert Weight Instantly: KG, LBS, Grams & Ounces",
     metaDescription: "Convert kg to lbs, grams to ounces, tons. Fast weight converter for cooking, gym, shipping. Free, accurate.",
     h1: "Weight Converter - KG to LBS",
     keywords: "weight converter, kg to lbs, grams to ounces, mass conversion",
@@ -193,6 +193,30 @@ export const TOOLS_SEO = {
       { q: "Can I download the logo for free?", a: "Yes — once you are happy with the design, export it as a PNG straight from the canvas at no cost and with no sign-up." },
       { q: "Can I use the logo commercially?", a: "Yes. The generated logo is yours to use for your business, social media, and products, including commercial use." },
       { q: "Can I change colors and fonts after generating?", a: "Yes. The canvas lets you adjust colors, fonts, icon placement and size, so you can fine-tune the AI concept to match your exact brand palette." },
+    ],
+  },
+  "snake-game": {
+    title: "Play Snake Game — Grow Long, Beat Your High Score",
+    metaDescription: "Play the classic Snake game free in your browser. Grow the snake, avoid the walls, beat your high score. No download, no signup.",
+    h1: "Snake Game — Free Classic Arcade",
+    keywords: "snake game, play snake online, classic snake, free arcade game",
+    content: "Snake is the classic arcade game where you steer a growing snake around the board, eating food to get longer while avoiding the walls and your own tail. Every bite makes the snake longer and the game faster, so survival becomes a test of reflexes and planning. This version runs entirely in your browser — no download, no sign-up, no ads. Use the arrow keys or swipe on mobile, chase a new high score, and see how long you can grow.",
+    faqs: [
+      { q: "How do I control the snake?", a: "Use the arrow keys on desktop or swipe in the direction you want to go on mobile. The snake turns instantly — anticipate your next move before reaching a wall or your own tail." },
+      { q: "Why does the snake speed up?", a: "Each piece of food makes the snake longer and slightly faster, raising the difficulty. The longer you survive, the harder it gets to avoid yourself." },
+      { q: "Can I play Snake on my phone?", a: "Yes — the game is fully responsive and supports swipe controls on touch screens, with no app install required." },
+    ],
+  },
+  "game-2048": {
+    title: "Play 2048 Free — Merge Tiles & Reach the 2048 Tile",
+    metaDescription: "Play 2048 free in your browser. Merge matching tiles, plan your moves, reach the 2048 tile. No download, no signup, works on mobile.",
+    h1: "2048 Game — Free Puzzle Online",
+    keywords: "2048 game, play 2048 online, merge tiles game, free puzzle game",
+    content: "2048 is a sliding-tile puzzle: swipe to move all tiles at once, and when two tiles with the same number touch they merge into one with double the value. The goal is to keep merging until a tile shows 2048 — but you can keep going for a higher score. Every move matters, because a bad swipe can fill the board and end the game. This version runs in your browser with smooth animations, works on mobile with swipe gestures, and needs no download or sign-up.",
+    faqs: [
+      { q: "How do I play 2048?", a: "Use the arrow keys (or swipe on mobile) to slide all tiles in one direction. Two tiles with the same number merge into one tile of double the value. Reach the 2048 tile to win." },
+      { q: "What is the best 2048 strategy?", a: "Keep your largest tile pinned to one corner — usually the bottom-right — and build a descending chain toward it. Avoid moving in the direction that empties that corner." },
+      { q: "Can I keep playing after reaching 2048?", a: "Yes. Reaching 2048 is the classic goal, but you can continue merging toward 4096, 8192 and beyond for a higher score." },
     ],
   },
 };
