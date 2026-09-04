@@ -119,7 +119,7 @@ function HeroSection({ catCount, searchQuery, onSearchChange }) {
 
           <div className="flex items-center justify-center gap-4 mb-6" style={{ animation: "floatC 6s ease-in-out infinite" }}>
             <Logo />
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-[#6D28D9] to-[#F59E0B] bg-clip-text text-transparent animate-gradient-x">
+            <h1 className="text-4xl md:text-6xl tracking-tight from-[#6D28D9] to-[#F59E0B] bg-clip-text text-transparent animate-gradient-x font-normal [font-family:'Abril_Fatface',_system-ui]">
               iyadel
             </h1>
           </div>
@@ -323,7 +323,7 @@ function ToolsHub({ searchQuery = "" }) {
           }
         {showList && filtered.length > 0 &&
           <>
-        <h2 className="mt-6 mb-4 text-left text-[20px] text-[#111827] dark:text-[#FEF3C7] underline [font-family:'Cormorant',_serif] font-medium italic">{activeCategory === "Favorites" ? t("Favorites") : activeCategory === "All" ? t("All Tools") : `${t("Popular")} ${t(activeCategory)}`}</h2>
+        <h2 className="mt-6 mb-4 text-left text-[20px] text-[#111827] dark:text-[#FEF3C7] [font-family:'Cormorant',_serif] font-medium italic no-underline">{activeCategory === "Favorites" ? t("Favorites") : activeCategory === "All" ? t("All Tools") : `${t("Popular")} ${t(activeCategory)}`}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((tool, index) => {
                 const Icon = ICONS[tool.icon] || Calculator;
