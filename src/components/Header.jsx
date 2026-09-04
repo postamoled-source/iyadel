@@ -9,9 +9,9 @@ import MobileSelect from "./MobileSelect";
 import ProfileSheet from "./ProfileSheet";
 
 const LANG_OPTIONS = [
-  { value: "en", label: "🇬🇧 English" },
-  { value: "ar", label: "🇸🇦 العربية" },
-];
+{ value: "en", label: "🇬🇧 English" },
+{ value: "ar", label: "🇸🇦 العربية" }];
+
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
@@ -30,12 +30,12 @@ export default function Header() {
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 select-none ${
-        scrolled
-          ? "bg-background/95 backdrop-blur-md border-b border-border shadow-sm"
-          : "bg-transparent"
-      }`}
-      style={{ paddingTop: "env(safe-area-inset-top)" }}
-    >
+      scrolled ?
+      "bg-background/95 backdrop-blur-md border-b border-border shadow-sm" :
+      "bg-transparent"}`
+      }
+      style={{ paddingTop: "env(safe-area-inset-top)" }}>
+      
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
         {/* Left: Navigation (desktop) */}
         <nav className="hidden sm:flex items-center gap-6 select-none">
@@ -48,8 +48,8 @@ export default function Header() {
         <div className="hidden sm:flex items-center justify-end gap-3 ml-auto">
           <button
             onClick={toggleTheme}
-            className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-medium text-card-foreground hover:bg-muted transition-all duration-300 hover:border-primary/50 select-none"
-          >
+            className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-medium text-card-foreground hover:bg-muted transition-all duration-300 hover:border-primary/50 select-none">
+            
             {isDark ? <Moon className="w-4 h-4 text-primary" /> : <Sun className="w-4 h-4 text-accent" />}
             {isDark ? t("Dark Mode") : t("Light Mode")}
           </button>
@@ -59,9 +59,9 @@ export default function Header() {
             onChange={(v) => setLang(v)}
             options={LANG_OPTIONS}
             placeholder="🇬🇧 English"
-            leading={<Globe className="w-4 h-4 text-muted-foreground" />}
-            triggerClassName="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 h-auto w-auto min-w-0 text-xs font-medium text-card-foreground shadow-none focus:ring-0 hover:border-primary/50 transition-all duration-300"
-          />
+            leading={<Globe className="w-4 h-4 text-[hsl(var(--destructive))]" />}
+            triggerClassName="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 h-auto w-auto min-w-0 text-xs font-medium text-card-foreground shadow-none focus:ring-0 hover:border-primary/50 transition-all duration-300" />
+          
 
           <ProfileSheet />
         </div>
@@ -76,8 +76,8 @@ export default function Header() {
             <button
               onClick={toggleTheme}
               className="flex items-center justify-center w-9 h-9 rounded-full bg-card border border-border text-muted-foreground hover:text-primary hover:border-primary/50 transition-all duration-300 select-none"
-              aria-label={t("Toggle theme")}
-            >
+              aria-label={t("Toggle theme")}>
+              
               {isDark ? <Moon className="w-4 h-4 text-primary" /> : <Sun className="w-4 h-4 text-accent" />}
             </button>
             <MobileSelect
@@ -87,12 +87,12 @@ export default function Header() {
               placeholder="🇬🇧 English"
               showLabel={false}
               leading={<Globe className="w-4 h-4 text-muted-foreground" />}
-              triggerClassName="flex items-center justify-center w-9 h-9 rounded-full bg-card border border-border text-muted-foreground hover:text-primary hover:border-primary/50 transition-all duration-300 shadow-none focus:ring-0"
-            />
+              triggerClassName="flex items-center justify-center w-9 h-9 rounded-full bg-card border border-border text-muted-foreground hover:text-primary hover:border-primary/50 transition-all duration-300 shadow-none focus:ring-0" />
+            
             <ProfileSheet />
           </div>
         </div>
       </div>
-    </header>
-  );
+    </header>);
+
 }
