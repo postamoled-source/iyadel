@@ -36,7 +36,7 @@ export default function MathTools({ slug }) {
   const res = (r, node) => {
     if (!r) return null;
     if (r.error) return <ErrorResult msg={r.error} />;
-    return node;
+    return typeof node === "function" ? node() : node;
   };
 
   switch (slug) {
@@ -52,7 +52,7 @@ export default function MathTools({ slug }) {
           <TxtInput label={t("Expression")} value={inputs.expr} onChange={set("expr")} placeholder="2 + 3 * 4" />
           <p className="text-xs text-muted-foreground mt-2 ml-1">{t("Supports")} +, −, ×, ÷, ( )</p>
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
-          {res(r, (
+          {res(r, () => (
             <ResultCard title={t("Result")}>
               <ResultCircle value={r.value} />
               <TipBox>{t("Order of operations (PEMDAS) applies: parentheses, then ×÷, then +−.")}</TipBox>
@@ -73,7 +73,7 @@ export default function MathTools({ slug }) {
           <TxtInput label={t("Expression")} value={inputs.expr} onChange={set("expr")} placeholder="sin(pi/2) + 2^3" />
           <p className="text-xs text-muted-foreground mt-2 ml-1">{t("Supports")} sin, cos, tan, sqrt, ln, log, ^, π, e</p>
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
-          {res(r, (
+          {res(r, () => (
             <ResultCard title={t("Result")}>
               <ResultCircle value={r.value} />
               <TipBox>{t("Use π for pi, e for Euler's number, ^ for powers, sqrt() for square root.")}</TipBox>
@@ -101,7 +101,7 @@ export default function MathTools({ slug }) {
             <NumInput label={t("Denominator 2")} value={inputs.d} onChange={set("d")} placeholder="4" />
           </div>
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
-          {res(r, (
+          {res(r, () => (
             <ResultCard title={t("Result")}>
               <ResultCircle value={r.display} unit={t("Fraction")} sub={`= ${r.decimal}`} />
               <div className="mt-4 text-sm text-center text-[#1E1B4B] dark:text-[#FEF3C7]">{t("Simplified")}: <strong className="text-primary">{r.display}</strong> · {t("Decimal")}: <strong className="text-accent">{r.decimal}</strong></div>
@@ -128,7 +128,7 @@ export default function MathTools({ slug }) {
         <>
           <TxtInput label={t("Numbers (comma-separated)")} value={inputs.numbers} onChange={set("numbers")} placeholder="5, 10, 15, 20, 25" />
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
-          {res(r, (
+          {res(r, () => (
             <ResultCard title={t("Statistics")}>
               <ResultCircle value={r.mean} unit={t("Mean")} sub={`${r.count} ${t("values")}`} />
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -168,7 +168,7 @@ export default function MathTools({ slug }) {
             {needC && <NumInput label={t("c")} value={inputs.c} onChange={set("c")} placeholder="depth" />}
           </div>
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
-          {res(r, (
+          {res(r, () => (
             <ResultCard title={t(r.label)}>
               <ResultCircle value={r.value} />
               <TipBox>{t("Circle area uses π × r². Triangle area uses ½ × base × height.")}</TipBox>
@@ -197,7 +197,7 @@ export default function MathTools({ slug }) {
           </div>
           <p className="text-xs text-muted-foreground mt-2 ml-1">{t("Solves")} ax² + bx + c = 0</p>
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Solve")}</CalcButton></div>
-          {res(r, (
+          {res(r, () => (
             <ResultCard title={t("Solution")}>
               <div className="text-center text-lg font-bold text-foreground break-words">{rootsLabel}</div>
               <div className="mt-4 text-sm text-center text-[#1E1B4B] dark:text-[#FEF3C7]">{t("Discriminant")}: <strong className="text-accent">{r.discriminant}</strong></div>
@@ -218,7 +218,7 @@ export default function MathTools({ slug }) {
         <>
           <TxtInput label={t("Numbers (comma-separated)")} value={inputs.numbers} onChange={set("numbers")} placeholder="12, 18, 24" />
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
-          {res(r, (
+          {res(r, () => (
             <ResultCard title={t("Result")}>
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-2xl bg-background border border-border p-5 text-center">
@@ -250,7 +250,7 @@ export default function MathTools({ slug }) {
           </div>
           <p className="text-xs text-muted-foreground mt-2 ml-1">{t("nPr = ordered arrangements · nCr = unordered selections")}</p>
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
-          {res(r, (
+          {res(r, () => (
             <ResultCard title={t("Result")}>
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-2xl bg-background border border-border p-5 text-center">
@@ -303,7 +303,7 @@ export default function MathTools({ slug }) {
             {showSecond && mat("Matrix B", ["b11", "b12", "b21", "b22"])}
           </div>
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
-          {res(r, (
+          {res(r, () => (
             <ResultCard title={t("Result")}>
               {r.type === "determinant" ? (
                 <ResultCircle value={r.value} unit={t("Determinant")} />
