@@ -3,6 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
 import { motion } from "framer-motion";
 import { Globe, Volume2, Pencil, Heart, BookOpen, Play } from "lucide-react";
+import BeeMascot from "@/components/games/BeeMascot";
 
 export default function LanguageSection() {
   const { t, lang } = useI18n();
@@ -22,7 +23,7 @@ export default function LanguageSection() {
             <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
               <div className="shrink-0">
                 <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-[0_18px_40px_-12px_hsl(var(--primary)/0.5)]">
-                  <Globe className="w-16 h-16 text-white" strokeWidth={1.8} />
+                  <BeeMascot size={80} />
                 </div>
               </div>
               <div className="flex-1 text-center md:text-start">
