@@ -14,6 +14,7 @@ import GameMusicButton from "@/components/games/GameMusicButton";
 import PercentageCalculator from "@/components/tools/PercentageCalculator";
 import JpgToPngConverter from "@/components/tools/JpgToPngConverter";
 import ImageResizer from "@/components/tools/ImageResizer";
+import MathTools from "@/components/tools/MathTools";
 import { NumInput, TxtInput, FnInput, SelectField, RangeField, ResultCard, ResultCircle, InsightBox, TipBox, CalcButton } from "@/components/tools/ToolUI";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
@@ -1724,6 +1725,16 @@ export default function ToolCalculator({ slug }) {
         return <BallLauncher />;
       case "snake-game":
         return <SnakeGame />;
+      case "basic-calculator":
+      case "scientific-calculator":
+      case "fraction-calculator":
+      case "statistics-calculator":
+      case "geometry-calculator":
+      case "quadratic-solver":
+      case "gcd-lcm-calculator":
+      case "perm-comb-calculator":
+      case "matrix-calculator":
+        return <MathTools slug={slug} />;
       default:
         return (
           <div className="text-center py-10">

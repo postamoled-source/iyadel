@@ -11,6 +11,7 @@ import {
   Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent,
   Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown,
   Ticket, Wand2, Palette, Hammer, Crosshair, Spline, Maximize2, FileDown, Languages,
+  Pi, Divide, Sigma, Triangle, Hash, Grid3x3,
 } from "lucide-react";
 import Game2048 from "@/components/games/Game2048";
 import MemoryMatch from "@/components/games/MemoryMatch";
@@ -31,6 +32,7 @@ const ICONS = {
   Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom,
   FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket,
   Wand2, Palette, Hammer, Crosshair, Spline, Maximize2, FileDown, Languages,
+  Pi, Divide, Sigma, Triangle, Hash, Grid3x3,
 };
 
 // Tools whose interactive calculator is an importable component → embedded directly.
@@ -72,6 +74,15 @@ const EMBED = {
   "image-compressor": ToolCalculator,
   "image-enhancer": ToolCalculator,
   "logo-maker": ToolCalculator,
+  "basic-calculator": ToolCalculator,
+  "scientific-calculator": ToolCalculator,
+  "fraction-calculator": ToolCalculator,
+  "statistics-calculator": ToolCalculator,
+  "geometry-calculator": ToolCalculator,
+  "quadratic-solver": ToolCalculator,
+  "gcd-lcm-calculator": ToolCalculator,
+  "perm-comb-calculator": ToolCalculator,
+  "matrix-calculator": ToolCalculator,
 };
 
 const FORMULAS = {
@@ -90,6 +101,15 @@ const FORMULAS = {
   "area-converter": "result = value × (fromFactor ÷ toFactor)   [base: m²]",
   "time-converter": "result = value × (fromFactor ÷ toFactor)   [base: seconds]",
   "speed-converter": "result = value × (fromFactor ÷ toFactor)   [base: m/s]",
+  "basic-calculator": "result = expression  (PEMDAS order of operations)",
+  "scientific-calculator": "result = expression  (sin, cos, ln, ^, π, e)",
+  "fraction-calculator": "a/b op c/d → simplify by GCD",
+  "statistics-calculator": "mean = Σx ÷ n   |   std = √(Σ(x−mean)² ÷ (n−1))",
+  "geometry-calculator": "rect: l×w   |   circle: π·r²   |   tri: ½·b·h   |   cube: l·w·h",
+  "quadratic-solver": "x = (−b ± √(b²−4ac)) ÷ 2a",
+  "gcd-lcm-calculator": "GCD: Euclidean algorithm   |   LCM = (a × b) ÷ GCD",
+  "perm-comb-calculator": "nPr = n! ÷ (n−r)!   |   nCr = n! ÷ (r! × (n−r)!)",
+  "matrix-calculator": "det = a11·a22 − a12·a21",
 };
 
 const EXAMPLES = {
@@ -107,6 +127,15 @@ const EXAMPLES = {
   "area-converter": "1 acre → 0.4047 ha.",
   "time-converter": "1 hour → 3600 s.",
   "speed-converter": "100 km/h → 27.78 m/s.",
+  "basic-calculator": "2 + 3 × 4 → 14 (multiplication before addition).",
+  "scientific-calculator": "sin(π/2) + 2³ → 1 + 8 = 9.",
+  "fraction-calculator": "1/2 + 3/4 → 5/4 = 1.25.",
+  "statistics-calculator": "5, 10, 15, 20, 25 → mean 15, median 15.",
+  "geometry-calculator": "Circle radius 5 → area ≈ 78.54.",
+  "quadratic-solver": "x² − 5x + 6 = 0 → x = 2, x = 3.",
+  "gcd-lcm-calculator": "12, 18 → GCD 6, LCM 36.",
+  "perm-comb-calculator": "n=5, r=2 → nPr 20, nCr 10.",
+  "matrix-calculator": "det([[3,1],[5,2]]) → 1.",
 };
 
 function Section({ title, children }) {

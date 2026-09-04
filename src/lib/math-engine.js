@@ -36,8 +36,9 @@ export function calculateBasic(expression) {
 // ---------- 2. حساب علمي ----------
 export function calculateScientific(expression) {
   let e = String(expression)
+    .replace(/\bpi\b/gi, "Math.PI")
     .replace(/π/g, "Math.PI")
-    .replace(/e(?![xp])/g, "Math.E")
+    .replace(/\be\b/g, "Math.E")
     .replace(/\^/g, "**")
     .replace(/log10\(/g, "Math.log10(")
     .replace(/ln\(/g, "Math.log(")
