@@ -39,6 +39,7 @@ export const STATIC_TOOLS = [
     category: "Finance",
     description: "Fuel cost, gas mileage, horsepower, and engine HP — four automotive calculators in one tool.",
     icon: "Gauge",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/d5d3541bf_generated_image.png",
     content: "A suite of four essential automotive calculators. The Fuel Cost Calculator estimates trip cost from distance, consumption, fuel price, and passenger count. The Gas Mileage Calculator computes L/100km, km/L, and cost per km. The Horsepower Calculator converts force, distance, and time into watts, mechanical horsepower, and kilowatts. The Engine Horsepower Calculator uses the ET method or trap-speed method with metric or imperial units to estimate engine output in HP, kW, and PS.",
   },
   {
