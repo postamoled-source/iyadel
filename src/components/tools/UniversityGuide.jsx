@@ -255,38 +255,41 @@ export default function UniversityGuide() {
     setError(null);
     setSearched(true);
     setVisibleCount(PAGE_SIZE);
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
-    try {
-      const params = new URLSearchParams();
-      if (q.trim()) params.append("name", q.trim());
 
-      if (c) {
-        params.append("country", c);
-        const url = `https://universities.hipolabs.com/search?${params}`;
-        const res = await fetch(url, { signal: controller.signal });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        setResults(await res.json() || []);
-      } else {
-        // Fetch all target countries in parallel batches of 8
-        const batchSize = 8;
-        let all = [];
-        for (let i = 0; i < TARGET_COUNTRIES.length; i += batchSize) {
-          const batch = TARGET_COUNTRIES.slice(i, i + batchSize);
-          const promises = batch.map(async (ctry) => {
-            const url = `https://universities.hipolabs.com/search?name=${encodeURIComponent(q.trim())}&country=${encodeURIComponent(ctry)}`;
-            const r = await fetch(url, { signal: controller.signal });
-            if (!r.ok) return [];
-            return r.json().catch(() => []);
-          });
-          const batchResults = await Promise.all(promises);
-          all = all.concat(...batchResults);
-        }
-        setResults(all);
+    const nameParam = q.trim();
+    // Build a single API URL — one request only, no batch fetching
+    const params = new URLSearchParams();
+    if (nameParam) params.append("name", nameParam);
+    if (c) params.append("country", c);
+
+    const tryFetch = async (signal) => {
+      const url = `https://universities.hipolabs.com/search?${params.toString()}`;
+      const res = await fetch(url, { signal, headers: { Accept: "application/json" } });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      return Array.isArray(json) ? json : [];
+    };
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    try {
+      let data = await tryFetch(controller.signal);
+      // When no specific country selected, filter to only our target countries
+      if (!c) {
+        data = data.filter((u) => TARGET_COUNTRIES.includes(u.country));
       }
+      setResults(data);
     } catch (e) {
-      setError(e.name === "AbortError" ? "Request timed out" : (e.message || "fetch error"));
-      setResults([]);
+      // Retry once without timeout abort — the API can be slow on first hit
+      try {
+        let data = await tryFetch(AbortSignal.timeout(12000));
+        if (!c) data = data.filter((u) => TARGET_COUNTRIES.includes(u.country));
+        setResults(data);
+        setError(null);
+      } catch (e2) {
+        setError(e2.name === "TimeoutError" ? "Request timed out — please try again" : (e2.message || "fetch error"));
+        setResults([]);
+      }
     } finally {
       clearTimeout(timeout);
       setLoading(false);
