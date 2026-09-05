@@ -57,6 +57,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Find your healthy weight target (Devine formula).",
     icon: "Scale",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/33a765531_generated_image.png",
     content: "Ideal body weight is an estimate of a healthy weight range based on height and gender. The Devine formula, widely used in clinical settings, calculates a target weight and a ±5 kg healthy band around it. It is a useful reference point, but body composition — the ratio of muscle to fat — matters more than any single number. Pair this estimate with BMI and body-fat percentage for a fuller picture of a healthy weight for your frame.",
   },
   {
@@ -65,6 +66,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Estimate body fat % (US Navy method).",
     icon: "Bone",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/7ede743c1_generated_image.png",
     content: "Body-fat percentage measures the proportion of fat versus lean mass in your body — a more informative health marker than weight alone. The US Navy method estimates it from circumference measurements: waist, neck, and (for women) hip, combined with height. It is reasonably accurate for tracking changes over time when you measure consistently. For clinical precision, methods like DEXA or calipers are more reliable, but the Navy method is a convenient at-home estimate.",
   },
   {
@@ -73,6 +75,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "How much protein you need per day.",
     icon: "Drumstick",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/6d62b15eb_generated_image.png",
     content: "Protein is essential for building and repairing tissue, and your daily need depends on body weight, activity level, and fitness goal. Sedentary adults need about 0.8 g/kg to maintain health, while active individuals and athletes benefit from 1.2–2.2 g/kg depending on training intensity and whether the goal is to maintain, build muscle, or lose fat. Spreading protein across meals improves absorption and supports muscle protein synthesis throughout the day.",
   },
   {
@@ -81,6 +84,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Calculate daily carbohydrate intake.",
     icon: "Wheat",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0ef72b83c_generated_image.png",
     content: "Carbohydrates are the body's primary energy source, especially for the brain and during exercise. This calculator converts a percentage of your daily calories into grams of carbs — since each gram provides 4 calories. The recommended range is 45–65% of total calories for most people, though athletes may lean higher to fuel training. Choosing complex carbs (whole grains, vegetables, legumes) over refined sugars supports stable energy and better health.",
   },
   {
@@ -89,6 +93,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Calculate daily fat intake.",
     icon: "Droplet",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/d87fdfcc7_generated_image.png",
     content: "Dietary fat is vital for hormone production, nutrient absorption, and cell health. This calculator translates a percentage of your daily calories into grams of fat — each gram packs 9 calories, more than twice that of carbs or protein. A healthy range is 20–35% of total calories. The type of fat matters as much as the amount: prioritize unsaturated fats from olive oil, nuts, seeds, and fish, and limit saturated and trans fats for long-term health.",
   },
   {
@@ -97,6 +102,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Find your pace and speed from distance and time.",
     icon: "Footprints",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0c21fb203_generated_image.png",
     content: "Running pace measures how many minutes it takes to cover one kilometer (or mile). It is the key metric runners use to set targets and track progress. Pace equals total time divided by distance — a lower pace means you cover each unit faster. Knowing your pace helps you plan race strategies, estimate finish times, and train at the right intensity. Speed in km/h is the inverse view, useful for comparing with cycling or treadmill displays.",
   },
   {
@@ -105,6 +111,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Basal Metabolic Rate (Mifflin-St Jeor).",
     icon: "Flame",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/fd50842e5_generated_image.png",
     content: "Basal Metabolic Rate (BMR) is the energy your body burns at complete rest just to keep vital functions running — breathing, circulation, and cell repair. The Mifflin-St Jeor equation is the modern standard for estimating it from weight, height, age, and gender. BMR accounts for roughly 60–75% of daily calorie burn. Knowing it is the foundation for calculating total daily energy expenditure (TDEE) and planning nutrition for weight loss, maintenance, or gain.",
   },
   {
@@ -113,6 +120,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Total Daily Energy Expenditure.",
     icon: "Heart",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/aa76d576d_generated_image.png",
     content: "Total Daily Energy Expenditure (TDEE) is the number of calories you burn each day combining rest and activity. It is calculated by multiplying your BMR by an activity factor that reflects how active you are — from sedentary (1.2) to extra active (1.9). TDEE is the most useful single number for nutrition planning: eat below it to lose weight, at it to maintain, or above it to gain. Tracking intake against TDEE for a week reveals how your habits match your needs.",
   },
   {
@@ -121,6 +129,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Daily calorie needs: loss, maintenance, gain.",
     icon: "Salad",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/81e4cf839_generated_image.png",
     content: "Your daily calorie needs depend on your BMR and activity level. This calculator shows three targets: a deficit for weight loss (−500 kcal/day, roughly 0.5 kg/week), maintenance to keep your weight steady, and a surplus for gaining (+500 kcal/day). The Mifflin-St Jeor equation estimates BMR, which is then multiplied by your activity factor to get maintenance (TDEE). Use these as starting points and adjust based on real results over a few weeks of consistent tracking.",
   },
   {
@@ -265,6 +274,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Evaluate arithmetic expressions with order of operations.",
     icon: "Calculator",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/ea3c5a592_generated_image.png",
     content: "A basic arithmetic calculator evaluates expressions containing addition, subtraction, multiplication, and division while respecting the standard order of operations (PEMDAS). Parentheses override default precedence so you can group sub-expressions. This tool parses your expression safely and returns the exact result — useful for quick checks, homework, and accounting tasks where a phone calculator's linear input would mislead.",
   },
   {
@@ -273,6 +283,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Trigonometry, logarithms, powers and constants.",
     icon: "Pi",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/dc4959f3f_generated_image.png",
     content: "A scientific calculator extends basic arithmetic with trigonometric functions (sin, cos, tan), logarithms (ln, log), square roots, powers, and mathematical constants like π and e. This tool evaluates such expressions instantly, converting symbols like ^ into powers and π into Math.PI. It is ideal for students, engineers, and anyone working with formulas that go beyond simple arithmetic.",
   },
   {
@@ -281,6 +292,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Add, subtract, multiply and divide fractions.",
     icon: "Divide",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/148f7b51f_generated_image.png",
     content: "Fraction calculators perform arithmetic on two fractions and return the result in simplified form. Adding or subtracting requires a common denominator, while multiplication multiplies numerators and denominators directly, and division inverts the second fraction. The result is reduced to lowest terms by dividing by the greatest common divisor, and a decimal equivalent is shown for convenience.",
   },
   {
@@ -289,6 +301,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Mean, median, mode, variance and standard deviation.",
     icon: "Sigma",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/2514a1339_generated_image.png",
     content: "A statistics calculator summarizes a set of numbers with key measures: the mean (average), median (middle value), mode (most frequent), variance and standard deviation (spread), plus the range (min and max). These descriptive statistics are the foundation of data analysis. Standard deviation tells you how tightly the values cluster around the mean — a small value means consistent data, a large one means wide variation.",
   },
   {
@@ -297,6 +310,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Area and volume of common shapes.",
     icon: "Triangle",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/e16b68576_generated_image.png",
     content: "Geometry calculators compute the area of common 2D shapes and the volume of 3D solids from their dimensions. Rectangle area is length × width, circle area is π × radius², triangle area is ½ × base × height, and rectangular prism volume is length × width × height. These formulas are fundamental in construction, design, and education, giving exact measurements from simple inputs.",
   },
   {
@@ -305,6 +319,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Solve ax² + bx + c = 0 and find roots.",
     icon: "FunctionSquare",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/ee0bbb762_generated_image.png",
     content: "A quadratic equation has the form ax² + bx + c = 0. Its roots are found with the quadratic formula x = (−b ± √(b²−4ac)) ÷ 2a, where the discriminant (b²−4ac) determines the nature of the solutions: positive discriminant gives two distinct real roots, zero gives one repeated root, and negative gives two complex conjugate roots. This solver handles all three cases automatically.",
   },
   {
@@ -313,6 +328,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Greatest common divisor and least common multiple.",
     icon: "Hash",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/56983617b_generated_image.png",
     content: "The Greatest Common Divisor (GCD) is the largest integer that divides two or more numbers without remainder, while the Least Common Multiple (LCM) is the smallest integer that all of them divide evenly. GCD is used to simplify fractions, and LCM is used to find common denominators. Both are computed efficiently with the Euclidean algorithm, which repeatedly takes remainders until reaching zero.",
   },
   {
@@ -321,6 +337,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Calculate nPr and nCr instantly.",
     icon: "Shuffle",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/ee39ebc0c_generated_image.png",
     content: "Permutations (nPr) count the number of ordered arrangements of r items chosen from n, where order matters: nPr = n! ÷ (n−r)!. Combinations (nCr) count unordered selections where order does not matter: nCr = n! ÷ (r! × (n−r)!). These are central to probability, statistics, and combinatorics — for example, counting possible passwords, lottery outcomes, or committee selections.",
   },
   {
@@ -329,6 +346,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Add, subtract, multiply 2×2 matrices and find determinant.",
     icon: "Grid3x3",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/2dcb2d416_generated_image.png",
     content: "Matrix arithmetic operates on 2×2 matrices: addition and subtraction are element-wise, multiplication follows the dot-product rule, and the determinant of [[a,b],[c,d]] is ad − bc. The determinant reveals whether a matrix is invertible (non-zero) and appears in solving linear systems and transformations. This tool handles all four operations on two matrices.",
   },
   {
