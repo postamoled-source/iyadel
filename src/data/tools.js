@@ -3,7 +3,7 @@
 
 export const LOGO_URL = "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png";
 
-export const CATEGORIES = ["Finance", "Health", "Converters", "Math", "Games", "Image Tools"];
+export const CATEGORIES = ["Finance", "Health", "Converters", "Math", "Education", "Games", "Image Tools"];
 
 export const STATIC_TOOLS = [
   {
@@ -41,6 +41,15 @@ export const STATIC_TOOLS = [
     icon: "Gauge",
     logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/d5d3541bf_generated_image.png",
     content: "A suite of four essential automotive calculators. The Fuel Cost Calculator estimates trip cost from distance, consumption, fuel price, and passenger count. The Gas Mileage Calculator computes L/100km, km/L, and cost per km. The Horsepower Calculator converts force, distance, and time into watts, mechanical horsepower, and kilowatts. The Engine Horsepower Calculator uses the ET method or trap-speed method with metric or imperial units to estimate engine output in HP, kW, and PS.",
+  },
+  {
+    name: "University Guide",
+    slug: "university-guide",
+    category: "Education",
+    description: "Search thousands of universities across the US, Canada, Europe, China, Japan, South Korea, and Russia — with direct links and domain data.",
+    icon: "GraduationCap",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/c03aa4c5f_generated_image.png",
+    content: "A university search directory covering major institutions in the United States, Canada, Europe, China, Japan, South Korea, and Russia. Search by name or filter by country to find a university's official website, primary domain, and location. Data is sourced from the Hipolabs Universities API, which aggregates publicly available university domain information worldwide. This tool is useful for students researching study-abroad options, professionals verifying institutional credentials, or anyone exploring higher-education landscapes across these regions.",
   },
   {
     name: "BMI Calculator",
@@ -425,8 +434,9 @@ export const STATIC_TOOLS = [
     name: "Learn Languages (Vocab Quiz)",
     slug: "vocab-quiz",
     category: "Games",
-    description: "FluentBee-style lessons for 8 languages (English, Arabic, French, Spanish, Italian, German, Japanese, Portuguese) with a talking globe — vocab, listening, sentence building & typing, levels each.",
+    description: "FluentBee-style lessons for 8 languages (English, Arabic, French, Spanish, Italian, German, Japanese, Portuguese) with a friendly bee mascot — vocab, listening, sentence building & typing, levels each.",
     icon: "Languages",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/48d28db6a_generated_image.png",
     content: "A FluentBee-style language-learning game with a friendly bee mascot. Pick a language from the top menu — English, Arabic, French, Spanish, Italian, German, Japanese or Portuguese — then work through themed levels (greetings, family, numbers, colors, food, animals, routines, school, time, travel, weather & feelings, conversations), with 15 to 35 questions per level as you advance. Use the Swap feature to choose the language you learn and your own language — meanings and answers appear in your language, not just Arabic. Six exercise types: choose the Arabic meaning of a foreign word, listen to a spoken word and pick its meaning, complete the blank in a sentence, arrange cut-up words into a correct sentence, type the word in the target language, and understand phrases the character speaks. The browser's speech engine pronounces every word and sentence in the correct language, and the mascot praises you aloud on correct answers. Wrong answers send you back to the same question until you answer it correctly, so you can't advance to the next level without mastering every question. Five hearts, a streak bonus, and your best score per language is saved on your device. Everything runs in your browser — nothing is uploaded.",
   },
   {

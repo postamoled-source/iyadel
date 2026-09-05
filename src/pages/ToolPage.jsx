@@ -13,6 +13,7 @@ import {
   Ticket, Wand2, Palette, Hammer, Crosshair, Spline, Maximize2, FileDown, Languages,
   Pi, Divide, Sigma, Triangle, Hash, Grid3x3,
   Scale, Bone, Drumstick, Wheat, Droplet, Footprints, Heart, Salad,
+  GraduationCap,
 } from "lucide-react";
 import Game2048 from "@/components/games/Game2048";
 import MemoryMatch from "@/components/games/MemoryMatch";
@@ -24,6 +25,7 @@ import WordScrambleGame from "@/components/games/WordScrambleGame";
 import VocabQuizGame from "@/components/games/VocabQuizGame";
 import LoveCalculator from "@/components/games/LoveCalculator";
 import CarTools from "@/components/tools/CarTools";
+import UniversityGuide from "@/components/tools/UniversityGuide";
 import PercentageCalculator from "@/components/tools/PercentageCalculator";
 import JpgToPngConverter from "@/components/tools/JpgToPngConverter";
 import ImageResizer from "@/components/tools/ImageResizer";
@@ -37,6 +39,7 @@ const ICONS = {
   Wand2, Palette, Hammer, Crosshair, Spline, Maximize2, FileDown, Languages,
   Pi, Divide, Sigma, Triangle, Hash, Grid3x3,
   Scale, Bone, Drumstick, Wheat, Droplet, Footprints, Heart, Salad,
+  GraduationCap,
 };
 
 // Tools whose interactive calculator is an importable component → embedded directly.
@@ -51,6 +54,7 @@ const EMBED = {
   "vocab-quiz": VocabQuizGame,
   "love-calculator": LoveCalculator,
   "car-tools-suite": CarTools,
+  "university-guide": UniversityGuide,
   "percentage-calculator": PercentageCalculator,
   "jpg-to-png": JpgToPngConverter,
   "image-resizer": ImageResizer,

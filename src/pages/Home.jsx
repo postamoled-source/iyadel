@@ -16,7 +16,7 @@ import DomainInspector from "@/components/tools/DomainInspector";
 import PrivacyTeaser from "@/components/PrivacyTeaser";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, ArrowLeftRight, ChevronRight, ShieldQuestion, Coins, Layers, Zap, Box, Gift, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, Swords, Spline, Instagram, Facebook, Image as ImageIcon, Pencil, Maximize2, FileDown, Youtube, Globe, Pi, Divide, Sigma, Triangle, Hash, Grid3x3,
-  Scale, Bone, Drumstick, Wheat, Droplet, Footprints, Heart, Salad } from "lucide-react";
+  Scale, Bone, Drumstick, Wheat, Droplet, Footprints, Heart, Salad, GraduationCap } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { trackEvent, useSeo } from "@/lib/analytics";
 
@@ -28,7 +28,7 @@ const ICONS = {
   Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical,
   HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket, Wand2, Palette, Hammer, Crosshair, Swords, Spline, Maximize2, Youtube,
   Pi, Divide, Sigma, Triangle, Hash, Grid3x3,
-  Scale, Bone, Drumstick, Wheat, Droplet, Footprints, Heart, Salad
+  Scale, Bone, Drumstick, Wheat, Droplet, Footprints, Heart, Salad, GraduationCap
 };
 
 function ImageEditIcon() {
@@ -47,6 +47,7 @@ const CATEGORY_CARDS = [
 { label: "Health", cat: "Health", Icon: Activity },
 { label: "Converters", cat: "Converters", Icon: ArrowLeftRight },
 { label: "Math", cat: "Math", Icon: Calculator },
+{ label: "Education", cat: "Education", Icon: GraduationCap },
 { label: "Brain Games", cat: "Games", Icon: Puzzle },
 { label: "Image Tools", cat: "Image Tools", Icon: ImageEditIcon },
 { label: "PDF Tools", cat: "PDF Tools", Icon: FileDown, route: "/pdf-tools" },
@@ -574,7 +575,7 @@ export default function Home() {
   });
   return (
     <div className="min-h-screen bg-[#FFFBEB] dark:bg-[#1E1B4B] transition-colors duration-300 selection:bg-primary/30 selection:text-primary">
-      <HeroSection catCount={7} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <HeroSection catCount={8} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <LanguageSection />
       <ToolsHub searchQuery={searchQuery} />
       <DomainInspector />

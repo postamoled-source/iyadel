@@ -30,6 +30,7 @@ const AR = {
   "Health": "الصحة",
   "Converters": "المحولات",
   "Math": "الرياضيات",
+  "Education": "التعليم",
   "Games": "الألعاب",
   "Run": "جري",
   "RUN": "جري",
@@ -901,6 +902,10 @@ const AR = {
   // Car Tools Suite
   "Car Tools Suite": "مجموعة أدوات السيارات",
   "Fuel cost, gas mileage, horsepower, and engine HP — four automotive calculators in one tool.": "تكلفة الوقود، استهلاك المسافة، القدرة الحصانية، وقدرة المحرك — أربع حاسبات سيارات في أداة واحدة.",
+
+  // University Guide
+  "University Guide": "دليل الجامعات",
+  "Search thousands of universities across the US, Canada, Europe, China, Japan, South Korea, and Russia — with direct links and domain data.": "ابحث في آلاف الجامعات في أمريكا، كندا، أوروبا، الصين، اليابان، كوريا الجنوبية، وروسيا — مع روابط مباشرة وبيانات النطاق.",
 
   // Love Calculator game
   "Love Calculator": "حاسبة الحب",

@@ -229,29 +229,49 @@ function WordScramble({ className, style }) {
 
 function VocabQuiz({ className, style }) {
   return (
-    <svg viewBox="0 0 64 64" className={className} style={style}>
+    <svg viewBox="0 0 64 64" className={className} style={style} fill="none">
       <defs>
-        <radialGradient id="gmvqg" cx="38%" cy="32%" r="75%" fx="34%" fy="26%">
-          <stop offset="0%" stopColor="#a78bfa" />
-          <stop offset="55%" stopColor="#6D28D9" />
-          <stop offset="100%" stopColor="#3b2a8c" />
-        </radialGradient>
-        <linearGradient id="gmvqLand" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#fbbf24" />
+        <radialGradient id="gmbeeBody" cx="38%" cy="28%" r="80%" fx="32%" fy="20%">
+          <stop offset="0%" stopColor="#fef3c7" />
+          <stop offset="45%" stopColor="#fbbf24" />
           <stop offset="100%" stopColor="#b45309" />
+        </radialGradient>
+        <linearGradient id="gmbeeStripe" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#3b2a8c" />
+          <stop offset="100%" stopColor="#1e1b4b" />
         </linearGradient>
+        <radialGradient id="gmbeeWing" cx="40%" cy="30%" r="75%" fx="35%" fy="25%">
+          <stop offset="0%" stopColor="#e0e7ff" stopOpacity="0.9" />
+          <stop offset="60%" stopColor="#a78bfa" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#6D28D9" stopOpacity="0.3" />
+        </radialGradient>
       </defs>
-      <circle cx="32" cy="32" r="26" fill="url(#gmvqg)" />
-      <circle cx="32" cy="32" r="26" fill="none" stroke="#fff" strokeOpacity="0.18" strokeWidth="2" />
-      <path d="M10 28 q8 -5 14 0 q6 6 14 2 q6 -3 16 2" stroke="url(#gmvqLand)" strokeWidth="5" fill="none" strokeLinecap="round" />
-      <path d="M14 42 q10 4 18 -2 q8 -2 22 4" stroke="url(#gmvqLand)" strokeWidth="4" fill="none" strokeLinecap="round" />
-      <ellipse cx="22" cy="30" rx="4" ry="3" fill="url(#gmvqLand)" />
-      <ellipse cx="44" cy="38" rx="3.5" ry="3" fill="url(#gmvqLand)" />
-      <circle cx="27" cy="35" r="2.6" fill="#fff" />
-      <circle cx="37" cy="35" r="2.6" fill="#fff" />
-      <circle cx="28" cy="35.5" r="1.2" fill="#1e1b4b" />
-      <circle cx="38" cy="35.5" r="1.2" fill="#1e1b4b" />
-      <path d="M27 41 q5 4 10 0" stroke="#fff" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+      {/* wings */}
+      <ellipse cx="22" cy="22" rx="12" ry="9" fill="url(#gmbeeWing)" transform="rotate(-25 22 22)" />
+      <ellipse cx="42" cy="22" rx="12" ry="9" fill="url(#gmbeeWing)" transform="rotate(25 42 22)" />
+      <ellipse cx="22" cy="22" rx="12" ry="9" fill="none" stroke="#fff" strokeOpacity="0.4" strokeWidth="1" transform="rotate(-25 22 22)" />
+      <ellipse cx="42" cy="22" rx="12" ry="9" fill="none" stroke="#fff" strokeOpacity="0.4" strokeWidth="1" transform="rotate(25 42 22)" />
+      {/* body */}
+      <ellipse cx="32" cy="40" rx="16" ry="17" fill="url(#gmbeeBody)" />
+      {/* stripes */}
+      <path d="M18 36 q14 8 28 0" stroke="url(#gmbeeStripe)" strokeWidth="5" fill="none" strokeLinecap="round" />
+      <path d="M20 44 q12 6 24 0" stroke="url(#gmbeeStripe)" strokeWidth="5" fill="none" strokeLinecap="round" />
+      {/* belly highlight */}
+      <ellipse cx="28" cy="42" rx="6" ry="8" fill="#fff" opacity="0.25" />
+      {/* eyes */}
+      <circle cx="26" cy="33" r="3" fill="#fff" />
+      <circle cx="38" cy="33" r="3" fill="#fff" />
+      <circle cx="27" cy="34" r="1.5" fill="#1e1b4b" />
+      <circle cx="39" cy="34" r="1.5" fill="#1e1b4b" />
+      <circle cx="27.5" cy="33.5" r="0.5" fill="#fff" />
+      <circle cx="39.5" cy="33.5" r="0.5" fill="#fff" />
+      {/* smile */}
+      <path d="M27 40 q5 4 10 0" stroke="#1e1b4b" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+      {/* antennae */}
+      <path d="M28 25 q-2 -6 0 -9" stroke="#3b2a8c" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      <path d="M36 25 q2 -6 0 -9" stroke="#3b2a8c" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      <circle cx="28" cy="16" r="1.8" fill="#6D28D9" />
+      <circle cx="36" cy="16" r="1.8" fill="#6D28D9" />
     </svg>
   );
 }
