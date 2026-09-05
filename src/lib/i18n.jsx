@@ -905,7 +905,7 @@ const AR = {
 
   // University Guide
   "University Guide": "دليل الجامعات",
-  "Search thousands of universities across the US, Canada, Europe, China, Japan, South Korea, and Russia — with direct links and domain data.": "ابحث في آلاف الجامعات في أمريكا، كندا، أوروبا، الصين، اليابان، كوريا الجنوبية، وروسيا — مع روابط مباشرة وبيانات النطاق.",
+  "Discover the real cost of every US college — tuition, net price after aid, admission rates & graduation stats in one click.": "اكتشف التكلفة الحقيقية لكل كلية أمريكية — الرسوم وصافي التكلفة بعد المساعدات ونسب القبول والتخرج بنقرة واحدة.",
 
   // Love Calculator game
   "Love Calculator": "حاسبة الحب",

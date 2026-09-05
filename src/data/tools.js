@@ -46,10 +46,10 @@ export const STATIC_TOOLS = [
     name: "University Guide",
     slug: "university-guide",
     category: "Education",
-    description: "Search thousands of universities across the US, Canada, Europe, China, Japan, South Korea, and Russia — with direct links and domain data.",
+    description: "Discover the real cost of every US college — tuition, net price after aid, admission rates & graduation stats in one click.",
     icon: "GraduationCap",
     logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/c03aa4c5f_generated_image.png",
-    content: "A university search directory covering major institutions in the United States, Canada, Europe, China, Japan, South Korea, and Russia. Search by name or filter by country to find a university's official website, primary domain, and location. Data is sourced from the Hipolabs Universities API, which aggregates publicly available university domain information worldwide. This tool is useful for students researching study-abroad options, professionals verifying institutional credentials, or anyone exploring higher-education landscapes across these regions.",
+    content: "Your ultimate US college explorer. Search any American college or university and instantly uncover the real annual cost — tuition in-state and out-of-state, net price after grants and financial aid, admission rate, student body size, and graduation rate. Filter by state, compare schools side by side, and jump straight to each institution's official cost calculator and website. Data is sourced live from the US Department of Education's College Scorecard, so the numbers are official and up to date. Whether you are a student planning applications, a parent budgeting for tuition, or a counselor advising others, this tool turns scattered federal data into one clear, instant report.",
   },
   {
     name: "BMI Calculator",
