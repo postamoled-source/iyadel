@@ -1,6 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useI18n } from "@/lib/i18n";
-import { Search, ExternalLink, AlertCircle, Building2, Mail, Globe2, RefreshCw } from "lucide-react";
+import { getCountryData } from "@/data/university-data";
+import {
+  Search, ExternalLink, AlertCircle, Building2, Mail, Globe2, RefreshCw,
+  GraduationCap, FileText, DollarSign, CalendarClock, Stethoscope, Banknote,
+} from "lucide-react";
 
 const TARGET_COUNTRIES = [
   "United States", "Canada", "Russia", "China", "Japan", "South Korea",
@@ -15,22 +19,10 @@ const TARGET_COUNTRIES = [
   "Switzerland", "Ukraine", "United Kingdom", "Vatican City",
 ].sort((a, b) => a.localeCompare(b));
 
-const FLAGS = {
-  "United States": "🇺🇸", "Canada": "🇨🇦", "United Kingdom": "🇬🇧", "Germany": "🇩🇪",
-  "France": "🇫🇷", "Italy": "🇮🇹", "Spain": "🇪🇸", "Portugal": "🇵🇹",
-  "Netherlands": "🇳🇱", "Belgium": "🇧🇪", "Switzerland": "🇨🇭", "Austria": "🇦🇹",
-  "Sweden": "🇸🇪", "Norway": "🇳🇴", "Denmark": "🇩🇰", "Finland": "🇫🇮",
-  "Ireland": "🇮🇪", "Greece": "🇬🇷", "Russia": "🇷🇺", "Ukraine": "🇺🇦",
-  "Poland": "🇵🇱", "Czech Republic": "🇨🇿", "Hungary": "🇭🇺", "Romania": "🇷🇴",
-  "Bulgaria": "🇧🇬", "Serbia": "🇷🇸", "Croatia": "🇭🇷", "Slovenia": "🇸🇮",
-  "Slovakia": "🇸🇰", "Estonia": "🇪🇪", "Latvia": "🇱🇻", "Lithuania": "🇱🇹",
-  "China": "🇨🇳", "Japan": "🇯🇵", "South Korea": "🇰🇷",
-};
-
 const STR = {
   en: {
-    subtitle: "Search the largest universities in the US, Canada, Europe, China, Japan, South Korea, and Russia",
-    subtitleHint: "Accurate university info with direct links and domain data",
+    subtitle: "Search universities in the US, Canada, Europe, China, Japan, South Korea & Russia — with tuition costs & required documents",
+    subtitleHint: "Accurate university info with direct links, admission requirements & fees",
     nameLabel: "University Name",
     namePlaceholder: "e.g. Harvard, Oxford, Toronto, Tsinghua, Tokyo...",
     countryLabel: "Country",
@@ -39,7 +31,7 @@ const STR = {
     searching: "Searching...",
     results: "Results",
     countSuffix: "universities",
-    loading: "Searching for universities in selected countries...",
+    loading: "Searching for universities...",
     errorTitle: "An error occurred during search",
     errorRetry: "Please try again",
     retryBtn: "Retry",
@@ -58,10 +50,25 @@ const STR = {
     footerApi: "Hipolabs Universities API",
     footerCoverage: "Covers selected countries",
     footerUpdated: "Data is continuously updated",
+    tuitionIntl: "Tuition (International)",
+    tuitionDom: "Tuition (Domestic)",
+    livingCost: "Living Cost",
+    currency: "Currency",
+    documentsTitle: "Required Documents",
+    applicationPortal: "Application Portal",
+    visaInfo: "Visa Info",
+    academicYear: "Academic Year",
+    deadline: "Application Deadline",
+    showMore: "Show more documents",
+    showLess: "Show less",
+    countryInfo: "Country Admission Info",
+    loadMore: "Load more",
+    showing: "showing",
+    of: "of",
   },
   ar: {
-    subtitle: "ابحث في أكبر الجامعات في أمريكا، كندا، أوروبا، الصين، اليابان، كوريا الجنوبية، وروسيا",
-    subtitleHint: "معلومات دقيقة عن الجامعات مع روابط مباشرة وبيانات النطاق",
+    subtitle: "ابحث في جامعات أمريكا، كندا، أوروبا، الصين، اليابان، كوريا الجنوبية وروسيا — مع التكاليف والوثائق المطلوبة",
+    subtitleHint: "معلومات دقيقة عن الجامعات مع روابط مباشرة وشروط القبول والرسوم",
     nameLabel: "اسم الجامعة",
     namePlaceholder: "مثال: Harvard, Oxford, Toronto, Tsinghua, Tokyo...",
     countryLabel: "الدولة",
@@ -70,7 +77,7 @@ const STR = {
     searching: "جاري البحث...",
     results: "النتائج",
     countSuffix: "جامعة",
-    loading: "جاري البحث عن الجامعات في الدول المختارة...",
+    loading: "جاري البحث عن الجامعات...",
     errorTitle: "حدث خطأ أثناء البحث",
     errorRetry: "يرجى المحاولة مرة أخرى",
     retryBtn: "إعادة المحاولة",
@@ -89,8 +96,35 @@ const STR = {
     footerApi: "Hipolabs Universities API",
     footerCoverage: "تغطي الدول المختارة",
     footerUpdated: "يتم تحديث البيانات بشكل مستمر",
+    tuitionIntl: "الرسوم (أجانب)",
+    tuitionDom: "الرسوم (محليين)",
+    livingCost: "تكاليف المعيشة",
+    currency: "العملة",
+    documentsTitle: "الوثائق المطلوبة",
+    applicationPortal: "بوابة التقديم",
+    visaInfo: "معلومات التأشيرة",
+    academicYear: "السنة الدراسية",
+    deadline: "آخر موعد للتقديم",
+    showMore: "عرض المزيد من الوثائق",
+    showLess: "عرض أقل",
+    countryInfo: "معلومات القبول للدولة",
+    loadMore: "عرض المزيد",
+    showing: "عرض",
+    of: "من",
   },
 };
+
+function InfoRow({ icon: Icon, label, value, lang }) {
+  return (
+    <div className="flex items-start gap-2">
+      <Icon className="w-3.5 h-3.5 text-[#6D28D9] mt-0.5 shrink-0" />
+      <div className="flex-1 min-w-0">
+        <span className="text-[10px] font-semibold text-[#9CA3AF] dark:text-[#8B8AB0] uppercase tracking-wide block">{label}</span>
+        <span className="text-[12px] font-medium text-[#1E1B4B] dark:text-[#FEF3C7] break-words">{value}</span>
+      </div>
+    </div>
+  );
+}
 
 function UniversityCard({ school, s, lang }) {
   const name = school.name || (lang === "ar" ? "اسم غير معروف" : "Unknown");
@@ -101,17 +135,25 @@ function UniversityCard({ school, s, lang }) {
   const mainDomain = domains[0] || "";
   const mainWebPage = webPages[0] || "";
   const location = [country, stateProvince].filter(Boolean).join(lang === "ar" ? "، " : ", ");
-  const flag = FLAGS[country] || "🌍";
+  const cData = useMemo(() => getCountryData(country), [country]);
+  const [docsExpanded, setDocsExpanded] = useState(false);
+  const flag = cData.flag || "🌍";
+  const visibleDocs = docsExpanded ? cData.documents : cData.documents.slice(0, 4);
 
   return (
-    <div className="rounded-2xl bg-[#FFFEF5] dark:bg-[#2D2A5A] border border-[#FFE8A0] dark:border-[#4B3F8A] p-5 transition-all duration-200 hover:border-[#F59E0B] hover:shadow-[0_8px_30px_rgba(109,40,217,0.08)] hover:-translate-y-0.5">
-      <h4 className="text-[17px] font-bold text-[#1E1B4B] dark:text-[#FEF3C7] leading-tight">{name}</h4>
-      <p className="text-[13px] text-[#6B7280] dark:text-[#A8A6C4] mt-0.5 mb-3 flex items-center gap-1.5">
+    <div className="rounded-2xl bg-[#FFFEF5] dark:bg-[#2D2A5A] border border-[#FFE8A0] dark:border-[#4B3F8A] p-5 transition-all duration-200 hover:border-[#F59E0B] hover:shadow-[0_8px_30px_rgba(109,40,217,0.08)]">
+      {/* Header */}
+      <div className="flex items-start gap-2 mb-1">
+        <GraduationCap className="w-5 h-5 text-[#6D28D9] shrink-0 mt-0.5" />
+        <h4 className="text-[17px] font-bold text-[#1E1B4B] dark:text-[#FEF3C7] leading-tight flex-1">{name}</h4>
+      </div>
+      <p className="text-[13px] text-[#6B7280] dark:text-[#A8A6C4] mb-3 flex items-center gap-1.5 ml-7">
         <span className="text-base">{flag}</span>
-        {location || (lang === "ar" ? "📍 معلومات الموقع غير متوفرة" : "📍 Location info unavailable")}
+        {location || (lang === "ar" ? "📍 معلومات الموقع غير متوفرة" : "📍 Location unavailable")}
       </p>
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+      {/* Domain info */}
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 mb-3">
         <div className="flex flex-col">
           <span className="text-[10px] font-semibold text-[#9CA3AF] dark:text-[#8B8AB0] uppercase tracking-wide">{s.domainLabel}</span>
           {mainDomain ? (
@@ -122,21 +164,61 @@ function UniversityCard({ school, s, lang }) {
           <span className="text-[10px] font-semibold text-[#9CA3AF] dark:text-[#8B8AB0] uppercase tracking-wide">{s.domainsCountLabel}</span>
           <span className="text-[13px] font-medium text-[#1E1B4B] dark:text-[#FEF3C7]">{domains.length || 0}</span>
         </div>
-        {stateProvince && (
-          <div className="flex flex-col">
-            <span className="text-[10px] font-semibold text-[#9CA3AF] dark:text-[#8B8AB0] uppercase tracking-wide">{s.stateLabel}</span>
-            <span className="text-[13px] font-medium text-[#1E1B4B] dark:text-[#FEF3C7]">{stateProvince}</span>
-          </div>
+      </div>
+
+      {/* Costs section */}
+      <div className="rounded-xl bg-[#FFFBEB] dark:bg-[#1E1B4B] border border-[#FDE68A] dark:border-[#4B3F8A] p-3 mb-3 space-y-2">
+        <div className="flex items-center gap-1.5 mb-1">
+          <DollarSign className="w-3.5 h-3.5 text-[#F59E0B]" />
+          <span className="text-[11px] font-bold text-[#92400E] dark:text-[#FBBF24] uppercase tracking-wide">{s.countryInfo}: {flag} {country}</span>
+        </div>
+        <InfoRow icon={Banknote} label={s.tuitionIntl} value={cData.tuition_international} lang={lang} />
+        <InfoRow icon={Banknote} label={s.tuitionDom} value={cData.tuition_domestic} lang={lang} />
+        <InfoRow icon={Stethoscope} label={s.livingCost} value={cData.living_cost} lang={lang} />
+        <InfoRow icon={DollarSign} label={s.currency} value={cData.currency} lang={lang} />
+        <InfoRow icon={CalendarClock} label={s.academicYear} value={cData.academic_year} lang={lang} />
+        <InfoRow icon={CalendarClock} label={s.deadline} value={cData.deadline} lang={lang} />
+      </div>
+
+      {/* Documents section */}
+      <div className="rounded-xl bg-white dark:bg-[#1E1B4B] border border-[#E9D5FF] dark:border-[#4B3F8A] p-3 mb-3">
+        <div className="flex items-center gap-1.5 mb-2">
+          <FileText className="w-3.5 h-3.5 text-[#6D28D9]" />
+          <span className="text-[11px] font-bold text-[#6D28D9] uppercase tracking-wide">{s.documentsTitle}</span>
+        </div>
+        <ul className="space-y-1.5">
+          {visibleDocs.map((doc, i) => (
+            <li key={i} className="flex items-start gap-1.5 text-[12px] text-[#374151] dark:text-[#D6D2EE]">
+              <span className="text-[#F59E0B] mt-0.5 shrink-0">▸</span>
+              <span className="break-words">{doc}</span>
+            </li>
+          ))}
+        </ul>
+        {cData.documents.length > 4 && (
+          <button onClick={() => setDocsExpanded(!docsExpanded)} className="mt-2 text-[11px] font-semibold text-[#6D28D9] hover:underline">
+            {docsExpanded ? `▲ ${s.showLess}` : `▼ ${s.showMore} (${cData.documents.length})`}
+          </button>
         )}
       </div>
 
-      {domains.length > 0 && (
-        <p className="mt-2.5 text-[11px] text-[#9CA3AF] dark:text-[#8B8AB0]">
-          <span className="font-semibold">{s.domainsListLabel}:</span> {domains.join("، ")}
-        </p>
-      )}
+      {/* Portal & Visa links */}
+      <div className="grid grid-cols-1 gap-2 mb-3">
+        {cData.portal && (
+          <a href={cData.portal} target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#6D28D9] hover:underline break-all">
+            <Globe2 className="w-3.5 h-3.5 shrink-0" /> {s.applicationPortal}: {cData.portal.replace(/^https?:\/\//, "")}
+          </a>
+        )}
+        {cData.visa_link && (
+          <a href={cData.visa_link} target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#6D28D9] hover:underline break-all">
+            <FileText className="w-3.5 h-3.5 shrink-0" /> {s.visaInfo}: {cData.visa}
+          </a>
+        )}
+      </div>
 
-      <div className="mt-3 pt-3 border-t border-dashed border-[#E9D5FF] dark:border-[#4B3F8A] flex flex-wrap items-center justify-between gap-2">
+      {/* Footer */}
+      <div className="pt-3 border-t border-dashed border-[#E9D5FF] dark:border-[#4B3F8A] flex flex-wrap items-center justify-between gap-2">
         {mainWebPage ? (
           <a href={mainWebPage} target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#6D28D9] text-white text-[12px] font-semibold hover:bg-[#5B21B6] transition-colors">
@@ -155,6 +237,8 @@ function UniversityCard({ school, s, lang }) {
   );
 }
 
+const PAGE_SIZE = 20;
+
 export default function UniversityGuide() {
   const { lang } = useI18n();
   const s = STR[lang] || STR.en;
@@ -164,26 +248,47 @@ export default function UniversityGuide() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searched, setSearched] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const doSearch = useCallback(async (q, c) => {
     setLoading(true);
     setError(null);
     setSearched(true);
+    setVisibleCount(PAGE_SIZE);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
     try {
       const params = new URLSearchParams();
       if (q.trim()) params.append("name", q.trim());
-      if (c) params.append("country", c);
-      const url = `https://universities.hipolabs.com/search${params.toString() ? "?" + params : ""}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      let data = await res.json();
-      data = data || [];
-      if (!c) data = data.filter((u) => TARGET_COUNTRIES.includes(u.country));
-      setResults(data);
+
+      if (c) {
+        params.append("country", c);
+        const url = `https://universities.hipolabs.com/search?${params}`;
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        setResults(await res.json() || []);
+      } else {
+        // Fetch all target countries in parallel batches of 8
+        const batchSize = 8;
+        let all = [];
+        for (let i = 0; i < TARGET_COUNTRIES.length; i += batchSize) {
+          const batch = TARGET_COUNTRIES.slice(i, i + batchSize);
+          const promises = batch.map(async (ctry) => {
+            const url = `https://universities.hipolabs.com/search?name=${encodeURIComponent(q.trim())}&country=${encodeURIComponent(ctry)}`;
+            const r = await fetch(url, { signal: controller.signal });
+            if (!r.ok) return [];
+            return r.json().catch(() => []);
+          });
+          const batchResults = await Promise.all(promises);
+          all = all.concat(...batchResults);
+        }
+        setResults(all);
+      }
     } catch (e) {
-      setError(e.message || "fetch error");
+      setError(e.name === "AbortError" ? "Request timed out" : (e.message || "fetch error"));
       setResults([]);
     } finally {
+      clearTimeout(timeout);
       setLoading(false);
     }
   }, []);
@@ -192,17 +297,16 @@ export default function UniversityGuide() {
 
   const onSubmit = () => doSearch(query, country);
   const count = results?.length || 0;
+  const visibleResults = results ? results.slice(0, visibleCount) : [];
 
   return (
     <div className="w-full" dir={lang === "ar" ? "rtl" : "ltr"}>
-      {/* Subtitle */}
       <p className="text-center text-[13px] text-[#6B7280] dark:text-[#A8A6C4] mb-5 leading-relaxed pb-3 border-b border-[#E9D5FF] dark:border-[#4B3F8A]">
         <strong className="text-[#6D28D9]">{s.subtitle}</strong>
         <br />
         <span className="text-[11px] opacity-70">{s.subtitleHint}</span>
       </p>
 
-      {/* Search Section */}
       <div className="rounded-2xl bg-white/60 dark:bg-[#2D2A5A]/60 border border-[#FFE8A0] dark:border-[#4B3F8A] p-4 mb-5">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1 text-left">
@@ -228,7 +332,6 @@ export default function UniversityGuide() {
         </div>
       </div>
 
-      {/* Results Header */}
       <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
         <h3 className="text-[15px] font-bold text-[#111827] dark:text-[#FEF3C7] flex items-center gap-1.5">
           <Building2 className="w-4 h-4 text-[#6D28D9]" /> {s.results}
@@ -238,7 +341,6 @@ export default function UniversityGuide() {
         </span>
       </div>
 
-      {/* States */}
       {loading && (
         <div className="text-center py-12">
           <RefreshCw className="w-10 h-10 text-[#6D28D9] animate-spin mx-auto mb-3" />
@@ -250,7 +352,7 @@ export default function UniversityGuide() {
         <div className="text-center py-12">
           <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-2" />
           <p className="text-[14px] font-semibold text-red-600 dark:text-red-400">{s.errorTitle}</p>
-          <p className="text-[12px] text-[#6B7280] mt-1">{s.errorRetry}</p>
+          <p className="text-[12px] text-[#6B7280] mt-1">{error}</p>
           <button onClick={onSubmit} className="mt-4 inline-flex items-center gap-2 px-6 py-2 rounded-full bg-[#6D28D9] text-white font-semibold text-sm hover:bg-[#5B21B6] transition-colors">
             <RefreshCw className="w-4 h-4" /> {s.retryBtn}
           </button>
@@ -273,14 +375,22 @@ export default function UniversityGuide() {
         </div>
       )}
 
-      {/* Results Grid */}
       {!loading && !error && count > 0 && (
-        <div className="grid grid-cols-1 gap-3">
-          {results.map((school, i) => <UniversityCard key={i} school={school} s={s} lang={lang} />)}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-3">
+            {visibleResults.map((school, i) => <UniversityCard key={i} school={school} s={s} lang={lang} />)}
+          </div>
+          {visibleCount < count && (
+            <div className="text-center mt-4">
+              <button onClick={() => setVisibleCount(visibleCount + PAGE_SIZE)}
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#FFFBEB] dark:bg-[#2D2A5A] border-2 border-[#FDE68A] dark:border-[#4B3F8A] text-[#1E1B4B] dark:text-[#FEF3C7] font-semibold text-sm hover:border-[#F59E0B] transition-colors">
+                {s.loadMore} ({s.showing} {visibleCount} {s.of} {count})
+              </button>
+            </div>
+          )}
+        </>
       )}
 
-      {/* Footer */}
       <div className="mt-6 pt-4 border-t border-[#E9D5FF] dark:border-[#4B3F8A] text-center text-[10px] text-[#9CA3AF] flex justify-center gap-3 flex-wrap">
         <span>⚡ {s.footerData}</span>
         <a href="https://github.com/Hipo/university-domains-list" target="_blank" rel="noopener noreferrer" className="text-[#6D28D9] font-medium hover:underline">{s.footerApi}</a>
