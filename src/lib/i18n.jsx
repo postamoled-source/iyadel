@@ -897,6 +897,10 @@ const AR = {
   "TDEE = BMR × activity factor. Eat below it to lose weight, above it to gain.": "TDEE = BMR × معامل النشاط. كل أقل منه لخسارة الوزن، أكثر منه للزيادة.",
   "A 500 kcal/day deficit gives roughly 0.5 kg loss per week.": "عجز 500 سعرة/يوم يعطي خسارة ~0.5 كغ أسبوعيًا.",
   "Track intake for a week to see how it matches your calculated needs.": "تابع الاستهلاك لأسبوع لترى مدى مطابقته لاحتياجك المحسوب.",
+
+  // Love Calculator game
+  "Love Calculator": "حاسبة الحب",
+  "Enter two names and reveal your love compatibility percentage — a fun romantic game.": "أدخل اسمين واكتشف نسبة توافق الحب بينكما — لعبة رومانسية ممتعة.",
 };
 
 const I18nContext = createContext(null);

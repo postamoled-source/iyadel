@@ -421,6 +421,15 @@ export const STATIC_TOOLS = [
     content: "A FluentBee-style language-learning game with a friendly bee mascot. Pick a language from the top menu — English, Arabic, French, Spanish, Italian, German, Japanese or Portuguese — then work through themed levels (greetings, family, numbers, colors, food, animals, routines, school, time, travel, weather & feelings, conversations), with 15 to 35 questions per level as you advance. Use the Swap feature to choose the language you learn and your own language — meanings and answers appear in your language, not just Arabic. Six exercise types: choose the Arabic meaning of a foreign word, listen to a spoken word and pick its meaning, complete the blank in a sentence, arrange cut-up words into a correct sentence, type the word in the target language, and understand phrases the character speaks. The browser's speech engine pronounces every word and sentence in the correct language, and the mascot praises you aloud on correct answers. Wrong answers send you back to the same question until you answer it correctly, so you can't advance to the next level without mastering every question. Five hearts, a streak bonus, and your best score per language is saved on your device. Everything runs in your browser — nothing is uploaded.",
   },
   {
+    name: "Love Calculator",
+    slug: "love-calculator",
+    category: "Games",
+    description: "Enter two names and reveal your love compatibility percentage — a fun romantic game.",
+    icon: "Heart",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/b5bac92e9_generated_image.png",
+    content: "A Love Calculator is a fun, entertainment-only game that computes a 'compatibility percentage' between two people from their names. The algorithm multiplies the sum of each name's character codes, then takes the remainder modulo 100 — a playful pseudo-science result with no real basis. Colorful floating hearts and a countdown animation make the reveal feel magical. Share the result with friends for a laugh; it is designed purely for amusement and should never be taken seriously.",
+  },
+  {
     name: "Snake",
     slug: "snake-game",
     category: "Games",

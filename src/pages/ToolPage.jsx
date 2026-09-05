@@ -22,6 +22,7 @@ import SnakeGame from "@/components/games/SnakeGame";
 import MathPuzzleGame from "@/components/games/MathPuzzleGame";
 import WordScrambleGame from "@/components/games/WordScrambleGame";
 import VocabQuizGame from "@/components/games/VocabQuizGame";
+import LoveCalculator from "@/components/games/LoveCalculator";
 import PercentageCalculator from "@/components/tools/PercentageCalculator";
 import JpgToPngConverter from "@/components/tools/JpgToPngConverter";
 import ImageResizer from "@/components/tools/ImageResizer";
@@ -47,6 +48,7 @@ const EMBED = {
   "math-puzzle": MathPuzzleGame,
   "word-scramble": WordScrambleGame,
   "vocab-quiz": VocabQuizGame,
+  "love-calculator": LoveCalculator,
   "percentage-calculator": PercentageCalculator,
   "jpg-to-png": JpgToPngConverter,
   "image-resizer": ImageResizer,

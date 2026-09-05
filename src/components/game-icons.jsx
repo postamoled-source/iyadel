@@ -256,6 +256,28 @@ function VocabQuiz({ className, style }) {
   );
 }
 
+function Love({ className, style }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} style={style} fill="none">
+      <defs>
+        <radialGradient id="gmlove" cx="38%" cy="30%" r="78%" fx="32%" fy="22%">
+          <stop offset="0%" stopColor="#ffe4ec" />
+          <stop offset="50%" stopColor="#ff6b9d" />
+          <stop offset="100%" stopColor="#c81e5a" />
+        </radialGradient>
+        <linearGradient id="gmloveShine" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fff" />
+          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d="M32 54 C12 40 6 28 12 19 C18 11 28 13 32 21 C36 13 46 11 52 19 C58 28 52 40 32 54 Z" fill="url(#gmlove)" />
+      <path d="M32 50 C16 38 12 28 16 21 C20 16 27 18 30 24" fill="url(#gmloveShine)" opacity="0.55" />
+      <path d="M20 16 l1.5 3.5 M25 12 l1 3 M16 22 l3 1.5" stroke="#fde68a" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M44 14 l1.5 3.5 M49 16 l1 3" stroke="#fde68a" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 const MAP = {
   "snake-game": Snake,
   "game-2048": Game2048,
@@ -266,6 +288,7 @@ const MAP = {
   "math-puzzle": MathPuzzle,
   "word-scramble": WordScramble,
   "vocab-quiz": VocabQuiz,
+  "love-calculator": Love,
 };
 
 export default function GameIcon({ slug, className = "w-16 h-16" }) {
