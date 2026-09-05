@@ -34,6 +34,14 @@ export const STATIC_TOOLS = [
     content: "Bonds are debt instruments that pay a fixed coupon and return their face value at maturity. Current yield measures the annual coupon relative to the bond's current market price, while yield to maturity (YTM) estimates the total annualized return if you hold the bond until it matures. YTM accounts for both the coupon payments and any gain or loss from buying the bond at a discount or premium to its face value. Comparing these two figures helps you judge whether a bond is fairly priced relative to similar investments.",
   },
   {
+    name: "Car Tools Suite",
+    slug: "car-tools-suite",
+    category: "Finance",
+    description: "Fuel cost, gas mileage, horsepower, and engine HP — four automotive calculators in one tool.",
+    icon: "Gauge",
+    content: "A suite of four essential automotive calculators. The Fuel Cost Calculator estimates trip cost from distance, consumption, fuel price, and passenger count. The Gas Mileage Calculator computes L/100km, km/L, and cost per km. The Horsepower Calculator converts force, distance, and time into watts, mechanical horsepower, and kilowatts. The Engine Horsepower Calculator uses the ET method or trap-speed method with metric or imperial units to estimate engine output in HP, kW, and PS.",
+  },
+  {
     name: "BMI Calculator",
     slug: "bmi-calculator",
     category: "Health",

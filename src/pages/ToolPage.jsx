@@ -23,6 +23,7 @@ import MathPuzzleGame from "@/components/games/MathPuzzleGame";
 import WordScrambleGame from "@/components/games/WordScrambleGame";
 import VocabQuizGame from "@/components/games/VocabQuizGame";
 import LoveCalculator from "@/components/games/LoveCalculator";
+import CarTools from "@/components/tools/CarTools";
 import PercentageCalculator from "@/components/tools/PercentageCalculator";
 import JpgToPngConverter from "@/components/tools/JpgToPngConverter";
 import ImageResizer from "@/components/tools/ImageResizer";
@@ -49,6 +50,7 @@ const EMBED = {
   "word-scramble": WordScrambleGame,
   "vocab-quiz": VocabQuizGame,
   "love-calculator": LoveCalculator,
+  "car-tools-suite": CarTools,
   "percentage-calculator": PercentageCalculator,
   "jpg-to-png": JpgToPngConverter,
   "image-resizer": ImageResizer,
