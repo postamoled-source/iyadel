@@ -15,6 +15,7 @@ import PercentageCalculator from "@/components/tools/PercentageCalculator";
 import JpgToPngConverter from "@/components/tools/JpgToPngConverter";
 import ImageResizer from "@/components/tools/ImageResizer";
 import MathTools from "@/components/tools/MathTools";
+import HealthTools from "@/components/tools/HealthTools";
 import { NumInput, TxtInput, FnInput, SelectField, RangeField, ResultCard, ResultCircle, InsightBox, TipBox, CalcButton } from "@/components/tools/ToolUI";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, Legend } from "recharts";
 import { jsPDF } from "jspdf";
@@ -1735,6 +1736,16 @@ export default function ToolCalculator({ slug }) {
       case "perm-comb-calculator":
       case "matrix-calculator":
         return <MathTools slug={slug} />;
+      case "ideal-weight":
+      case "body-fat":
+      case "daily-protein":
+      case "daily-carbs":
+      case "daily-fat":
+      case "running-pace":
+      case "bmr-calculator":
+      case "tdee-calculator":
+      case "calorie-calculator":
+        return <HealthTools slug={slug} />;
       default:
         return (
           <div className="text-center py-10">

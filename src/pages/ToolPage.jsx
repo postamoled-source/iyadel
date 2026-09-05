@@ -12,6 +12,7 @@ import {
   Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown,
   Ticket, Wand2, Palette, Hammer, Crosshair, Spline, Maximize2, FileDown, Languages,
   Pi, Divide, Sigma, Triangle, Hash, Grid3x3,
+  Scale, Bone, Drumstick, Wheat, Droplet, Footprints, Heart, Salad,
 } from "lucide-react";
 import Game2048 from "@/components/games/Game2048";
 import MemoryMatch from "@/components/games/MemoryMatch";
@@ -33,6 +34,7 @@ const ICONS = {
   FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket,
   Wand2, Palette, Hammer, Crosshair, Spline, Maximize2, FileDown, Languages,
   Pi, Divide, Sigma, Triangle, Hash, Grid3x3,
+  Scale, Bone, Drumstick, Wheat, Droplet, Footprints, Heart, Salad,
 };
 
 // Tools whose interactive calculator is an importable component → embedded directly.
@@ -83,6 +85,15 @@ const EMBED = {
   "gcd-lcm-calculator": ToolCalculator,
   "perm-comb-calculator": ToolCalculator,
   "matrix-calculator": ToolCalculator,
+  "ideal-weight": ToolCalculator,
+  "body-fat": ToolCalculator,
+  "daily-protein": ToolCalculator,
+  "daily-carbs": ToolCalculator,
+  "daily-fat": ToolCalculator,
+  "running-pace": ToolCalculator,
+  "bmr-calculator": ToolCalculator,
+  "tdee-calculator": ToolCalculator,
+  "calorie-calculator": ToolCalculator,
 };
 
 const FORMULAS = {
@@ -110,6 +121,15 @@ const FORMULAS = {
   "gcd-lcm-calculator": "GCD: Euclidean algorithm   |   LCM = (a × b) ÷ GCD",
   "perm-comb-calculator": "nPr = n! ÷ (n−r)!   |   nCr = n! ÷ (r! × (n−r)!)",
   "matrix-calculator": "det = a11·a22 − a12·a21",
+  "ideal-weight": "Ideal = 50 + 2.3 × (height_in − 60)   [male]",
+  "body-fat": "US Navy: BF = 86.01·log₁₀(waist−neck) − 70.04·log₁₀(height) + 36.76",
+  "daily-protein": "Protein (g) = weight(kg) × factor",
+  "daily-carbs": "Carbs (g) = (calories × carb%) ÷ 4",
+  "daily-fat": "Fat (g) = (calories × fat%) ÷ 9",
+  "running-pace": "Pace = time ÷ distance   |   Speed = distance ÷ time",
+  "bmr-calculator": "BMR = 10·weight + 6.25·height − 5·age + s   [s=5 male, −161 female]",
+  "tdee-calculator": "TDEE = BMR × activity_factor",
+  "calorie-calculator": "Maintenance = TDEE   |   Loss = TDEE − 500   |   Gain = TDEE + 500",
 };
 
 const EXAMPLES = {
@@ -136,6 +156,15 @@ const EXAMPLES = {
   "gcd-lcm-calculator": "12, 18 → GCD 6, LCM 36.",
   "perm-comb-calculator": "n=5, r=2 → nPr 20, nCr 10.",
   "matrix-calculator": "det([[3,1],[5,2]]) → 1.",
+  "ideal-weight": "Male, 175 cm → ideal ≈ 70.4 kg (range 65.4–75.4).",
+  "body-fat": "Male, waist 80, neck 38, height 175 → ≈ 15.6% (Fitness).",
+  "daily-protein": "70 kg, active, build muscle → 112 g/day.",
+  "daily-carbs": "2000 kcal at 45% → 225 g carbs/day.",
+  "daily-fat": "2000 kcal at 30% → ≈ 66.7 g fat/day.",
+  "running-pace": "10 km in 50 min → pace 5.0 min/km, speed 12 km/h.",
+  "bmr-calculator": "Male, 30, 175 cm, 70 kg → BMR ≈ 1650 kcal.",
+  "tdee-calculator": "Male, 30, 175 cm, 70 kg, moderate → TDEE ≈ 2558 kcal.",
+  "calorie-calculator": "Maintenance 2558 → loss 2058, gain 3058 kcal.",
 };
 
 function Section({ title, children }) {

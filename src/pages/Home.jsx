@@ -15,7 +15,8 @@ import LanguageSection from "@/components/LanguageSection";
 import DomainInspector from "@/components/tools/DomainInspector";
 import PrivacyTeaser from "@/components/PrivacyTeaser";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
-import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, ArrowLeftRight, ChevronRight, ShieldQuestion, Coins, Layers, Zap, Box, Gift, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, Swords, Spline, Instagram, Facebook, Image as ImageIcon, Pencil, Maximize2, FileDown, Youtube, Globe, Pi, Divide, Sigma, Triangle, Hash, Grid3x3 } from "lucide-react";
+import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, ArrowLeftRight, ChevronRight, ShieldQuestion, Coins, Layers, Zap, Box, Gift, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, Swords, Spline, Instagram, Facebook, Image as ImageIcon, Pencil, Maximize2, FileDown, Youtube, Globe, Pi, Divide, Sigma, Triangle, Hash, Grid3x3,
+  Scale, Bone, Drumstick, Wheat, Droplet, Footprints, Heart, Salad } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { trackEvent, useSeo } from "@/lib/analytics";
 
@@ -26,7 +27,8 @@ const ICONS = {
   Calculator, TrendingUp, LineChart: LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight,
   Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical,
   HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, Ticket, Wand2, Palette, Hammer, Crosshair, Swords, Spline, Maximize2, Youtube,
-  Pi, Divide, Sigma, Triangle, Hash, Grid3x3
+  Pi, Divide, Sigma, Triangle, Hash, Grid3x3,
+  Scale, Bone, Drumstick, Wheat, Droplet, Footprints, Heart, Salad
 };
 
 function ImageEditIcon() {
