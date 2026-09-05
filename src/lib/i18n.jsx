@@ -947,3 +947,5 @@ export const useI18n = () => {
   if (!ctx) throw new Error("useI18n must be used within I18nProvider");
   return ctx;
 };
+
+if (import.meta.hot) import.meta.hot.decline();
