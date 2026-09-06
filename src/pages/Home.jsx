@@ -14,6 +14,7 @@ import ToolCalculator from "@/components/tools/ToolCalculator";
 import LanguageSection from "@/components/LanguageSection";
 import DomainInspector from "@/components/tools/DomainInspector";
 import PrivacyTeaser from "@/components/PrivacyTeaser";
+import PromoBanner from "@/components/PromoBanner";
 import { CATEGORIES, STATIC_TOOLS, LOGO_URL } from "@/data/tools";
 import { Calculator, TrendingUp, LineChart as LineChartIcon, Activity, Flame, DollarSign, Ruler, Weight, Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom, FlaskConical, HelpCircle, Puzzle, Shuffle, Crop, Eraser, FileImage, ImageDown, ArrowLeft, ArrowLeftRight, ChevronRight, ShieldQuestion, Coins, Layers, Zap, Box, Gift, Smartphone, Ticket, Search, X, Star, Wand2, Palette, Hammer, Crosshair, Swords, Spline, Instagram, Facebook, Image as ImageIcon, Pencil, Maximize2, FileDown, Youtube, Globe, Pi, Divide, Sigma, Triangle, Hash, Grid3x3,
   Scale, Bone, Drumstick, Wheat, Droplet, Footprints, Heart, Salad, GraduationCap } from "lucide-react";
@@ -575,6 +576,7 @@ export default function Home() {
   });
   return (
     <div className="min-h-screen bg-[#FFFBEB] dark:bg-[#1E1B4B] transition-colors duration-300 selection:bg-primary/30 selection:text-primary">
+      <PromoBanner />
       <HeroSection catCount={8} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <LanguageSection />
       <ToolsHub searchQuery={searchQuery} />
