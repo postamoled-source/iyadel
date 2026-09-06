@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, ArrowLeftRight, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -219,24 +220,28 @@ export default function PromoBanner() {
         </motion.div>
       )}
 
-      {/* floating toggle to re-show the banner after closing */}
-      <AnimatePresence>
-        {!visible && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.6, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.6 }}
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.94 }}
-            onClick={show}
-            aria-label="إظهار الإعلان / Show promo"
-            className="fixed top-4 right-4 z-[60] flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#6D28D9] to-[#7C3AED] text-[#FBBF24] shadow-[0_8px_24px_rgba(109,40,217,0.5)] ring-2 ring-[#FBBF24]/40"
-          >
-            <Sparkles className="h-5 w-5" />
-            <span className="absolute inset-0 rounded-full [animation:blink_1.6s_ease-in-out_infinite] ring-2 ring-[#FBBF24]/30" />
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {/* floating toggle to re-show the banner after closing (ported to body so it escapes any transformed ancestor) */}
+      {createPortal(
+        <AnimatePresence>
+          {!visible && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.6 }}
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.94 }}
+              onClick={show}
+              aria-label="إظهار الإعلان / Show promo"
+              style={{ position: "fixed", top: "1rem", right: "1rem", zIndex: 9999 }}
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#6D28D9] to-[#7C3AED] text-[#FBBF24] shadow-[0_8px_24px_rgba(109,40,217,0.5)] ring-2 ring-[#FBBF24]/40"
+            >
+              <Sparkles className="h-5 w-5" />
+              <span className="absolute inset-0 rounded-full [animation:blink_1.6s_ease-in-out_infinite] ring-2 ring-[#FBBF24]/30" />
+            </motion.button>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </AnimatePresence>
   );
 }
