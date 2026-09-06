@@ -159,6 +159,14 @@ export default function PromoBanner() {
 
             <div className="relative mx-auto flex max-w-6xl flex-col gap-2 px-4 py-2.5 sm:flex-row sm:items-center sm:gap-4">
               <div className="flex min-w-0 flex-1 items-center gap-2.5">
+                <motion.img
+                  src="https://media.base44.com/images/public/6a7e76e3396b41955b675542/119b4193b_796788088_1400521338814129_7628354999335043826_n.gif"
+                  alt="iyadel — Financial Calculator"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1, y: [0, -3, 0] }}
+                  transition={{ opacity: { delay: 0.15, duration: 0.5 }, scale: { delay: 0.15, duration: 0.5 }, y: { duration: 3, repeat: Infinity, ease: "easeInOut" } }}
+                  className="h-9 w-auto shrink-0 rounded-lg object-cover ring-1 ring-[#FBBF24]/60 shadow-[0_0_14px_rgba(251,191,36,0.45)]"
+                />
                 <motion.span
                   className="flex shrink-0 items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-extrabold text-[#FBBF24] ring-1 ring-[#FBBF24]/40 backdrop-blur-sm"
                   animate={{ boxShadow: ["0 0 0 0 rgba(251,191,36,0.5)", "0 0 0 6px rgba(251,191,36,0)", "0 0 0 0 rgba(251,191,36,0)"] }}
