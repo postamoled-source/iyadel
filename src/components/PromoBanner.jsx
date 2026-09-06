@@ -110,6 +110,21 @@ export default function PromoBanner() {
     if (tickTimer.current) clearInterval(tickTimer.current);
   };
 
+  const show = () => {
+    setRemaining(TOTAL_SECONDS);
+    msgIndex.current = 0;
+    charIndex.current = 0;
+    isDeleting.current = false;
+    setText("");
+    setVisible(true);
+    if (twTimer.current) clearTimeout(twTimer.current);
+    if (tickTimer.current) clearInterval(tickTimer.current);
+    tickTypewriter();
+    tickTimer.current = setInterval(() => {
+      setRemaining((r) => (r <= 0 ? 0 : r - 1));
+    }, 1000);
+  };
+
   return (
     <AnimatePresence>
       {visible && (
@@ -203,6 +218,25 @@ export default function PromoBanner() {
           `}</style>
         </motion.div>
       )}
+
+      {/* floating toggle to re-show the banner after closing */}
+      <AnimatePresence>
+        {!visible && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.6, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.6 }}
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.94 }}
+            onClick={show}
+            aria-label="إظهار الإعلان / Show promo"
+            className="fixed bottom-4 right-4 z-[60] flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#6D28D9] to-[#7C3AED] text-[#FBBF24] shadow-[0_8px_24px_rgba(109,40,217,0.5)] ring-2 ring-[#FBBF24]/40"
+          >
+            <Sparkles className="h-5 w-5" />
+            <span className="absolute inset-0 rounded-full [animation:blink_1.6s_ease-in-out_infinite] ring-2 ring-[#FBBF24]/30" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </AnimatePresence>
   );
 }
