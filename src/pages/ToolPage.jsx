@@ -3,6 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import { useSeo } from "@/lib/analytics";
 import { STATIC_TOOLS } from "@/data/tools";
 import { TOOLS_SEO } from "@/data/tools-seo";
+import { TOOL_TITLES } from "@/data/tool-titles";
 import { TOOL_GUIDES } from "@/data/tool-guides";
 import { TOOL_CONTENT_AR, TOOL_GUIDES_AR } from "@/data/translations-ar";
 import {
@@ -203,10 +204,12 @@ export default function ToolPage() {
   const tool = STATIC_TOOLS.find((x) => x.slug === slug);
   const seo = slug ? TOOLS_SEO[slug] : null;
   const useSeoCfg = !!(seo && lang !== "ar");
+  // Exciting high-CTR headline overrides every tool; " | iyadel" is appended.
+  const customTitle = slug ? TOOL_TITLES[slug] : null;
 
   useSeo({
-    title: useSeoCfg ? seo.title : (tool ? `${tool.name} — Free Online Tool` : "Tool not found"),
-    rawTitle: useSeoCfg,
+    title: customTitle || (useSeoCfg ? seo.title : (tool ? `${tool.name} — Free Online Tool` : "Tool not found")),
+    rawTitle: !customTitle,
     description: useSeoCfg
       ? seo.metaDescription
       : (tool ? (tool.description || (tool.content || "").slice(0, 150)) : "Tool not found"),
