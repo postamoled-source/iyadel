@@ -230,7 +230,7 @@ export default function PromoBanner() {
             whileTap={{ scale: 0.94 }}
             onClick={show}
             aria-label="إظهار الإعلان / Show promo"
-            className="fixed bottom-4 right-4 z-[60] flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#6D28D9] to-[#7C3AED] text-[#FBBF24] shadow-[0_8px_24px_rgba(109,40,217,0.5)] ring-2 ring-[#FBBF24]/40"
+            className="fixed top-4 right-4 z-[60] flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#6D28D9] to-[#7C3AED] text-[#FBBF24] shadow-[0_8px_24px_rgba(109,40,217,0.5)] ring-2 ring-[#FBBF24]/40"
           >
             <Sparkles className="h-5 w-5" />
             <span className="absolute inset-0 rounded-full [animation:blink_1.6s_ease-in-out_infinite] ring-2 ring-[#FBBF24]/30" />
