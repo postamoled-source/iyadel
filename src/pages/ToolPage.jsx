@@ -32,6 +32,7 @@ import JpgToPngConverter from "@/components/tools/JpgToPngConverter";
 import ImageResizer from "@/components/tools/ImageResizer";
 import ToolCalculator from "@/components/tools/ToolCalculator";
 import PageNotFound from "@/lib/PageNotFound";
+import ExploreAllTools from "@/components/ExploreAllTools";
 
 const ICONS = {
   Calculator: CalcIcon, TrendingUp, LineChart, Activity, Flame, DollarSign, Ruler, Weight,
@@ -366,6 +367,8 @@ export default function ToolPage() {
             })}
           </div>
         </Section>
+
+        <ExploreAllTools />
 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />

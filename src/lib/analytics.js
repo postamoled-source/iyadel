@@ -21,7 +21,9 @@ export function trackEvent(eventName, params = {}) {
 // Open Graph / Twitter tags per page. Pass `noindex: true` for private pages
 // (auth, admin) so search engines don't index them.
 const SITE_NAME = "iyadel";
+const SITE_SUFFIX = "iyadel - Explore All Free Tools";
 const SITE_URL = "https://iyadel.com";
+const DEFAULT_DESCRIPTION = "هذا الموقع يحتوي على أدوات تهمك في مجالات متعددة: مالية، صحية، رياضية، تحرير صور، وألعاب ذهنية. قم بزيارة الموقع واكتشف بنفسك!";
 
 function upsertMeta(selector, attrs) {
   let tag = document.querySelector(selector);
@@ -36,19 +38,19 @@ function upsertMeta(selector, attrs) {
 export function useSeo({ title, description, image, path, noindex, keywords, rawTitle } = {}) {
   useEffect(() => {
     const fullTitle = title
-      ? (rawTitle ? title : `${title} | ${SITE_NAME}`)
+      ? (rawTitle ? title : `${title} | ${SITE_SUFFIX}`)
       : `${SITE_NAME} — Free Online Calculators, Converters & Image Tools`;
     document.title = fullTitle;
+
+    const desc = description || DEFAULT_DESCRIPTION;
 
     if (keywords) {
       upsertMeta('meta[name="keywords"]', { name: "keywords", content: keywords });
     }
 
-    if (description) {
-      upsertMeta('meta[name="description"]', { name: "description", content: description });
-      upsertMeta('meta[property="og:description"]', { property: "og:description", content: description });
-      upsertMeta('meta[name="twitter:description"]', { name: "twitter:description", content: description });
-    }
+    upsertMeta('meta[name="description"]', { name: "description", content: desc });
+    upsertMeta('meta[property="og:description"]', { property: "og:description", content: desc });
+    upsertMeta('meta[name="twitter:description"]', { name: "twitter:description", content: desc });
 
     upsertMeta('meta[property="og:title"]', { property: "og:title", content: fullTitle });
     upsertMeta('meta[name="twitter:title"]', { name: "twitter:title", content: fullTitle });
