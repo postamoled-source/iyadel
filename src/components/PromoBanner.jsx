@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, X, ArrowLeftRight } from "lucide-react";
+import { Sparkles, X, ArrowLeftRight, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 const MESSAGES = [
@@ -19,7 +19,7 @@ const MESSAGES = [
   "✨ Image Enhancer — تحسين الصور",
   "🎨 Logo Maker — صانع الشعارات",
   "📊 Math Function Plotter — رسم الدوال",
-  "％ Percentage Calculator — النسبة المئوية",
+  "٪ Percentage Calculator — النسبة المئوية",
   "⚛️ Physics Calculators — حاسبات الفيزياء",
   "🧪 Chemistry Calculators — الكيمياء",
   "🧠 Brain Games — ألعاب العقل",
@@ -46,13 +46,12 @@ export default function PromoBanner() {
     if (!isDeleting.current) {
       charIndex.current++;
       if (charIndex.current >= current.length) {
-        // pause at full word
         if (twTimer.current) clearTimeout(twTimer.current);
+        setText(current.substring(0, charIndex.current));
         twTimer.current = setTimeout(() => {
           isDeleting.current = true;
           tickTypewriter();
-        }, 2200);
-        setText(current.substring(0, charIndex.current));
+        }, 2400);
         return;
       }
     } else {
@@ -62,12 +61,12 @@ export default function PromoBanner() {
         charIndex.current = 0;
         msgIndex.current = (msgIndex.current + 1) % MESSAGES.length;
         if (twTimer.current) clearTimeout(twTimer.current);
-        twTimer.current = setTimeout(tickTypewriter, 350);
+        twTimer.current = setTimeout(tickTypewriter, 400);
         return;
       }
     }
     setText(current.substring(0, charIndex.current));
-    const speed = isDeleting.current ? 45 : 95;
+    const speed = isDeleting.current ? 40 : 90;
     if (twTimer.current) clearTimeout(twTimer.current);
     twTimer.current = setTimeout(tickTypewriter, speed);
   }, []);
@@ -77,16 +76,14 @@ export default function PromoBanner() {
     tickTimer.current = setInterval(() => {
       setRemaining((r) => (r <= 0 ? 0 : r - 1));
     }, 1000);
-
     const onVisibility = () => {
       pausedRef.current = document.hidden;
-      if (!document.hidden && visible && remaining > 0) {
-        // resume typewriter
-        if (!twTimer.current) twTimer.current = setTimeout(tickTypewriter, 100);
+      if (!document.hidden && remaining > 0) {
+        if (twTimer.current) clearTimeout(twTimer.current);
+        twTimer.current = setTimeout(tickTypewriter, 120);
       }
     };
     document.addEventListener("visibilitychange", onVisibility);
-
     return () => {
       if (twTimer.current) clearTimeout(twTimer.current);
       if (tickTimer.current) clearInterval(tickTimer.current);
@@ -111,75 +108,99 @@ export default function PromoBanner() {
     setVisible(false);
     if (twTimer.current) clearTimeout(twTimer.current);
     if (tickTimer.current) clearInterval(tickTimer.current);
-    try { localStorage.setItem("iyadel_promo_dismissed", "1"); } catch {}
   };
-
-  useEffect(() => {
-    try {
-      if (localStorage.getItem("iyadel_promo_dismissed") === "1") setVisible(false);
-    } catch {}
-  }, []);
 
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: -24, height: 0 }}
+          animate={{ opacity: 1, y: 0, height: "auto" }}
           exit={{ opacity: 0, height: 0, marginTop: 0 }}
-          transition={{ duration: 0.45, ease: "easeOut" }}
-          className="relative w-full overflow-hidden bg-gradient-to-r from-[#6D28D9] via-[#7C3AED] to-[#4C1D95] text-white"
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           dir={isRTL ? "rtl" : "ltr"}
+          className="relative w-full overflow-hidden bg-[#1E1B4B] text-white"
         >
-          {/* glow accents */}
-          <div className="pointer-events-none absolute -top-16 -left-10 h-40 w-40 rounded-full bg-[#FBBF24]/30 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-16 right-10 h-40 w-40 rounded-full bg-[#EF4444]/20 blur-3xl" />
-          <div className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:radial-gradient(circle_at_20%_50%,#fff_1px,transparent_1px)] [background-size:16px_16px]" />
+          {/* animated gradient layer */}
+          <div className="absolute inset-0 bg-[linear-gradient(110deg,#4C1D95,#6D28D9,#7C3AED,#4C1D95,#312E81)] bg-[length:300%_300%] [animation:promoGradient_9s_ease_infinite]" />
+          {/* glow blobs */}
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute -top-20 left-1/4 h-44 w-44 rounded-full bg-[#FBBF24] opacity-30 blur-[60px]"
+            animate={{ x: [0, 40, 0], y: [0, 10, 0], opacity: [0.25, 0.45, 0.25] }}
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-16 right-1/4 h-40 w-40 rounded-full bg-[#EF4444] opacity-25 blur-[55px]"
+            animate={{ x: [0, -30, 0], y: [0, -12, 0], opacity: [0.2, 0.4, 0.2] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          {/* dot grid */}
+          <div className="pointer-events-none absolute inset-0 opacity-[0.08] [background-image:radial-gradient(circle,#fff_1px,transparent_1.5px)] [background-size:18px_18px]" />
+          {/* shimmer sweep */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div className="absolute -inset-y-4 -left-1/3 w-1/3 -skew-x-12 bg-white/10 blur-md [animation:promoShimmer_5s_ease-in-out_infinite]" />
+          </div>
+          {/* bottom accent line */}
+          <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[#FBBF24] to-transparent" />
 
-          <div className="relative mx-auto flex max-w-6xl flex-col items-stretch gap-2 px-4 py-2.5 sm:flex-row sm:items-center sm:gap-4">
+          <div className="relative mx-auto flex max-w-6xl flex-col gap-2 px-4 py-2.5 sm:flex-row sm:items-center sm:gap-4">
             {/* brand + typewriter */}
-            <div className="flex min-w-0 flex-1 items-center gap-3">
-              <span className="hidden shrink-0 items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold text-[#FBBF24] ring-1 ring-white/20 sm:flex">
+            <div className="flex min-w-0 flex-1 items-center gap-2.5">
+              <motion.span
+                className="flex shrink-0 items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-extrabold text-[#FBBF24] ring-1 ring-[#FBBF24]/40 backdrop-blur-sm"
+                animate={{ boxShadow: ["0 0 0 0 rgba(251,191,36,0.5)", "0 0 0 6px rgba(251,191,36,0)", "0 0 0 0 rgba(251,191,36,0)"] }}
+                transition={{ duration: 2.2, repeat: Infinity }}
+              >
                 <Sparkles className="h-3.5 w-3.5" /> iyadel
-              </span>
-              <div className="min-h-[26px] flex-1 truncate font-medium leading-6 text-white/95 text-sm sm:text-[15px]" dir="ltr">
-                <span className="text-[#FBBF24]">{text}</span>
-                <span className="ml-0.5 inline-block h-4 w-[2px] translate-y-0.5 animate-pulse bg-[#FBBF24]" />
+              </motion.span>
+              <div className="min-h-[24px] flex-1 items-center text-sm font-medium leading-6 text-white/95 sm:text-[15px]">
+                <span dir="ltr" className="text-[#FBBF24]">{text}</span>
+                <span className="ml-0.5 inline-block h-4 w-[2px] translate-y-0.5 bg-[#FBBF24] [animation:blink_0.9s_steps(2)_infinite]" />
               </div>
             </div>
 
             {/* timer + CTA */}
-            <div className="flex shrink-0 items-center gap-3">
+            <div className="flex shrink-0 items-center gap-2.5">
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-black/25 px-2 py-0.5 text-[11px] font-bold tabular-nums text-white/90 ring-1 ring-white/15">
+                <span className="rounded-full bg-black/30 px-2 py-0.5 text-[11px] font-bold tabular-nums text-white/90 ring-1 ring-white/15">
                   {timeStr}
                 </span>
-                <div className="hidden h-1.5 w-20 overflow-hidden rounded-full bg-black/30 sm:block">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-[#EF4444] via-[#FBBF24] to-[#FACC15] transition-all duration-1000 ease-linear"
+                <div className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-black/40 sm:block">
+                  <motion.div
+                    className="h-full rounded-full bg-gradient-to-r from-[#EF4444] via-[#FBBF24] to-[#FACC15]"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
               </div>
-              <a
+              <motion.a
                 href="#tools"
                 onClick={(e) => { e.preventDefault(); document.getElementById("tools")?.scrollIntoView({ behavior: "smooth" }); }}
-                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FBBF24] to-[#F59E0B] px-3.5 py-1.5 text-xs font-bold text-[#1E1B4B] shadow-[0_4px_14px_rgba(251,191,36,0.4)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(251,191,36,0.55)]"
+                whileHover={{ scale: 1.04, y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className="group inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FBBF24] to-[#F59E0B] px-3.5 py-1.5 text-xs font-bold text-[#1E1B4B] shadow-[0_4px_16px_rgba(251,191,36,0.45)] ring-1 ring-white/30"
               >
-                <ArrowLeftRight className="h-3.5 w-3.5" />
+                <Zap className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
                 <span>Discover All Tools</span>
-                <span className="opacity-70">| اكتشف الأدوات</span>
-              </a>
+                <span className="hidden opacity-80 sm:inline">| اكتشف الأدوات</span>
+              </motion.a>
             </div>
           </div>
 
           <button
             onClick={dismiss}
             aria-label="Close / إغلاق"
-            className="absolute top-1.5 ltr:right-2 rtl:left-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white/70 transition hover:bg-white/20 hover:text-white"
+            className="absolute top-1.5 right-2 z-20 flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white/70 transition hover:rotate-90 hover:bg-white/25 hover:text-white"
           >
             <X className="h-3.5 w-3.5" />
           </button>
+
+          <style>{`
+            @keyframes promoGradient { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+            @keyframes promoShimmer { 0%{transform:translateX(-20%);opacity:0} 35%{opacity:0.6} 70%{opacity:0} 100%{transform:translateX(420%);opacity:0} }
+            @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+          `}</style>
         </motion.div>
       )}
     </AnimatePresence>
