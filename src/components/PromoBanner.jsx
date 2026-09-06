@@ -72,14 +72,18 @@ export default function PromoBanner() {
     twTimer.current = setTimeout(tickTypewriter, speed);
   }, []);
 
+  // Typewriter + countdown start together whenever the banner is visible,
+  // and stop together whenever it hides — so the animated text is always
+  // running with every fresh 5-minute cycle.
   useEffect(() => {
+    if (!visible) return;
     tickTypewriter();
     tickTimer.current = setInterval(() => {
       setRemaining((r) => (r <= 0 ? 0 : r - 1));
     }, 1000);
     const onVisibility = () => {
       pausedRef.current = document.hidden;
-      if (!document.hidden && remaining > 0) {
+      if (!document.hidden) {
         if (twTimer.current) clearTimeout(twTimer.current);
         twTimer.current = setTimeout(tickTypewriter, 120);
       }
@@ -90,15 +94,15 @@ export default function PromoBanner() {
       if (tickTimer.current) clearInterval(tickTimer.current);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [visible, tickTypewriter]);
 
+  // When the countdown reaches zero, hide the banner; the effect above cleans
+  // up the typewriter + interval automatically.
   useEffect(() => {
-    if (remaining <= 0) {
+    if (remaining <= 0 && visible) {
       setVisible(false);
-      if (tickTimer.current) clearInterval(tickTimer.current);
     }
-  }, [remaining]);
+  }, [remaining, visible]);
 
   const mins = Math.floor(remaining / 60);
   const secs = remaining % 60;
@@ -107,23 +111,15 @@ export default function PromoBanner() {
 
   const dismiss = () => {
     setVisible(false);
-    if (twTimer.current) clearTimeout(twTimer.current);
-    if (tickTimer.current) clearInterval(tickTimer.current);
   };
 
   const show = () => {
-    setRemaining(TOTAL_SECONDS);
     msgIndex.current = 0;
     charIndex.current = 0;
     isDeleting.current = false;
     setText("");
+    setRemaining(TOTAL_SECONDS);
     setVisible(true);
-    if (twTimer.current) clearTimeout(twTimer.current);
-    if (tickTimer.current) clearInterval(tickTimer.current);
-    tickTypewriter();
-    tickTimer.current = setInterval(() => {
-      setRemaining((r) => (r <= 0 ? 0 : r - 1));
-    }, 1000);
   };
 
   return (
