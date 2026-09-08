@@ -11,6 +11,7 @@ const AR = {
   "Toggle theme": "تبديل المظهر",
   "Account": "الحساب",
   "Contact Us": "اتصل بنا",
+  "Discover All Free Tools": "اكتشف كل الأدوات المجانية",
 
   // Hero
   "Your all-in-one platform": "منصتك المتكاملة",

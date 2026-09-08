@@ -213,7 +213,7 @@ export default function PromoBanner() {
                   className="group inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FBBF24] to-[#F59E0B] px-3.5 py-1.5 text-xs font-bold text-[#1E1B4B] shadow-[0_4px_16px_rgba(251,191,36,0.45)] ring-1 ring-white/30"
                 >
                   <Zap className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
-                  <span>اكتشف كل الأدوات المجانية</span>
+                  <span>{t("Discover All Free Tools")}</span>
                   <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showTools ? "rotate-180" : ""}`} />
                 </motion.button>
               </div>
@@ -273,7 +273,7 @@ export default function PromoBanner() {
                 <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="flex items-center gap-2 text-base font-bold text-[#FBBF24]">
-                    <Zap className="h-4 w-4" /> اكتشف كل الأدوات المجانية
+                    <Zap className="h-4 w-4" /> {t("Discover All Free Tools")}
                   </h2>
                   <button
                     onClick={() => setShowTools(false)}
