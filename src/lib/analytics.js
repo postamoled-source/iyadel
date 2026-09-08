@@ -21,7 +21,7 @@ export function trackEvent(eventName, params = {}) {
 // Open Graph / Twitter tags per page. Pass `noindex: true` for private pages
 // (auth, admin) so search engines don't index them.
 const SITE_NAME = "iyadel";
-const SITE_SUFFIX = "iyadel - Explore All Free Tools";
+const SITE_SUFFIX = "iyadel";
 const SITE_URL = "https://iyadel.com";
 const DEFAULT_DESCRIPTION = "هذا الموقع يحتوي على أدوات تهمك في مجالات متعددة: مالية، صحية، رياضية، تحرير صور، وألعاب ذهنية. قم بزيارة الموقع واكتشف بنفسك!";
 
@@ -38,7 +38,7 @@ function upsertMeta(selector, attrs) {
 export function useSeo({ title, description, image, path, noindex, keywords, rawTitle } = {}) {
   useEffect(() => {
     const fullTitle = title
-      ? (rawTitle ? title : `${title} | ${SITE_SUFFIX}`)
+      ? (rawTitle ? title : `${title} - ${SITE_SUFFIX}`)
       : `${SITE_NAME} — Free Online Calculators, Converters & Image Tools`;
     document.title = fullTitle;
 

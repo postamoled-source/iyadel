@@ -18,6 +18,18 @@
     },
     "content": {
       "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "seo_title": {
+      "type": "string"
+    },
+    "meta_description": {
+      "type": "string"
+    },
+    "focus_keyword": {
+      "type": "string"
     }
   },
   "required": [
