@@ -213,48 +213,11 @@ export default function PromoBanner() {
                   className="group inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FBBF24] to-[#F59E0B] px-3.5 py-1.5 text-xs font-bold text-[#1E1B4B] shadow-[0_4px_16px_rgba(251,191,36,0.45)] ring-1 ring-white/30"
                 >
                   <Zap className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
-                  <span>Discover All Tools</span>
-                  <span className="hidden opacity-80 sm:inline">| اكتشف الأدوات</span>
+                  <span>اكتشف كل الأدوات المجانية</span>
                   <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showTools ? "rotate-180" : ""}`} />
                 </motion.button>
               </div>
             </div>
-
-            <AnimatePresence>
-              {showTools && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="overflow-hidden border-t border-white/10"
-                >
-                  <div className="mx-auto max-h-[50vh] max-w-6xl space-y-3 overflow-y-auto px-4 py-3">
-                    {groups ? (
-                      Object.entries(groups).map(([cat, tools]) => (
-                        <div key={cat}>
-                          <h3 className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-[#FBBF24]">{t(cat)}</h3>
-                          <div className="flex flex-wrap gap-1.5">
-                            {tools.map((tool) => (
-                              <Link
-                                key={tool.slug}
-                                to={`/tools/${tool.slug}`}
-                                onClick={() => setShowTools(false)}
-                                className="rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white/90 transition-colors hover:bg-[#FBBF24] hover:text-[#1E1B4B] hover:border-[#FBBF24]"
-                              >
-                                {tool.name}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-xs text-white/60">Loading… / جارٍ التحميل…</p>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
 
             <button
               onClick={dismiss}
@@ -284,6 +247,69 @@ export default function PromoBanner() {
             <Sparkles className="h-5 w-5" />
           </button>
         ),
+        document.body
+      )}
+
+      {createPortal(
+        <AnimatePresence>
+          {showTools && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 z-[10000] flex flex-col bg-black/60 backdrop-blur-sm"
+              onClick={() => setShowTools(false)}
+            >
+              <motion.div
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                dir={isRTL ? "rtl" : "ltr"}
+                onClick={(e) => e.stopPropagation()}
+                className="mt-auto max-h-[75vh] overflow-y-auto rounded-t-3xl bg-[#1E1B4B] p-5 shadow-[0_-8px_40px_rgba(0,0,0,0.5)]"
+              >
+                <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="flex items-center gap-2 text-base font-bold text-[#FBBF24]">
+                    <Zap className="h-4 w-4" /> اكتشف كل الأدوات المجانية
+                  </h2>
+                  <button
+                    onClick={() => setShowTools(false)}
+                    aria-label="إغلاق / Close"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/70 transition hover:bg-white/25 hover:text-white"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {groups ? (
+                    Object.entries(groups).map(([cat, tools]) => (
+                      <div key={cat}>
+                        <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wide text-[#FBBF24]">{t(cat)}</h3>
+                        <div className="flex flex-wrap gap-1.5">
+                          {tools.map((tool) => (
+                            <Link
+                              key={tool.slug}
+                              to={`/tools/${tool.slug}`}
+                              onClick={() => setShowTools(false)}
+                              className="rounded-full border border-white/15 bg-white/10 px-2.5 py-1.5 text-xs font-medium text-white/90 transition-colors hover:bg-[#FBBF24] hover:text-[#1E1B4B] hover:border-[#FBBF24]"
+                            >
+                              {tool.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-xs text-white/60">Loading… / جارٍ التحميل…</p>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
         document.body
       )}
     </>
