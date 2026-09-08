@@ -209,8 +209,8 @@ export default function ToolPage() {
   const customTitle = slug ? TOOL_TITLES[slug] : null;
 
   useSeo({
-    title: customTitle || (useSeoCfg ? seo.title : (tool ? `${tool.name} — Free Online Tool` : "Tool not found")),
-    rawTitle: !customTitle,
+    title: customTitle || (useSeoCfg ? seo.title : (tool ? tool.name : "Tool not found")),
+    rawTitle: !customTitle && useSeoCfg,
     description: useSeoCfg
       ? seo.metaDescription
       : (tool ? (tool.description || (tool.content || "").slice(0, 150)) : "Tool not found"),
