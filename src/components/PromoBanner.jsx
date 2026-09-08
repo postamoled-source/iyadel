@@ -5,9 +5,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Zap, ChevronDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { getCachedTools } from "@/lib/tools-cache";
+import { STATIC_TOOLS } from "@/data/tools";
 import { PDF_TOOLS_FLAT } from "@/data/pdf-tools";
 
 const PDF_SLUGS = new Set(PDF_TOOLS_FLAT.map((t) => t.slug));
+
+// Build a complete tool list from STATIC_TOOLS so every Health, Math,
+// Finance, etc. tool always appears regardless of sitemap cache state.
+const ALL_STATIC = STATIC_TOOLS.map((t) => ({
+  slug: t.slug,
+  name: t.name,
+  category: t.category,
+}));
 
 const MESSAGES = [
   "💱 Currency Converter — محول العملات",
@@ -120,8 +129,19 @@ export default function PromoBanner() {
     let alive = true;
     getCachedTools().then((tools) => {
       if (!alive) return;
+      // Merge cached tools with the full STATIC_TOOLS list so nothing
+      // is ever missing (Health, Math, etc.).
+      const seen = new Set();
+      const merged = [];
+      const addTool = (tool) => {
+        if (!tool || !tool.slug || seen.has(tool.slug)) return;
+        seen.add(tool.slug);
+        merged.push(tool);
+      };
+      (tools || []).forEach(addTool);
+      ALL_STATIC.forEach(addTool);
       const map = {};
-      (tools || []).forEach((tool) => {
+      merged.forEach((tool) => {
         const c = tool.category || "Other";
         (map[c] = map[c] || []).push(tool);
       });
@@ -267,13 +287,13 @@ export default function PromoBanner() {
               onClick={() => setShowTools(false)}
             >
               <motion.div
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "100%" }}
+                initial={{ y: "100%", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: "100%", opacity: 0 }}
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 dir={isRTL ? "rtl" : "ltr"}
                 onClick={(e) => e.stopPropagation()}
-                className="mt-auto max-h-[75vh] overflow-y-auto rounded-t-3xl bg-[#1E1B4B] p-5 shadow-[0_-8px_40px_rgba(0,0,0,0.5)]"
+                className="mt-auto max-h-[80vh] w-full overflow-y-auto rounded-t-3xl bg-[#1E1B4B] p-5 shadow-[0_-8px_40px_rgba(0,0,0,0.5)] sm:m-auto sm:mt-0 sm:max-h-[85vh] sm:max-w-2xl sm:rounded-3xl"
               >
                 <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
                 <div className="mb-4 flex items-center justify-between">
