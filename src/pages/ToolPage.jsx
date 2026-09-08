@@ -34,6 +34,22 @@ import ToolCalculator from "@/components/tools/ToolCalculator";
 import PageNotFound from "@/lib/PageNotFound";
 import ExploreAllTools from "@/components/ExploreAllTools";
 
+// Maps sitemap/database slugs (from fixIyadelSEO) to the shorter STATIC_TOOLS slugs.
+const SLUG_ALIASES = {
+  "ideal-weight-calculator": "ideal-weight",
+  "body-fat-calculator": "body-fat",
+  "daily-protein-calculator": "daily-protein",
+  "daily-carbs-calculator": "daily-carbs",
+  "daily-fat-calculator": "daily-fat",
+  "running-pace-calculator": "running-pace",
+  "daily-calorie-calculator": "calorie-calculator",
+  "percentage": "percentage-calculator",
+  "quadratic-equation-solver": "quadratic-solver",
+  "permutations-combinations": "perm-comb-calculator",
+  "jpg-to-png-converter": "jpg-to-png",
+  "images-to-pdf": "image-to-pdf",
+};
+
 const ICONS = {
   Calculator: CalcIcon, TrendingUp, LineChart, Activity, Flame, DollarSign, Ruler, Weight,
   Square, Clock, Gauge, Wifi, QrCode, Link2, ShieldCheck, FunctionSquare, Percent, Atom,
@@ -199,9 +215,10 @@ function Faq({ q, a }) {
 }
 
 export default function ToolPage() {
-  const { slug } = useParams();
+  const { slug: rawSlug } = useParams();
   const { t, lang } = useI18n();
   const navigate = useNavigate();
+  const slug = SLUG_ALIASES[rawSlug] || rawSlug;
   const tool = STATIC_TOOLS.find((x) => x.slug === slug);
   const seo = slug ? TOOLS_SEO[slug] : null;
   const useSeoCfg = !!(seo && lang !== "ar");
