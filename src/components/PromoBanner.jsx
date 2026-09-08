@@ -5,6 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Zap, ChevronDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { getCachedTools } from "@/lib/tools-cache";
+import { PDF_TOOLS_FLAT } from "@/data/pdf-tools";
+
+const PDF_SLUGS = new Set(PDF_TOOLS_FLAT.map((t) => t.slug));
 
 const MESSAGES = [
   "💱 Currency Converter — محول العملات",
@@ -122,6 +125,8 @@ export default function PromoBanner() {
         const c = tool.category || "Other";
         (map[c] = map[c] || []).push(tool);
       });
+      // Surface all PDF sub-tools under the "PDF Tools" group.
+      (map["PDF Tools"] = map["PDF Tools"] || []).push(...PDF_TOOLS_FLAT);
       setGroups(map);
     });
     return () => { alive = false; };
@@ -292,7 +297,7 @@ export default function PromoBanner() {
                           {tools.map((tool) => (
                             <Link
                               key={tool.slug}
-                              to={`/tools/${tool.slug}`}
+                              to={PDF_SLUGS.has(tool.slug) ? `/pdf-tools?tool=${tool.slug}` : `/tools/${tool.slug}`}
                               onClick={() => setShowTools(false)}
                               className="rounded-full border border-white/15 bg-white/10 px-2.5 py-1.5 text-xs font-medium text-white/90 transition-colors hover:bg-[#FBBF24] hover:text-[#1E1B4B] hover:border-[#FBBF24]"
                             >

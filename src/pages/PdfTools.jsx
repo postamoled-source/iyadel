@@ -1,10 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { jsPDF } from "jspdf";
 import { useI18n } from "@/lib/i18n";
+import { PDF_CATEGORIES as CATEGORIES } from "@/data/pdf-tools";
 import {
-  FileDown, FileOutput, Layers, Minimize2, Shield, ScanText, Wrench,
-  FileText, FileSpreadsheet, FileImage, Scissors, ArrowDownUp, Globe,
-  Lock, Droplet, ListOrdered, Eye, FilePlus, Search, X, Upload, Download,
+  FileDown, Search, X, Upload, Download,
   Sparkles, Info,
 } from "lucide-react";
 
@@ -49,40 +48,7 @@ const parsePageRanges = (input) => {
 };
 const downloadBlob = (blob, name) => { const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); };
 
-/* ---------- tool catalog ---------- */
-const CATEGORIES = [
-  { key: "convert-to-pdf", name: "تحويل إلى PDF", nameEn: "Convert to PDF", icon: FileDown, desc: "حوّل ملفات Word و Excel والصور إلى PDF", tools: [
-    { slug: "word-to-pdf", name: "Word إلى PDF", nameEn: "Word to PDF", icon: FileText, desc: "حوّل مستندات Word (.docx) إلى PDF", accept: ".docx", multi: false },
-    { slug: "excel-to-pdf", name: "Excel إلى PDF", nameEn: "Excel to PDF", icon: FileSpreadsheet, desc: "حوّل جداول Excel (.xlsx) إلى PDF", accept: ".xlsx,.xls", multi: false },
-    { slug: "image-to-pdf", name: "صور إلى PDF", nameEn: "Images to PDF", icon: FileImage, desc: "حوّل مجموعة صور (JPG, PNG) إلى PDF واحد", accept: "image/*", multi: true },
-  ]},
-  { key: "convert-from-pdf", name: "استخراج من PDF", nameEn: "Extract from PDF", icon: FileOutput, desc: "استخرج النصوص والصور من ملفات PDF", tools: [
-    { slug: "pdf-to-text", name: "استخراج النص", nameEn: "PDF to Text", icon: FileText, desc: "استخرج النصوص من PDF", accept: "application/pdf", multi: false },
-    { slug: "pdf-to-images", name: "PDF إلى صور", nameEn: "PDF to Images", icon: FileImage, desc: "حوّل كل صفحة من PDF إلى صورة (ZIP)", accept: "application/pdf", multi: false },
-  ]},
-  { key: "merge-split", name: "دمج وتقسيم", nameEn: "Merge & Split", icon: Layers, desc: "ادمج عدة PDF أو قسّم ملفاً إلى أجزاء", tools: [
-    { slug: "merge-pdf", name: "دمج PDF", nameEn: "Merge PDF", icon: Layers, desc: "ادمج عدة ملفات PDF في ملف واحد", accept: "application/pdf", multi: true },
-    { slug: "split-pdf", name: "تقسيم PDF", nameEn: "Split PDF", icon: Scissors, desc: "قسّم PDF إلى صفحات منفصلة (ZIP)", accept: "application/pdf", multi: false },
-    { slug: "extract-pages", name: "استخراج صفحات", nameEn: "Extract Pages", icon: FileOutput, desc: "استخرج صفحات محددة من PDF", accept: "application/pdf", multi: false },
-    { slug: "rearrange-pages", name: "ترتيب الصفحات", nameEn: "Rearrange Pages", icon: ArrowDownUp, desc: "أعد ترتيب صفحات PDF", accept: "application/pdf", multi: false },
-  ]},
-  { key: "compress-optimize", name: "ضغط وتحسين", nameEn: "Compress & Optimize", icon: Minimize2, desc: "قلّص حجم ملفات PDF", tools: [
-    { slug: "compress-pdf", name: "ضغط PDF", nameEn: "Compress PDF", icon: Minimize2, desc: "أعد حفظ PDF لتقليل الحجم", accept: "application/pdf", multi: false },
-    { slug: "web-optimize", name: "تحسين للويب", nameEn: "Web Optimize", icon: Globe, desc: "أعد حفظ PDF محسّناً للعرض", accept: "application/pdf", multi: false },
-  ]},
-  { key: "protect-edit", name: "حماية وتحرير", nameEn: "Protect & Edit", icon: Shield, desc: "حماية، علامة مائية، أرقام صفحات", tools: [
-    { slug: "protect-pdf", name: "حماية PDF", nameEn: "Protect PDF", icon: Lock, desc: "أضف كلمة مرور لتشفير PDF", accept: "application/pdf", multi: false },
-    { slug: "watermark-pdf", name: "علامة مائية", nameEn: "Add Watermark", icon: Droplet, desc: "أضف نصاً كعلامة مائية على كل صفحة", accept: "application/pdf", multi: false },
-    { slug: "page-numbers", name: "أرقام الصفحات", nameEn: "Add Page Numbers", icon: ListOrdered, desc: "أضف أرقام الصفحات أسفل كل صفحة", accept: "application/pdf", multi: false },
-  ]},
-  { key: "ocr", name: "التعرف على النصوص (OCR)", nameEn: "OCR", icon: ScanText, desc: "استخرج النص من الصور (Tesseract.js)", tools: [
-    { slug: "ocr-image", name: "OCR على صورة", nameEn: "OCR Image", icon: ScanText, desc: "استخرج النص من صورة (عربي/إنجليزي)", accept: "image/*", multi: false },
-  ]},
-  { key: "extra", name: "أدوات إضافية", nameEn: "Extra", icon: Wrench, desc: "عرض PDF أو إنشاء PDF فارغ", tools: [
-    { slug: "view-pdf", name: "عرض PDF", nameEn: "View PDF", icon: Eye, desc: "اعرض ملف PDF في المتصفح", accept: "application/pdf", multi: false },
-    { slug: "create-blank-pdf", name: "إنشاء PDF فارغ", nameEn: "Create Blank PDF", icon: FilePlus, desc: "أنشئ ملف PDF فارغاً", accept: null, multi: false },
-  ]},
-];
+/* CATEGORIES imported from @/data/pdf-tools */
 
 export default function PdfTools() {
   const { t, isRTL } = useI18n();
@@ -94,6 +60,17 @@ export default function PdfTools() {
   const [result, setResult] = useState(null);
   const [extra, setExtra] = useState({ password: "123456", watermark: "iyadel.com", pages: "1", order: "1,2,3" });
   const [dragOver, setDragOver] = useState(false);
+
+  // Auto-open a specific tool when navigated via ?tool=<slug>
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("tool");
+    if (slug && !activeSlug) {
+      const exists = CATEGORIES.some((c) => c.tools.some((t) => t.slug === slug));
+      if (exists) reset(slug);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const activeTool = (() => {
     for (const c of CATEGORIES) { const f = c.tools.find((x) => x.slug === activeSlug); if (f) return { tool: f, cat: c }; }
