@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, X, Zap } from "lucide-react";
+import { Sparkles, X, Zap, ChevronDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { getCachedTools } from "@/lib/tools-cache";
 
 const MESSAGES = [
   "💱 Currency Converter — محول العملات",
@@ -29,10 +31,12 @@ const MESSAGES = [
 const TOTAL_SECONDS = 300;
 
 export default function PromoBanner() {
-  const { isRTL } = useI18n();
+  const { isRTL, t } = useI18n();
   const [visible, setVisible] = useState(true);
   const [text, setText] = useState("");
   const [remaining, setRemaining] = useState(TOTAL_SECONDS);
+  const [showTools, setShowTools] = useState(false);
+  const [groups, setGroups] = useState(null);
 
   const msgIndex = useRef(0);
   const charIndex = useRef(0);
@@ -108,6 +112,20 @@ export default function PromoBanner() {
   const secs = remaining % 60;
   const timeStr = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   const progress = (remaining / TOTAL_SECONDS) * 100;
+
+  useEffect(() => {
+    let alive = true;
+    getCachedTools().then((tools) => {
+      if (!alive) return;
+      const map = {};
+      (tools || []).forEach((tool) => {
+        const c = tool.category || "Other";
+        (map[c] = map[c] || []).push(tool);
+      });
+      setGroups(map);
+    });
+    return () => { alive = false; };
+  }, []);
 
   const dismiss = () => {
     setVisible(false);
@@ -188,9 +206,8 @@ export default function PromoBanner() {
                     />
                   </div>
                 </div>
-                <motion.a
-                  href="#tools"
-                  onClick={(e) => { e.preventDefault(); document.getElementById("tools")?.scrollIntoView({ behavior: "smooth" }); }}
+                <motion.button
+                  onClick={() => setShowTools((s) => !s)}
                   whileHover={{ scale: 1.04, y: -1 }}
                   whileTap={{ scale: 0.97 }}
                   className="group inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FBBF24] to-[#F59E0B] px-3.5 py-1.5 text-xs font-bold text-[#1E1B4B] shadow-[0_4px_16px_rgba(251,191,36,0.45)] ring-1 ring-white/30"
@@ -198,9 +215,46 @@ export default function PromoBanner() {
                   <Zap className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
                   <span>Discover All Tools</span>
                   <span className="hidden opacity-80 sm:inline">| اكتشف الأدوات</span>
-                </motion.a>
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showTools ? "rotate-180" : ""}`} />
+                </motion.button>
               </div>
             </div>
+
+            <AnimatePresence>
+              {showTools && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden border-t border-white/10"
+                >
+                  <div className="mx-auto max-h-[50vh] max-w-6xl space-y-3 overflow-y-auto px-4 py-3">
+                    {groups ? (
+                      Object.entries(groups).map(([cat, tools]) => (
+                        <div key={cat}>
+                          <h3 className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-[#FBBF24]">{t(cat)}</h3>
+                          <div className="flex flex-wrap gap-1.5">
+                            {tools.map((tool) => (
+                              <Link
+                                key={tool.slug}
+                                to={`/tools/${tool.slug}`}
+                                onClick={() => setShowTools(false)}
+                                className="rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white/90 transition-colors hover:bg-[#FBBF24] hover:text-[#1E1B4B] hover:border-[#FBBF24]"
+                              >
+                                {tool.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-xs text-white/60">Loading… / جارٍ التحميل…</p>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <button
               onClick={dismiss}
