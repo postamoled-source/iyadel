@@ -42,12 +42,41 @@ export default function BlogPostPage() {
   const [loading, setLoading] = useState(true);
   const { fontSize, fontIndex, changeFont, theme, changeTheme } = useReadingPrefs();
   const readTheme = READING_THEMES[theme] || READING_THEMES.light;
+
+  const postPath = post?.slug ? `/Blog/post?slug=${encodeURIComponent(post.slug)}` : `/Blog`;
   useSeo({
     title: post?.title,
     description: post?.excerpt,
     image: post?.image_url,
-    path: `/Blog/post?slug=${encodeURIComponent(post?.slug || "")}`,
+    path: postPath,
   });
+
+  const articleSchema = post ? {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerpt || "",
+    image: post.image_url ? [post.image_url] : undefined,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: { "@type": "Organization", name: "iyadel" },
+    publisher: {
+      "@type": "Organization",
+      name: "iyadel",
+      logo: { "@type": "ImageObject", url: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0b6ef70f2_generated_image.png" },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `https://iyadel.com/Blog/post?slug=${encodeURIComponent(post.slug)}` },
+  } : null;
+
+  const breadcrumbSchema = post ? {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://iyadel.com/" },
+      { "@type": "ListItem", position: 2, name: "Blog", item: "https://iyadel.com/Blog" },
+      { "@type": "ListItem", position: 3, name: post.title, item: `https://iyadel.com/Blog/post?slug=${encodeURIComponent(post.slug)}` },
+    ],
+  } : null;
 
   useEffect(() => {
     let active = true;
@@ -161,6 +190,13 @@ export default function BlogPostPage() {
           </Link>
         </div>
       </article>
+
+      {articleSchema && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      )}
+      {breadcrumbSchema && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      )}
     </div>
   );
 }

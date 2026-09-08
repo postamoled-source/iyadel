@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
-import { Mail, Facebook, Twitter, Instagram } from "lucide-react";
+import { Mail, Facebook, Instagram } from "lucide-react";
 import { LOGO_URL } from "@/data/tools";
 
 export default function Footer() {
@@ -37,29 +37,27 @@ export default function Footer() {
           <h4 className="font-bold text-background mb-4">{t("Quick Links")}</h4>
           <ul className="space-y-3 text-sm">
             <li><Link to="/About" className="text-background/70 hover:text-accent transition-colors">{t("About Us")}</Link></li>
-            <li><Link to="/About" className="text-background/70 hover:text-accent transition-colors">{t("Privacy Policy")}</Link></li>
+            <li><Link to="/Privacy" className="text-background/70 hover:text-accent transition-colors">{t("Privacy Policy")}</Link></li>
             <li><a href="mailto:support@iyadel.com" className="text-background/70 hover:text-accent transition-colors">{t("Contact Us")}</a></li>
             <li><Link to="/Blog" className="text-background/70 hover:text-accent transition-colors">{t("Blog")}</Link></li>
-            <li><Link to="/Dashboard" className="text-background/70 hover:text-accent transition-colors">{t("Usage Dashboard")}</Link></li>
           </ul>
         </div>
 
         <div>
           <h4 className="font-bold text-background mb-4">{t("Categories")}</h4>
           <ul className="space-y-3 text-sm">
-            <li><Link to="/" className="text-background/70 hover:text-accent transition-colors">{t("Finance Tools")}</Link></li>
-            <li><Link to="/" className="text-background/70 hover:text-accent transition-colors">{t("Health Tools")}</Link></li>
-            <li><Link to="/" className="text-background/70 hover:text-accent transition-colors">{t("Converters")}</Link></li>
-            <li><Link to="/" className="text-background/70 hover:text-accent transition-colors">{t("Brain Games")}</Link></li>
+            <li><Link to="/tools/loan-calculator" className="text-background/70 hover:text-accent transition-colors">{t("Finance Tools")}</Link></li>
+            <li><Link to="/tools/bmi-calculator" className="text-background/70 hover:text-accent transition-colors">{t("Health Tools")}</Link></li>
+            <li><Link to="/tools/currency-converter" className="text-background/70 hover:text-accent transition-colors">{t("Converters")}</Link></li>
+            <li><Link to="/tools/game-2048" className="text-background/70 hover:text-accent transition-colors">{t("Brain Games")}</Link></li>
           </ul>
         </div>
 
         <div>
           <h4 className="font-bold text-background mb-4">{t("Social")}</h4>
           <div className="flex gap-3 mb-5">
-            <a href="#" aria-label="Facebook" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Facebook className="w-4 h-4 text-background" /></a>
-            <a href="#" aria-label="Twitter" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Twitter className="w-4 h-4 text-background" /></a>
-            <a href="#" aria-label="Instagram" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Instagram className="w-4 h-4 text-background" /></a>
+            <a href="https://www.facebook.com/share/14mMyMHd6h4/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Facebook className="w-4 h-4 text-background" /></a>
+            <a href="https://www.instagram.com/stories/iyadelpost/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Instagram className="w-4 h-4 text-background" /></a>
           </div>
           <a href="mailto:support@iyadel.com" className="flex items-center gap-2 text-sm text-background/70 hover:text-accent transition-colors">
             <Mail className="w-4 h-4" /> support@iyadel.com

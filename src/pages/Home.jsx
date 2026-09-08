@@ -124,7 +124,7 @@ function HeroSection({ catCount, searchQuery, onSearchChange }) {
 
           <div className="flex items-center justify-center gap-4 mb-6" style={{ animation: "floatC 6s ease-in-out infinite" }}>
             <Logo />
-            <h1 className="text-4xl md:text-6xl tracking-[0.04em] bg-clip-text text-transparent not-italic text-center animate-gradient-x [font-family:'Aether',_sans-serif] font-bold" style={{ backgroundImage: "linear-gradient(90deg, #6D28D9, #F59E0B, #CA8A04, #B91C1C)" }}>iyadel</h1>
+            <h1 className="text-4xl md:text-6xl tracking-[0.04em] bg-clip-text text-transparent not-italic text-center animate-gradient-x [font-family:'Aether',_sans-serif] font-bold" style={{ backgroundImage: "linear-gradient(90deg, #6D28D9, #F59E0B, #CA8A04, #B91C1C)" }}>iyadel — Free Online Tools</h1>
           </div>
           
           <p className="text-[18px] leading-[1.5] text-[#374151] dark:text-[#FEF3C7]/80 max-w-2xl mx-auto mb-6 font-medium">
@@ -547,7 +547,7 @@ function BlogTeaser() {
               {items.map((post, i) =>
               <Link key={post.title} to="/Blog" className="block h-full rounded-[2rem] bg-background border border-border overflow-hidden hover:-translate-y-2 hover:shadow-xl hover:border-primary/30 transition-all duration-400 group">
                   <div className="aspect-[16/9] overflow-hidden">
-                    <img src={post.image_url} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <img src={post.image_url} alt={post.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   </div>
                   <div className="p-6">
                     <span className="text-xs font-bold px-3 py-1 rounded-full bg-secondary text-secondary-foreground uppercase tracking-wide">{post.category}</span>

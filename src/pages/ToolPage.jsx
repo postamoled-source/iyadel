@@ -249,7 +249,7 @@ export default function ToolPage() {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${schemaBase}/` },
-      { "@type": "ListItem", position: 2, name: tool.category, item: `${schemaBase}/?cat=${encodeURIComponent(tool.category)}` },
+      { "@type": "ListItem", position: 2, name: tool.category, item: `${schemaBase}/` },
       { "@type": "ListItem", position: 3, name: tool.name, item: `${schemaBase}/tools/${slug}` },
     ],
   };

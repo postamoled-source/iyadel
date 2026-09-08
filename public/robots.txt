@@ -1,11 +1,9 @@
 User-agent: *
 Allow: /
-
-# Private / admin areas — keep out of the index
-Disallow: /Dashboard
 Disallow: /login
 Disallow: /register
-Disallow: /reset-password
 Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /Dashboard
 
 Sitemap: https://iyadel.com/sitemap.xml

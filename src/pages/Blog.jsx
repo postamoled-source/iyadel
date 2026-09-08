@@ -53,7 +53,7 @@ function HeroSection() {
             </h1>
             <p className="text-lg text-muted-foreground max-w-xl">{t("Practical guides on finance, health and productivity — powered by the same tools you use every day.")}</p>
           </div>
-          <a href="#"><Button variant="outline" className="rounded-xl border-border text-foreground hover:bg-secondary">{t("Admin Panel")}</Button></a>
+
         </motion.div>
       </div>
     </section>
