@@ -75,7 +75,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Find your healthy weight target (Devine formula).",
     icon: "Scale",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/33a765531_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/b559edac8_generated_image.png",
     content: "Ideal body weight is an estimate of a healthy weight range based on height and gender. The Devine formula, widely used in clinical settings, calculates a target weight and a ±5 kg healthy band around it. It is a useful reference point, but body composition — the ratio of muscle to fat — matters more than any single number. Pair this estimate with BMI and body-fat percentage for a fuller picture of a healthy weight for your frame.",
   },
   {
@@ -84,7 +84,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Estimate body fat % (US Navy method).",
     icon: "Bone",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/7ede743c1_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/67ea650a2_generated_image.png",
     content: "Body-fat percentage measures the proportion of fat versus lean mass in your body — a more informative health marker than weight alone. The US Navy method estimates it from circumference measurements: waist, neck, and (for women) hip, combined with height. It is reasonably accurate for tracking changes over time when you measure consistently. For clinical precision, methods like DEXA or calipers are more reliable, but the Navy method is a convenient at-home estimate.",
   },
   {
@@ -93,7 +93,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "How much protein you need per day.",
     icon: "Drumstick",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/6d62b15eb_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/ffe094a5b_generated_image.png",
     content: "Protein is essential for building and repairing tissue, and your daily need depends on body weight, activity level, and fitness goal. Sedentary adults need about 0.8 g/kg to maintain health, while active individuals and athletes benefit from 1.2–2.2 g/kg depending on training intensity and whether the goal is to maintain, build muscle, or lose fat. Spreading protein across meals improves absorption and supports muscle protein synthesis throughout the day.",
   },
   {
@@ -102,7 +102,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Calculate daily carbohydrate intake.",
     icon: "Wheat",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0ef72b83c_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/e3890d164_generated_image.png",
     content: "Carbohydrates are the body's primary energy source, especially for the brain and during exercise. This calculator converts a percentage of your daily calories into grams of carbs — since each gram provides 4 calories. The recommended range is 45–65% of total calories for most people, though athletes may lean higher to fuel training. Choosing complex carbs (whole grains, vegetables, legumes) over refined sugars supports stable energy and better health.",
   },
   {
@@ -111,7 +111,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Calculate daily fat intake.",
     icon: "Droplet",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/d87fdfcc7_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/78daa2d5c_generated_image.png",
     content: "Dietary fat is vital for hormone production, nutrient absorption, and cell health. This calculator translates a percentage of your daily calories into grams of fat — each gram packs 9 calories, more than twice that of carbs or protein. A healthy range is 20–35% of total calories. The type of fat matters as much as the amount: prioritize unsaturated fats from olive oil, nuts, seeds, and fish, and limit saturated and trans fats for long-term health.",
   },
   {
@@ -120,7 +120,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Find your pace and speed from distance and time.",
     icon: "Footprints",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0c21fb203_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/015c65c76_generated_image.png",
     content: "Running pace measures how many minutes it takes to cover one kilometer (or mile). It is the key metric runners use to set targets and track progress. Pace equals total time divided by distance — a lower pace means you cover each unit faster. Knowing your pace helps you plan race strategies, estimate finish times, and train at the right intensity. Speed in km/h is the inverse view, useful for comparing with cycling or treadmill displays.",
   },
   {
@@ -319,7 +319,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Mean, median, mode, variance and standard deviation.",
     icon: "Sigma",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/2514a1339_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/85d2546a6_generated_image.png",
     content: "A statistics calculator summarizes a set of numbers with key measures: the mean (average), median (middle value), mode (most frequent), variance and standard deviation (spread), plus the range (min and max). These descriptive statistics are the foundation of data analysis. Standard deviation tells you how tightly the values cluster around the mean — a small value means consistent data, a large one means wide variation.",
   },
   {
@@ -337,7 +337,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Solve ax² + bx + c = 0 and find roots.",
     icon: "FunctionSquare",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/ee0bbb762_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/65760a88f_generated_image.png",
     content: "A quadratic equation has the form ax² + bx + c = 0. Its roots are found with the quadratic formula x = (−b ± √(b²−4ac)) ÷ 2a, where the discriminant (b²−4ac) determines the nature of the solutions: positive discriminant gives two distinct real roots, zero gives one repeated root, and negative gives two complex conjugate roots. This solver handles all three cases automatically.",
   },
   {
