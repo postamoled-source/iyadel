@@ -57,7 +57,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Get your health classification instantly.",
     icon: "Activity",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/547f577b2_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/f7944a176_generated_image.png",
     content: "Body Mass Index (BMI) estimates body fat from your weight and height, classifying results as underweight, normal, overweight, or obese. It is a quick screening tool widely used by health professionals, but it does not distinguish between muscle and fat — very muscular people may register as overweight without being unhealthy. BMI works best as a starting point alongside other measures like waist circumference and body-fat percentage. For a complete assessment, consult a healthcare provider rather than relying on BMI alone.",
   },
   {
@@ -66,7 +66,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Estimate calories burned during activity.",
     icon: "Flame",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/9aab25421_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/f6ac9b9c3_generated_image.png",
     content: "Calorie burn during exercise depends on your weight, the activity, and how long you do it. This tool uses MET (Metabolic Equivalent of Task) values, which estimate the intensity of common activities from walking to swimming. Heavier individuals burn more calories for the same activity, and higher-intensity workouts burn more per minute. Remember that these are estimates — actual burn varies with fitness level, metabolism, and effort, so use the result as a guide rather than an exact figure.",
   },
   {
@@ -129,7 +129,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Basal Metabolic Rate (Mifflin-St Jeor).",
     icon: "Flame",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/fd50842e5_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/c66925f99_generated_image.png",
     content: "Basal Metabolic Rate (BMR) is the energy your body burns at complete rest just to keep vital functions running — breathing, circulation, and cell repair. The Mifflin-St Jeor equation is the modern standard for estimating it from weight, height, age, and gender. BMR accounts for roughly 60–75% of daily calorie burn. Knowing it is the foundation for calculating total daily energy expenditure (TDEE) and planning nutrition for weight loss, maintenance, or gain.",
   },
   {
@@ -138,7 +138,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Total Daily Energy Expenditure.",
     icon: "Heart",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/aa76d576d_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/1cfaac912_generated_image.png",
     content: "Total Daily Energy Expenditure (TDEE) is the number of calories you burn each day combining rest and activity. It is calculated by multiplying your BMR by an activity factor that reflects how active you are — from sedentary (1.2) to extra active (1.9). TDEE is the most useful single number for nutrition planning: eat below it to lose weight, at it to maintain, or above it to gain. Tracking intake against TDEE for a week reveals how your habits match your needs.",
   },
   {
@@ -147,7 +147,7 @@ export const STATIC_TOOLS = [
     category: "Health",
     description: "Daily calorie needs: loss, maintenance, gain.",
     icon: "Salad",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/81e4cf839_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/16f4dea5b_generated_image.png",
     content: "Your daily calorie needs depend on your BMR and activity level. This calculator shows three targets: a deficit for weight loss (−500 kcal/day, roughly 0.5 kg/week), maintenance to keep your weight steady, and a surplus for gaining (+500 kcal/day). The Mifflin-St Jeor equation estimates BMR, which is then multiplied by your activity factor to get maintenance (TDEE). Use these as starting points and adjust based on real results over a few weeks of consistent tracking.",
   },
   {
@@ -256,7 +256,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Plot mathematical functions.",
     icon: "FunctionSquare",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/7320e9d3e_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/bb1d43408_generated_image.png",
     content: "A function plotter visualizes mathematical functions by evaluating an expression across a range of x values. This tool supports common functions — sin, cos, tan, sqrt, ln, log, exp, abs — and the power operator (^). Plotting helps you understand behavior like roots, maxima, minima, and asymptotes that are hard to see from the formula alone. It is a quick way to explore equations for study, teaching, or checking homework.",
   },
   {
@@ -265,7 +265,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Quick percentage calculations.",
     icon: "Percent",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/ad024adb3_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/f0888f0d0_generated_image.png",
     content: "Percentages express a value as a fraction of 100, and they appear everywhere — discounts, taxes, statistics, and finance. This tool handles three common cases: finding a percentage of a number, finding what percentage one number is of another, and calculating the percentage change between two values. Percentage change is especially useful for comparing growth or decline over time. Knowing which mode to use avoids the common mistake of confusing 'percent of' with 'percent of what'.",
   },
   {
@@ -274,7 +274,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Speed, distance, time and Ohm's Law.",
     icon: "Atom",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/5d87d63db_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/8c5b36634_generated_image.png",
     content: "Physics calculators solve fundamental motion and electricity equations. The speed, distance, and time relations are connected: speed = distance ÷ time, distance = speed × time, and time = distance ÷ speed. Ohm's Law links voltage, current, and resistance: I = V ÷ R. These formulas are the backbone of mechanics and electronics and are useful for students, hobbyists, and engineers working through practical problems.",
   },
   {
@@ -283,7 +283,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Calculate molar mass instantly.",
     icon: "FlaskConical",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/21a81ebd5_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/4d3378b50_generated_image.png",
     content: "Molar mass is the mass of one mole of a substance, calculated by adding the atomic weights of all atoms in its formula. This tool parses a chemical formula (like H2O or C6H12O6) and sums the standard atomic weights of each element multiplied by its count. Knowing molar mass is essential for converting between grams and moles in lab work, stoichiometry, and solution preparation. The supported element set covers the most common elements; for exotic ones, add their atomic weights.",
   },
   {
@@ -310,7 +310,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Add, subtract, multiply and divide fractions.",
     icon: "Divide",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/148f7b51f_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/0571738b1_generated_image.png",
     content: "Fraction calculators perform arithmetic on two fractions and return the result in simplified form. Adding or subtracting requires a common denominator, while multiplication multiplies numerators and denominators directly, and division inverts the second fraction. The result is reduced to lowest terms by dividing by the greatest common divisor, and a decimal equivalent is shown for convenience.",
   },
   {
@@ -328,7 +328,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Area and volume of common shapes.",
     icon: "Triangle",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/e16b68576_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/8c217d3e2_generated_image.png",
     content: "Geometry calculators compute the area of common 2D shapes and the volume of 3D solids from their dimensions. Rectangle area is length × width, circle area is π × radius², triangle area is ½ × base × height, and rectangular prism volume is length × width × height. These formulas are fundamental in construction, design, and education, giving exact measurements from simple inputs.",
   },
   {
@@ -346,7 +346,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Greatest common divisor and least common multiple.",
     icon: "Hash",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/56983617b_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/b03f3db3a_generated_image.png",
     content: "The Greatest Common Divisor (GCD) is the largest integer that divides two or more numbers without remainder, while the Least Common Multiple (LCM) is the smallest integer that all of them divide evenly. GCD is used to simplify fractions, and LCM is used to find common denominators. Both are computed efficiently with the Euclidean algorithm, which repeatedly takes remainders until reaching zero.",
   },
   {
@@ -355,7 +355,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Calculate nPr and nCr instantly.",
     icon: "Shuffle",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/ee39ebc0c_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/fefc57e55_generated_image.png",
     content: "Permutations (nPr) count the number of ordered arrangements of r items chosen from n, where order matters: nPr = n! ÷ (n−r)!. Combinations (nCr) count unordered selections where order does not matter: nCr = n! ÷ (r! × (n−r)!). These are central to probability, statistics, and combinatorics — for example, counting possible passwords, lottery outcomes, or committee selections.",
   },
   {
@@ -364,7 +364,7 @@ export const STATIC_TOOLS = [
     category: "Math",
     description: "Add, subtract, multiply 2×2 matrices and find determinant.",
     icon: "Grid3x3",
-    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/2dcb2d416_generated_image.png",
+    logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/5f76bae5b_generated_image.png",
     content: "Matrix arithmetic operates on 2×2 matrices: addition and subtraction are element-wise, multiplication follows the dot-product rule, and the determinant of [[a,b],[c,d]] is ad − bc. The determinant reveals whether a matrix is invertible (non-zero) and appears in solving linear systems and transformations. This tool handles all four operations on two matrices.",
   },
   {
