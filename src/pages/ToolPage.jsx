@@ -38,6 +38,7 @@ import MathFunctionPlotter from "@/components/tools/MathFunctionPlotter";
 import MathFunctionArticle from "@/components/tools/MathFunctionArticle";
 import TimeConverter from "@/components/tools/TimeConverter";
 import TimeConverterArticle from "@/components/tools/TimeConverterArticle";
+import CarToolsArticle from "@/components/tools/CarToolsArticle";
 
 // Maps sitemap/database slugs (from fixIyadelSEO) to the shorter STATIC_TOOLS slugs.
 const SLUG_ALIASES = {
@@ -253,7 +254,25 @@ export default function ToolPage() {
   const formula = FORMULAS[slug] || `// ${tool.name} — interactive tool, see How to use above.`;
   const example = EXAMPLES[slug] || `Open the ${tool.name} calculator above to try a live example.`;
 
-  const faqs = slug === "time-converter"
+  const faqs = slug === "car-tools-suite"
+    ? (lang === "ar"
+      ? [
+          { q: "كيف أحسب تكلفة الوقود لرحلة معينة؟", a: "اضرب المسافة × الاستهلاك ÷ 100 × سعر اللتر. مثال: 500 كم × 8 لتر/100كم = 40 لتراً، 40 × 2.5 = 100 ريال. الأداة في الأعلى تحسبها تلقائيًا مع إمكانية تقسيم التكلفة على الركاب." },
+          { q: "ما الفرق بين القوة الحصانية الميكانيكية والمترية؟", a: "الميكانيكية = 745.7 واط، والمترية = 735.5 واط. الفرق حوالي 1.4%، لكنه يظهر في السيارات الأوروبية واليابانية. الأداة تعرض النتيجتين معًا لتجنب الالتباس." },
+          { q: "كيف أحسب القوة الحصانية من زمن الربع ميل؟", a: "HP = الوزن ÷ (ET ÷ 5.825)³. مثلاً سيارة 1500 كجم تقطع الربع ميل في 14 ثانية = 1500 ÷ (14 ÷ 5.825)³ ≈ 108 حصان. القيمة تقديرية لكنها مفيدة للمقارنة." },
+          { q: "ماذا يعني استهلاك 8 لتر لكل 100 كم؟", a: "يعني أن سيارتك تستهلك 8 لترات من الوقود لكل 100 كيلومتر تقطعها. أقل = أكثر كفاءة. المتوسط العالمي للسيارات الحديثة 6-9 لتر/100كم." },
+          { q: "هل يمكنني استخدام الأداة لحساب سيارة كهربائية؟", a: "حاسبة الوقود والاستهلاك مخصصة لمحركات الاحتراق. للسيارات الكهربائية، تحتاج وحدات مختلفة مثل kWh/100km. لكن حاسبة القوة الحصانية تعمل مع أي محرك." },
+          { q: "هل الأداة دقيقة؟", a: "الحسابات الرياضية دقيقة بنسبة 100%. لكن النتائج الفعلية تتأثر بعوامل خارجية: ضغط الإطارات، حالة الطقس، أسلوب القيادة، وحمل السيارة. الأداة تعطيك تقديرًا نظريًا يمكن الاعتماد عليه للتخطيط." },
+        ]
+      : [
+          { q: "How do I calculate fuel cost for a trip?", a: "Multiply distance × consumption ÷ 100 × price per liter. Example: 500 km × 8 L/100km = 40 liters, 40 × 2.5 = $100. The tool above calculates it automatically with the option to split the cost among passengers." },
+          { q: "What's the difference between mechanical and metric horsepower?", a: "Mechanical = 745.7 watts, Metric = 735.5 watts. The difference is about 1.4%, but it shows up in European and Japanese cars. The tool displays both to avoid confusion." },
+          { q: "How do I calculate horsepower from quarter-mile time?", a: "HP = Weight ÷ (ET ÷ 5.825)³. For example, a 1500 kg car covering the quarter mile in 14 seconds = 1500 ÷ (14 ÷ 5.825)³ ≈ 108 HP. The value is an estimate but useful for comparison." },
+          { q: "What does 8 liters per 100 km consumption mean?", a: "It means your car consumes 8 liters of fuel for every 100 kilometers you drive. Lower = more efficient. The global average for modern cars is 6-9 L/100km." },
+          { q: "Can I use the tool for an electric car?", a: "The fuel and mileage calculators are for combustion engines. For electric cars, you need different units like kWh/100km. But the horsepower calculator works with any engine." },
+          { q: "Is the tool accurate?", a: "The mathematical calculations are 100% accurate. However, real-world results are affected by external factors: tire pressure, weather, driving style, and vehicle load. The tool gives you a theoretical estimate you can rely on for planning." },
+        ])
+    : slug === "time-converter"
     ? (lang === "ar"
       ? [
           { q: "كيف أحول 7 ساعات و45 دقيقة إلى ساعات عشرية؟", a: "45 دقيقة = 45 ÷ 60 = 0.75 ساعة. إذن 7 ساعات و45 دقيقة = 7.75 ساعة عشرية. هذه هي الصيغة التي تطلبها معظم أنظمة الرواتب والجداول الزمنية." },
@@ -335,7 +354,25 @@ export default function ToolPage() {
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   };
   // Article schema — يُضاف فقط لصفحات تحتوي على مقال شامل
-  const articleSchema = slug === "time-converter" ? {
+  const articleSchema = slug === "car-tools-suite" ? {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: lang === "ar"
+      ? "حسابات السيارة: من فاتورة البنزين إلى قوة المحرك"
+      : "Car Calculations: From the Gas Bill to Engine Power",
+    description: lang === "ar"
+      ? "دليل عملي لحساب تكلفة الوقود واستهلاك البنزين والقوة الحصانية للسيارة، مع معادلات وأمثلة واقعية."
+      : "A practical guide to calculating fuel cost, gas mileage, and car horsepower, with formulas and real-world examples.",
+    author: { "@type": "Person", name: "Iyadel" },
+    publisher: {
+      "@type": "Organization",
+      name: "Iyadel",
+      logo: { "@type": "ImageObject", url: `${schemaBase}/logo.png` },
+    },
+    datePublished: "2026-01-25",
+    dateModified: "2026-01-25",
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${schemaBase}/tools/car-tools-suite` },
+  } : slug === "time-converter" ? {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: lang === "ar"
@@ -400,7 +437,7 @@ export default function ToolPage() {
 
   return (
     <section className="bg-[#FFFBEB] dark:bg-[#1E1B4B] min-h-screen py-6">
-      <div className={`${(slug === "math-function-calculator" || slug === "time-converter") ? "max-w-5xl" : "max-w-3xl"} mx-auto px-4`}>
+      <div className={`${(slug === "math-function-calculator" || slug === "time-converter" || slug === "car-tools-suite") ? "max-w-5xl" : "max-w-3xl"} mx-auto px-4`}>
         <nav className="flex items-center gap-1 text-xs text-[#6B7280] mb-4 flex-wrap">
           <Link to="/" className="hover:text-[#6D28D9]">{t("Home")}</Link>
           <ChevronRight className="w-3 h-3" />
@@ -450,6 +487,8 @@ export default function ToolPage() {
           <MathFunctionArticle />
         ) : slug === "time-converter" ? (
           <TimeConverterArticle />
+        ) : slug === "car-tools-suite" ? (
+          <CarToolsArticle />
         ) : (
           <>
             <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed mb-6">{intro}</p>
