@@ -34,6 +34,8 @@ import ToolCalculator from "@/components/tools/ToolCalculator";
 import PageNotFound from "@/lib/PageNotFound";
 import ExploreAllTools from "@/components/ExploreAllTools";
 import IdealWeightArticle from "@/components/tools/IdealWeightArticle";
+import MathFunctionPlotter from "@/components/tools/MathFunctionPlotter";
+import MathFunctionArticle from "@/components/tools/MathFunctionArticle";
 
 // Maps sitemap/database slugs (from fixIyadelSEO) to the shorter STATIC_TOOLS slugs.
 const SLUG_ALIASES = {
@@ -74,6 +76,7 @@ const EMBED = {
   "love-calculator": LoveCalculator,
   "car-tools-suite": CarTools,
   "university-guide": UniversityGuide,
+  "math-function-calculator": MathFunctionPlotter,
   "percentage-calculator": PercentageCalculator,
   "jpg-to-png": JpgToPngConverter,
   "image-resizer": ImageResizer,
@@ -93,7 +96,6 @@ const EMBED = {
   "qr-code-generator": ToolCalculator,
   "share-link-generator": ToolCalculator,
   "privacy-policy-generator": ToolCalculator,
-  "math-function-calculator": ToolCalculator,
   "physics-calculators": ToolCalculator,
   "chemistry-calculators": ToolCalculator,
   "riddle-game": ToolCalculator,
@@ -249,7 +251,23 @@ export default function ToolPage() {
   const formula = FORMULAS[slug] || `// ${tool.name} — interactive tool, see How to use above.`;
   const example = EXAMPLES[slug] || `Open the ${tool.name} calculator above to try a live example.`;
 
-  const faqs = slug === "ideal-weight"
+  const faqs = slug === "math-function-calculator"
+    ? (lang === "ar"
+      ? [
+          { q: "هل يمكن رسم أكثر من دالة في نفس الوقت؟", a: "نعم، حتى أربع دوال. كل دالة تأخذ لونًا مختلفًا، وفي الجدول أسفل الرسم سترى عمودًا لكل واحدة. مفيد لمقارنة سلوك دالتين." },
+          { q: "لماذا الرسم يبدو متقطعًا عند بعض الدوال؟", a: "بعض الدوال مثل tan(x) لها خطوط تقارب رأسية، حيث تقفز من +∞ إلى -∞. الأداة تتعرف على هذا القفز وتقطع الخط، وهو السلوك الصحيح رياضيًا." },
+          { q: "ما الدقة التي تعطيها الأداة؟", a: "الأداة ترسم عند 2400 نقطة عبر النطاق المحدد. في نطاق من -10 إلى 10، هذا يعني دقة تقارب 0.008 لكل نقطة، وهي كافية للاستخدام التعليمي." },
+          { q: "هل يمكن رسم الدوال الضمنية مثل x² + y² = 4؟", a: "لا، الأداة ترسم الدوال بصيغة y = f(x) فقط. الدوال الضمنية تحتاج خوارزميات مختلفة." },
+          { q: "هل البيانات التي أُدخلها تُرسل إلى خادم؟", a: "لا. كل شيء يعمل في متصفحك. الدوال، الرسم، التخزين — كلها تجري محليًا. لا توجد أي اتصالات خارجية بعد تحميل الصفحة." },
+        ]
+      : [
+          { q: "Can I plot more than one function at the same time?", a: "Yes, up to four functions. Each function gets a different color, and the table below the plot shows a column for each one. Useful for comparing the behavior of two functions." },
+          { q: "Why does the graph look broken for some functions?", a: "Some functions like tan(x) have vertical asymptotes where they jump from +∞ to -∞. The tool detects this jump and breaks the line, which is the mathematically correct behavior." },
+          { q: "What accuracy does the tool provide?", a: "The tool plots at 2400 points across the specified range. In a range from -10 to 10, this means accuracy of about 0.008 per point — more than enough for educational use." },
+          { q: "Can I plot implicit functions like x² + y² = 4?", a: "No, the tool plots functions in the form y = f(x) only. Implicit functions require different algorithms." },
+          { q: "Is the data I enter sent to a server?", a: "No. Everything runs in your browser. The functions, plotting, and storage all happen locally. There are no external connections after the page loads." },
+        ])
+    : slug === "ideal-weight"
     ? (lang === "ar"
       ? [
           { q: "كيف أحسب وزني المثالي بدون حاسبة؟", a: "استخدم معادلة مؤشر كتلة الجسم: اقسم وزنك بالكيلوجرام على مربع طولك بالمتر. إذا كانت النتيجة بين 18.5 و24.9 فأنت في النطاق الصحي." },
@@ -295,7 +313,25 @@ export default function ToolPage() {
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   };
   // Article schema — يُضاف فقط لصفحات تحتوي على مقال شامل
-  const articleSchema = slug === "ideal-weight" ? {
+  const articleSchema = slug === "math-function-calculator" ? {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: lang === "ar"
+      ? "رسم الدوال الرياضية: من الورق المربّع إلى شاشة المتصفح"
+      : "Plotting Mathematical Functions: From Graph Paper to the Browser Screen",
+    description: lang === "ar"
+      ? "مقال شامل عن رسم الدوال الرياضية: لماذا نرسم، أخطاء شائعة، ودوال تستحق أن ترسمها بعينك."
+      : "A comprehensive article about plotting mathematical functions: why we plot, common mistakes, and functions worth seeing.",
+    author: { "@type": "Person", name: "Iyadel" },
+    publisher: {
+      "@type": "Organization",
+      name: "Iyadel",
+      logo: { "@type": "ImageObject", url: `${schemaBase}/logo.png` },
+    },
+    datePublished: "2026-01-15",
+    dateModified: "2026-01-15",
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${schemaBase}/tools/math-function-calculator` },
+  } : slug === "ideal-weight" ? {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: lang === "ar"
@@ -324,7 +360,7 @@ export default function ToolPage() {
 
   return (
     <section className="bg-[#FFFBEB] dark:bg-[#1E1B4B] min-h-screen py-6">
-      <div className="max-w-3xl mx-auto px-4">
+      <div className={`${slug === "math-function-calculator" ? "max-w-6xl" : "max-w-3xl"} mx-auto px-4`}>
         <nav className="flex items-center gap-1 text-xs text-[#6B7280] mb-4 flex-wrap">
           <Link to="/" className="hover:text-[#6D28D9]">{t("Home")}</Link>
           <ChevronRight className="w-3 h-3" />
@@ -370,6 +406,8 @@ export default function ToolPage() {
 
         {slug === "ideal-weight" ? (
           <IdealWeightArticle />
+        ) : slug === "math-function-calculator" ? (
+          <MathFunctionArticle />
         ) : (
           <>
             <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed mb-6">{intro}</p>
