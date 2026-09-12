@@ -250,12 +250,19 @@ export default function ToolPage() {
   const example = EXAMPLES[slug] || `Open the ${tool.name} calculator above to try a live example.`;
 
   const faqs = slug === "ideal-weight"
-    ? [
-        { q: "كيف أحسب وزني المثالي بدون حاسبة؟", a: "استخدم معادلة مؤشر كتلة الجسم: اقسم وزنك بالكيلوجرام على مربع طولك بالمتر. إذا كانت النتيجة بين 18.5 و24.9 فأنت في النطاق الصحي." },
-        { q: "هل الوزن المثالي يختلف بين الرجل والمرأة؟", a: "نعم. تركيبة الجسم ونسبة العضلات تختلف بين الجنسين، لذلك يختلف النطاق المثالي قليلًا حتى لنفس الطول." },
-        { q: "ما هو الوزن المثالي للطول 170 للنساء؟", a: "عادة بين 58 و70 كجم حسب العمر وبنية الجسم، اعتمادًا على مؤشر كتلة الجسم الصحي." },
-        { q: "هل مؤشر كتلة الجسم كافٍ وحده؟", a: "لا. مؤشر كتلة الجسم مؤشر مبدئي فقط ولا يقيس نسبة الدهون. الأفضل دمجه مع قياس محيط الخصر ونسبة الدهون." },
-      ]
+    ? (lang === "ar"
+      ? [
+          { q: "كيف أحسب وزني المثالي بدون حاسبة؟", a: "استخدم معادلة مؤشر كتلة الجسم: اقسم وزنك بالكيلوجرام على مربع طولك بالمتر. إذا كانت النتيجة بين 18.5 و24.9 فأنت في النطاق الصحي." },
+          { q: "هل الوزن المثالي يختلف بين الرجل والمرأة؟", a: "نعم. تركيبة الجسم ونسبة العضلات تختلف بين الجنسين، لذلك يختلف النطاق المثالي قليلًا حتى لنفس الطول." },
+          { q: "ما هو الوزن المثالي للطول 170 للنساء؟", a: "عادة بين 58 و70 كجم حسب العمر وبنية الجسم، اعتمادًا على مؤشر كتلة الجسم الصحي." },
+          { q: "هل مؤشر كتلة الجسم كافٍ وحده؟", a: "لا. مؤشر كتلة الجسم مؤشر مبدئي فقط ولا يقيس نسبة الدهون. الأفضل دمجه مع قياس محيط الخصر ونسبة الدهون." },
+        ]
+      : [
+          { q: "How do I calculate my ideal weight without a calculator?", a: "Use the BMI formula: divide your weight in kilograms by your height in meters squared. If the result is between 18.5 and 24.9, you're in the healthy range." },
+          { q: "Does ideal weight differ between men and women?", a: "Yes. Body composition and muscle mass differ between sexes, so the ideal range differs slightly even for the same height." },
+          { q: "What is the ideal weight for a 170 cm woman?", a: "Usually between 58 and 70 kg depending on age and body frame, based on the healthy BMI range." },
+          { q: "Is BMI enough on its own?", a: "No. BMI is only a preliminary indicator and doesn't measure body fat. It's best to combine it with waist circumference and body fat percentage." },
+        ])
     : useSeoCfg
     ? seo.faqs.map((f) => ({ q: f.q, a: f.a }))
     : [
@@ -291,8 +298,12 @@ export default function ToolPage() {
   const articleSchema = slug === "ideal-weight" ? {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: "حساب الوزن المثالي حسب الطول والعمر: دليل شامل مع الجداول",
-    description: "دليل شامل لطريقة حساب الوزن المثالي حسب الطول والعمر، مع معادلات معتمدة وجداول وأسئلة شائعة.",
+    headline: lang === "ar"
+      ? "حساب الوزن المثالي حسب الطول والعمر: دليل شامل مع الجداول"
+      : "Ideal Weight by Height and Age: A Complete Guide with Charts",
+    description: lang === "ar"
+      ? "دليل شامل لطريقة حساب الوزن المثالي حسب الطول والعمر، مع معادلات معتمدة وجداول وأسئلة شائعة."
+      : "A complete guide to calculating your ideal weight by height and age, with proven formulas, charts, and FAQs.",
     author: { "@type": "Person", name: "Iyadel" },
     publisher: {
       "@type": "Organization",
