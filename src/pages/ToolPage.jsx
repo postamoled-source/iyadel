@@ -350,7 +350,7 @@ export default function ToolPage() {
               {useSeoCfg ? seo.h1 : t(tool.name)}
             </h1>
             <span className="inline-block mt-1 text-xs font-medium text-[#6B7280] bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] rounded-full px-2.5 py-0.5">{t(tool.category)}</span>
-            <p className="text-sm text-[#6B7280] mt-2">{t(tool.description)}</p>
+            <p className="text-sm text-[#6B7280] mt-2">{lang === "ar" && tool.description_ar ? tool.description_ar : t(tool.description)}</p>
           </div>
         </div>
 
