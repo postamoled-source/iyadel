@@ -36,6 +36,8 @@ import ExploreAllTools from "@/components/ExploreAllTools";
 import IdealWeightArticle from "@/components/tools/IdealWeightArticle";
 import MathFunctionPlotter from "@/components/tools/MathFunctionPlotter";
 import MathFunctionArticle from "@/components/tools/MathFunctionArticle";
+import TimeConverter from "@/components/tools/TimeConverter";
+import TimeConverterArticle from "@/components/tools/TimeConverterArticle";
 
 // Maps sitemap/database slugs (from fixIyadelSEO) to the shorter STATIC_TOOLS slugs.
 const SLUG_ALIASES = {
@@ -91,10 +93,10 @@ const EMBED = {
   "distance-converter": ToolCalculator,
   "weight-converter": ToolCalculator,
   "area-converter": ToolCalculator,
-  "time-converter": ToolCalculator,
   "speed-converter": ToolCalculator,
   "qr-code-generator": ToolCalculator,
   "share-link-generator": ToolCalculator,
+  "time-converter": TimeConverter,
   "privacy-policy-generator": ToolCalculator,
   "physics-calculators": ToolCalculator,
   "chemistry-calculators": ToolCalculator,
@@ -251,7 +253,27 @@ export default function ToolPage() {
   const formula = FORMULAS[slug] || `// ${tool.name} — interactive tool, see How to use above.`;
   const example = EXAMPLES[slug] || `Open the ${tool.name} calculator above to try a live example.`;
 
-  const faqs = slug === "math-function-calculator"
+  const faqs = slug === "time-converter"
+    ? (lang === "ar"
+      ? [
+          { q: "كيف أحول 7 ساعات و45 دقيقة إلى ساعات عشرية؟", a: "45 دقيقة = 45 ÷ 60 = 0.75 ساعة. إذن 7 ساعات و45 دقيقة = 7.75 ساعة عشرية. هذه هي الصيغة التي تطلبها معظم أنظمة الرواتب والجداول الزمنية." },
+          { q: "كم ثانية في اليوم الواحد؟", a: "24 ساعة × 60 دقيقة × 60 ثانية = 86,400 ثانية. الأداة تحسب هذا تلقائيًا لو أدخلت 1 يوم واخترت \"ثانية\" كنتيجة." },
+          { q: "كم ساعة في السنة الواحدة؟", a: "السنة الميلادية 365 يوماً، وتضاف إليها سنة كبيسة كل 4 سنوات. لذا المتوسط المعتمد دولياً هو 365.25 يوماً = 8,766 ساعة = 525,960 دقيقة. لو أخذنا السنة العادية فقط (365 يوماً)، ستكون 8,760 ساعة." },
+          { q: "هل يمكن استخدامه لحساب ساعات العمل في كشف الرواتب؟", a: "نعم، أدخل الساعات والدقائق واقرأ النتيجة العشرية، مثل 6 ساعات و30 دقيقة = 6.5 ساعة، جاهزة للإدخال في أي نظام رواتب." },
+          { q: "لماذا 45 دقيقة تساوي 0.75 وليس 0.45؟", a: "لأن الساعة 60 دقيقة، وليس 100. الكسر العشري يُحسب بقسمة الدقائق على 60. 45 ÷ 60 = 0.75. لو كانت الساعة 100 دقيقة، لكان الجواب 0.45، لكن نظامنا الزمني ستيني." },
+          { q: "هل الشهر دائماً 30.44 يوماً؟", a: "لا، هذه قيمة متوسطة فقط. الشهور الفعلية تتراوح بين 28 و31 يوماً. المتوسط مفيد للتحويلات الرياضية السريعة، لكنه غير دقيق للعقود والالتزامات القانونية التي تحتاج حساباً بالتواريخ الفعلية." },
+          { q: "هل تعمل الأداة بدون إنترنت؟", a: "نعم. بعد تحميل الصفحة، كل الحسابات تتم في المتصفح. لا توجد أي اتصالات خارجية، ولا يتم إرسال أي بيانات." },
+        ]
+      : [
+          { q: "How do I convert 7 hours and 45 minutes to decimal hours?", a: "45 minutes = 45 ÷ 60 = 0.75 hour. So 7 hours and 45 minutes = 7.75 decimal hours. This is the format most payroll and timesheet systems require." },
+          { q: "How many seconds in a day?", a: "24 hours × 60 minutes × 60 seconds = 86,400 seconds. The tool calculates this automatically if you enter 1 day and select 'seconds' as the result." },
+          { q: "How many hours in a year?", a: "A calendar year is 365 days, with a leap year every 4 years. So the internationally accepted average is 365.25 days = 8,766 hours = 525,960 minutes. A regular year (365 days) is 8,760 hours." },
+          { q: "Can I use it to calculate work hours for payroll?", a: "Yes — enter the hours and minutes and read the decimal result, like 6 hours and 30 minutes = 6.5 hours, ready to enter into any payroll system." },
+          { q: "Why is 45 minutes equal to 0.75 and not 0.45?", a: "Because an hour is 60 minutes, not 100. The decimal fraction is calculated by dividing minutes by 60. 45 ÷ 60 = 0.75. If an hour were 100 minutes, the answer would be 0.45, but our time system is sexagesimal." },
+          { q: "Is a month always 30.44 days?", a: "No, this is only an average. Actual months range from 28 to 31 days. The average is useful for quick mathematical conversions but inaccurate for contracts and legal commitments that need actual date counting." },
+          { q: "Does the tool work offline?", a: "Yes. After the page loads, all calculations happen in your browser. There are no external connections, and no data is sent anywhere." },
+        ])
+    : slug === "math-function-calculator"
     ? (lang === "ar"
       ? [
           { q: "هل يمكن رسم أكثر من دالة في نفس الوقت؟", a: "نعم، حتى أربع دوال. كل دالة تأخذ لونًا مختلفًا، وفي الجدول أسفل الرسم سترى عمودًا لكل واحدة. مفيد لمقارنة سلوك دالتين." },
@@ -313,7 +335,25 @@ export default function ToolPage() {
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   };
   // Article schema — يُضاف فقط لصفحات تحتوي على مقال شامل
-  const articleSchema = slug === "math-function-calculator" ? {
+  const articleSchema = slug === "time-converter" ? {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: lang === "ar"
+      ? "تحويل الوقت: من الجدول المدرسي إلى كشف الرواتب"
+      : "Time Conversion: From the School Schedule to the Payroll Sheet",
+    description: lang === "ar"
+      ? "مقال عن تحويل وحدات الوقت، الساعات العشرية، وأخطاء شائعة في حساب الدقائق والأشهر."
+      : "An article about converting time units, decimal hours, and common mistakes in calculating minutes and months.",
+    author: { "@type": "Person", name: "Iyadel" },
+    publisher: {
+      "@type": "Organization",
+      name: "Iyadel",
+      logo: { "@type": "ImageObject", url: `${schemaBase}/logo.png` },
+    },
+    datePublished: "2026-01-20",
+    dateModified: "2026-01-20",
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${schemaBase}/tools/time-converter` },
+  } : slug === "math-function-calculator" ? {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: lang === "ar"
@@ -360,7 +400,7 @@ export default function ToolPage() {
 
   return (
     <section className="bg-[#FFFBEB] dark:bg-[#1E1B4B] min-h-screen py-6">
-      <div className={`${slug === "math-function-calculator" ? "max-w-6xl" : "max-w-3xl"} mx-auto px-4`}>
+      <div className={`${(slug === "math-function-calculator" || slug === "time-converter") ? "max-w-5xl" : "max-w-3xl"} mx-auto px-4`}>
         <nav className="flex items-center gap-1 text-xs text-[#6B7280] mb-4 flex-wrap">
           <Link to="/" className="hover:text-[#6D28D9]">{t("Home")}</Link>
           <ChevronRight className="w-3 h-3" />
@@ -408,6 +448,8 @@ export default function ToolPage() {
           <IdealWeightArticle />
         ) : slug === "math-function-calculator" ? (
           <MathFunctionArticle />
+        ) : slug === "time-converter" ? (
+          <TimeConverterArticle />
         ) : (
           <>
             <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed mb-6">{intro}</p>
