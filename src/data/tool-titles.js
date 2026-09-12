@@ -19,7 +19,7 @@ export const TOOL_TITLES = {
   // Health
   "bmi-calculator": "Check Your BMI Instantly - Know Your Healthy Weight",
   "calories-burned": "Track Calories Burned - Fitness Made Simple",
-  "ideal-weight": "Find Your Ideal Weight - Healthy Target Calculator",
+  "ideal-weight": "حساب الوزن المثالي حسب الطول والعمر | حاسبة دقيقة + دليل شامل",
   "body-fat": "Measure Body Fat % - US Navy Method Calculator",
   "daily-protein": "How Much Protein Do You Need - Daily Intake Calculator",
   "daily-carbs": "Calculate Daily Carbs - Fuel Your Body Right",

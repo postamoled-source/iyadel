@@ -33,6 +33,7 @@ import ImageResizer from "@/components/tools/ImageResizer";
 import ToolCalculator from "@/components/tools/ToolCalculator";
 import PageNotFound from "@/lib/PageNotFound";
 import ExploreAllTools from "@/components/ExploreAllTools";
+import IdealWeightArticle from "@/components/tools/IdealWeightArticle";
 
 // Maps sitemap/database slugs (from fixIyadelSEO) to the shorter STATIC_TOOLS slugs.
 const SLUG_ALIASES = {
@@ -248,7 +249,14 @@ export default function ToolPage() {
   const formula = FORMULAS[slug] || `// ${tool.name} — interactive tool, see How to use above.`;
   const example = EXAMPLES[slug] || `Open the ${tool.name} calculator above to try a live example.`;
 
-  const faqs = useSeoCfg
+  const faqs = slug === "ideal-weight"
+    ? [
+        { q: "كيف أحسب وزني المثالي بدون حاسبة؟", a: "استخدم معادلة مؤشر كتلة الجسم: اقسم وزنك بالكيلوجرام على مربع طولك بالمتر. إذا كانت النتيجة بين 18.5 و24.9 فأنت في النطاق الصحي." },
+        { q: "هل الوزن المثالي يختلف بين الرجل والمرأة؟", a: "نعم. تركيبة الجسم ونسبة العضلات تختلف بين الجنسين، لذلك يختلف النطاق المثالي قليلًا حتى لنفس الطول." },
+        { q: "ما هو الوزن المثالي للطول 170 للنساء؟", a: "عادة بين 58 و70 كجم حسب العمر وبنية الجسم، اعتمادًا على مؤشر كتلة الجسم الصحي." },
+        { q: "هل مؤشر كتلة الجسم كافٍ وحده؟", a: "لا. مؤشر كتلة الجسم مؤشر مبدئي فقط ولا يقيس نسبة الدهون. الأفضل دمجه مع قياس محيط الخصر ونسبة الدهون." },
+      ]
+    : useSeoCfg
     ? seo.faqs.map((f) => ({ q: f.q, a: f.a }))
     : [
         { q: `${t("What is")} ${t(tool.name)}؟`, a: tool.description ? t(tool.description) : intro },
@@ -272,13 +280,29 @@ export default function ToolPage() {
   };
   const appSchema = {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
+    "@type": "WebApplication",
     name: tool.name,
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "Any (Web browser)",
     url: `${schemaBase}/tools/${slug}`,
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   };
+  // Article schema — يُضاف فقط لصفحات تحتوي على مقال شامل
+  const articleSchema = slug === "ideal-weight" ? {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "حساب الوزن المثالي حسب الطول والعمر: دليل شامل مع الجداول",
+    description: "دليل شامل لطريقة حساب الوزن المثالي حسب الطول والعمر، مع معادلات معتمدة وجداول وأسئلة شائعة.",
+    author: { "@type": "Person", name: "Iyadel" },
+    publisher: {
+      "@type": "Organization",
+      name: "Iyadel",
+      logo: { "@type": "ImageObject", url: `${schemaBase}/logo.png` },
+    },
+    datePublished: "2026-09-12",
+    dateModified: "2026-09-12",
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${schemaBase}/tools/ideal-weight` },
+  } : null;
 
   const sameCat = STATIC_TOOLS.filter((x) => x.category === tool.category && x.slug !== tool.slug);
   const others = STATIC_TOOLS.filter((x) => x.category !== tool.category);
@@ -319,7 +343,7 @@ export default function ToolPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#2D2A5A] rounded-[20px] p-5 shadow-[0_4px_12px_rgba(109,40,217,0.08)] mb-6">
+        <div id="calculator" className="bg-white dark:bg-[#2D2A5A] rounded-[20px] p-5 shadow-[0_4px_12px_rgba(109,40,217,0.08)] mb-6 scroll-mt-4">
           {Calc ? (
             <Calc slug={slug} />
           ) : (
@@ -333,41 +357,47 @@ export default function ToolPage() {
           )}
         </div>
 
-        <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed mb-6">{intro}</p>
+        {slug === "ideal-weight" ? (
+          <IdealWeightArticle />
+        ) : (
+          <>
+            <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed mb-6">{intro}</p>
 
-        {useSeoCfg && seo.content && (
-          <div className="mb-6">
-            <Section title={`What is ${tool.name}?`}>
-              <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed">{seo.content}</p>
-              <p className="mt-3 text-xs text-[#9CA3AF] dark:text-[#8B8AB0]">Last updated: September 2026</p>
+            {useSeoCfg && seo.content && (
+              <div className="mb-6">
+                <Section title={`What is ${tool.name}?`}>
+                  <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed">{seo.content}</p>
+                  <p className="mt-3 text-xs text-[#9CA3AF] dark:text-[#8B8AB0]">Last updated: September 2026</p>
+                </Section>
+              </div>
+            )}
+
+            <Section title={`${t("How to use")} ${t(tool.name)}`}>
+              <ol className="space-y-3">
+                {steps.slice(0, 3).map((s, i) => (
+                  <li key={i} className="flex gap-3">
+                    <span className="shrink-0 w-6 h-6 rounded-full bg-[#6D28D9] text-white text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                    <span className="text-sm text-[#374151] dark:text-[#D6D2EE] pt-0.5">{s}</span>
+                  </li>
+                ))}
+              </ol>
             </Section>
-          </div>
+
+            <Section title={t("Formula")}>
+              <pre className="bg-[#F9FAFB] dark:bg-[#1E1B4B] border border-[#F3F4F6] dark:border-[#4B3F8A] rounded-xl p-4 text-sm text-[#111827] dark:text-[#FEF3C7] overflow-x-auto font-mono whitespace-pre-wrap">{formula}</pre>
+            </Section>
+
+            <Section title={t("Example")}>
+              <p className="text-sm text-[#374151] dark:text-[#D6D2EE] bg-[#FFFBEB] dark:bg-[#2D2A5A] border border-[#FDE68A] rounded-xl p-4">{example}</p>
+            </Section>
+
+            <Section title={t("FAQs")}>
+              <div className="space-y-2">
+                {faqs.map((f, i) => <Faq key={i} q={f.q} a={f.a} />)}
+              </div>
+            </Section>
+          </>
         )}
-
-        <Section title={`${t("How to use")} ${t(tool.name)}`}>
-          <ol className="space-y-3">
-            {steps.slice(0, 3).map((s, i) => (
-              <li key={i} className="flex gap-3">
-                <span className="shrink-0 w-6 h-6 rounded-full bg-[#6D28D9] text-white text-xs font-bold flex items-center justify-center">{i + 1}</span>
-                <span className="text-sm text-[#374151] dark:text-[#D6D2EE] pt-0.5">{s}</span>
-              </li>
-            ))}
-          </ol>
-        </Section>
-
-        <Section title={t("Formula")}>
-          <pre className="bg-[#F9FAFB] dark:bg-[#1E1B4B] border border-[#F3F4F6] dark:border-[#4B3F8A] rounded-xl p-4 text-sm text-[#111827] dark:text-[#FEF3C7] overflow-x-auto font-mono whitespace-pre-wrap">{formula}</pre>
-        </Section>
-
-        <Section title={t("Example")}>
-          <p className="text-sm text-[#374151] dark:text-[#D6D2EE] bg-[#FFFBEB] dark:bg-[#2D2A5A] border border-[#FDE68A] rounded-xl p-4">{example}</p>
-        </Section>
-
-        <Section title={t("FAQs")}>
-          <div className="space-y-2">
-            {faqs.map((f, i) => <Faq key={i} q={f.q} a={f.a} />)}
-          </div>
-        </Section>
 
         <Section title={t("Related Tools")}>
           <div className="grid grid-cols-2 gap-3">
@@ -390,6 +420,7 @@ export default function ToolPage() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(appSchema) }} />
+        {articleSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />}
       </div>
     </section>
   );
