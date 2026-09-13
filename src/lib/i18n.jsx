@@ -789,6 +789,28 @@ const AR = {
   "Showing first 16 items": "عرض أول 16 عنصرًا",
   "depth": "العمق",
 
+  // Math tools — new tool names
+  "Basic Calculator": "آلة حاسبة أساسية",
+  "Scientific Calculator": "آلة حاسبة علمية",
+  "Fraction Calculator": "حاسبة الكسور",
+  "Statistics Calculator": "حاسبة الإحصاء",
+  "Geometry Calculator": "حاسبة الهندسة",
+  "Quadratic Equation Solver": "حل المعادلة التربيعية",
+  "GCD & LCM Calculator": "حاسبة الق.م.أ والق.م.م",
+  "Permutations & Combinations": "التباديل والتوافيق",
+  "Matrix Calculator (2×2)": "حاسبة المصفوفات (2×2)",
+
+  // Math tools — new descriptions
+  "Evaluate arithmetic expressions with order of operations.": "احسب التعابير الحسابية مع ترتيب العمليات.",
+  "Trigonometry, logarithms, powers and constants.": "حساب المثلثات واللوغاريتمات والأسس والثوابت.",
+  "Add, subtract, multiply and divide fractions.": "جمع وطرح وضرب وقسمة الكسور.",
+  "Mean, median, mode, variance and standard deviation.": "المتوسط والوسيط والمنوال والتباين والانحراف المعياري.",
+  "Area and volume of common shapes.": "مساحة وحجم الأشكال الشائعة.",
+  "Solve ax² + bx + c = 0 and find roots.": "حل المعادلة ax² + bx + c = 0 وإيجاد الجذور.",
+  "Greatest common divisor and least common multiple.": "القاسم المشترك الأكبر والمضاعف المشترك الأصغر.",
+  "Calculate nPr and nCr instantly.": "احسب التباديل (nPr) والتوافيق (nCr) فورًا.",
+  "Add, subtract, multiply 2×2 matrices and find determinant.": "جمع وطرح وضرب مصفوفات 2×2 وإيجاد المحدد.",
+
   // Health tools — names & descriptions
   "Ideal Weight Calculator": "حاسبة الوزن المثالي",
   "Body Fat Calculator": "حاسبة نسبة الدهون",
