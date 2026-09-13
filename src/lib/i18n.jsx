@@ -941,6 +941,11 @@ const AR = {
   // Love Calculator game
   "Love Calculator": "حاسبة الحب",
   "Enter two names and reveal your love compatibility percentage — a fun romantic game.": "أدخل اسمين واكتشف نسبة توافق الحب بينكما — لعبة رومانسية ممتعة.",
+
+  // Blog: Time Converter Guide
+  "Time Converter Guide: From Work Hours to Payroll": "دليل محول الوقت: من ساعات العمل إلى كشف الرواتب",
+  "Struggling to convert hours and minutes for your timesheet? Learn how decimal hours work, why 45 minutes is 0.75 not 0.45, and avoid the payroll mistakes that cost real money.": "تواجه صعوبة في تحويل الساعات والدقائق لكشف الرواتب؟ تعرّف على الساعات العشرية، ولماذا 45 دقيقة = 0.75 وليس 0.45، وتجنّب أخطاء الرواتب التي تكلف أموالاً حقيقية.",
+  "Productivity": "الإنتاجية",
 };
 
 const I18nContext = createContext(null);
