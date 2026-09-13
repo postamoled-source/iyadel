@@ -40,7 +40,7 @@ export const TOOL_TITLES = {
   "qr-code-generator": "Create Custom QR Codes - Free & Instant Generator",
   "share-link-generator": "Generate Share Links - Social Media in One Click",
   "privacy-policy-generator": "Generate GDPR Privacy Policy - Free & Instant",
-  "coupon-code-generator": "Generate Coupon Codes in Bulk - Free Promo Generator",
+  "coupon-code-generator": "Generate Unique Coupon Codes with Prefix & CSV Export - Free Bulk Tool",
 
   // Math
   "math-function-calculator": "Plot Any Math Function - Free Graphing Tool",

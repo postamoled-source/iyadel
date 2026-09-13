@@ -946,6 +946,11 @@ const AR = {
   "Time Converter Guide: From Work Hours to Payroll": "دليل محول الوقت: من ساعات العمل إلى كشف الرواتب",
   "Struggling to convert hours and minutes for your timesheet? Learn how decimal hours work, why 45 minutes is 0.75 not 0.45, and avoid the payroll mistakes that cost real money.": "تواجه صعوبة في تحويل الساعات والدقائق لكشف الرواتب؟ تعرّف على الساعات العشرية، ولماذا 45 دقيقة = 0.75 وليس 0.45، وتجنّب أخطاء الرواتب التي تكلف أموالاً حقيقية.",
   "Productivity": "الإنتاجية",
+
+  // Coupon Code Generator
+  "Coupon Code Generator": "مولد أكواد الخصم",
+  "Generate thousands of unique discount codes with custom prefix, suffix & CSV export for Shopify and WooCommerce. Free bulk coupon generator with anti-duplicate and anti-confusable-character protection.": "أنشئ آلاف أكواد الخصم الفريدة ببادئة ولاحقة مخصصة وتصدير CSV لـ Shopify وWooCommerce. مولد كوبونات مجاني بالجملة مع حماية من التكرار والأحرف المتشابهة (O و0 وI و1).",
+  "Converters": "المحوّلات",
 };
 
 const I18nContext = createContext(null);

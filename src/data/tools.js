@@ -246,10 +246,11 @@ export const STATIC_TOOLS = [
     name: "Coupon Code Generator",
     slug: "coupon-code-generator",
     category: "Converters",
-    description: "Create random, copy-ready promo codes.",
+    description: "Generate thousands of unique discount codes with custom prefix, suffix & CSV export for Shopify and WooCommerce. Free bulk coupon generator with anti-duplicate and anti-confusable-character protection.",
+    description_ar: "أنشئ آلاف أكواد الخصم الفريدة ببادئة ولاحقة مخصصة وتصدير CSV لـ Shopify وWooCommerce. مولد كوبونات مجاني بالجملة مع حماية من التكرار والأحرف المتشابهة (O و0 وI و1).",
     icon: "Ticket",
     logo: "https://media.base44.com/images/public/6a7e76e3396b41955b675542/4e1b754ca_generated_image.png",
-    content: "Coupon codes are short unique strings used for discounts, promotions, and tracking marketing campaigns. This generator creates batches of random codes with your chosen length, character set, and an optional prefix. The default character set excludes easily confused characters (O, I, 0, 1) so codes stay readable when printed or typed. Use dashes to break long codes into readable groups, and generate enough codes to cover your campaign plus extras.",
+    content: "A coupon code generator creates random, unique discount codes you can import straight into Shopify, WooCommerce, or any POS system that accepts CSV. It is built for big seasonal campaigns — Black Friday, Ramadan sales, launch giveaways — where you need hundreds or thousands of single-use codes instead of one shared promo. You control the character length, a prefix like SALE or BF2026, an optional suffix, and dash grouping for readability. The default character set excludes easily confused characters (O, I, 0, 1, L) so customers never fail at checkout due to a typo. Uniqueness is guaranteed by duplicate-checking each code as it is generated, so every customer gets a code nobody else can redeem. Export the finished list as CSV in one click — no signup, no watermark, all generation happens in your browser.",
   },
   {
     name: "Math Function Calculator",
