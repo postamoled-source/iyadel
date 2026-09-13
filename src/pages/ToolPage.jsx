@@ -40,6 +40,7 @@ import TimeConverter from "@/components/tools/TimeConverter";
 import TimeConverterArticle from "@/components/tools/TimeConverterArticle";
 import CarToolsArticle from "@/components/tools/CarToolsArticle";
 import WeightConverterArticle from "@/components/tools/WeightConverterArticle";
+import CouponCodeArticle from "@/components/tools/CouponCodeArticle";
 
 // Maps sitemap/database slugs (from fixIyadelSEO) to the shorter STATIC_TOOLS slugs.
 const SLUG_ALIASES = {
@@ -528,6 +529,8 @@ export default function ToolPage() {
           <CarToolsArticle />
         ) : slug === "weight-converter" ? (
           <WeightConverterArticle />
+        ) : slug === "coupon-code-generator" ? (
+          <CouponCodeArticle />
         ) : (
           <>
             <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed mb-6">{intro}</p>
