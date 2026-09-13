@@ -32,7 +32,7 @@ export const TOOL_TITLES = {
   // Converters
   "currency-converter": "Convert Currency Live - World Rates Free Tool",
   "distance-converter": "Convert Distance Instantly - Miles, KM, Meters & Feet",
-  "weight-converter": "Convert Weight Instantly - KG, LBS, Grams & Ounces",
+  "weight-converter": "Precise KG to LBS Converter - Exact 2.20462 Factor Free",
   "area-converter": "Convert Area Instantly - Sq Ft, Acres & Hectares",
   "time-converter": "Convert Time Fast - Hours, Minutes & Decimal Hours",
   "speed-converter": "Convert Speed Instantly - MPH, KPH, Knots & m/s",

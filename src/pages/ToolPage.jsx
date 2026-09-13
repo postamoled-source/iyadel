@@ -39,6 +39,7 @@ import MathFunctionArticle from "@/components/tools/MathFunctionArticle";
 import TimeConverter from "@/components/tools/TimeConverter";
 import TimeConverterArticle from "@/components/tools/TimeConverterArticle";
 import CarToolsArticle from "@/components/tools/CarToolsArticle";
+import WeightConverterArticle from "@/components/tools/WeightConverterArticle";
 
 // Maps sitemap/database slugs (from fixIyadelSEO) to the shorter STATIC_TOOLS slugs.
 const SLUG_ALIASES = {
@@ -322,6 +323,24 @@ export default function ToolPage() {
           { q: "What is the ideal weight for a 170 cm woman?", a: "Usually between 58 and 70 kg depending on age and body frame, based on the healthy BMI range." },
           { q: "Is BMI enough on its own?", a: "No. BMI is only a preliminary indicator and doesn't measure body fat. It's best to combine it with waist circumference and body fat percentage." },
         ])
+    : slug === "weight-converter"
+    ? (lang === "ar"
+      ? [
+          { q: "كيف أحول الكيلوغرام إلى باوند؟", a: "اضرب الكتلة بالكيلوغرام في 2.20462. مثال: 70 كجم × 2.20462 = 154.32 باوند. المعامل الدقيق هو 2.20462262185، لكن ست منازل كافية لأي استخدام عملي." },
+          { q: "كم غرام في الأونصة الواحدة؟", a: "الأونصة الواحدة = 28.3495 غرام. للأونصة السائلة (الحجم) قيمة مختلفة تمامًا: 29.5735 ملليلتر. تأكد دائمًا من نوع الأونصة المطلوبة قبل التحويل." },
+          { q: "ما هو الستون بالكيلوغرام؟", a: "الستون الواحد = 14 باوند = 6.35029 كيلوغرام. يُستخدم في المملكة المتحدة وأيرلندا لقياس وزن الجسم. إذا سمعت \"12 ستون\"، فهذا يعني حوالي 76.2 كيلوغرام." },
+          { q: "ما الفرق بين الطن المتري والطن الأمريكي؟", a: "الطن المتري = 1000 كجم. الطن الأمريكي (Short Ton) = 907.18 كجم. الطن الإمبراطوري (Long Ton) = 1016.05 كجم. الفرق بين المتري والأمريكي يقارب 10%، وهو مبلغ كبير في سياق الشحن." },
+          { q: "هل يمكنني استخدام الأرقام الجاهزة بدون حاسبة؟", a: "نعم، للتحويلات الشائعة مثل الكيلو إلى باوند، أو الغرام إلى أونصة. لكن للقيم غير المعتادة، أو عند الحاجة إلى دقة عالية، الأفضل استخدام أداة تحويل أو حاسبة تدعم المعاملات الكاملة." },
+          { q: "لماذا يحتوي الجدول على \"قيراط\" و\"ملليغرام\"؟", a: "القيراط يُستخدم في تجارة الأحجار الكريمة والذهب: 1 قيراط = 200 ملليغرام. الملليغرام يُستخدم لقياس الكميات الصغيرة جدًا، مثل مكونات بعض الوصفات الدقيقة أو أوزان العناصر الخفيفة. الوحدتان تُظهران أن التحويلات تغطي مدى واسعًا، من الجواهر إلى الأشياء الدقيقة." },
+        ]
+      : [
+          { q: "How do I convert kilograms to pounds?", a: "Multiply the mass in kilograms by 2.20462. Example: 70 kg × 2.20462 = 154.32 lb. The exact factor is 2.20462262185, but six decimal places are sufficient for any practical use." },
+          { q: "How many grams are in one ounce?", a: "One ounce = 28.3495 grams. A fluid ounce (volume) has a completely different value: 29.5735 milliliters. Always confirm which type of ounce is needed before converting." },
+          { q: "What is a stone in kilograms?", a: "One stone = 14 pounds = 6.35029 kg. It's used in the UK and Ireland for measuring body weight. If you hear '12 stone,' that's about 76.2 kg." },
+          { q: "What's the difference between a metric ton and a US ton?", a: "A metric ton (tonne) = 1,000 kg. A US short ton = 907.18 kg. A British imperial long ton = 1,016.05 kg. The difference between metric and US is nearly 10% — a large amount in shipping." },
+          { q: "Can I use ready-made numbers without a calculator?", a: "Yes, for common conversions like kg to pounds or grams to ounces. But for unusual values or when high precision is needed, it's better to use a conversion tool that supports the full factors." },
+          { q: "Why does the table include carats and milligrams?", a: "The carat is used in the gemstone and gold trade: 1 carat = 200 milligrams. The milligram is used for very small quantities, like precise recipe ingredients or light element weights. Both units show that conversions cover a wide range, from jewels to delicate items." },
+        ])
     : useSeoCfg
     ? seo.faqs.map((f) => ({ q: f.q, a: f.a }))
     : [
@@ -426,6 +445,24 @@ export default function ToolPage() {
     datePublished: "2026-09-12",
     dateModified: "2026-09-12",
     mainEntityOfPage: { "@type": "WebPage", "@id": `${schemaBase}/tools/ideal-weight` },
+  } : slug === "weight-converter" ? {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: lang === "ar"
+      ? "تحويل الوزن: من وصفة الكيك إلى وزن الحقيبة"
+      : "Weight Conversion: From a Cake Recipe to a Suitcase",
+    description: lang === "ar"
+      ? "دليل عملي لتحويل وحدات الوزن: كيلوغرام، باوند، أونصة، ستون، طن. مع جداول مرجعية، معاملات دقيقة، وأخطاء شائعة يجب تجنبها."
+      : "A practical guide to converting weight units: kilograms, pounds, ounces, stones, tons. With reference tables, precise factors, and common mistakes to avoid.",
+    author: { "@type": "Person", name: "Iyadel" },
+    publisher: {
+      "@type": "Organization",
+      name: "Iyadel",
+      logo: { "@type": "ImageObject", url: `${schemaBase}/logo.png` },
+    },
+    datePublished: "2026-01-27",
+    dateModified: "2026-01-27",
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${schemaBase}/tools/weight-converter` },
   } : null;
 
   const sameCat = STATIC_TOOLS.filter((x) => x.category === tool.category && x.slug !== tool.slug);
@@ -437,7 +474,7 @@ export default function ToolPage() {
 
   return (
     <section className="bg-[#FFFBEB] dark:bg-[#1E1B4B] min-h-screen py-6">
-      <div className={`${(slug === "math-function-calculator" || slug === "time-converter" || slug === "car-tools-suite") ? "max-w-5xl" : "max-w-3xl"} mx-auto px-4`}>
+      <div className={`${(slug === "math-function-calculator" || slug === "time-converter" || slug === "car-tools-suite" || slug === "weight-converter") ? "max-w-5xl" : "max-w-3xl"} mx-auto px-4`}>
         <nav className="flex items-center gap-1 text-xs text-[#6B7280] mb-4 flex-wrap">
           <Link to="/" className="hover:text-[#6D28D9]">{t("Home")}</Link>
           <ChevronRight className="w-3 h-3" />
@@ -489,6 +526,8 @@ export default function ToolPage() {
           <TimeConverterArticle />
         ) : slug === "car-tools-suite" ? (
           <CarToolsArticle />
+        ) : slug === "weight-converter" ? (
+          <WeightConverterArticle />
         ) : (
           <>
             <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed mb-6">{intro}</p>
