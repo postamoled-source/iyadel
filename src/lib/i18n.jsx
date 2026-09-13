@@ -780,6 +780,14 @@ const AR = {
   "Result Matrix": "مصفوفة النتيجة",
   "Determinant of a 2×2 matrix = a11·a22 − a12·a21.": "محدّد مصفوفة 2×2 = a11·a22 − a12·a21.",
   "nPr = ordered arrangements · nCr = unordered selections": "nPr = ترتيبات مرتبة · nCr = اختيارات غير مرتبة",
+  "Enter numbers to see a live bar chart": "أدخل أرقامًا لرؤية مخطط أعمدة مباشر",
+  "No real roots (parabola does not cross x-axis)": "لا جذور حقيقية (القطع المكافئ لا يعبر محور x)",
+  "Enter two or more positive integers": "أدخل عددين صحيحين موجبين أو أكثر",
+  "Common divisors": "القواسم المشتركة",
+  "Enter n and r (n ≥ r ≥ 0)": "أدخل n و r (n ≥ r ≥ 0)",
+  "selected": "مختار",
+  "Showing first 16 items": "عرض أول 16 عنصرًا",
+  "depth": "العمق",
 
   // Health tools — names & descriptions
   "Ideal Weight Calculator": "حاسبة الوزن المثالي",

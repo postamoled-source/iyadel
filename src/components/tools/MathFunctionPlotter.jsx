@@ -13,6 +13,7 @@ const PRESETS = ["x^2", "sin(x)", "cos(x)", "tan(x)", "sqrt(x)", "ln(x)", "exp(x
 
 const STR = {
   ar: {
+    xMin: "X الأدنى", xMax: "X الأعلى", yMin: "Y الأدنى", yMax: "Y الأعلى",
     functions: "الدوال", addFunction: "إضافة دالة", clearAll: "مسح الكل",
     quickExamples: "أمثلة سريعة", plotRange: "نطاق الرسم", applyRange: "تطبيق النطاق",
     savedSets: "المحفوظات", saveName: "اسم المجموعة...", zoomIn: "تكبير", zoomOut: "تصغير",
@@ -28,6 +29,7 @@ const STR = {
     saveFailed: "تعذّر الحفظ", notFound: "لم يُعثر على", notSaved: "غير محفوظة",
   },
   en: {
+    xMin: "X min", xMax: "X max", yMin: "Y min", yMax: "Y max",
     functions: "Functions", addFunction: "Add Function", clearAll: "Clear All",
     quickExamples: "Quick Examples", plotRange: "Plot Range", applyRange: "Apply Range",
     savedSets: "Saved Sets", saveName: "Set name...", zoomIn: "Zoom In", zoomOut: "Zoom Out",
@@ -612,19 +614,19 @@ export default function MathFunctionPlotter() {
               <div className="text-[12px] font-semibold uppercase tracking-wide text-[#94A3B8] dark:text-[#8B8AB0] mb-2.5">{S.plotRange}</div>
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block text-[12px] font-semibold text-[#94A3B8] dark:text-[#8B8AB0] mb-1 font-mono">X min</label>
+                  <label className="block text-[12px] font-semibold text-[#94A3B8] dark:text-[#8B8AB0] mb-1 font-mono">{S.xMin}</label>
                   <input id="mfp-xmin" type="number" defaultValue={view.xMin} step="1" className="w-full px-2.5 py-2 border border-[#E2E8F0] dark:border-[#4B3F8A] rounded-lg bg-[#FAFAFC] dark:bg-[#1E1B4B] text-[#0f172a] dark:text-[#FEF3C7] font-mono text-[13px] ltr text-left outline-none focus:border-[#6D28D9]" dir="ltr" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-semibold text-[#94A3B8] dark:text-[#8B8AB0] mb-1 font-mono">X max</label>
+                  <label className="block text-[12px] font-semibold text-[#94A3B8] dark:text-[#8B8AB0] mb-1 font-mono">{S.xMax}</label>
                   <input id="mfp-xmax" type="number" defaultValue={view.xMax} step="1" className="w-full px-2.5 py-2 border border-[#E2E8F0] dark:border-[#4B3F8A] rounded-lg bg-[#FAFAFC] dark:bg-[#1E1B4B] text-[#0f172a] dark:text-[#FEF3C7] font-mono text-[13px] ltr text-left outline-none focus:border-[#6D28D9]" dir="ltr" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-semibold text-[#94A3B8] dark:text-[#8B8AB0] mb-1 font-mono">Y min</label>
+                  <label className="block text-[12px] font-semibold text-[#94A3B8] dark:text-[#8B8AB0] mb-1 font-mono">{S.yMin}</label>
                   <input id="mfp-ymin" type="number" defaultValue={view.yMin} step="1" className="w-full px-2.5 py-2 border border-[#E2E8F0] dark:border-[#4B3F8A] rounded-lg bg-[#FAFAFC] dark:bg-[#1E1B4B] text-[#0f172a] dark:text-[#FEF3C7] font-mono text-[13px] ltr text-left outline-none focus:border-[#6D28D9]" dir="ltr" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-semibold text-[#94A3B8] dark:text-[#8B8AB0] mb-1 font-mono">Y max</label>
+                  <label className="block text-[12px] font-semibold text-[#94A3B8] dark:text-[#8B8AB0] mb-1 font-mono">{S.yMax}</label>
                   <input id="mfp-ymax" type="number" defaultValue={view.yMax} step="1" className="w-full px-2.5 py-2 border border-[#E2E8F0] dark:border-[#4B3F8A] rounded-lg bg-[#FAFAFC] dark:bg-[#1E1B4B] text-[#0f172a] dark:text-[#FEF3C7] font-mono text-[13px] ltr text-left outline-none focus:border-[#6D28D9]" dir="ltr" />
                 </div>
               </div>

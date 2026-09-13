@@ -175,7 +175,7 @@ export default function MathTools({ slug }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
             <NumInput label={t("a")} value={inputs.a} onChange={set("a")} placeholder={ph[mode][0]} />
             {needB && <NumInput label={t("b")} value={inputs.b} onChange={set("b")} placeholder={ph[mode][1]} />}
-            {needC && <NumInput label={t("c")} value={inputs.c} onChange={set("c")} placeholder="depth" />}
+            {needC && <NumInput label={t("c")} value={inputs.c} onChange={set("c")} placeholder={t("depth")} />}
           </div>
           <GeometryVisual type={mode} a={inputs.a} b={inputs.b} c={inputs.c} />
           <div className="flex justify-center mt-6"><CalcButton onClick={() => runCalc(calc)} busy={busy} busyLabel={t("Calculating...")}>{t("Calculate")}</CalcButton></div>
