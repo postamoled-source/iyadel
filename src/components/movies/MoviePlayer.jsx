@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Film, Loader2 } from "lucide-react";
 import HlsVideoPlayer from "./HlsVideoPlayer";
+import EmbedServersPlayer from "./EmbedServersPlayer";
 
 const DIRECT_RE = /\.(mp4|m4v|webm|ogg|ogv|mov|mkv|m3u8)(\?.*)?$/i;
 
@@ -27,7 +28,7 @@ function EmbedPlayer({ url, title, lang }) {
       <iframe
         src={toEmbedUrl(url)}
         title={title}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+        allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
         allowFullScreen
         className="w-full h-full"
         onLoad={() => setReady(true)}
@@ -36,7 +37,16 @@ function EmbedPlayer({ url, title, lang }) {
   );
 }
 
-export default function MoviePlayer({ url, poster, title, lang }) {
+export default function MoviePlayer({
+  url,
+  poster,
+  title,
+  lang,
+  tmdbId,
+  mediaType = "movie",
+  season = 1,
+  episode = 1,
+}) {
   const L = lang === "ar"
     ? {
         noSource: "لا يتوفر رابط تشغيل لهذا العمل بعد.",
@@ -49,24 +59,43 @@ export default function MoviePlayer({ url, poster, title, lang }) {
         directHint: "The player supports MP4, WebM, HLS (m3u8) and embed URLs.",
       };
 
-  if (!url) {
+  const shell = "w-full rounded-2xl overflow-hidden bg-black shadow-[0_8px_24px_rgba(0,0,0,0.18)]";
+
+  // 1. A direct link stored in the database (MP4, WebM, HLS…) — built-in player.
+  if (url) {
     return (
-      <div className="flex flex-col items-center justify-center text-center rounded-2xl border border-dashed border-[#E9D5FF] dark:border-[#4B3F8A] bg-white dark:bg-[#2D2A5A] px-5 py-10">
-        <Film className="w-8 h-8 text-[#9CA3AF] mb-3" />
-        <p className="text-sm font-semibold text-[#111827] dark:text-[#FEF3C7]">{L.noSource}</p>
-        <p className="text-xs text-[#6B7280] dark:text-[#A8A6C4] mt-1.5 max-w-xs leading-relaxed">{L.noSourceHint}</p>
-        <p className="text-[11px] text-[#9CA3AF] dark:text-[#8B8AB0] mt-2 max-w-xs leading-relaxed">{L.directHint}</p>
+      <div className={shell}>
+        {DIRECT_RE.test(url) ? (
+          <HlsVideoPlayer src={url} poster={poster} lang={lang} />
+        ) : (
+          <EmbedPlayer url={url} title={title} lang={lang} />
+        )}
+      </div>
+    );
+  }
+
+  // 2. No stored link — fall back to TMDB embed servers with a switcher.
+  if (tmdbId) {
+    return (
+      <div className={shell}>
+        <EmbedServersPlayer
+          tmdbId={tmdbId}
+          mediaType={mediaType}
+          season={season}
+          episode={episode}
+          title={title}
+          lang={lang}
+        />
       </div>
     );
   }
 
   return (
-    <div className="w-full rounded-2xl overflow-hidden bg-black shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
-      {DIRECT_RE.test(url) ? (
-        <HlsVideoPlayer src={url} poster={poster} lang={lang} />
-      ) : (
-        <EmbedPlayer url={url} title={title} lang={lang} />
-      )}
+    <div className="flex flex-col items-center justify-center text-center rounded-2xl border border-dashed border-[#E9D5FF] dark:border-[#4B3F8A] bg-white dark:bg-[#2D2A5A] px-5 py-10">
+      <Film className="w-8 h-8 text-[#9CA3AF] mb-3" />
+      <p className="text-sm font-semibold text-[#111827] dark:text-[#FEF3C7]">{L.noSource}</p>
+      <p className="text-xs text-[#6B7280] dark:text-[#A8A6C4] mt-1.5 max-w-xs leading-relaxed">{L.noSourceHint}</p>
+      <p className="text-[11px] text-[#9CA3AF] dark:text-[#8B8AB0] mt-2 max-w-xs leading-relaxed">{L.directHint}</p>
     </div>
   );
 }

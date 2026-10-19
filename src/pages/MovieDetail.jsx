@@ -119,6 +119,7 @@ export default function MovieDetail() {
   const cast = custom ? [] : (d.credits?.cast || []).slice(0, 10);
 
   const streamUrl = custom ? (r.watch_url || "") : "";
+  const tmdbId = custom ? (r.tmdb_id || "") : id;
 
   const similar = custom
     ? []
@@ -207,7 +208,14 @@ export default function MovieDetail() {
         )}
 
         <div className="mb-6">
-          <MoviePlayer url={streamUrl} poster={poster || backdrop} title={title} lang={lang} />
+          <MoviePlayer
+            url={streamUrl}
+            tmdbId={tmdbId}
+            mediaType={mediaType}
+            poster={poster || backdrop}
+            title={title}
+            lang={lang}
+          />
         </div>
 
         {overview && (
