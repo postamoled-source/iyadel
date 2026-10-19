@@ -3,8 +3,9 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { base44 } from "@/api/base44Client";
 import { tmdb } from "@/functions/tmdb";
-import { ArrowLeft, Star, Calendar, Clock, Globe, Loader2, Play, Download, ExternalLink, Film, Tv, Users } from "lucide-react";
+import { ArrowLeft, Star, Calendar, Clock, Globe, Loader2, Download, Film, Tv, Users } from "lucide-react";
 import { Image } from "@/components/ui/image";
+import MoviePlayer from "@/components/movies/MoviePlayer";
 
 function Section({ title, children }) {
   return (
@@ -28,18 +29,18 @@ export default function MovieDetail() {
   const [error, setError] = useState("");
 
   const L = lang === "ar"
-    ? { back: "رجوع", overview: "القصة", trailer: "الإعلان", watch: "المشاهدة الرسمية", downloads: "التحميل",
-        cast: "طاقم العمل", similar: "أعمال مشابهة", whereToWatch: "أين تشاهد", stream: "بث", rent: "إيجار", buy: "شراء",
+    ? { back: "رجوع", overview: "القصة", player: "المشاهدة", downloads: "التحميل",
+        cast: "طاقم العمل", similar: "أعمال مشابهة",
         loading: "جارٍ التحميل...", notFound: "لم يتم العثور على العمل.",
-        noDownloads: "لا تتوفر روابط تحميل مباشرة لهذا العمل — الكتالوج يوفّر البيانات الوصفية وأماكن المشاهدة الرسمية فقط.",
-        minutes: "دقيقة", seasons: "مواسم", country: "الدولة", rating: "التقييم", openLink: "فتح الرابط",
-        noTrailer: "لا يتوفر إعلان لهذا العمل." }
-    : { back: "Back", overview: "Overview", trailer: "Trailer", watch: "Official watch", downloads: "Download",
-        cast: "Cast", similar: "Similar titles", whereToWatch: "Where to watch", stream: "Stream", rent: "Rent", buy: "Buy",
+        noDownloads: "لا تتوفر روابط تحميل مباشرة لهذا العمل.",
+        minutes: "دقيقة", seasons: "مواسم", country: "الدولة", original: "الاسم الأصلي",
+        movie: "فيلم", series: "مسلسل" }
+    : { back: "Back", overview: "Overview", player: "Watch", downloads: "Download",
+        cast: "Cast", similar: "Similar titles",
         loading: "Loading...", notFound: "This title could not be found.",
-        noDownloads: "No direct download links are available for this title — the catalog provides metadata and official where-to-watch links only.",
-        minutes: "min", seasons: "seasons", country: "Country", rating: "Rating", openLink: "Open link",
-        noTrailer: "No trailer available for this title." };
+        noDownloads: "No direct download links are available for this title.",
+        minutes: "min", seasons: "seasons", country: "Country", original: "Original title",
+        movie: "Movie", series: "Series" };
 
   useEffect(() => {
     let alive = true;
@@ -95,6 +96,7 @@ export default function MovieDetail() {
   const d = custom ? null : item.data;
 
   const title = custom ? r.title : (d.title || d.name);
+  const originalTitle = custom ? "" : (d.original_title || d.original_name || "");
   const overview = custom ? r.overview : d.overview;
   const poster = custom
     ? r.poster_url
@@ -110,26 +112,13 @@ export default function MovieDetail() {
     : (d.genres || []).map((g) => g.name);
   const countryNames = custom
     ? (r.country ? [r.country] : [])
-    : ((d.production_countries || []).map((c) => c.name).length
+    : ((d.production_countries || []).length
         ? (d.production_countries || []).map((c) => c.name)
         : (d.origin_country || []));
   const runtime = custom ? "" : (d.runtime ? `${d.runtime} ${L.minutes}` : (d.number_of_seasons ? `${d.number_of_seasons} ${L.seasons}` : ""));
   const cast = custom ? [] : (d.credits?.cast || []).slice(0, 10);
 
-  const trailerKey = custom
-    ? (() => {
-        const m = (r.trailer_url || "").match(/(?:youtu\.be\/|v=)([A-Za-z0-9_-]{6,})/);
-        return m ? m[1] : "";
-      })()
-    : (d.videos?.results || []).find((v) => v.site === "YouTube" && v.type === "Trailer")?.key
-      || (d.videos?.results || []).find((v) => v.site === "YouTube")?.key
-      || "";
-
-  const providers = custom ? null : (() => {
-    const results = d["watch/providers"]?.results || {};
-    const region = results.US || Object.values(results)[0];
-    return region || null;
-  })();
+  const streamUrl = custom ? (r.watch_url || "") : "";
 
   const similar = custom
     ? []
@@ -145,22 +134,26 @@ export default function MovieDetail() {
 
   const downloadLinks = custom ? (r.download_links || []).filter((l) => l.url) : [];
   const TypeIcon = mediaType === "tv" ? Tv : Film;
+  const typeLabel = mediaType === "tv" ? L.series : L.movie;
 
   return (
     <section className="bg-[#FFFBEB] dark:bg-[#1E1B4B] min-h-screen">
       <div className="relative">
         {backdrop ? (
-          <div className="relative h-48 sm:h-72 w-full overflow-hidden">
+          <div className="relative h-44 sm:h-72 w-full overflow-hidden">
             <Image src={backdrop} alt={title} className="w-full h-full" fittingType="fill" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#FFFBEB] dark:from-[#1E1B4B] via-[#FFFBEB]/40 dark:via-[#1E1B4B]/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#FFFBEB] dark:from-[#1E1B4B] via-[#FFFBEB]/50 dark:via-[#1E1B4B]/65 to-transparent" />
           </div>
         ) : (
           <div className="h-24 w-full bg-gradient-to-br from-[#6D28D9] to-[#F59E0B]" />
         )}
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 -mt-16 sm:-mt-24 relative">
-        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 text-sm text-[#6D28D9] dark:text-[#FBBF24] font-semibold mb-4 hover:opacity-80">
+      <div className="max-w-3xl mx-auto px-4 -mt-14 sm:-mt-24 relative">
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-1.5 text-sm text-[#6D28D9] dark:text-[#FBBF24] font-semibold mb-4 hover:opacity-80"
+        >
           <ArrowLeft className="w-4 h-4" /> {L.back}
         </button>
 
@@ -174,13 +167,18 @@ export default function MovieDetail() {
               </div>
             )}
           </div>
-          <div className="flex-1 min-w-0 pt-14 sm:pt-20">
+
+          <div className="flex-1 min-w-0 pt-12 sm:pt-20">
+            <span className="inline-block text-[10px] font-bold uppercase tracking-wide text-[#6D28D9] dark:text-[#FBBF24] bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] rounded-full px-2.5 py-0.5 mb-2">
+              {typeLabel}
+            </span>
             <h1 className="text-xl sm:text-2xl font-bold text-[#111827] dark:text-[#FEF3C7] leading-tight">{title}</h1>
+            {originalTitle && originalTitle !== title && (
+              <p className="text-xs text-[#9CA3AF] dark:text-[#8B8AB0] mt-1 italic" dir="auto">
+                {L.original}: {originalTitle}
+              </p>
+            )}
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-[#6B7280] dark:text-[#A8A6C4]">
-              <span className="inline-flex items-center gap-1">
-                <TypeIcon className="w-3.5 h-3.5" />
-                {mediaType === "tv" ? (lang === "ar" ? "مسلسل" : "Series") : (lang === "ar" ? "فيلم" : "Movie")}
-              </span>
               {year && <span className="inline-flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{year}</span>}
               {runtime && <span className="inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{runtime}</span>}
               {rating > 0 && (
@@ -189,17 +187,18 @@ export default function MovieDetail() {
                 </span>
               )}
             </div>
-            {genreNames.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-3">
-                {genreNames.map((g) => (
-                  <span key={g} className="text-[11px] font-medium text-[#6B7280] dark:text-[#D6D2EE] bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] rounded-full px-2.5 py-0.5">
-                    {g}
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
         </div>
+
+        {genreNames.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {genreNames.map((g) => (
+              <span key={g} className="text-[11px] font-medium text-[#6B7280] dark:text-[#D6D2EE] bg-white dark:bg-[#2D2A5A] border border-[#E9D5FF] dark:border-[#4B3F8A] rounded-full px-2.5 py-0.5">
+                {g}
+              </span>
+            ))}
+          </div>
+        )}
 
         {countryNames.length > 0 && (
           <p className="inline-flex items-center gap-1.5 text-xs text-[#6B7280] dark:text-[#A8A6C4] mb-6">
@@ -207,74 +206,13 @@ export default function MovieDetail() {
           </p>
         )}
 
+        <div className="mb-6">
+          <MoviePlayer url={streamUrl} poster={poster || backdrop} title={title} lang={lang} />
+        </div>
+
         {overview && (
           <Section title={L.overview}>
-            <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed">{overview}</p>
-          </Section>
-        )}
-
-        <Section title={L.trailer}>
-          {trailerKey ? (
-            <div className="rounded-2xl overflow-hidden aspect-video bg-black">
-              <iframe
-                src={`https://www.youtube.com/embed/${trailerKey}`}
-                title={`${title} — ${L.trailer}`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
-            </div>
-          ) : (
-            <p className="text-sm text-[#6B7280] dark:text-[#A8A6C4]">{L.noTrailer}</p>
-          )}
-        </Section>
-
-        {custom && r.watch_url && (
-          <Section title={L.watch}>
-            <a
-              href={r.watch_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-[#6D28D9] to-[#F59E0B] text-white font-semibold px-5 py-3 rounded-xl shadow-[0_4px_12px_rgba(109,40,217,0.25)] hover:opacity-90 transition-opacity"
-            >
-              <Play className="w-4 h-4" /> {L.openLink}
-            </a>
-          </Section>
-        )}
-
-        {!custom && providers && (
-          <Section title={L.whereToWatch}>
-            <div className="space-y-4">
-              {[
-                { key: "flatrate", label: L.stream },
-                { key: "rent", label: L.rent },
-                { key: "buy", label: L.buy },
-              ].map(({ key, label }) => {
-                const list = providers[key] || [];
-                if (!list.length) return null;
-                return (
-                  <div key={key}>
-                    <p className="text-xs font-semibold text-[#6B7280] dark:text-[#A8A6C4] mb-2">{label}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {list.map((p) => (
-                        <a
-                          key={p.provider_id}
-                          href={providers.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 bg-white dark:bg-[#2D2A5A] border border-[#F3F4F6] dark:border-[#4B3F8A] rounded-xl px-3 py-2 hover:border-[#6D28D9] transition-colors"
-                        >
-                          {p.logo_path && (
-                            <img src={`https://image.tmdb.org/t/p/w45${p.logo_path}`} alt={p.provider_name} className="w-6 h-6 rounded" />
-                          )}
-                          <span className="text-xs font-semibold text-[#111827] dark:text-[#FEF3C7]">{p.provider_name}</span>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <p className="text-sm text-[#374151] dark:text-[#D6D2EE] leading-relaxed" dir="auto">{overview}</p>
           </Section>
         )}
 

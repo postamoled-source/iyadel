@@ -8,7 +8,7 @@ const labelClass = "block text-[11px] font-semibold text-[#6B7280] dark:text-[#A
 
 const EMPTY = {
   title: "", media_type: "movie", overview: "", poster_url: "", release_year: "",
-  country: "", rating: "", trailer_url: "", watch_url: "",
+  country: "", rating: "", watch_url: "",
   genres: "", download_links: [{ quality: "1080p", url: "" }],
 };
 
@@ -20,13 +20,17 @@ export default function AddMovieDialog({ lang, onAdded, onClose }) {
   const L = lang === "ar"
     ? { title: "إضافة عمل جديد", name: "الاسم", type: "النوع", movie: "فيلم", tv: "مسلسل",
         overview: "الوصف", poster: "رابط البوستر", year: "سنة الإصدار", country: "الدولة",
-        genres: "التصنيفات (افصل بفاصلة)", rating: "التقييم (0-10)", trailer: "رابط الإعلان (YouTube)",
-        watch: "رابط المشاهدة الرسمي", downloads: "روابط التحميل", quality: "الجودة", url: "الرابط",
+        genres: "التصنيفات (افصل بفاصلة)", rating: "التقييم (0-10)",
+        watch: "رابط التشغيل داخل الصفحة",
+        watchHint: "ملف مباشر (MP4 / WebM / HLS) أو رابط تضمين Embed. سيُشغَّل داخل صفحة العمل.",
+        downloads: "روابط التحميل", quality: "الجودة", url: "الرابط",
         addQuality: "إضافة جودة", save: "حفظ", saving: "جارٍ الحفظ...", cancel: "إلغاء", required: "الاسم مطلوب" }
     : { title: "Add a new title", name: "Title", type: "Type", movie: "Movie", tv: "Series",
         overview: "Overview", poster: "Poster URL", year: "Release year", country: "Country",
-        genres: "Genres (comma separated)", rating: "Rating (0-10)", trailer: "Trailer URL (YouTube)",
-        watch: "Official watch link", downloads: "Download links", quality: "Quality", url: "URL",
+        genres: "Genres (comma separated)", rating: "Rating (0-10)",
+        watch: "In-page playback URL",
+        watchHint: "A direct file (MP4 / WebM / HLS) or an embed URL. It plays inside the title page.",
+        downloads: "Download links", quality: "Quality", url: "URL",
         addQuality: "Add quality", save: "Save", saving: "Saving...", cancel: "Cancel", required: "Title is required" };
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
@@ -56,7 +60,6 @@ export default function AddMovieDialog({ lang, onAdded, onClose }) {
         country: form.country.trim(),
         genres: form.genres.split(",").map((g) => g.trim()).filter(Boolean),
         rating: Number(form.rating) || 0,
-        trailer_url: form.trailer_url.trim(),
         watch_url: form.watch_url.trim(),
         download_links: form.download_links.filter((l) => l.url.trim()),
         status: "published",
@@ -131,13 +134,9 @@ export default function AddMovieDialog({ lang, onAdded, onClose }) {
           </div>
 
           <div>
-            <label className={labelClass}>{L.trailer}</label>
-            <input value={form.trailer_url} onChange={(e) => set("trailer_url", e.target.value)} className={inputClass} />
-          </div>
-
-          <div>
             <label className={labelClass}>{L.watch}</label>
             <input value={form.watch_url} onChange={(e) => set("watch_url", e.target.value)} className={inputClass} />
+            <p className="text-[11px] text-[#9CA3AF] dark:text-[#8B8AB0] mt-1.5 leading-relaxed">{L.watchHint}</p>
           </div>
 
           <div>
