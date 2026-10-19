@@ -1,23 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import videojs from "video.js";
-import "video.js/dist/video-js.css";
+import { useState } from "react";
 import { Film, Loader2 } from "lucide-react";
-
-const SOURCE_TYPES = [
-  { re: /\.m3u8(\?.*)?$/i, type: "application/x-mpegURL" },
-  { re: /\.(mp4|m4v)(\?.*)?$/i, type: "video/mp4" },
-  { re: /\.webm(\?.*)?$/i, type: "video/webm" },
-  { re: /\.(ogv|ogg)(\?.*)?$/i, type: "video/ogg" },
-  { re: /\.mov(\?.*)?$/i, type: "video/quicktime" },
-  { re: /\.mkv(\?.*)?$/i, type: "video/x-matroska" },
-];
+import HlsVideoPlayer from "./HlsVideoPlayer";
 
 const DIRECT_RE = /\.(mp4|m4v|webm|ogg|ogv|mov|mkv|m3u8)(\?.*)?$/i;
-
-function sourceType(url) {
-  const found = SOURCE_TYPES.find((s) => s.re.test(url));
-  return found ? found.type : "video/mp4";
-}
 
 function toEmbedUrl(url) {
   const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
@@ -25,54 +10,6 @@ function toEmbedUrl(url) {
   const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
   if (vm) return `https://player.vimeo.com/video/${vm[1]}`;
   return url;
-}
-
-function VideoJsPlayer({ src, poster, type }) {
-  const videoRef = useRef(null);
-  const playerRef = useRef(null);
-
-  useEffect(() => {
-    if (!playerRef.current) {
-      playerRef.current = videojs(videoRef.current, {
-        controls: true,
-        autoplay: false,
-        preload: "auto",
-        fluid: true,
-        responsive: true,
-        playsinline: true,
-        playbackRates: [0.5, 1, 1.25, 1.5, 2],
-        controlBar: { pictureInPictureToggle: true },
-        poster: poster || "",
-        sources: [{ src, type }],
-      });
-    } else {
-      playerRef.current.poster(poster || "");
-      playerRef.current.src({ src, type });
-    }
-  }, [src, poster, type]);
-
-  useEffect(() => {
-    return () => {
-      const player = playerRef.current;
-      if (player && !player.isDisposed()) {
-        player.dispose();
-        playerRef.current = null;
-      }
-    };
-  }, []);
-
-  return (
-    <div className="w-full" data-vjs-player>
-      <video
-        ref={videoRef}
-        className="video-js vjs-big-play-centered w-full"
-        controls
-        preload="auto"
-        playsInline
-        webkit-playsinline="true"
-      />
-    </div>
-  );
 }
 
 function EmbedPlayer({ url, title, lang }) {
@@ -105,13 +42,11 @@ export default function MoviePlayer({ url, poster, title, lang }) {
         noSource: "لا يتوفر رابط تشغيل لهذا العمل بعد.",
         noSourceHint: "يمكن للمشرف إضافة رابط التشغيل من زر «إضافة عمل» في صفحة الأفلام.",
         directHint: "يدعم المشغّل MP4 و WebM و HLS (m3u8) وروابط التضمين Embed.",
-        unsupported: "تعذّر تشغيل هذا الرابط. تأكد من صحة الرابط أو جرّب متصفحًا آخر.",
       }
     : {
         noSource: "No playback source is available for this title yet.",
         noSourceHint: "An admin can add a playback link from the \"Add a title\" button on the Movies page.",
         directHint: "The player supports MP4, WebM, HLS (m3u8) and embed URLs.",
-        unsupported: "This link could not be played. Check the URL or try another browser.",
       };
 
   if (!url) {
@@ -125,12 +60,10 @@ export default function MoviePlayer({ url, poster, title, lang }) {
     );
   }
 
-  const isDirect = DIRECT_RE.test(url);
-
   return (
-    <div className="iyadel-player w-full rounded-2xl overflow-hidden bg-black shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
-      {isDirect ? (
-        <VideoJsPlayer src={url} poster={poster} type={sourceType(url)} />
+    <div className="w-full rounded-2xl overflow-hidden bg-black shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
+      {DIRECT_RE.test(url) ? (
+        <HlsVideoPlayer src={url} poster={poster} lang={lang} />
       ) : (
         <EmbedPlayer url={url} title={title} lang={lang} />
       )}
