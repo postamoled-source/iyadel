@@ -1,8 +1,23 @@
-import { useState } from "react";
-import { Play, Loader2, AlertCircle, Film } from "lucide-react";
-import { Image } from "@/components/ui/image";
+import { useEffect, useRef, useState } from "react";
+import videojs from "video.js";
+import "video.js/dist/video-js.css";
+import { Film, Loader2 } from "lucide-react";
+
+const SOURCE_TYPES = [
+  { re: /\.m3u8(\?.*)?$/i, type: "application/x-mpegURL" },
+  { re: /\.(mp4|m4v)(\?.*)?$/i, type: "video/mp4" },
+  { re: /\.webm(\?.*)?$/i, type: "video/webm" },
+  { re: /\.(ogv|ogg)(\?.*)?$/i, type: "video/ogg" },
+  { re: /\.mov(\?.*)?$/i, type: "video/quicktime" },
+  { re: /\.mkv(\?.*)?$/i, type: "video/x-matroska" },
+];
 
 const DIRECT_RE = /\.(mp4|m4v|webm|ogg|ogv|mov|mkv|m3u8)(\?.*)?$/i;
+
+function sourceType(url) {
+  const found = SOURCE_TYPES.find((s) => s.re.test(url));
+  return found ? found.type : "video/mp4";
+}
 
 function toEmbedUrl(url) {
   const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
@@ -12,27 +27,82 @@ function toEmbedUrl(url) {
   return url;
 }
 
-export default function MoviePlayer({ url, poster, title, lang }) {
-  const [active, setActive] = useState(false);
-  const [ready, setReady] = useState(false);
-  const [failed, setFailed] = useState(false);
+function VideoJsPlayer({ src, poster, type }) {
+  const containerRef = useRef(null);
+  const playerRef = useRef(null);
 
+  useEffect(() => {
+    if (!playerRef.current) {
+      const el = document.createElement("video-js");
+      el.classList.add("vjs-big-play-centered");
+      containerRef.current.appendChild(el);
+      playerRef.current = videojs(el, {
+        controls: true,
+        autoplay: false,
+        preload: "auto",
+        fluid: true,
+        responsive: true,
+        playbackRates: [0.5, 1, 1.25, 1.5, 2],
+        controlBar: { pictureInPictureToggle: true },
+        poster: poster || "",
+        sources: [{ src, type }],
+      });
+    } else {
+      playerRef.current.poster(poster || "");
+      playerRef.current.src({ src, type });
+    }
+  }, [src, poster, type]);
+
+  useEffect(() => {
+    return () => {
+      const player = playerRef.current;
+      if (player && !player.isDisposed()) {
+        player.dispose();
+        playerRef.current = null;
+      }
+    };
+  }, []);
+
+  return <div ref={containerRef} className="w-full" data-vjs-player />;
+}
+
+function EmbedPlayer({ url, title, lang }) {
+  const [ready, setReady] = useState(false);
+  const L = lang === "ar" ? { preparing: "جارٍ التحضير..." } : { preparing: "Preparing..." };
+
+  return (
+    <div className="relative w-full aspect-video bg-black">
+      {!ready && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black z-10">
+          <Loader2 className="w-6 h-6 animate-spin text-[#F59E0B]" />
+          <p className="text-xs text-white/70">{L.preparing}</p>
+        </div>
+      )}
+      <iframe
+        src={toEmbedUrl(url)}
+        title={title}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+        allowFullScreen
+        className="w-full h-full"
+        onLoad={() => setReady(true)}
+      />
+    </div>
+  );
+}
+
+export default function MoviePlayer({ url, poster, title, lang }) {
   const L = lang === "ar"
     ? {
-        play: "تشغيل الآن", preparing: "جارٍ التحضير...",
-        error: "تعذّر تشغيل هذا الرابط. تأكد من صحة الرابط أو جرّب متصفحًا آخر.",
-        unsupported: "صيغة الفيديو غير مدعومة في هذا المتصفح.",
         noSource: "لا يتوفر رابط تشغيل لهذا العمل بعد.",
         noSourceHint: "يمكن للمشرف إضافة رابط التشغيل من زر «إضافة عمل» في صفحة الأفلام.",
-        directHint: "للتشغيل داخل الصفحة، أضف رابطًا مباشرًا بصيغة MP4 أو WebM أو HLS، أو رابط تضمين (Embed).",
+        directHint: "يدعم المشغّل MP4 و WebM و HLS (m3u8) وروابط التضمين Embed.",
+        unsupported: "تعذّر تشغيل هذا الرابط. تأكد من صحة الرابط أو جرّب متصفحًا آخر.",
       }
     : {
-        play: "Play now", preparing: "Preparing...",
-        error: "This link could not be played. Check the URL or try another browser.",
-        unsupported: "This video format is not supported in your browser.",
         noSource: "No playback source is available for this title yet.",
         noSourceHint: "An admin can add a playback link from the \"Add a title\" button on the Movies page.",
-        directHint: "To play in-page, add a direct MP4, WebM or HLS link, or an embed URL.",
+        directHint: "The player supports MP4, WebM, HLS (m3u8) and embed URLs.",
+        unsupported: "This link could not be played. Check the URL or try another browser.",
       };
 
   if (!url) {
@@ -48,67 +118,12 @@ export default function MoviePlayer({ url, poster, title, lang }) {
 
   const isDirect = DIRECT_RE.test(url);
 
-  if (!active) {
-    return (
-      <button
-        type="button"
-        onClick={() => setActive(true)}
-        className="group relative w-full aspect-video rounded-2xl overflow-hidden bg-[#111827] shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
-        aria-label={L.play}
-      >
-        {poster ? (
-          <Image src={poster} alt={title} className="w-full h-full opacity-70 group-hover:opacity-85 transition-opacity" fittingType="fill" />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] opacity-80" />
-        )}
-        <span className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-          <span className="w-16 h-16 rounded-full bg-white/95 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-            <Play className="w-7 h-7 text-[#6D28D9] fill-[#6D28D9] ms-1" />
-          </span>
-          <span className="text-white text-sm font-bold drop-shadow">{L.play}</span>
-        </span>
-      </button>
-    );
-  }
-
   return (
-    <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black">
-      {!ready && !failed && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black z-10">
-          <Loader2 className="w-6 h-6 animate-spin text-[#F59E0B]" />
-          <p className="text-xs text-white/70">{L.preparing}</p>
-        </div>
-      )}
-
-      {failed && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black px-6 text-center z-10">
-          <AlertCircle className="w-6 h-6 text-[#DC2626]" />
-          <p className="text-xs text-white/80 leading-relaxed max-w-xs">{L.error}</p>
-        </div>
-      )}
-
+    <div className="iyadel-player w-full rounded-2xl overflow-hidden bg-black shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
       {isDirect ? (
-        <video
-          src={url}
-          poster={poster || undefined}
-          controls
-          autoPlay
-          playsInline
-          preload="metadata"
-          className="w-full h-full bg-black"
-          onLoadedData={() => setReady(true)}
-          onCanPlay={() => setReady(true)}
-          onError={() => { setFailed(true); setReady(true); }}
-        />
+        <VideoJsPlayer src={url} poster={poster} type={sourceType(url)} />
       ) : (
-        <iframe
-          src={toEmbedUrl(url)}
-          title={title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          allowFullScreen
-          className="w-full h-full"
-          onLoad={() => setReady(true)}
-        />
+        <EmbedPlayer url={url} title={title} lang={lang} />
       )}
     </div>
   );
