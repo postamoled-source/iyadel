@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
-import { Home as HomeIcon, Wrench, Newspaper, Info } from "lucide-react";
+import { Home as HomeIcon, Wrench, Newspaper, Info, Clapperboard } from "lucide-react";
 
 const ITEMS = [
   { to: "/", label: "Home", icon: HomeIcon },
   { to: "/#tools", label: "Tools", icon: Wrench },
+  { to: "/movies", label: "Movies", icon: Clapperboard },
   { to: "/Blog", label: "Blog", icon: Newspaper },
   { to: "/About", label: "About", icon: Info },
 ];

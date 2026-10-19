@@ -4,6 +4,7 @@ const AR = {
   // Nav / global
   "Home": "الرئيسية",
   "Blog": "المدونة",
+  "Movies": "أفلام ومسلسلات",
   "About Us": "من نحن",
   "About": "من نحن",
   "Dark Mode": "الوضع الداكن",

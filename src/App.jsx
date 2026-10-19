@@ -21,6 +21,8 @@ import Privacy from './pages/Privacy';
 import ToolPage from './pages/ToolPage';
 import PdfTools from './pages/PdfTools';
 import DomainInspectorPage from './pages/DomainInspectorPage';
+import Movies from './pages/Movies';
+import MovieDetail from './pages/MovieDetail';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -58,6 +60,8 @@ const AuthenticatedApp = () => {
         <Route path="/tools/:slug" element={<ToolPage />} />
         <Route path="/pdf-tools" element={<PdfTools />} />
         <Route path="/domain-inspector" element={<DomainInspectorPage />} />
+        <Route path="/movies" element={<Movies />} />
+        <Route path="/movies/:type/:id" element={<MovieDetail />} />
         <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} requireAdmin />}>
           <Route path="/Dashboard" element={<Dashboard />} />
         </Route>
