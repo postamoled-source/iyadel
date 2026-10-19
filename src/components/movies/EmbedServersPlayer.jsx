@@ -3,25 +3,22 @@ import { Loader2 } from "lucide-react";
 
 function buildServers(tmdbId, mediaType, season, episode) {
   const isTv = mediaType === "tv";
+  const path = isTv ? `tv/${tmdbId}/${season}/${episode}` : `movie/${tmdbId}`;
   return [
     {
-      key: "vidsrc",
-      label: "VidSrc",
-      url: isTv
-        ? `https://vidsrc.to/embed/tv/${tmdbId}/${season}/${episode}`
-        : `https://vidsrc.to/embed/movie/${tmdbId}`,
+      key: "vidlink",
+      label: "VidLink",
+      url: `https://vidlink.pro/${path}`,
     },
     {
-      key: "multiembed",
-      label: "MultiEmbed",
-      url: `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1`,
+      key: "vidfast",
+      label: "VidFast",
+      url: `https://vidfast.pro/${path}`,
     },
     {
-      key: "embedsu",
-      label: "EmbedSU",
-      url: isTv
-        ? `https://embed.su/embed/tv/${tmdbId}/${season}/${episode}`
-        : `https://embed.su/embed/movie/${tmdbId}`,
+      key: "111movies",
+      label: "111Movies",
+      url: `https://111movies.com/${path}`,
     },
   ];
 }
