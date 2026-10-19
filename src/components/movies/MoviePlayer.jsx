@@ -28,20 +28,18 @@ function toEmbedUrl(url) {
 }
 
 function VideoJsPlayer({ src, poster, type }) {
-  const containerRef = useRef(null);
+  const videoRef = useRef(null);
   const playerRef = useRef(null);
 
   useEffect(() => {
     if (!playerRef.current) {
-      const el = document.createElement("video-js");
-      el.classList.add("vjs-big-play-centered");
-      containerRef.current.appendChild(el);
-      playerRef.current = videojs(el, {
+      playerRef.current = videojs(videoRef.current, {
         controls: true,
         autoplay: false,
         preload: "auto",
         fluid: true,
         responsive: true,
+        playsinline: true,
         playbackRates: [0.5, 1, 1.25, 1.5, 2],
         controlBar: { pictureInPictureToggle: true },
         poster: poster || "",
@@ -63,7 +61,18 @@ function VideoJsPlayer({ src, poster, type }) {
     };
   }, []);
 
-  return <div ref={containerRef} className="w-full" data-vjs-player />;
+  return (
+    <div className="w-full" data-vjs-player>
+      <video
+        ref={videoRef}
+        className="video-js vjs-big-play-centered w-full"
+        controls
+        preload="auto"
+        playsInline
+        webkit-playsinline="true"
+      />
+    </div>
+  );
 }
 
 function EmbedPlayer({ url, title, lang }) {
