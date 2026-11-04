@@ -2,7 +2,6 @@ import { ExternalLink } from "lucide-react";
 import { Image } from "@/components/ui/image";
 
 const GROUPS = [
-  { key: "flatrate", en: "Subscription", ar: "اشتراك" },
   { key: "free", en: "Free", ar: "مجاني" },
   { key: "ads", en: "With ads", ar: "مع إعلانات" },
 ];
