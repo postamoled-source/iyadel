@@ -5,8 +5,6 @@ const GROUPS = [
   { key: "flatrate", en: "Subscription", ar: "اشتراك" },
   { key: "free", en: "Free", ar: "مجاني" },
   { key: "ads", en: "With ads", ar: "مع إعلانات" },
-  { key: "rent", en: "Rent", ar: "إيجار" },
-  { key: "buy", en: "Buy", ar: "شراء" },
 ];
 
 export default function WatchProviders({ providers, region, lang }) {
