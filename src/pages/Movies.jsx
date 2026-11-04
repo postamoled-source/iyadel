@@ -86,7 +86,7 @@ export default function Movies() {
       try {
         const payload = debouncedQuery
           ? { action: "search", query: debouncedQuery, page, language: lang === "ar" ? "ar" : "en-US" }
-          : { action: "discover", type, genre, country, sort, page, language: lang === "ar" ? "ar" : "en-US" };
+          : { action: "discover", type, genre, country, sort, page, prioritize_arabic: true, language: lang === "ar" ? "ar" : "en-US" };
         const res = await tmdb(payload);
         if (!alive) return;
         const data = res.data || {};
@@ -99,6 +99,7 @@ export default function Movies() {
             poster: r.poster_path ? `https://image.tmdb.org/t/p/w500${r.poster_path}` : "",
             year: (r.release_date || r.first_air_date || "").slice(0, 4),
             rating: r.vote_average || 0,
+            hasArabic: !!r.has_arabic,
             isCustom: false,
           }));
         setItems(results);
@@ -127,8 +128,9 @@ export default function Movies() {
         poster: m.poster_url || "",
         year: m.release_year || "",
         rating: m.rating || 0,
+        hasArabic: (m.language || "").toLowerCase().startsWith("ar"),
         isCustom: true,
-      })));
+      })).sort((a, b) => Number(b.hasArabic) - Number(a.hasArabic)));
     } catch {
       setLibrary([]);
     }

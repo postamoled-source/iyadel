@@ -2,6 +2,16 @@ import { secrets } from "base44:runtime";
 
 const BASE = "https://api.themoviedb.org/3";
 
+// A title "supports Arabic" when TMDB returns an Arabic localized overview or
+// title for it (or it was produced in Arabic in the first place).
+const ARABIC_RE = /[\u0600-\u06FF]/;
+
+function supportsArabic(item) {
+  if (!item) return false;
+  if (String(item.original_language || "").toLowerCase() === "ar") return true;
+  return ARABIC_RE.test(item.overview || "") || ARABIC_RE.test(item.title || item.name || "");
+}
+
 async function tmdb(path, params, key) {
   const url = new URL(BASE + path);
   url.searchParams.set("api_key", key);
@@ -46,9 +56,9 @@ export default async function (req) {
 
     if (action === "discover") {
       const type = body.type === "tv" ? "tv" : "movie";
-      const params = {
-        language,
-        page: body.page || 1,
+      const path = type === "tv" ? "/discover/tv" : "/discover/movie";
+      const page = Math.max(1, Number(body.page) || 1);
+      const params: Record<string, unknown> = {
         sort_by: body.sort || "popularity.desc",
         include_adult: false,
       };
@@ -58,12 +68,57 @@ export default async function (req) {
         if (type === "tv") params.first_air_date_year = body.year;
         else params.primary_release_year = body.year;
       }
-      const data = await tmdb(type === "tv" ? "/discover/tv" : "/discover/movie", params, key);
+
+      if (!body.prioritize_arabic) {
+        const data = await tmdb(path, { ...params, language, page }, key);
+        return Response.json({
+          results: (data.results || []).map((r) => ({ ...r, has_arabic: supportsArabic(r) })),
+          page: data.page || 1,
+          total_pages: data.total_pages || 1,
+          total_results: data.total_results || 0,
+        });
+      }
+
+      // Two TMDB pages make up one screen page, so every page leads with the
+      // titles that carry an Arabic translation and ends with the rest.
+      const tmdbPages = [(page - 1) * 2 + 1, (page - 1) * 2 + 2];
+      const languages = language === "ar" ? ["ar"] : [language, "ar"];
+      const jobs = tmdbPages.flatMap((p) => languages.map((l) => ({ page: p, language: l })));
+      const fetched = await Promise.all(
+        jobs.map((j) =>
+          tmdb(path, { ...params, language: j.language, page: j.page }, key).catch(() => ({ results: [], total_pages: 1 }))
+        )
+      );
+      const pageData = (p: number, l: string) =>
+        fetched[jobs.findIndex((j) => j.page === p && j.language === l)];
+
+      const merged: any[] = [];
+      const seen = new Set<unknown>();
+      tmdbPages.forEach((p) => {
+        (pageData(p, language).results || []).forEach((r) => {
+          if (seen.has(r.id)) return;
+          seen.add(r.id);
+          merged.push(r);
+        });
+      });
+
+      const arabicIds = new Set<unknown>();
+      tmdbPages.forEach((p) => {
+        (pageData(p, "ar").results || []).forEach((r) => {
+          if (supportsArabic(r)) arabicIds.add(r.id);
+        });
+      });
+
+      const results = merged
+        .map((r) => ({ ...r, has_arabic: arabicIds.has(r.id) }))
+        .sort((a, b) => Number(b.has_arabic) - Number(a.has_arabic));
+
+      const rawTotal = Math.max(...tmdbPages.map((p) => pageData(p, language).total_pages || 1));
       return Response.json({
-        results: data.results || [],
-        page: data.page || 1,
-        total_pages: data.total_pages || 1,
-        total_results: data.total_results || 0,
+        results,
+        page,
+        total_pages: Math.max(1, Math.ceil(rawTotal / 2)),
+        total_results: merged.length,
       });
     }
 

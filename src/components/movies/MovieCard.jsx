@@ -31,6 +31,11 @@ export default function MovieCard({ item, lang }) {
             {lang === "ar" ? "مضاف" : "Added"}
           </span>
         )}
+        {item.hasArabic && (
+          <span className="absolute bottom-2 start-2 bg-[#059669] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+            {lang === "ar" ? "عربي" : "Arabic"}
+          </span>
+        )}
       </div>
       <div className="p-3">
         <h3 dir="auto" className="text-sm font-bold text-[#111827] dark:text-[#FEF3C7] leading-snug line-clamp-2 min-h-[2.5rem]">
