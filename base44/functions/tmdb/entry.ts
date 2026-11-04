@@ -87,6 +87,26 @@ export default async function (req) {
       return Response.json({ data });
     }
 
+    if (action === "season") {
+      const id = String(body.id || "").replace(/[^0-9]/g, "");
+      const seasonNumber = Number(body.season);
+      if (!id || Number.isNaN(seasonNumber)) {
+        return Response.json({ error: "A valid id and season number are required" }, { status: 400 });
+      }
+      const data = await tmdb(`/tv/${id}/season/${seasonNumber}`, { language }, key);
+      const episodes = (data.episodes || []).map((ep) => ({
+        id: ep.id,
+        episode_number: ep.episode_number,
+        name: ep.name,
+        overview: ep.overview,
+        air_date: ep.air_date,
+        runtime: ep.runtime,
+        still_path: ep.still_path,
+        vote_average: ep.vote_average,
+      }));
+      return Response.json({ data: { season_number: data.season_number, episodes } });
+    }
+
     return Response.json({ error: "Unknown action" }, { status: 400 });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

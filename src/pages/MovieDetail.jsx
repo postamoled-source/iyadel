@@ -3,9 +3,12 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { base44 } from "@/api/base44Client";
 import { tmdb } from "@/functions/tmdb";
-import { ArrowLeft, Star, Calendar, Clock, Globe, Loader2, Download, Film, Tv, Users } from "lucide-react";
+import { ArrowLeft, Star, Calendar, Clock, Globe, Loader2, Download, Film, Tv, Users, Play } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import MoviePlayer from "@/components/movies/MoviePlayer";
+import TrailerModal from "@/components/movies/TrailerModal";
+import WatchProviders from "@/components/movies/WatchProviders";
+import EpisodeList from "@/components/movies/EpisodeList";
 
 function Section({ title, children }) {
   return (
@@ -27,6 +30,7 @@ export default function MovieDetail() {
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showTrailer, setShowTrailer] = useState(false);
 
   const L = lang === "ar"
     ? { back: "رجوع", overview: "القصة", player: "المشاهدة", downloads: "التحميل",
@@ -34,13 +38,15 @@ export default function MovieDetail() {
         loading: "جارٍ التحميل...", notFound: "لم يتم العثور على العمل.",
         noDownloads: "لا تتوفر روابط تحميل مباشرة لهذا العمل.",
         minutes: "دقيقة", seasons: "مواسم", country: "الدولة", original: "الاسم الأصلي",
-        movie: "فيلم", series: "مسلسل" }
+        movie: "فيلم", series: "مسلسل", trailer: "الإعلان الرسمي",
+        episodes: "الحلقات", whereToWatch: "شاهد الآن على" }
     : { back: "Back", overview: "Overview", player: "Watch", downloads: "Download",
         cast: "Cast", similar: "Similar titles",
         loading: "Loading...", notFound: "This title could not be found.",
         noDownloads: "No direct download links are available for this title.",
         minutes: "min", seasons: "seasons", country: "Country", original: "Original title",
-        movie: "Movie", series: "Series" };
+        movie: "Movie", series: "Series", trailer: "Official trailer",
+        episodes: "Episodes", whereToWatch: "Where to watch" };
 
   useEffect(() => {
     let alive = true;
@@ -120,6 +126,13 @@ export default function MovieDetail() {
 
   const streamUrl = custom ? (r.watch_url || "") : "";
   const tmdbId = custom ? (r.tmdb_id || "") : id;
+
+  const videos = custom ? [] : (d.videos?.results || []).filter((v) => v.site === "YouTube");
+  const trailerKey = (videos.find((v) => v.type === "Trailer") || videos[0])?.key || "";
+  const trailerUrl = custom ? (r.trailer_url || "") : (trailerKey ? `https://www.youtube.com/watch?v=${trailerKey}` : "");
+  const providers = custom ? null : (d["watch/providers"] || null);
+  const seasons = !custom && mediaType === "tv" ? (d.seasons || []).filter((s) => s.season_number > 0) : [];
+  const region = (typeof navigator !== "undefined" ? (navigator.language || "").split("-")[1] : "") || "US";
 
   const similar = custom
     ? []
@@ -216,7 +229,27 @@ export default function MovieDetail() {
             title={title}
             lang={lang}
           />
+          {trailerUrl && (
+            <button
+              onClick={() => setShowTrailer(true)}
+              className="mt-3 inline-flex items-center gap-2 rounded-xl bg-[#6D28D9] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              <Play className="h-4 w-4 fill-white" /> {L.trailer}
+            </button>
+          )}
         </div>
+
+        {seasons.length > 0 && (
+          <Section title={L.episodes}>
+            <EpisodeList tmdbId={tmdbId} seasons={seasons} lang={lang} />
+          </Section>
+        )}
+
+        {providers && (
+          <Section title={L.whereToWatch}>
+            <WatchProviders providers={providers} region={region} lang={lang} />
+          </Section>
+        )}
 
         {overview && (
           <Section title={L.overview}>
@@ -292,6 +325,10 @@ export default function MovieDetail() {
           <ArrowLeft className="w-4 h-4" /> {L.back}
         </Link>
       </div>
+
+      {showTrailer && trailerUrl && (
+        <TrailerModal url={trailerUrl} title={title} lang={lang} onClose={() => setShowTrailer(false)} />
+      )}
     </section>
   );
 }
