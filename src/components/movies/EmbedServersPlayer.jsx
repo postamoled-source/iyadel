@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import ProServerPane from "./ProServerPane";
 
@@ -14,7 +14,7 @@ function buildServers(tmdbId, mediaType, season, episode) {
     {
       key: "vidfast",
       label: "VidFast",
-      url: `https://vidfast.pro/${path}`,
+      url: `https://vidfast.vc/${path}`,
     },
     {
       key: "pro",
@@ -40,10 +40,31 @@ export default function EmbedServersPlayer({
   const servers = buildServers(tmdbId, mediaType, season, episode);
   const [activeKey, setActiveKey] = useState(servers[0].key);
   const [ready, setReady] = useState(false);
+  const [blocked, setBlocked] = useState(false);
 
   const L = lang === "ar"
-    ? { preparing: "جارٍ تجهيز المشغل...", servers: "السيرفرات" }
-    : { preparing: "Preparing the player...", servers: "Servers" };
+    ? {
+        preparing: "جارٍ تجهيز المشغل...",
+        servers: "السيرفرات",
+        blocked: "هذا السيرفر لم يفتح داخل الصفحة — قد يكون محجوباً من المتصفح.",
+        openTab: "افتح السيرفر في نافذة جديدة",
+        other: "أو اختر سيرفراً آخر من الأسفل.",
+      }
+    : {
+        preparing: "Preparing the player...",
+        servers: "Servers",
+        blocked: "This server did not open inside the page — the browser may be blocking it.",
+        openTab: "Open the server in a new tab",
+        other: "Or pick another server below.",
+      };
+
+  // Third-party embeds can be refused by the browser (frame blocking, network
+  // errors). After a grace period show a way out instead of an endless spinner.
+  useEffect(() => {
+    if (ready) return;
+    const t = setTimeout(() => setBlocked(true), 15000);
+    return () => clearTimeout(t);
+  }, [ready, activeKey]);
 
   const current = servers.find((s) => s.key === activeKey) || servers[0];
 
@@ -53,16 +74,31 @@ export default function EmbedServersPlayer({
         <ProServerPane title={title} lang={lang} />
       ) : (
         <div className="relative w-full aspect-video bg-black">
-          {!ready && (
+          {!ready && !blocked && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-black">
               <Loader2 className="w-8 h-8 animate-spin text-[#F59E0B]" />
               <p className="text-xs text-white/70">{L.preparing}</p>
+            </div>
+          )}
+          {!ready && blocked && (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-black px-5 text-center">
+              <p className="max-w-xs text-xs leading-relaxed text-white/70">{L.blocked}</p>
+              <a
+                href={current.url}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg bg-[#F59E0B] px-3 py-2 text-xs font-bold text-black"
+              >
+                {L.openTab}
+              </a>
+              <p className="text-[11px] text-white/40">{L.other}</p>
             </div>
           )}
           <iframe
             key={current.key}
             src={current.url}
             title={title}
+            referrerPolicy="origin"
             allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
             allowFullScreen
             className="w-full h-full border-0"
@@ -81,6 +117,7 @@ export default function EmbedServersPlayer({
             onClick={() => {
               if (s.key === activeKey) return;
               setReady(false);
+              setBlocked(false);
               setActiveKey(s.key);
             }}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
