@@ -49,6 +49,7 @@ export default function EmbedServersPlayer({
         blocked: "هذا السيرفر لم يفتح داخل الصفحة — قد يكون محجوباً من المتصفح.",
         openTab: "افتح السيرفر في نافذة جديدة",
         other: "أو اختر سيرفراً آخر من الأسفل.",
+        blackHint: "إذا بقيت الشاشة سوداء فالسيرفر غير متاح من شبكتك.",
       }
     : {
         preparing: "Preparing the player...",
@@ -56,6 +57,7 @@ export default function EmbedServersPlayer({
         blocked: "This server did not open inside the page — the browser may be blocking it.",
         openTab: "Open the server in a new tab",
         other: "Or pick another server below.",
+        blackHint: "If the screen stays black, this server isn't reachable from your network.",
       };
 
   // Third-party embeds can be refused by the browser (frame blocking, network
@@ -130,6 +132,20 @@ export default function EmbedServersPlayer({
           </button>
         ))}
       </div>
+
+      {current.key !== "pro" && (
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-[#111827] px-3 py-2">
+          <p className="text-[11px] leading-relaxed text-white/40">{L.blackHint}</p>
+          <a
+            href={current.url}
+            target="_blank"
+            rel="noreferrer"
+            className="text-[11px] font-semibold text-[#F59E0B] underline"
+          >
+            {L.openTab}
+          </a>
+        </div>
+      )}
     </div>
   );
 }
