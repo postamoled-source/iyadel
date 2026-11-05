@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Film, Loader2 } from "lucide-react";
-import CinemaPlayer from "./CinemaPlayer";
+import ProPlayer from "./pro/ProPlayer";
 import EmbedServersPlayer from "./EmbedServersPlayer";
 
-const DIRECT_RE = /\.(mp4|m4v|webm|ogg|ogv|mov|mkv|m3u8)(\?.*)?$/i;
+const DIRECT_RE = /\.(mp4|m4v|webm|ogg|ogv|mov|mkv|m3u8|mpd)(\?.*)?$/i;
 
 function toEmbedUrl(url) {
   const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
@@ -66,7 +66,7 @@ export default function MoviePlayer({
     return (
       <div className={shell}>
         {DIRECT_RE.test(url) ? (
-          <CinemaPlayer src={url} poster={poster} title={title} lang={lang} />
+          <ProPlayer src={url} poster={poster} title={title} lang={lang} />
         ) : (
           <EmbedPlayer url={url} title={title} lang={lang} />
         )}

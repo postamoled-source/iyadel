@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import ProServerPane from "./ProServerPane";
 
 function buildServers(tmdbId, mediaType, season, episode) {
   const isTv = mediaType === "tv";
@@ -14,6 +15,11 @@ function buildServers(tmdbId, mediaType, season, episode) {
       key: "vidfast",
       label: "VidFast",
       url: `https://vidfast.pro/${path}`,
+    },
+    {
+      key: "pro",
+      label: "Pro",
+      url: "",
     },
     {
       key: "111movies",
@@ -43,23 +49,27 @@ export default function EmbedServersPlayer({
 
   return (
     <div>
-      <div className="relative w-full aspect-video bg-black">
-        {!ready && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-black">
-            <Loader2 className="w-8 h-8 animate-spin text-[#F59E0B]" />
-            <p className="text-xs text-white/70">{L.preparing}</p>
-          </div>
-        )}
-        <iframe
-          key={current.key}
-          src={current.url}
-          title={title}
-          allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-          allowFullScreen
-          className="w-full h-full border-0"
-          onLoad={() => setReady(true)}
-        />
-      </div>
+      {current.key === "pro" ? (
+        <ProServerPane title={title} lang={lang} />
+      ) : (
+        <div className="relative w-full aspect-video bg-black">
+          {!ready && (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-black">
+              <Loader2 className="w-8 h-8 animate-spin text-[#F59E0B]" />
+              <p className="text-xs text-white/70">{L.preparing}</p>
+            </div>
+          )}
+          <iframe
+            key={current.key}
+            src={current.url}
+            title={title}
+            allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full border-0"
+            onLoad={() => setReady(true)}
+          />
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-2 px-3 py-3 bg-[#111827]">
         <span className="text-[11px] font-semibold text-white/60">{L.servers}:</span>
