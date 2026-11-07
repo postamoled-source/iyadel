@@ -23,6 +23,7 @@ import PdfTools from './pages/PdfTools';
 import DomainInspectorPage from './pages/DomainInspectorPage';
 import Movies from './pages/Movies';
 import MovieDetail from './pages/MovieDetail';
+import Sports from './pages/Sports';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -62,6 +63,7 @@ const AuthenticatedApp = () => {
         <Route path="/domain-inspector" element={<DomainInspectorPage />} />
         <Route path="/movies" element={<Movies />} />
         <Route path="/movies/:type/:id" element={<MovieDetail />} />
+        <Route path="/sports" element={<Sports />} />
         <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} requireAdmin />}>
           <Route path="/Dashboard" element={<Dashboard />} />
         </Route>

@@ -1,11 +1,37 @@
-import { secrets } from "base44:runtime";
-
 const CACHE = new Map();
 const TTL_MS = 45_000;
 const MAX_DAYS = 45;
 
-const UA =
-  "Mozilla/5.0 (Linux; Android 13; SM-A536B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36";
+// Competitions most followed by an Arabic-speaking football audience, in display
+// priority order. Every feed carries its own competition name and logo.
+const LEAGUES = [
+  { slug: "ksa.1", ar: "دوري روشن السعودي" },
+  { slug: "caf.champions", ar: "دوري أبطال أفريقيا" },
+  { slug: "caf.confed", ar: "كأس الكونفدرالية الأفريقية" },
+  { slug: "caf.nations", ar: "كأس أمم أفريقيا" },
+  { slug: "uefa.champions", ar: "دوري أبطال أوروبا" },
+  { slug: "uefa.europa", ar: "الدوري الأوروبي" },
+  { slug: "uefa.europa.conf", ar: "دوري المؤتمرات الأوروبي" },
+  { slug: "eng.1", ar: "الدوري الإنجليزي الممتاز" },
+  { slug: "esp.1", ar: "الدوري الإسباني" },
+  { slug: "ita.1", ar: "الدوري الإيطالي" },
+  { slug: "ger.1", ar: "الدوري الألماني" },
+  { slug: "fra.1", ar: "الدوري الفرنسي" },
+  { slug: "por.1", ar: "الدوري البرتغالي" },
+  { slug: "ned.1", ar: "الدوري الهولندي" },
+  { slug: "tur.1", ar: "الدوري التركي" },
+  { slug: "afc.champions", ar: "دوري أبطال آسيا" },
+  { slug: "fifa.worldq.caf", ar: "تصفيات كأس العالم — أفريقيا" },
+  { slug: "fifa.worldq.uefa", ar: "تصفيات كأس العالم — أوروبا" },
+  { slug: "uefa.nations", ar: "دوري الأمم الأوروبية" },
+  { slug: "eng.2", ar: "دوري الدرجة الأولى الإنجليزي" },
+  { slug: "esp.2", ar: "الدوري الإسباني — الدرجة الثانية" },
+  { slug: "ita.2", ar: "الدوري الإيطالي — الدرجة الثانية" },
+  { slug: "ger.2", ar: "الدوري الألماني — الدرجة الثانية" },
+  { slug: "fra.2", ar: "الدوري الفرنسي — الدرجة الثانية" },
+  { slug: "usa.1", ar: "الدوري الأمريكي" },
+  { slug: "mex.1", ar: "الدوري المكسيكي" },
+];
 
 function validDate(value) {
   const d = String(value || "").trim();
@@ -17,148 +43,108 @@ function validDate(value) {
   return d;
 }
 
-// The calendar page ships its match list as escaped React flight chunks; decode
-// them, then pull the balanced JSON array that follows "sections".
-function extractSections(html) {
-  const chunks = [];
-  const re = /self\.__next_f\.push\(\[1,"((?:[^"\\]|\\.)*)"\]\)/g;
-  let m;
-  while ((m = re.exec(html)) !== null) {
-    try {
-      chunks.push(JSON.parse('"' + m[1] + '"'));
-    } catch {
-      // skip a malformed chunk
-    }
-  }
-  const payload = chunks.join("");
-  const key = '"sections":[';
-  const start = payload.indexOf(key);
-  if (start === -1) return null;
-
-  let i = start + key.length - 1;
-  let depth = 0;
-  let inStr = false;
-  let esc = false;
-  for (; i < payload.length; i++) {
-    const c = payload[i];
-    if (inStr) {
-      if (esc) esc = false;
-      else if (c === "\\") esc = true;
-      else if (c === '"') inStr = false;
-      continue;
-    }
-    if (c === '"') {
-      inStr = true;
-      continue;
-    }
-    if (c === "[" || c === "{") depth++;
-    else if (c === "]" || c === "}") {
-      depth--;
-      if (depth === 0) {
-        i++;
-        break;
-      }
-    }
-  }
-  const raw = payload.slice(start + key.length - 1, i).replace(/"\$undefined"/g, "null");
-  try {
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
+function toNumber(score) {
+  return score === undefined || score === null || score === "" ? null : Number(score);
 }
 
-function normalizeMatch(match) {
-  const center = match.center || {};
-  const hasScore = center.type === "score" && center.home != null && center.away != null;
-  const scheduled = typeof center.label === "string" && /^\d{1,2}:\d{2}$/.test(center.label);
+function normalizeEvent(event) {
+  const comp = event.competitions?.[0] || {};
+  const status = comp.status?.type || {};
+  const competitors = comp.competitors || [];
+  const home = competitors.find((c) => c.homeAway === "home");
+  const away = competitors.find((c) => c.homeAway === "away");
+  if (!home || !away) return null;
+
+  const flag = `${status.name || ""} ${status.description || ""} ${status.shortDetail || ""}`;
   let type = "upcoming";
-  if (hasScore) type = center.live ? "live" : "finished";
-  else if (!scheduled && center.label) type = "postponed";
+  if (/postpon|susp/i.test(flag)) type = "postponed";
+  else if (/cancel|abandon/i.test(flag)) type = "canceled";
+  else if (status.state === "in") type = "live";
+  else if (status.state === "post") type = "finished";
 
   return {
-    id: String(match.id || ""),
-    home: { name: match.home?.name || "", logo: match.home?.logoUrl || "" },
-    away: { name: match.away?.name || "", logo: match.away?.logoUrl || "" },
-    kickoff: match.kickoffIso || center.kickoffIso || null,
+    id: String(event.id || ""),
+    home: {
+      name: home.team?.displayName || "",
+      short: home.team?.shortDisplayName || "",
+      logo: home.team?.logo || "",
+    },
+    away: {
+      name: away.team?.displayName || "",
+      short: away.team?.shortDisplayName || "",
+      logo: away.team?.logo || "",
+    },
+    kickoff: event.date || comp.date || null,
+    venue: comp.venue?.fullName || "",
     status: {
       type,
-      label: center.minuteLabel || center.dateLabel || null,
-      live: Boolean(center.live),
-      home_score: hasScore ? Number(center.home) : null,
-      away_score: hasScore ? Number(center.away) : null,
+      live: status.state === "in",
+      label: status.state === "pre" ? null : status.shortDetail || status.detail || null,
+      home_score: toNumber(home.score),
+      away_score: toNumber(away.score),
     },
   };
 }
 
-function normalizeSections(sections) {
-  return sections
-    .map((section) => ({
-      id: String(section.id || ""),
-      title: section.title || "",
-      logo: section.logoUrl || "",
-      matches: (section.matches || [])
-        .map(normalizeMatch)
-        .filter((m) => m.home.name && m.away.name)
-        .sort((a, b) => String(a.kickoff || "").localeCompare(String(b.kickoff || ""))),
-    }))
-    .filter((section) => section.matches.length > 0);
+async function fetchLeague(league, date) {
+  const res = await fetch(
+    `https://site.api.espn.com/apis/site/v2/sports/soccer/${league.slug}/scoreboard?dates=${date.replace(/-/g, "")}&limit=100`,
+    { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(9_000) }
+  );
+  if (!res.ok) return null;
+  const json = await res.json();
+  const matches = (json.events || [])
+    .map(normalizeEvent)
+    .filter((m) => m && m.home.name && m.away.name)
+    .sort((a, b) => String(a.kickoff || "").localeCompare(String(b.kickoff || "")));
+  if (matches.length === 0) return null;
+
+  const meta = json.leagues?.[0] || {};
+  return {
+    id: league.slug,
+    name: meta.name || league.slug,
+    name_ar: league.ar,
+    logo: String(meta.logos?.[0]?.href || "").replace(/^http:/, "https:"),
+    matches,
+  };
+}
+
+async function fetchAll(date) {
+  const sections = [];
+  for (let i = 0; i < LEAGUES.length; i += 6) {
+    const results = await Promise.allSettled(LEAGUES.slice(i, i + 6).map((l) => fetchLeague(l, date)));
+    results.forEach((r) => {
+      if (r.status === "fulfilled" && r.value) sections.push(r.value);
+    });
+  }
+  return sections;
 }
 
 export default async function (req) {
   try {
     const body = await req.json().catch(() => ({}));
-    if (body.debug) {
-      const target = encodeURIComponent("https://m.elbotola.com/analytics/calendar/2026-11-07/");
-      const cases = [
-        { name: "allorigins", url: "https://api.allorigins.win/raw?url=" + target, headers: { Accept: "text/html" } },
-        { name: "codetabs", url: "https://api.codetabs.com/v1/proxy?quest=" + target, headers: { Accept: "text/html" } },
-        { name: "corsproxy", url: "https://corsproxy.io/?url=" + target, headers: { Accept: "text/html" } },
-        { name: "espn_soccer", url: "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard", headers: { Accept: "application/json" } },
-      ];
-      const out = [];
-      for (const c of cases) {
-        try {
-          const r = await fetch(c.url, { headers: c.headers, signal: AbortSignal.timeout(10000) });
-          const txt = await r.text();
-          out.push({ name: c.name, status: r.status, head: txt.slice(0, 120) });
-        } catch (e) {
-          out.push({ name: c.name, error: String(e).slice(0, 120) });
-        }
-      }
-      return Response.json({ debug: out });
-    }
-    const lang = body.lang === "ar" ? "ar" : "en";
     const date = validDate(body.date) || new Date().toISOString().slice(0, 10);
 
-    const cacheKey = date + ":" + lang;
-    const cached = CACHE.get(cacheKey);
+    const cached = CACHE.get(date);
     if (cached && Date.now() - cached.at < TTL_MS) return Response.json(cached.data);
 
-    const host = lang === "ar" ? "https://m.elbotola.com" : "https://m.elbotola.com/en";
-    const res = await fetch(`${host}/analytics/calendar/${date}/`, {
-      headers: { "User-Agent": UA, Accept: "text/html,application/xhtml+xml" },
-      signal: AbortSignal.timeout(12_000),
-    });
-    if (!res.ok) {
-      return Response.json({ error: "Upstream calendar unavailable (" + res.status + ")" }, { status: 502 });
+    const sections = await fetchAll(date);
+    if (sections.length === 0) {
+      return Response.json({ error: "No match data available for this date" }, { status: 502 });
     }
 
-    const sections = normalizeSections(extractSections(await res.text()) || []);
     const data = {
       date,
-      lang,
       updated_at: new Date().toISOString(),
       sections,
       totals: {
-        matches: sections.reduce((sum, s) => sum + s.matches.length, 0),
+        matches: sections.reduce((n, s) => n + s.matches.length, 0),
         competitions: sections.length,
-        live: sections.reduce((sum, s) => sum + s.matches.filter((m) => m.status.type === "live").length, 0),
+        live: sections.reduce((n, s) => n + s.matches.filter((m) => m.status.type === "live").length, 0),
       },
     };
 
-    CACHE.set(cacheKey, { at: Date.now(), data });
+    CACHE.set(date, { at: Date.now(), data });
     if (CACHE.size > 40) CACHE.delete(CACHE.keys().next().value);
 
     return Response.json(data);

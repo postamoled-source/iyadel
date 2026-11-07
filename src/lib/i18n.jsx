@@ -952,6 +952,8 @@ const AR = {
   "Coupon Code Generator": "مولد أكواد الخصم",
   "Generate thousands of unique discount codes with custom prefix, suffix & CSV export for Shopify and WooCommerce. Free bulk coupon generator with anti-duplicate and anti-confusable-character protection.": "أنشئ آلاف أكواد الخصم الفريدة ببادئة ولاحقة مخصصة وتصدير CSV لـ Shopify وWooCommerce. مولد كوبونات مجاني بالجملة مع حماية من التكرار والأحرف المتشابهة (O و0 وI و1).",
   "Converters": "المحوّلات",
+  "Sports": "الرياضة",
+  "Sports Calendar": "أجندة الرياضة",
 };
 
 const I18nContext = createContext(null);
