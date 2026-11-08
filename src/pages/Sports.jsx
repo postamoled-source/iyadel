@@ -3,14 +3,16 @@ import { base44 } from "@/api/base44Client";
 import { useI18n } from "@/lib/i18n";
 import { CalendarDays, Loader2, Radio, RefreshCw, Trophy } from "lucide-react";
 import DateStrip, { dayKey } from "@/components/sports/DateStrip";
+import RegionTabs from "@/components/sports/RegionTabs";
 import LeagueSection from "@/components/sports/LeagueSection";
 
 const TEXT = {
   en: {
     title: "Sports Calendar",
-    subtitle: "Football fixtures, live scores and results — all in one place.",
+    subtitle: "Fixtures, live scores and results across Arab, European, African, Asian and American competitions.",
     live: "Live now",
     matches: "matches",
+    competitions: "competitions",
     empty: "No matches scheduled on this day.",
     emptyHint: "Pick another date from the strip above.",
     error: "We couldn't load the matches right now.",
@@ -20,9 +22,10 @@ const TEXT = {
   },
   ar: {
     title: "أجندة الرياضة",
-    subtitle: "مواعيد المباريات والنتائج الحية في مكان واحد.",
+    subtitle: "مواعيد المباريات والنتائج الحية في الدوريات العربية والأوروبية والأفريقية والآسيوية والأمريكية.",
     live: "مباشر الآن",
     matches: "مباراة",
+    competitions: "بطولة",
     empty: "لا توجد مباريات في هذا اليوم.",
     emptyHint: "اختر تاريخاً آخر من الأعلى.",
     error: "تعذّر تحميل المباريات حالياً.",
@@ -36,6 +39,7 @@ export default function Sports() {
   const { lang } = useI18n();
   const t = TEXT[lang] || TEXT.en;
   const [date, setDate] = useState(() => dayKey(new Date()));
+  const [region, setRegion] = useState("all");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -46,7 +50,7 @@ export default function Sports() {
       setError(false);
     }
     try {
-      const res = await base44.functions.invoke("sportsCalendar", { date: targetDate });
+      const res = await base44.functions.invoke("sportsCalendar", { action: "board", date: targetDate });
       if (res.data?.error) throw new Error(res.data.error);
       setData(res.data);
       setError(false);
@@ -64,7 +68,6 @@ export default function Sports() {
     load(date, false);
   }, [date, load]);
 
-  // Live scores refresh themselves while a match is in play.
   const liveCount = useMemo(() => data?.totals?.live || 0, [data]);
   useEffect(() => {
     if (liveCount === 0) return;
@@ -86,8 +89,15 @@ export default function Sports() {
     };
   }, [t.title, t.subtitle]);
 
+  const regions = data?.regions || [];
+  const visibleRegions = region === "all" ? regions : regions.filter((r) => r.key === region);
+
+  useEffect(() => {
+    if (region !== "all" && regions.length > 0 && !regions.some((r) => r.key === region)) setRegion("all");
+  }, [region, regions]);
+
   return (
-    <div className="mx-auto w-full max-w-2xl px-4 py-6 pb-28 space-y-4">
+    <div className="mx-auto w-full max-w-2xl px-4 py-6 pb-28 space-y-3">
       <div className="flex items-start gap-3">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#6D28D9] to-[#F59E0B] shadow-lg">
           <Trophy className="h-5 w-5 text-white" />
@@ -108,6 +118,10 @@ export default function Sports() {
       )}
 
       <DateStrip value={date} onChange={setDate} lang={lang} />
+
+      {!loading && !error && regions.length > 0 && (
+        <RegionTabs regions={regions} value={region} onChange={setRegion} lang={lang} />
+      )}
 
       {loading ? (
         <div className="space-y-3">
@@ -135,7 +149,7 @@ export default function Sports() {
             {t.retry}
           </button>
         </div>
-      ) : !data || data.sections.length === 0 ? (
+      ) : visibleRegions.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-[#E9D5FF] bg-white px-5 py-8 text-center dark:border-[#4B3F8A] dark:bg-[#2D2A5A]">
           <CalendarDays className="mx-auto mb-2 h-7 w-7 text-[#9CA3AF]" />
           <p className="text-sm font-semibold text-[#111827] dark:text-[#FEF3C7]">{t.empty}</p>
@@ -144,13 +158,30 @@ export default function Sports() {
       ) : (
         <>
           <p className="text-[11px] font-semibold text-[#6B7280] dark:text-[#A8A6C4]">
-            {data.totals.matches} {t.matches}
+            {data.totals.matches} {t.matches} · {data.totals.competitions} {t.competitions}
           </p>
-          <div className="space-y-3">
-            {data.sections.map((section) => (
-              <LeagueSection key={section.id} section={section} lang={lang} />
-            ))}
-          </div>
+
+          {visibleRegions.map((group) => {
+            const groupMatches = group.sections.reduce((n, s) => n + s.matches.length, 0);
+            return (
+              <section key={group.key} className="space-y-2">
+                <header className="flex items-center gap-2 pt-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B]" />
+                  <h2 className="text-[12px] font-black uppercase tracking-wide text-[#111827] dark:text-[#FEF3C7]">
+                    {lang === "ar" ? group.name_ar : group.name}
+                  </h2>
+                  <span className="text-[10px] font-bold text-[#9CA3AF]">{groupMatches}</span>
+                  <span className="h-px flex-1 bg-[#F3F4F6] dark:bg-[#4B3F8A]" />
+                </header>
+                <div className="space-y-2">
+                  {group.sections.map((section) => (
+                    <LeagueSection key={section.id} section={section} lang={lang} />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+
           <p className="pt-1 text-center text-[10px] text-[#9CA3AF] dark:text-[#8B8AB0]">{t.local}</p>
         </>
       )}

@@ -1,29 +1,23 @@
+import { Link } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
 import { Image } from "@/components/ui/image";
 
 const L = {
-  en: { ft: "FT", vs: "vs", postponed: "Postponed", canceled: "Canceled", today: "Today" },
-  ar: { ft: "انتهت", vs: "ضد", postponed: "مؤجلة", canceled: "ملغاة", today: "اليوم" },
+  en: { ft: "FT", vs: "vs", postponed: "Postponed", canceled: "Canceled" },
+  ar: { ft: "انتهت", vs: "ضد", postponed: "مؤجلة", canceled: "ملغاة" },
 };
 
 function Team({ team, align }) {
   return (
-    <div
-      className={`flex min-w-0 flex-1 items-center gap-1.5 ${
-        align === "end" ? "justify-end" : "justify-start"
-      }`}
-    >
+    <div className={`flex min-w-0 flex-1 items-center gap-1.5 ${align === "end" ? "justify-end" : "justify-start"}`}>
       {align === "end" && (
         <span dir="auto" className="truncate text-[12px] font-semibold text-[#111827] dark:text-[#F8FAFC]">
           {team.name}
         </span>
       )}
+      {team.red > 0 && <span className="h-3 w-2 shrink-0 rounded-[2px] bg-[#EF4444]" title={`${team.red}`} />}
       {team.logo ? (
-        <Image
-          src={team.logo}
-          alt={team.name}
-          fittingType="fit"
-          className="h-6 w-6 shrink-0 object-contain"
-        />
+        <Image src={team.logo} alt={team.name} fittingType="fit" className="h-6 w-6 shrink-0 object-contain" />
       ) : (
         <span className="h-6 w-6 shrink-0 rounded-full bg-[#E5E7EB] dark:bg-[#3B3670]" />
       )}
@@ -41,14 +35,14 @@ export default function MatchRow({ match, lang }) {
   const { status } = match;
   const played = status.type === "finished" || status.type === "live";
   const time = match.kickoff
-    ? new Date(match.kickoff).toLocaleTimeString(lang === "ar" ? "ar-MA" : "en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-      })
+    ? new Date(match.kickoff).toLocaleTimeString(lang === "ar" ? "ar-MA" : "en-GB", { hour: "2-digit", minute: "2-digit" })
     : "";
 
   return (
-    <div className="flex items-center gap-2 px-3 py-2.5">
+    <Link
+      to={`/sports/match/${match.id}`}
+      className="flex items-center gap-2 px-3 py-2.5 transition-colors hover:bg-[#F5F3FF] dark:hover:bg-[#332F63]"
+    >
       <div className="w-11 shrink-0 text-center">
         {status.type === "live" ? (
           <span className="inline-flex flex-col items-center gap-0.5">
@@ -71,7 +65,7 @@ export default function MatchRow({ match, lang }) {
       <div className="w-12 shrink-0 text-center">
         {played ? (
           <span className="text-sm font-black tabular-nums text-[#111827] dark:text-[#FEF3C7]">
-            {status.home_score ?? 0} - {status.away_score ?? 0}
+            {match.home.score ?? 0} - {match.away.score ?? 0}
           </span>
         ) : (
           <span className="text-[10px] font-semibold text-[#9CA3AF] dark:text-[#8B8AB0]">{labels.vs}</span>
@@ -79,6 +73,8 @@ export default function MatchRow({ match, lang }) {
       </div>
 
       <Team team={match.away} align="start" />
-    </div>
+
+      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-[#C4B5FD] rtl:rotate-180" />
+    </Link>
   );
 }

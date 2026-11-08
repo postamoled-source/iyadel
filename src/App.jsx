@@ -24,6 +24,7 @@ import DomainInspectorPage from './pages/DomainInspectorPage';
 import Movies from './pages/Movies';
 import MovieDetail from './pages/MovieDetail';
 import Sports from './pages/Sports';
+import MatchDetail from './pages/MatchDetail';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -64,6 +65,7 @@ const AuthenticatedApp = () => {
         <Route path="/movies" element={<Movies />} />
         <Route path="/movies/:type/:id" element={<MovieDetail />} />
         <Route path="/sports" element={<Sports />} />
+        <Route path="/sports/match/:id" element={<MatchDetail />} />
         <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} requireAdmin />}>
           <Route path="/Dashboard" element={<Dashboard />} />
         </Route>

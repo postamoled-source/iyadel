@@ -1,5 +1,5 @@
-const DAYS_BACK = 3;
-const DAYS_AHEAD = 7;
+const DAYS_BACK = 7;
+const DAYS_AHEAD = 3;
 
 export function dayKey(date) {
   const y = date.getFullYear();
@@ -27,6 +27,7 @@ export default function DateStrip({ value, onChange, lang }) {
   const shortLabel = (day) => {
     if (day.offset === 0) return lang === "ar" ? "اليوم" : "Today";
     if (day.offset === 1) return lang === "ar" ? "غداً" : "Tmrw";
+    if (day.offset === 2) return lang === "ar" ? "بعد غد" : "+2";
     if (day.offset === -1) return lang === "ar" ? "أمس" : "Yest.";
     return day.date.toLocaleDateString(locale, { weekday: "short" });
   };
