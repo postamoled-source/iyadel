@@ -5,11 +5,13 @@ import { CalendarDays, Loader2, Radio, RefreshCw, Trophy } from "lucide-react";
 import DateStrip, { dayKey } from "@/components/sports/DateStrip";
 import RegionTabs from "@/components/sports/RegionTabs";
 import LeagueSection from "@/components/sports/LeagueSection";
+import LiveNowStrip from "@/components/sports/LiveNowStrip";
+import StandingsView from "@/components/sports/StandingsView";
 
 const TEXT = {
   en: {
     title: "Sports Calendar",
-    subtitle: "Fixtures, live scores and results across Arab, European, African, Asian and American competitions.",
+    subtitle: "Fixtures, live scores, results and league tables across Arab, European, African, Asian and American competitions.",
     live: "Live now",
     matches: "matches",
     competitions: "competitions",
@@ -19,10 +21,12 @@ const TEXT = {
     retry: "Try again",
     updating: "Updating...",
     local: "Kickoff times are shown in your local time.",
+    tabMatches: "Matches",
+    tabStandings: "Standings",
   },
   ar: {
     title: "أجندة الرياضة",
-    subtitle: "مواعيد المباريات والنتائج الحية في الدوريات العربية والأوروبية والأفريقية والآسيوية والأمريكية.",
+    subtitle: "مواعيد المباريات والنتائج الحية وجداول الترتيب في الدوريات العربية والأوروبية والأفريقية والآسيوية والأمريكية.",
     live: "مباشر الآن",
     matches: "مباراة",
     competitions: "بطولة",
@@ -32,12 +36,20 @@ const TEXT = {
     retry: "إعادة المحاولة",
     updating: "جارٍ التحديث...",
     local: "أوقات المباريات معروضة حسب توقيتك المحلي.",
+    tabMatches: "المباريات",
+    tabStandings: "الترتيب",
   },
 };
+
+const TABS = [
+  { key: "matches", labelKey: "tabMatches" },
+  { key: "standings", labelKey: "tabStandings" },
+];
 
 export default function Sports() {
   const { lang } = useI18n();
   const t = TEXT[lang] || TEXT.en;
+  const [view, setView] = useState("matches");
   const [date, setDate] = useState(() => dayKey(new Date()));
   const [region, setRegion] = useState("all");
   const [data, setData] = useState(null);
@@ -108,81 +120,109 @@ export default function Sports() {
         </div>
       </div>
 
-      {liveCount > 0 && (
-        <div className="flex items-center gap-2 rounded-xl border border-[#EF4444]/30 bg-[#EF4444]/10 px-3 py-2">
-          <Radio className="h-4 w-4 animate-pulse text-[#EF4444]" />
-          <span className="text-[11px] font-bold text-[#EF4444]">
-            {t.live}: {liveCount}
-          </span>
-        </div>
-      )}
+      <div className="grid grid-cols-2 gap-1 rounded-xl border border-[#F3F4F6] bg-white p-1 dark:border-[#4B3F8A] dark:bg-[#2D2A5A]">
+        {TABS.map((tab) => {
+          const active = view === tab.key;
+          return (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => setView(tab.key)}
+              className={`rounded-lg px-3 py-1.5 text-[11px] font-bold transition-colors ${
+                active
+                  ? "bg-[#6D28D9] text-white shadow-sm"
+                  : "text-[#6B7280] hover:bg-[#F5F3FF] dark:text-[#A8A6C4] dark:hover:bg-[#332F63]"
+              }`}
+            >
+              {t[tab.labelKey]}
+            </button>
+          );
+        })}
+      </div>
 
-      <DateStrip value={date} onChange={setDate} lang={lang} />
-
-      {!loading && !error && regions.length > 0 && (
-        <RegionTabs regions={regions} value={region} onChange={setRegion} lang={lang} />
-      )}
-
-      {loading ? (
-        <div className="space-y-3">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="h-28 animate-pulse rounded-2xl border border-[#F3F4F6] bg-white dark:border-[#4B3F8A] dark:bg-[#2D2A5A]"
-            />
-          ))}
-          <div className="flex items-center justify-center gap-2 pt-2 text-[11px] text-[#9CA3AF]">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            {t.updating}
-          </div>
-        </div>
-      ) : error ? (
-        <div className="rounded-2xl border border-dashed border-[#E9D5FF] bg-white px-5 py-8 text-center dark:border-[#4B3F8A] dark:bg-[#2D2A5A]">
-          <CalendarDays className="mx-auto mb-2 h-7 w-7 text-[#9CA3AF]" />
-          <p className="text-sm font-semibold text-[#111827] dark:text-[#FEF3C7]">{t.error}</p>
-          <button
-            type="button"
-            onClick={() => load(date, false)}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-[#6D28D9] px-3 py-1.5 text-[11px] font-bold text-white"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-            {t.retry}
-          </button>
-        </div>
-      ) : visibleRegions.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[#E9D5FF] bg-white px-5 py-8 text-center dark:border-[#4B3F8A] dark:bg-[#2D2A5A]">
-          <CalendarDays className="mx-auto mb-2 h-7 w-7 text-[#9CA3AF]" />
-          <p className="text-sm font-semibold text-[#111827] dark:text-[#FEF3C7]">{t.empty}</p>
-          <p className="mt-1 text-[11px] text-[#6B7280] dark:text-[#A8A6C4]">{t.emptyHint}</p>
-        </div>
+      {view === "standings" ? (
+        <StandingsView lang={lang} />
       ) : (
         <>
-          <p className="text-[11px] font-semibold text-[#6B7280] dark:text-[#A8A6C4]">
-            {data.totals.matches} {t.matches} · {data.totals.competitions} {t.competitions}
-          </p>
+          {liveCount > 0 && (
+            <div className="flex items-center gap-2 rounded-xl border border-[#EF4444]/30 bg-[#EF4444]/10 px-3 py-2">
+              <Radio className="h-4 w-4 animate-pulse text-[#EF4444]" />
+              <span className="text-[11px] font-bold text-[#EF4444]">
+                {t.live}: {liveCount}
+              </span>
+            </div>
+          )}
 
-          {visibleRegions.map((group) => {
-            const groupMatches = group.sections.reduce((n, s) => n + s.matches.length, 0);
-            return (
-              <section key={group.key} className="space-y-2">
-                <header className="flex items-center gap-2 pt-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B]" />
-                  <h2 className="text-[12px] font-black uppercase tracking-wide text-[#111827] dark:text-[#FEF3C7]">
-                    {lang === "ar" ? group.name_ar : group.name}
-                  </h2>
-                  <span className="text-[10px] font-bold text-[#9CA3AF]">{groupMatches}</span>
-                  <span className="h-px flex-1 bg-[#F3F4F6] dark:bg-[#4B3F8A]" />
-                </header>
-                <div className="space-y-2">
-                  {group.sections.map((section) => (
-                    <LeagueSection key={section.id} section={section} lang={lang} />
-                  ))}
-                </div>
-              </section>
-            );
-          })}
+          <LiveNowStrip matches={data?.live_matches} lang={lang} />
 
-          <p className="pt-1 text-center text-[10px] text-[#9CA3AF] dark:text-[#8B8AB0]">{t.local}</p>
+          <DateStrip value={date} onChange={setDate} lang={lang} />
+
+          {!loading && !error && regions.length > 0 && (
+            <RegionTabs regions={regions} value={region} onChange={setRegion} lang={lang} />
+          )}
+
+          {loading ? (
+            <div className="space-y-3">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="h-28 animate-pulse rounded-2xl border border-[#F3F4F6] bg-white dark:border-[#4B3F8A] dark:bg-[#2D2A5A]"
+                />
+              ))}
+              <div className="flex items-center justify-center gap-2 pt-2 text-[11px] text-[#9CA3AF]">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                {t.updating}
+              </div>
+            </div>
+          ) : error ? (
+            <div className="rounded-2xl border border-dashed border-[#E9D5FF] bg-white px-5 py-8 text-center dark:border-[#4B3F8A] dark:bg-[#2D2A5A]">
+              <CalendarDays className="mx-auto mb-2 h-7 w-7 text-[#9CA3AF]" />
+              <p className="text-sm font-semibold text-[#111827] dark:text-[#FEF3C7]">{t.error}</p>
+              <button
+                type="button"
+                onClick={() => load(date, false)}
+                className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-[#6D28D9] px-3 py-1.5 text-[11px] font-bold text-white"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                {t.retry}
+              </button>
+            </div>
+          ) : visibleRegions.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-[#E9D5FF] bg-white px-5 py-8 text-center dark:border-[#4B3F8A] dark:bg-[#2D2A5A]">
+              <CalendarDays className="mx-auto mb-2 h-7 w-7 text-[#9CA3AF]" />
+              <p className="text-sm font-semibold text-[#111827] dark:text-[#FEF3C7]">{t.empty}</p>
+              <p className="mt-1 text-[11px] text-[#6B7280] dark:text-[#A8A6C4]">{t.emptyHint}</p>
+            </div>
+          ) : (
+            <>
+              <p className="text-[11px] font-semibold text-[#6B7280] dark:text-[#A8A6C4]">
+                {data.totals.matches} {t.matches} · {data.totals.competitions} {t.competitions}
+              </p>
+
+              {visibleRegions.map((group) => {
+                const groupMatches = group.sections.reduce((n, s) => n + s.matches.length, 0);
+                return (
+                  <section key={group.key} className="space-y-2">
+                    <header className="flex items-center gap-2 pt-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B]" />
+                      <h2 className="text-[12px] font-black uppercase tracking-wide text-[#111827] dark:text-[#FEF3C7]">
+                        {lang === "ar" ? group.name_ar : group.name}
+                      </h2>
+                      <span className="text-[10px] font-bold text-[#9CA3AF]">{groupMatches}</span>
+                      <span className="h-px flex-1 bg-[#F3F4F6] dark:bg-[#4B3F8A]" />
+                    </header>
+                    <div className="space-y-2">
+                      {group.sections.map((section) => (
+                        <LeagueSection key={section.id} section={section} lang={lang} />
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
+
+              <p className="pt-1 text-center text-[10px] text-[#9CA3AF] dark:text-[#8B8AB0]">{t.local}</p>
+            </>
+          )}
         </>
       )}
     </div>

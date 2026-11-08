@@ -295,12 +295,165 @@ async function loadBoard(date) {
       competitions: sections.length,
       live: allMatches.filter((m) => m.status.type === "live").length,
     },
+    live_matches: allMatches.filter((m) => m.status.type === "live"),
   };
 
   const hasLive = data.totals.live > 0 || date === new Date().toISOString().slice(0, 10);
   CACHE.set(key, { at: Date.now(), ttl: hasLive ? TTL_LIVE : TTL_PAST, data });
   if (CACHE.size > 60) CACHE.delete(CACHE.keys().next().value);
   return data;
+}
+
+const TTL_TABLE = 10 * 60_000;
+const SPLIT_TABLES = new Set(["home", "away", "form", "xg"]);
+
+function competitionsList() {
+  return REGIONS.map((region) => ({
+    key: region.key,
+    name: region.en,
+    name_ar: region.ar,
+    items: CATALOG.filter((entry) => entry.region === region.key).map((entry) => ({
+      id: entry.ids[0],
+      name: entry.en,
+      name_ar: entry.ar,
+      logo: `https://images.fotmob.com/image_resources/logo/leaguelogo/${entry.ids[0]}.png`,
+    })),
+  })).filter((region) => region.items.length > 0);
+}
+
+function tableRow(row) {
+  const goals = String(row.scoresStr || "").split("-");
+  return {
+    id: row.id || null,
+    position: row.idx ?? null,
+    name: row.name || "",
+    short: row.shortName || row.name || "",
+    logo: teamLogo(row.id),
+    played: row.played ?? 0,
+    wins: row.wins ?? 0,
+    draws: row.draws ?? 0,
+    losses: row.losses ?? 0,
+    goals_for: Number(goals[0]) || 0,
+    goals_against: Number(goals[1]) || 0,
+    diff: row.goalConDiff ?? 0,
+    points: row.pts ?? 0,
+    deduction: row.deduction || null,
+    color: row.qualColor || null,
+  };
+}
+
+function groupName(key) {
+  if (key === "all") return null;
+  const clean = String(key).replace(/^group[_ ]?/i, "").trim();
+  return clean ? clean.toUpperCase() : null;
+}
+
+async function loadStandings(leagueId) {
+  const entry = ID_INDEX.get(String(leagueId));
+  if (!entry) throw new Error("Unknown competition");
+
+  const key = `table:${entry.en}`;
+  const hit = CACHE.get(key);
+  if (hit && Date.now() - hit.at < hit.ttl) return hit.data;
+
+  let payload = null;
+  for (const id of entry.ids) {
+    try {
+      const res = await fetch(`https://www.fotmob.com/api/data/leagues?id=${id}`, { headers: UA });
+      if (!res.ok) continue;
+      const json = await res.json();
+      if (json?.table || json?.details) {
+        payload = json;
+        break;
+      }
+    } catch {
+      // try the next id for this competition
+    }
+  }
+  if (!payload) throw new Error("Standings are unavailable right now");
+
+  const block = Array.isArray(payload.table) ? payload.table[0] : payload.table;
+  const info = block?.data || {};
+  const tables = info.table || {};
+  const keys = Object.keys(tables).filter((k) => Array.isArray(tables[k]) && tables[k].length > 0);
+  const used = keys.includes("all") ? ["all"] : keys.filter((k) => !SPLIT_TABLES.has(k));
+
+  const data = {
+    id: entry.ids[0],
+    competition: entry.en,
+    competition_ar: entry.ar,
+    region: entry.region,
+    logo: `https://images.fotmob.com/image_resources/logo/leaguelogo/${entry.ids[0]}.png`,
+    season: payload.details?.selectedSeason || null,
+    legend: (info.legend || [])
+      .filter((item) => item?.color)
+      .map((item) => ({ title: item.title || "", color: item.color, indices: item.indices || [] })),
+    groups: used.map((k) => ({ key: k, name: groupName(k), rows: tables[k].map(tableRow) })),
+    matches: competitionMatches(payload.fixtures?.allMatches || [], entry),
+    updated_at: new Date().toISOString(),
+  };
+
+  CACHE.set(key, { at: Date.now(), ttl: TTL_TABLE, data });
+  if (CACHE.size > 80) CACHE.delete(CACHE.keys().next().value);
+  return data;
+}
+
+function normalizeFixture(fixture, entry) {
+  const scoreStr = fixture.status?.scoreStr || "";
+  const nums = scoreStr.match(/(\d+)\s*-\s*(\d+)/);
+  const state = mapStatus(fixture.status);
+  return {
+    id: String(fixture.id),
+    competition: entry.en,
+    competition_ar: entry.ar,
+    region: entry.region,
+    round: fixture.roundName ? String(fixture.roundName) : null,
+    group: fixture.group || null,
+    kickoff: fixture.status?.utcTime || null,
+    home: {
+      id: fixture.home?.id || null,
+      name: fixture.home?.name || "",
+      logo: teamLogo(fixture.home?.id),
+      score: nums ? Number(nums[1]) : null,
+      red: 0,
+    },
+    away: {
+      id: fixture.away?.id || null,
+      name: fixture.away?.name || "",
+      logo: teamLogo(fixture.away?.id),
+      score: nums ? Number(nums[2]) : null,
+      red: 0,
+    },
+    status: {
+      type: state,
+      label: state === "live" ? liveLabel(fixture.status) : null,
+      score_str: scoreStr || null,
+    },
+  };
+}
+
+// Knockout competitions carry no table, so fall back to their matches: live
+// first, then the next fixtures, then the latest results.
+const PLACEHOLDER_TEAM = /^(\d{1,2}[A-Z]|[A-Z]\d|W\d+|\d+)$/;
+
+function competitionMatches(list, entry) {
+  const matches = list
+    .map((fixture) => normalizeFixture(fixture, entry))
+    .filter(
+      (match) =>
+        !PLACEHOLDER_TEAM.test(match.home.name.trim()) && !PLACEHOLDER_TEAM.test(match.away.name.trim())
+    );
+  const byKickoff = (a, b) => String(a.kickoff || "").localeCompare(String(b.kickoff || ""));
+  const live = matches.filter((m) => m.status.type === "live");
+  const upcoming = matches
+    .filter((m) => m.status.type === "upcoming" || m.status.type === "postponed")
+    .sort(byKickoff)
+    .slice(0, 8);
+  const finished = matches
+    .filter((m) => m.status.type === "finished" || m.status.type === "canceled")
+    .sort((a, b) => byKickoff(b, a))
+    .slice(0, 8);
+  return [...live, ...upcoming, ...finished].slice(0, 14);
 }
 
 function minuteLabel(event) {
@@ -428,6 +581,18 @@ export default async function (req) {
   try {
     const body = await req.json().catch(() => ({}));
     const action = body.action || "board";
+
+    if (action === "competitions") {
+      return Response.json({ regions: competitionsList() });
+    }
+
+    if (action === "standings") {
+      const leagueId = String(body.leagueId || "").trim();
+      if (!/^\d{2,12}$/.test(leagueId)) {
+        return Response.json({ error: "Invalid competition id" }, { status: 400 });
+      }
+      return Response.json(await loadStandings(leagueId));
+    }
 
     if (action === "match") {
       const matchId = String(body.matchId || "").trim();
