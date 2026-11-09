@@ -307,18 +307,90 @@ async function loadBoard(date) {
 const TTL_TABLE = 10 * 60_000;
 const SPLIT_TABLES = new Set(["home", "away", "form", "xg"]);
 
+// Display order for the standings picker: big European and continental
+// competitions first (African and world club/international cups included),
+// Arab leagues last with the Moroccan Botola at the head of that group.
+const PICKER_ORDER = [
+  "UEFA Champions League",
+  "UEFA Europa League",
+  "UEFA Conference League",
+  "UEFA Super Cup",
+  "Premier League",
+  "LaLiga",
+  "Serie A",
+  "Bundesliga",
+  "Ligue 1",
+  "Liga Portugal",
+  "Eredivisie",
+  "Süper Lig",
+  "FA Cup",
+  "Copa del Rey",
+  "DFB Pokal",
+  "Coupe de France",
+  "UEFA EURO",
+  "UEFA Nations League",
+  "World Cup Qualifying — UEFA",
+  "UEFA EURO U21",
+  "UEFA U19 Championship",
+  "UEFA U17 Championship",
+  "CAF Champions League",
+  "CAF Confederation Cup",
+  "CAF Super Cup",
+  "Africa Cup of Nations",
+  "AFCON Qualification",
+  "African Nations Championship",
+  "World Cup Qualifying — CAF",
+  "AFC Champions League Elite",
+  "AFC Champions League Two",
+  "AFC Challenge League",
+  "AFC Asian Cup",
+  "AFC U23 Asian Cup",
+  "AFC U20 Asian Cup",
+  "World Cup Qualifying — AFC",
+  "Copa Libertadores",
+  "Copa Sudamericana",
+  "Copa América",
+  "CONCACAF Gold Cup",
+  "CONCACAF Champions Cup",
+  "World Cup Qualifying — CONMEBOL",
+  "Brasileirão Série A",
+  "Brasileirão Série B",
+  "Argentine Liga Profesional",
+  "Major League Soccer",
+  "J.League",
+  "J.League 2",
+  "FIFA World Cup",
+  "FIFA Club World Cup",
+  "FIFA U20 World Cup",
+  "FIFA U17 World Cup",
+  "Olympic Football",
+  // Arab competitions last — Botola Pro leads this group
+  "Botola Pro",
+  "Throne Cup",
+  "Egyptian Premier League",
+  "Egypt Cup",
+  "Algerian Ligue 1",
+  "Tunisian Ligue I",
+  "Saudi Pro League",
+  "King's Cup",
+  "Qatar Stars League",
+  "UAE Pro League",
+  "Arab Club Champions Cup",
+  "FIFA Arab Cup",
+  "Gulf Cup",
+];
+
 function competitionsList() {
-  return REGIONS.map((region) => ({
-    key: region.key,
-    name: region.en,
-    name_ar: region.ar,
-    items: CATALOG.filter((entry) => entry.region === region.key).map((entry) => ({
-      id: entry.ids[0],
-      name: entry.en,
-      name_ar: entry.ar,
-      logo: `https://images.fotmob.com/image_resources/logo/leaguelogo/${entry.ids[0]}.png`,
-    })),
-  })).filter((region) => region.items.length > 0);
+  const byName = new Map(CATALOG.map((entry) => [entry.en, entry]));
+  const ordered = PICKER_ORDER.map((name) => byName.get(name)).filter(Boolean);
+  const rest = CATALOG.filter((entry) => !PICKER_ORDER.includes(entry.en));
+  const items = [...ordered, ...rest].map((entry) => ({
+    id: entry.ids[0],
+    name: entry.en,
+    name_ar: entry.ar,
+    logo: `https://images.fotmob.com/image_resources/logo/leaguelogo/${entry.ids[0]}.png`,
+  }));
+  return [{ key: "all", name: "Competitions", name_ar: "البطولات والدوريات", items }];
 }
 
 function tableRow(row) {
