@@ -115,6 +115,11 @@ export default function Sports() {
           <Trophy className="h-5 w-5 text-white" />
         </span>
         <div className="min-w-0 flex-1">
+          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em]">
+            <span className="bg-gradient-to-r from-[#6D28D9] to-[#F59E0B] bg-clip-text text-transparent">iyadel</span>
+            <span className="text-[#9CA3AF] dark:text-[#8B8AB0]">·</span>
+            <span className="text-[#F59E0B]">Sport</span>
+          </p>
           <h1 className="text-xl font-black text-[#111827] dark:text-[#F8FAFC]">{t.title}</h1>
           <p className="mt-0.5 text-[12px] leading-relaxed text-[#6B7280] dark:text-[#A8A6C4]">{t.subtitle}</p>
         </div>

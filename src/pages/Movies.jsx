@@ -153,6 +153,9 @@ export default function Movies() {
       <div className="max-w-5xl mx-auto px-4">
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.14em] bg-gradient-to-r from-[#6D28D9] to-[#F59E0B] bg-clip-text text-transparent">
+              iyadel
+            </p>
             <h1 className="text-2xl font-bold text-[#111827] dark:text-[#FEF3C7] flex items-center gap-2">
               <Clapperboard className="w-6 h-6 text-[#6D28D9]" />
               {L.title}
