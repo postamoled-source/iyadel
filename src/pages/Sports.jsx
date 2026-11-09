@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useI18n } from "@/lib/i18n";
 import { CalendarDays, Loader2, Radio, RefreshCw, Trophy } from "lucide-react";
 import DateStrip, { dayKey } from "@/components/sports/DateStrip";
+import DayTabs from "@/components/sports/DayTabs";
 import RegionTabs from "@/components/sports/RegionTabs";
 import LeagueSection from "@/components/sports/LeagueSection";
 import LiveNowStrip from "@/components/sports/LiveNowStrip";
@@ -159,6 +160,8 @@ export default function Sports() {
           )}
 
           <LiveNowStrip matches={data?.live_matches} lang={lang} />
+
+          <DayTabs value={date} onChange={setDate} lang={lang} />
 
           <DateStrip value={date} onChange={setDate} lang={lang} />
 
