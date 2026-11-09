@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { useI18n } from "@/lib/i18n";
 import { Moon, Sun, Globe } from "lucide-react";
@@ -16,8 +16,6 @@ const LANG_OPTIONS = [
 export default function Header() {
   const { theme, setTheme } = useTheme();
   const { lang, setLang, t } = useI18n();
-  const { pathname } = useLocation();
-  const section = pathname.startsWith("/sports") ? "Sport" : pathname.startsWith("/movies") ? "Movies & Series" : null;
   const [scrolled, setScrolled] = useState(false);
   const isDark = (theme ?? "dark") === "dark";
 
@@ -75,11 +73,6 @@ export default function Header() {
           <Link to="/" className="flex items-center gap-2 shrink-0">
             <Logo className="w-9 h-9" />
             <span className="font-bold text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">iyadel</span>
-            {section && (
-              <span className="whitespace-nowrap rounded-md bg-muted px-1.5 py-0.5 text-[9.5px] font-bold text-muted-foreground">
-                {section}
-              </span>
-            )}
           </Link>
           <div className="flex items-center gap-2">
             <button
